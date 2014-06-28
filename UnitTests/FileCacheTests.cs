@@ -11,9 +11,9 @@ namespace UnitTests
     [TestFixture]
     public sealed class FileCacheTests
     {
-        private const int SmallItemCount = 10;
-        private const int MediumItemCount = 100;
-        private const int LargeItemCount = 1000;
+        private const int SmallItemCount = 1;
+        private const int MediumItemCount = 10;
+        private const int LargeItemCount = 100;
         private const int MinItem = 10000;
         private const string BlankPath = "   ";
 
@@ -26,13 +26,13 @@ namespace UnitTests
         public void SetUp()
         {
             _fileCache = new FileCache();
-            _fileCache.Clear();
+            _fileCache.Clear(ignoreExpirationDate: true);
         }
 
         [TearDown]
         public void TearDown()
         {
-            _fileCache.Clear();
+            _fileCache.Clear(ignoreExpirationDate: true);
             _fileCache = null;
         }
 
@@ -102,11 +102,28 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNotNull(_fileCache.Add(StringItems[i], StringItems[i], DateTime.UtcNow));
+                Assert.IsNotNull(_fileCache.Add(StringItems[i], StringItems[i], DateTime.UtcNow.AddMinutes(10)));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNotNull(_fileCache.Get(StringItems[i]));
+                var item = (string) _fileCache.Get(StringItems[i]);
+                Assert.IsNotNull(item);
+                Assert.AreEqual(StringItems[i], item);
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Get_FullCache_Outdated(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNotNull(_fileCache.Add(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10))));
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(_fileCache.Get(StringItems[i]));
             }
         }
 

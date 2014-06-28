@@ -39,7 +39,7 @@ namespace KVLite
             _cachePath = cachePath;
             _connectionString = CreateConnectionString(cachePath, Settings.Default.DefaultMaxCacheSize);
             
-            using (var ctx = new CacheContext(_connectionString))
+            using (var ctx = GetContext(_connectionString))
             {
                 ctx.Database.CreateIfNotExists();    
             }
@@ -80,7 +80,7 @@ namespace KVLite
 
             //return entry;
 
-            using (var ctx = new CacheContext(_connectionString))
+            using (var ctx = GetContext(_connectionString))
             {
                 var item = ctx.CacheItems.Add(new CacheItem {Key = key, ExpiresOn = utcExpiry, Value = entry.ToString()});
                 ctx.SaveChanges();
@@ -88,12 +88,28 @@ namespace KVLite
             }
         }
 
-        public void Clear()
+        public void Clear(bool ignoreExpirationDate = false)
         {
-            using (var ctx = new CacheContext(_connectionString))
+            using (var ctx = GetContext(_connectionString))
             {
-                ctx.CacheItems.RemoveRange(ctx.CacheItems);
-                ctx.SaveChanges();
+                using (var transaction = ctx.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var utcNow = DateTime.UtcNow;
+                        var items = ignoreExpirationDate
+                            ? ctx.CacheItems
+                            : ctx.CacheItems.Where(ci => ci.ExpiresOn <= utcNow);
+                        ctx.CacheItems.RemoveRange(items);
+                        ctx.SaveChanges();
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
             }
         }
 
@@ -123,9 +139,11 @@ namespace KVLite
 
             //return item.Item;
 
-            using (var ctx = new CacheContext(_connectionString))
+            using (var ctx = GetContext(_connectionString))
             {
-                return ctx.CacheItems.FirstOrDefault(x => x.Key == key);
+                var utcNow = DateTime.UtcNow;
+                var item = ctx.CacheItems.FirstOrDefault(x => x.Key == key && x.ExpiresOn > utcNow);
+                return (item == null) ? null : item.Value;
             }
         }
 
@@ -152,11 +170,19 @@ namespace KVLite
             //}
         }
 
+        #region Private Methods
+
         private static string CreateConnectionString(string dbPath, int maxDbSize)
         {
-                var fmt = Settings.Default.ConnectionStringFormat;
-                return String.Format(fmt, dbPath, maxDbSize);
-            
+            var fmt = Settings.Default.ConnectionStringFormat;
+            return String.Format(fmt, dbPath, maxDbSize);
         }
+
+        private static CacheContext GetContext(string connectionString)
+        {
+            return new CacheContext(connectionString);
+        }
+
+        #endregion
     }
 }
