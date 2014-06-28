@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Transactions;
 using System.Web.Caching;
 using System.Web.Security;
@@ -38,9 +39,9 @@ namespace KVLite
             _cachePath = cachePath;
             _connectionString = CreateConnectionString(cachePath, Settings.Default.DefaultMaxCacheSize);
             
-            using (var cache = new CacheContext(_connectionString))
+            using (var ctx = new CacheContext(_connectionString))
             {
-                cache.Database.CreateIfNotExists();    
+                ctx.Database.CreateIfNotExists();    
             }
         }
 
@@ -78,17 +79,21 @@ namespace KVLite
             //}
 
             //return entry;
-            return null;
+
+            using (var ctx = new CacheContext(_connectionString))
+            {
+                var item = ctx.CacheItems.Add(new CacheItem {Key = key, ExpiresOn = utcExpiry, Value = entry.ToString()});
+                ctx.SaveChanges();
+                return item;
+            }
         }
 
         public void Clear()
         {
             using (var ctx = new CacheContext(_connectionString))
             {
-                using (var tr = new TransactionScope())
-                {
-                    ctx.CacheItems.RemoveRange(ctx.CacheItems);
-                }
+                ctx.CacheItems.RemoveRange(ctx.CacheItems);
+                ctx.SaveChanges();
             }
         }
 
@@ -117,7 +122,11 @@ namespace KVLite
             //}
 
             //return item.Item;
-            return null;
+
+            using (var ctx = new CacheContext(_connectionString))
+            {
+                return ctx.CacheItems.FirstOrDefault(x => x.Key == key);
+            }
         }
 
         public override void Remove(string key)
