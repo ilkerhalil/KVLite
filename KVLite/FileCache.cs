@@ -2,7 +2,6 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Transactions;
 using System.Web.Caching;
 using System.Web.Security;
 using KVLite.Properties;
@@ -14,6 +13,7 @@ namespace KVLite
     {
         private readonly string _cachePath;
         private readonly string _connectionString;
+        private CacheContext _tmpContext;
 
         public FileCache() : this(ConfigurationManager.AppSettings["OutputCachePath"] ?? Settings.Default.DefaultCachePath)
         {
@@ -38,11 +38,9 @@ namespace KVLite
 
             _cachePath = cachePath;
             _connectionString = CreateConnectionString(cachePath, Settings.Default.DefaultMaxCacheSize);
-            
-            using (var ctx = GetContext(_connectionString))
-            {
-                ctx.Database.CreateIfNotExists();    
-            }
+
+            var ctx = GetContext();
+            ctx.Database.CreateIfNotExists();
         }
 
         #region Public Properties
@@ -80,35 +78,31 @@ namespace KVLite
 
             //return entry;
 
-            using (var ctx = GetContext(_connectionString))
-            {
-                var item = ctx.CacheItems.Add(new CacheItem {Key = key, ExpiresOn = utcExpiry, Value = entry.ToString()});
-                ctx.SaveChanges();
-                return item;
-            }
+            var ctx = GetContext();
+            var item = ctx.CacheItems.Add(new CacheItem {Key = key, ExpiresOn = utcExpiry, Value = entry.ToString()});
+            ctx.SaveChanges();
+            return item;
         }
 
         public void Clear(bool ignoreExpirationDate = false)
         {
-            using (var ctx = GetContext(_connectionString))
+            var ctx = GetContext();
+            using (var transaction = ctx.Database.BeginTransaction())
             {
-                using (var transaction = ctx.Database.BeginTransaction())
+                try
                 {
-                    try
-                    {
-                        var utcNow = DateTime.UtcNow;
-                        var items = ignoreExpirationDate
-                            ? ctx.CacheItems
-                            : ctx.CacheItems.Where(ci => ci.ExpiresOn <= utcNow);
-                        ctx.CacheItems.RemoveRange(items);
-                        ctx.SaveChanges();
-                        transaction.Commit();
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                        throw;
-                    }
+                    var utcNow = DateTime.UtcNow;
+                    var items = ignoreExpirationDate
+                        ? ctx.CacheItems
+                        : ctx.CacheItems.Where(ci => ci.ExpiresOn <= utcNow);
+                    ctx.CacheItems.RemoveRange(items);
+                    ctx.SaveChanges();
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
                 }
             }
         }
@@ -139,12 +133,10 @@ namespace KVLite
 
             //return item.Item;
 
-            using (var ctx = GetContext(_connectionString))
-            {
-                var utcNow = DateTime.UtcNow;
-                var item = ctx.CacheItems.FirstOrDefault(x => x.Key == key && x.ExpiresOn > utcNow);
-                return (item == null) ? null : item.Value;
-            }
+            var ctx = GetContext();
+            var utcNow = DateTime.UtcNow;
+            var item = ctx.CacheItems.FirstOrDefault(x => x.Key == key && x.ExpiresOn > utcNow);
+            return (item == null) ? null : item.Value;
         }
 
         public override void Remove(string key)
@@ -178,9 +170,13 @@ namespace KVLite
             return String.Format(fmt, dbPath, maxDbSize);
         }
 
-        private static CacheContext GetContext(string connectionString)
+        private CacheContext GetContext()
         {
-            return new CacheContext(connectionString);
+            if (_tmpContext == null)
+            {
+                _tmpContext = new CacheContext(_connectionString);
+            }
+            return _tmpContext;
         }
 
         #endregion
