@@ -27,6 +27,7 @@
     </dependencies>
     <references>
       System.Configuration
+      System.Transaction?
       System.Web
     </references>
     <tags></tags>

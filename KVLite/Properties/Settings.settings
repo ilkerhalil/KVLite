@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="KVLite.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ConnectionStringFormat" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Data Source={0}; Max Database Size={1}; Max Buffer Size=1024; Persist Security Info=False;</Value>
+    </Setting>
+    <Setting Name="AppSettings_CachePathKey" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">KVLite.FileCache.CachePath</Value>
+    </Setting>
+    <Setting Name="DefaultMaxCacheSize" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">512</Value>
+    </Setting>
+    <Setting Name="AppSettings_MaxCacheSizeKey" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">KVLite.FileCache.MaxCacheSize</Value>
+    </Setting>
+    <Setting Name="DefaultCachePath" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">FileCache.sdf</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

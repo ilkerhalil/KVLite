@@ -1,5 +1,6 @@
 ﻿using System;
 using KVLite;
+using KVLite.Properties;
 using NUnit.Framework;
 
 namespace UnitTests
@@ -8,6 +9,22 @@ namespace UnitTests
     public sealed class FileCacheTests
     {
         private const string BlankPath = "   ";
+
+        private FileCache _fileCache;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _fileCache = new FileCache();
+            _fileCache.Clear();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _fileCache.Clear();
+            _fileCache = null;
+        }
 
         #region Construction
 
@@ -55,12 +72,18 @@ namespace UnitTests
 
         #endregion
 
-        #region Miscellanea
+        #region Settings
 
         [Test]
-        public void Constants_AppSettingsKey()
+        public void Constants_AppSettings_CachePathKey()
         {
-            Assert.IsNotEmpty(Constants.AppSettingsKey.Trim());
+            Assert.IsNotEmpty(Settings.Default.AppSettings_CachePathKey.Trim());
+        }
+
+        [Test]
+        public void Constants_AppSettings_MaxCacheSizeKey()
+        {
+            Assert.IsNotEmpty(Settings.Default.AppSettings_MaxCacheSizeKey.Trim());
         }
 
         #endregion
