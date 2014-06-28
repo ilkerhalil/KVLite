@@ -5,38 +5,43 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Security;
+using Thrower;
 
 namespace KVLite
 {
     public sealed class FileCache : OutputCacheProvider
     {
-        private string _cachePath;
+        private readonly string _cachePath;
+
+        public FileCache() : this(ConfigurationManager.AppSettings["OutputCachePath"])
+        {
+
+            if (_cachePath == null) _cachePath = "~/";
+
+            HttpContext context = HttpContext.Current;
+
+            if (context != null)
+            {
+                _cachePath = context.Server.MapPath(_cachePath);
+
+                if (!_cachePath.EndsWith("\\"))
+
+                    _cachePath += "\\";
+            }
+        }
+
+        public FileCache(string cachePath)
+        {
+            Raise<ArgumentException>.IfIsEmpty(cachePath, ErrorMessages.NullOrEmptyCachePath);
+
+            _cachePath = cachePath;
+        }
+
+        #region Public Properties
 
         private string CachePath
         {
-            get
-            {
-                if (!string.IsNullOrEmpty(_cachePath))
-
-                    return _cachePath;
-
-                _cachePath = ConfigurationManager.AppSettings["OutputCachePath"];
-
-                if (_cachePath == null) _cachePath = "~/";
-
-                HttpContext context = HttpContext.Current;
-
-                if (context != null)
-                {
-                    _cachePath = context.Server.MapPath(_cachePath);
-
-                    if (!_cachePath.EndsWith("\\"))
-
-                        _cachePath += "\\";
-                }
-
-                return _cachePath;
-            }
+            get { return _cachePath; }
         }
 
         public object this[string cacheKey]
@@ -45,6 +50,8 @@ namespace KVLite
 
             set { Add(cacheKey, value, DateTime.Now.AddDays(365)); }
         }
+
+        #endregion
 
         public override object Add(string key, object entry, DateTime utcExpiry)
         {
