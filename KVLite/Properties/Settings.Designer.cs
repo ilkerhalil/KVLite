@@ -25,7 +25,7 @@ namespace KVLite.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source={0}; Version=3; Max Page Count={1};")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source={0}; Version=3; Journal Mode=Persist;")]
         public string ConnectionStringFormat {
             get {
                 return ((string)(this["ConnectionStringFormat"]));
@@ -38,24 +38,6 @@ namespace KVLite.Properties {
         public string AppSettings_CachePathKey {
             get {
                 return ((string)(this["AppSettings_CachePathKey"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("512")]
-        public int DefaultMaxCacheSize {
-            get {
-                return ((int)(this["DefaultMaxCacheSize"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("KVLite.FileCache.MaxCacheSize")]
-        public string AppSettings_MaxCacheSizeKey {
-            get {
-                return ((string)(this["AppSettings_MaxCacheSizeKey"]));
             }
         }
         

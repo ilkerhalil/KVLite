@@ -138,9 +138,9 @@ namespace UnitTests
         }
 
         [Test]
-        public void Constants_AppSettings_MaxCacheSizeKey()
+        public void Constants_CacheCreationScript()
         {
-            Assert.IsNotEmpty(Settings.Default.AppSettings_MaxCacheSizeKey.Trim());
+            Assert.IsNotEmpty(Settings.Default.CacheCreationScript.Trim());
         }
 
         #endregion

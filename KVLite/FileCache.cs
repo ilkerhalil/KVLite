@@ -39,7 +39,7 @@ namespace KVLite
             Raise<ArgumentException>.IfIsEmpty(cachePath, ErrorMessages.NullOrEmptyCachePath);
 
             _cachePath = cachePath;
-            _connectionString = CreateConnectionString(cachePath, Settings.Default.DefaultMaxCacheSize);
+            _connectionString = CreateConnectionString(cachePath);
 
             using (var ctx = CacheContext.Create(_connectionString))
             using (var transaction = ctx.BeginTransaction())
@@ -208,10 +208,10 @@ namespace KVLite
             }
         }
 
-        private static string CreateConnectionString(string dbPath, int maxDbSize)
+        private static string CreateConnectionString(string dbPath)
         {
             var fmt = Settings.Default.ConnectionStringFormat;
-            return String.Format(fmt, dbPath, maxDbSize);
+            return String.Format(fmt, dbPath);
         }
 
         #endregion

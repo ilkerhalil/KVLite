@@ -3,16 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="ConnectionStringFormat" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Data Source={0}; Version=3; Max Page Count={1};</Value>
+      <Value Profile="(Default)">Data Source={0}; Version=3; Journal Mode=Persist;</Value>
     </Setting>
     <Setting Name="AppSettings_CachePathKey" Type="System.String" Scope="Application">
       <Value Profile="(Default)">KVLite.FileCache.CachePath</Value>
-    </Setting>
-    <Setting Name="DefaultMaxCacheSize" Type="System.Int32" Scope="Application">
-      <Value Profile="(Default)">512</Value>
-    </Setting>
-    <Setting Name="AppSettings_MaxCacheSizeKey" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">KVLite.FileCache.MaxCacheSize</Value>
     </Setting>
     <Setting Name="DefaultCachePath" Type="System.String" Scope="Application">
       <Value Profile="(Default)">FileCache.kvlite</Value>
