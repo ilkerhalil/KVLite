@@ -25,8 +25,7 @@ namespace KVLite.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source={0}; Max Database Size={1}; Max Buffer Size=1024; Persist Security In" +
-            "fo=False;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source={0}; Version=3; Max Page Count={1};")]
         public string ConnectionStringFormat {
             get {
                 return ((string)(this["ConnectionStringFormat"]));
@@ -62,10 +61,21 @@ namespace KVLite.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("FileCache.sdf")]
+        [global::System.Configuration.DefaultSettingValueAttribute("FileCache.kvlite")]
         public string DefaultCachePath {
             get {
                 return ((string)(this["DefaultCachePath"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("CREATE TABLE \"cache_item\" (\"id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"k" +
+            "ey\" VARCHAR NOT NULL  UNIQUE , \"value\" BLOB NOT NULL , \"expiry\" DATETIME NOT NUL" +
+            "L );\r\nCREATE UNIQUE INDEX \"cache_expiry_dates\" ON \"cache_item\" (\"expiry\" ASC);")]
+        public string CacheCreationScript {
+            get {
+                return ((string)(this["CacheCreationScript"]));
             }
         }
     }

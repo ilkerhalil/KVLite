@@ -2,9 +2,11 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Transactions;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Web.Caching;
 using System.Web.Security;
+using Dapper;
+using KVLite.Dapper;
 using KVLite.Properties;
 using Thrower;
 
@@ -38,10 +40,24 @@ namespace KVLite
 
             _cachePath = cachePath;
             _connectionString = CreateConnectionString(cachePath, Settings.Default.DefaultMaxCacheSize);
-            
-            using (var ctx = GetContext(_connectionString))
+
+            using (var ctx = CacheContext.Create(_connectionString))
+            using (var transaction = ctx.BeginTransaction())
             {
-                ctx.Database.CreateIfNotExists();    
+                try
+                {
+                    var cacheReady = ctx.Query<long>("SELECT COUNT(*) FROM sqlite_master WHERE name = 'cache_item'").First() == 1L;
+                    if (!cacheReady)
+                    {
+                        ctx.Execute(Settings.Default.CacheCreationScript);
+                    }
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
             }
         }
 
@@ -63,11 +79,6 @@ namespace KVLite
 
         public override object Add(string key, object entry, DateTime utcExpiry)
         {
-            //string path = CachePath + FormsAuthentication.HashPasswordForStoringInConfigFile(key, "MD5") + ".dat";
-
-            //if (File.Exists(path))
-
-            //    return entry;
 
             //using (FileStream file = File.OpenWrite(path))
             //{
@@ -80,35 +91,51 @@ namespace KVLite
 
             //return entry;
 
-            using (var ctx = GetContext(_connectionString))
+            var formatter = new BinaryFormatter();
+            var stream = new MemoryStream();
+            formatter.Serialize(stream, entry);
+            var formattedValue = stream.ToArray();
+
+            using (var ctx = CacheContext.Create(_connectionString))
+            using (var transaction = ctx.BeginTransaction())
             {
-                var item = ctx.CacheItems.Add(new CacheItem {Key = key, ExpiresOn = utcExpiry, Value = entry.ToString()});
-                ctx.SaveChanges();
-                return item;
+                try
+                {
+                    var item = ctx.Get<CacheItem>(key);
+                    if (item == null)
+                    {
+                        // Key not in the cache
+                        ctx.Insert(new CacheItem {Key = key, Expiry = utcExpiry, Value = formattedValue});
+                    }
+                    else
+                    {
+                        item.Value = formattedValue;
+                        item.Expiry = utcExpiry;
+                        ctx.Update(item);
+                    }
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
             }
+            
+            return entry;
         }
 
         public void Clear(bool ignoreExpirationDate = false)
         {
-            using (var ctx = GetContext(_connectionString))
+            using (var ctx = CacheContext.Create(_connectionString))
             {
-                using (var transaction = ctx.Database.BeginTransaction())
+                if (ignoreExpirationDate)
                 {
-                    try
-                    {
-                        var utcNow = DateTime.UtcNow;
-                        var items = ignoreExpirationDate
-                            ? ctx.CacheItems
-                            : ctx.CacheItems.Where(ci => ci.ExpiresOn <= utcNow);
-                        ctx.CacheItems.RemoveRange(items);
-                        ctx.SaveChanges();
-                        transaction.Commit();
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                        throw;
-                    }
+                    ctx.Execute("DELETE FROM cache_item");
+                }
+                else
+                {
+                    ctx.Execute("DELETE FROM cache_item WHERE expiry <= @UtcNow", DateTime.UtcNow);
                 }
             }
         }
@@ -139,11 +166,11 @@ namespace KVLite
 
             //return item.Item;
 
-            using (var ctx = GetContext(_connectionString))
+            using (var ctx = CacheContext.Create(_connectionString))
             {
-                var utcNow = DateTime.UtcNow;
-                var item = ctx.CacheItems.FirstOrDefault(x => x.Key == key && x.ExpiresOn > utcNow);
-                return (item == null) ? null : item.Value;
+                const string query = "SELECT VALUE FROM cache_item WHERE key = @key AND expiry > @UtcNow";
+                var item = ctx.Query<CacheItem>(query, new {key, DateTime.UtcNow}).FirstOrDefault();
+                return (item == null || item.Value == null) ? null : Deserialize(item.Value);
             }
         }
 
@@ -172,15 +199,19 @@ namespace KVLite
 
         #region Private Methods
 
+        private static object Deserialize(byte[] array)
+        {
+            using (var memoryStream = new MemoryStream(array))
+            {
+                var formatter = new BinaryFormatter();
+                return formatter.Deserialize(memoryStream);
+            }
+        }
+
         private static string CreateConnectionString(string dbPath, int maxDbSize)
         {
             var fmt = Settings.Default.ConnectionStringFormat;
             return String.Format(fmt, dbPath, maxDbSize);
-        }
-
-        private static CacheContext GetContext(string connectionString)
-        {
-            return new CacheContext(connectionString);
         }
 
         #endregion

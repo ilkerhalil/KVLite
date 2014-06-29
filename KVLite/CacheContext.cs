@@ -1,15 +1,15 @@
-﻿using System.Data.Entity;
-using System.Data.SqlServerCe;
+﻿using System.Data;
+using System.Data.SQLite;
 
 namespace KVLite
 {
-    internal sealed class CacheContext : DbContext
+    internal static class CacheContext
     {
-        public CacheContext(string connectionString) : base(new SqlCeConnection(connectionString), true)
+        public static IDbConnection Create(string connectionString)
         {
-            // Empty, for now
+            var cnn = new SQLiteConnection(connectionString);
+            cnn.Open();
+            return cnn;
         }
-
-        public DbSet<CacheItem> CacheItems { get; set; }
     }
 }

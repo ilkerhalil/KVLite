@@ -1,6 +1,5 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using KVLite.Dapper;
 
 namespace KVLite
 {
@@ -13,19 +12,22 @@ namespace KVLite
         /// <summary>
         /// 
         /// </summary>
-        [Key, Column("CAIT_KEY")]
+        [Key]
+        public long Id { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string Key { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        [Required, Column("CAIT_EXPIRES_ON")]
-        public DateTime ExpiresOn { get; set; }
+        public DateTime Expiry { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        [Required, Column("CAIT_VALUE")]
-        public string Value { get; set; }
+        public byte[] Value { get; set; }
     }
 }
