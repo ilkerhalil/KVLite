@@ -1,15 +1,20 @@
-﻿using System.Data;
+﻿using System.Data.Common;
 using System.Data.SQLite;
+using DbExtensions;
 
 namespace KVLite
 {
-    internal static class CacheContext
+    internal sealed class CacheContext : Database
     {
-        public static IDbConnection Create(string connectionString)
+        private CacheContext(DbConnection connection) : base(connection)
+        {
+        }
+
+        public static CacheContext Create(string connectionString)
         {
             var cnn = new SQLiteConnection(connectionString);
             cnn.Open();
-            return cnn;
+            return new CacheContext(cnn);
         }
     }
 }

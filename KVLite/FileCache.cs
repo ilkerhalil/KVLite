@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Configuration;
+using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Web.Caching;
 using System.Web.Security;
 using Dapper;
-using KVLite.Dapper;
+using DbExtensions;
 using KVLite.Properties;
 using Thrower;
 
@@ -14,6 +15,8 @@ namespace KVLite
 {
     public sealed class FileCache : OutputCacheProvider
     {
+        private static readonly FileCache DefaultInstance = new FileCache();
+
         private readonly string _cachePath;
         private readonly string _connectionString;
 
@@ -42,20 +45,21 @@ namespace KVLite
             _connectionString = CreateConnectionString(cachePath);
 
             using (var ctx = CacheContext.Create(_connectionString))
-            using (var transaction = ctx.BeginTransaction())
+            using (ctx.Transaction = ctx.Connection.BeginTransaction())
             {
                 try
                 {
-                    var cacheReady = ctx.Query<long>("SELECT COUNT(*) FROM sqlite_master WHERE name = 'cache_item'").First() == 1L;
+                    var sql = new SqlBuilder("SELECT COUNT(*) FROM sqlite_master WHERE name = 'cache_item'");
+                    var cacheReady = ctx.Map<long>(sql).First() == 1L;
                     if (!cacheReady)
                     {
                         ctx.Execute(Settings.Default.CacheCreationScript);
                     }
-                    transaction.Commit();
+                    ctx.Transaction.Commit();
                 }
                 catch
                 {
-                    transaction.Rollback();
+                    ctx.Transaction.Rollback();
                     throw;
                 }
             }
@@ -66,6 +70,11 @@ namespace KVLite
         private string CachePath
         {
             get { return _cachePath; }
+        }
+
+        public static FileCache Default
+        {
+            get { return DefaultInstance; }
         }
 
         public object this[string cacheKey]
@@ -96,28 +105,31 @@ namespace KVLite
             formatter.Serialize(stream, entry);
             var formattedValue = stream.ToArray();
 
+            var db = new Database(new SQLiteConnection(_connectionString));
+
+
             using (var ctx = CacheContext.Create(_connectionString))
-            using (var transaction = ctx.BeginTransaction())
+            using (ctx.Transaction = ctx.Connection.BeginTransaction())
             {
                 try
                 {
-                    var item = ctx.Get<CacheItem>(key);
+                    var item = ctx.Map<CacheItem>("select * from cache_item where key = @key", new {key}).First();
                     if (item == null)
                     {
                         // Key not in the cache
-                        ctx.Insert(new CacheItem {Key = key, Expiry = utcExpiry, Value = formattedValue});
+                        ctx.Table<CacheItem>().Add(new CacheItem {Key = key, Expiry = utcExpiry, Value = formattedValue});
                     }
                     else
                     {
                         item.Value = formattedValue;
                         item.Expiry = utcExpiry;
-                        ctx.Update(item);
+                        ctx.Table<CacheItem>().Update(item);
                     }
-                    transaction.Commit();
+                    ctx.Transaction.Commit();
                 }
                 catch
                 {
-                    transaction.Rollback();
+                    ctx.Transaction.Rollback();
                     throw;
                 }
             }

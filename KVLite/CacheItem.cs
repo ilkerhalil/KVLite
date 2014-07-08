@@ -6,13 +6,11 @@ namespace KVLite
     /// <summary>
     /// 
     /// </summary>
-    [Table("CACHE_ITEM")]
     internal sealed class CacheItem
     {
         /// <summary>
         /// 
         /// </summary>
-        [Key]
         public long Id { get; set; }
 
         /// <summary>
