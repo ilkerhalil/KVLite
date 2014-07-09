@@ -209,6 +209,22 @@ namespace KVLite
             //}
         }
 
+        public void AddSliding<TObj>(string partition, string key, TObj value, TimeSpan interval)
+        {
+            
+        }
+
+        public void AddPersistent<TObj>(string partition, string key, TObj value)
+        {
+            Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
+            Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
+        }
+
+        public void AddPersistent<TObj>(string key, TObj value)
+        {
+            AddPersistent(Settings.Default.DefaultPartition, key, value);
+        }
+
         #region Private Methods
 
         private static object Deserialize(byte[] array)

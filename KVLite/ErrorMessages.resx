@@ -120,4 +120,10 @@
   <data name="NullOrEmptyCachePath" xml:space="preserve">
     <value>Cache path cannot be null or empty.</value>
   </data>
+  <data name="NullOrEmptyKey" xml:space="preserve">
+    <value>Key cannot be null or empty.</value>
+  </data>
+  <data name="NullOrEmptyPartition" xml:space="preserve">
+    <value>Partition cannot be null or empty.</value>
+  </data>
 </root>
