@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Configuration;
-using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Web.Caching;
 using System.Web.Security;
-using Dapper;
 using DbExtensions;
 using KVLite.Properties;
 using Thrower;
@@ -49,8 +47,11 @@ namespace KVLite
             {
                 try
                 {
-                    var sql = new SqlBuilder("SELECT COUNT(*) FROM sqlite_master WHERE name = 'cache_item'");
-                    var cacheReady = ctx.Map<long>(sql).First() == 1L;
+                   var query = SQL
+                      .SELECT("1")
+                      .FROM("INFORMATION_SCHEMA.TABLES")
+                      .WHERE("TABLE_NAME = {0}", "Cache_Item");
+                    var cacheReady = ctx.Exists(query);
                     if (!cacheReady)
                     {
                         ctx.Execute(Settings.Default.CacheCreationScript);
@@ -105,7 +106,7 @@ namespace KVLite
             formatter.Serialize(stream, entry);
             var formattedValue = stream.ToArray();
 
-            var db = new Database(new SQLiteConnection(_connectionString));
+            
 
 
             using (var ctx = CacheContext.Create(_connectionString))
@@ -113,11 +114,15 @@ namespace KVLite
             {
                 try
                 {
-                    var item = ctx.Map<CacheItem>("select * from cache_item where key = @key", new {key}).First();
+                   var query = SQL
+                      .SELECT("*")
+                      .FROM("CACHE_ITEM")
+                      .WHERE("KEY = {0}", key);
+                    var item = ctx.Map<CacheItem>(query).First();
                     if (item == null)
                     {
                         // Key not in the cache
-                        ctx.Table<CacheItem>().Add(new CacheItem {Key = key, Expiry = utcExpiry, Value = formattedValue});
+                        ctx.Table<CacheItem>().Add(new CacheItem {Partition = "A", Key = key, Expiry = utcExpiry, Value = formattedValue});
                     }
                     else
                     {
@@ -180,8 +185,11 @@ namespace KVLite
 
             using (var ctx = CacheContext.Create(_connectionString))
             {
-                const string query = "SELECT VALUE FROM cache_item WHERE key = @key AND expiry > @UtcNow";
-                var item = ctx.Query<CacheItem>(query, new {key, DateTime.UtcNow}).FirstOrDefault();
+               var query = SQL
+                  .SELECT("[VALUE]")
+                  .FROM("[CACHE_ITEM]")
+                  .WHERE("[KEY] = {0} AND [EXPIRY] > {1}", key, DateTime.UtcNow);
+                var item = ctx.Map<CacheItem>(query).FirstOrDefault();
                 return (item == null || item.Value == null) ? null : Deserialize(item.Value);
             }
         }

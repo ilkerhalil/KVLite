@@ -1,17 +1,18 @@
 ﻿using System;
-using KVLite.Dapper;
+using System.Data.Linq.Mapping;
 
 namespace KVLite
 {
     /// <summary>
     /// 
     /// </summary>
+    [Table(Name = "CACHE_ITEM")]
     internal sealed class CacheItem
     {
         /// <summary>
         /// 
         /// </summary>
-        public long Id { get; set; }
+        public string Partition { get; set; }
 
         /// <summary>
         /// 

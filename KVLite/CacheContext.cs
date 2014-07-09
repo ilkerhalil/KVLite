@@ -1,5 +1,5 @@
 ﻿using System.Data.Common;
-using System.Data.SQLite;
+using System.Data.SqlServerCe;
 using DbExtensions;
 
 namespace KVLite
@@ -12,7 +12,7 @@ namespace KVLite
 
         public static CacheContext Create(string connectionString)
         {
-            var cnn = new SQLiteConnection(connectionString);
+            var cnn = new SqlCeConnection(connectionString);
             cnn.Open();
             return new CacheContext(cnn);
         }
