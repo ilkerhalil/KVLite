@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Linq;
 using System.Data.Linq.Mapping;
 
 namespace KVLite
@@ -12,21 +13,25 @@ namespace KVLite
         /// <summary>
         /// 
         /// </summary>
+        [Column(IsPrimaryKey = true)]
         public string Partition { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
+        [Column(IsPrimaryKey = true)]
         public string Key { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
+        [Column(CanBeNull = true)]
         public DateTime Expiry { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public byte[] Value { get; set; }
+        [Column(CanBeNull = false)]
+        public Binary Value { get; set; }
     }
 }

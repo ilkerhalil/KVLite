@@ -116,9 +116,9 @@ namespace KVLite
                 {
                    var query = SQL
                       .SELECT("*")
-                      .FROM("CACHE_ITEM")
-                      .WHERE("KEY = {0}", key);
-                    var item = ctx.Map<CacheItem>(query).First();
+                      .FROM("[CACHE_ITEM]")
+                      .WHERE("[KEY] = {0}", key);
+                    var item = ctx.Map<CacheItem>(query).FirstOrDefault();
                     if (item == null)
                     {
                         // Key not in the cache
@@ -190,7 +190,7 @@ namespace KVLite
                   .FROM("[CACHE_ITEM]")
                   .WHERE("[KEY] = {0} AND [EXPIRY] > {1}", key, DateTime.UtcNow);
                 var item = ctx.Map<CacheItem>(query).FirstOrDefault();
-                return (item == null || item.Value == null) ? null : Deserialize(item.Value);
+                return (item == null || item.Value == null) ? null : Deserialize(item.Value.ToArray());
             }
         }
 
