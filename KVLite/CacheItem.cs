@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 
@@ -25,13 +26,19 @@ namespace KVLite
         /// <summary>
         /// 
         /// </summary>
-        [Column(CanBeNull = true)]
-        public DateTime Expiry { get; set; }
+        [Column(CanBeNull = false, DbType = "Image")]
+        public byte[] Value { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        [Column(CanBeNull = false)]
-        public Binary Value { get; set; }
+        [Column(CanBeNull = true)]
+        public DateTime? Expiry { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Column(CanBeNull = true)]
+        public TimeSpan? Interval { get; set; }
     }
 }

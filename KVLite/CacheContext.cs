@@ -16,5 +16,14 @@ namespace KVLite
             cnn.Open();
             return new CacheContext(cnn);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Connection.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

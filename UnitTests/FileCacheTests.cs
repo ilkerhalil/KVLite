@@ -11,9 +11,9 @@ namespace UnitTests
     [TestFixture]
     public sealed class FileCacheTests
     {
-        private const int SmallItemCount = 1;
-        private const int MediumItemCount = 10;
-        private const int LargeItemCount = 100;
+        private const int SmallItemCount = 10;
+        private const int MediumItemCount = 100;
+        private const int LargeItemCount = 1000;
         private const int MinItem = 10000;
         private const string BlankPath = "   ";
 

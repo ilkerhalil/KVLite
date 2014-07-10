@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Data.SqlServerCe;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -41,6 +42,12 @@ namespace KVLite
 
             _cachePath = cachePath;
             _connectionString = CreateConnectionString(cachePath);
+
+            if (!File.Exists(cachePath))
+            {
+                var engine = new SqlCeEngine(_connectionString);
+                engine.CreateDatabase();
+            }
 
             using (var ctx = CacheContext.Create(_connectionString))
             using (ctx.Transaction = ctx.Connection.BeginTransaction())
@@ -87,111 +94,56 @@ namespace KVLite
 
         #endregion
 
+        public object AddSliding<TObj>(string partition, string key, TObj value, TimeSpan interval)
+        {
+            return DoAdd(partition, key, value, DateTime.UtcNow, interval);
+        }
+
+        public object AddPersistent<TObj>(string partition, string key, TObj value)
+        {
+            return DoAdd(partition, key, value, null, null);
+        }
+
+        public object AddPersistent<TObj>(string key, TObj value)
+        {
+            return AddPersistent(Settings.Default.DefaultPartition, key, value);
+        }
+
         public override object Add(string key, object entry, DateTime utcExpiry)
         {
-
-            //using (FileStream file = File.OpenWrite(path))
-            //{
-            //    var item = new CacheItem {Expires = utcExpiry, Item = entry};
-
-            //    var formatter = new BinaryFormatter();
-
-            //    formatter.Serialize(file, item);
-            //}
-
-            //return entry;
-
-            var formatter = new BinaryFormatter();
-            var stream = new MemoryStream();
-            formatter.Serialize(stream, entry);
-            var formattedValue = stream.ToArray();
-
-            
-
-
-            using (var ctx = CacheContext.Create(_connectionString))
-            using (ctx.Transaction = ctx.Connection.BeginTransaction())
-            {
-                try
-                {
-                   var query = SQL
-                      .SELECT("*")
-                      .FROM("[CACHE_ITEM]")
-                      .WHERE("[KEY] = {0}", key);
-                    var item = ctx.Map<CacheItem>(query).FirstOrDefault();
-                    if (item == null)
-                    {
-                        // Key not in the cache
-                        ctx.Table<CacheItem>().Add(new CacheItem {Partition = "A", Key = key, Expiry = utcExpiry, Value = formattedValue});
-                    }
-                    else
-                    {
-                        item.Value = formattedValue;
-                        item.Expiry = utcExpiry;
-                        ctx.Table<CacheItem>().Update(item);
-                    }
-                    ctx.Transaction.Commit();
-                }
-                catch
-                {
-                    ctx.Transaction.Rollback();
-                    throw;
-                }
-            }
-            
-            return entry;
+            return DoAdd(Settings.Default.DefaultPartition, key, entry, utcExpiry, null);
         }
 
         public void Clear(bool ignoreExpirationDate = false)
         {
             using (var ctx = CacheContext.Create(_connectionString))
             {
-                if (ignoreExpirationDate)
-                {
-                    ctx.Execute("DELETE FROM cache_item");
-                }
-                else
-                {
-                    ctx.Execute("DELETE FROM cache_item WHERE expiry <= @UtcNow", DateTime.UtcNow);
-                }
+                var clearQuery = SQL
+                    .DELETE_FROM("[CACHE_ITEM]")
+                    ._If(!ignoreExpirationDate, "[EXPIRY] IS NOT NULL AND [EXPIRY] <= {0}", DateTime.UtcNow);
+                
+                ctx.Execute(clearQuery);
+            }
+        }
+
+        public object Get(string partition, string key)
+        {
+            using (var ctx = CacheContext.Create(_connectionString))
+            {
+                var query = SQL
+                   .SELECT("[VALUE]")
+                   .FROM("[CACHE_ITEM]")
+                   .WHERE("[PARTITION] = {0} AND [KEY] = {1}", partition, key)
+                   ._("([EXPIRY] IS NULL OR [EXPIRY] > {0})", DateTime.UtcNow);
+                
+                var item = ctx.Map<CacheItem>(query).FirstOrDefault();
+                return (item == null || item.Value == null) ? null : Deserialize(item.Value);
             }
         }
 
         public override object Get(string key)
         {
-            //string path = CachePath + FormsAuthentication.HashPasswordForStoringInConfigFile(key, "MD5") + ".dat";
-
-            //if (!File.Exists(path))
-
-            //    return null;
-
-            //CacheItem item = null;
-
-            //using (FileStream file = File.OpenRead(path))
-            //{
-            //    var formatter = new BinaryFormatter();
-
-            //    item = (CacheItem) formatter.Deserialize(file);
-            //}
-
-            //if (item == null || item.Expires <= DateTime.Now.ToUniversalTime())
-            //{
-            //    Remove(key);
-
-            //    return null;
-            //}
-
-            //return item.Item;
-
-            using (var ctx = CacheContext.Create(_connectionString))
-            {
-               var query = SQL
-                  .SELECT("[VALUE]")
-                  .FROM("[CACHE_ITEM]")
-                  .WHERE("[KEY] = {0} AND [EXPIRY] > {1}", key, DateTime.UtcNow);
-                var item = ctx.Map<CacheItem>(query).FirstOrDefault();
-                return (item == null || item.Value == null) ? null : Deserialize(item.Value.ToArray());
-            }
+            return Get(Settings.Default.DefaultPartition, key);
         }
 
         public override void Remove(string key)
@@ -217,23 +169,7 @@ namespace KVLite
             //}
         }
 
-        public void AddSliding<TObj>(string partition, string key, TObj value, TimeSpan interval)
-        {
-            
-        }
-
-        public void AddPersistent<TObj>(string partition, string key, TObj value)
-        {
-            Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
-            Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
-        }
-
-        public void AddPersistent<TObj>(string key, TObj value)
-        {
-            AddPersistent(Settings.Default.DefaultPartition, key, value);
-        }
-
-        #region Private Methods
+        #region Serialization
 
         private static object Deserialize(byte[] array)
         {
@@ -242,6 +178,64 @@ namespace KVLite
                 var formatter = new BinaryFormatter();
                 return formatter.Deserialize(memoryStream);
             }
+        }
+
+        private static byte[] Serialize(object obj)
+        {
+            var formatter = new BinaryFormatter();
+            using (var stream = new MemoryStream())
+            {
+                formatter.Serialize(stream, obj);
+                return stream.ToArray();
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private object DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
+        {
+            Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
+            Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
+
+            var formattedValue = Serialize(value);
+
+            using (var ctx = CacheContext.Create(_connectionString))
+            using (ctx.Transaction = ctx.Connection.BeginTransaction())
+            {
+                try
+                {
+                    var query = SQL
+                       .SELECT("*")
+                       .FROM("[CACHE_ITEM]")
+                       .WHERE("[PARTITION] = {0} AND [KEY] = {1}", partition, key);
+                    
+                    var item = ctx.Map<CacheItem>(query).FirstOrDefault();
+                    if (item == null)
+                    {
+                        // Key not in the cache
+                        query = SQL
+                            .INSERT_INTO("[CACHE_ITEM]")
+                            .VALUES(partition, key, formattedValue, utcExpiry, interval);
+                        ctx.Execute(query);
+                    }
+                    else
+                    {
+                        item.Value = formattedValue;
+                        item.Expiry = utcExpiry;
+                        ctx.Table<CacheItem>().Update(item);
+                    }
+                    ctx.Transaction.Commit();
+                }
+                catch
+                {
+                    ctx.Transaction.Rollback();
+                    throw;
+                }
+            }
+
+            return value;
         }
 
         private static string CreateConnectionString(string dbPath)

@@ -53,8 +53,8 @@ namespace KVLite.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("CREATE TABLE [Cache_Item] (\r\n  [Partition] NVARCHAR(100) NOT NULL,\r\n  [Key] NVARC" +
-            "HAR(100) NOT NULL,\r\n  [Expiry] DATETIME NOT NULL,\r\n  [Value] IMAGE NOT NULL,\r\n  " +
-            "CONSTRAINT Cache_Item_PK PRIMARY KEY ([Partition], [Key])\r\n);")]
+            "HAR(100) NOT NULL,\r\n  [Value] IMAGE NOT NULL,\r\n  [Expiry] DATETIME,\r\n  [Interval" +
+            "] BIGINT,\r\n  CONSTRAINT Cache_Item_PK PRIMARY KEY ([Partition], [Key])\r\n);")]
         public string CacheCreationScript {
             get {
                 return ((string)(this["CacheCreationScript"]));

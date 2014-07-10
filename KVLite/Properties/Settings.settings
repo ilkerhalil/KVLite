@@ -15,8 +15,9 @@
       <Value Profile="(Default)">CREATE TABLE [Cache_Item] (
   [Partition] NVARCHAR(100) NOT NULL,
   [Key] NVARCHAR(100) NOT NULL,
-  [Expiry] DATETIME NOT NULL,
   [Value] IMAGE NOT NULL,
+  [Expiry] DATETIME,
+  [Interval] BIGINT,
   CONSTRAINT Cache_Item_PK PRIMARY KEY ([Partition], [Key])
 );</Value>
     </Setting>
