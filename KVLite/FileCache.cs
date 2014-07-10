@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Data.SqlServerCe;
 using System.IO;
 using System.Linq;
@@ -19,7 +18,7 @@ namespace KVLite
         private readonly string _cachePath;
         private readonly string _connectionString;
 
-        public FileCache() : this(ConfigurationManager.AppSettings["OutputCachePath"] ?? Settings.Default.DefaultCachePath)
+        public FileCache() : this(Configuration.Instance.CachePath ?? Settings.Default.DefaultCachePath)
         {
 
             //if (_cachePath == null) _cachePath = "~/";
@@ -58,6 +57,7 @@ namespace KVLite
                       .SELECT("1")
                       .FROM("INFORMATION_SCHEMA.TABLES")
                       .WHERE("TABLE_NAME = {0}", "Cache_Item");
+                    
                     var cacheReady = ctx.Exists(query);
                     if (!cacheReady)
                     {

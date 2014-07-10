@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="CacheContext.cs" />
     <Compile Include="CacheItem.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
