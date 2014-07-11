@@ -3,6 +3,7 @@ using System.Data.SqlServerCe;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Web;
 using System.Web.Caching;
 using System.Web.Security;
 using DbExtensions;
@@ -20,24 +21,23 @@ namespace KVLite
 
         public FileCache() : this(Configuration.Instance.CachePath ?? Settings.Default.DefaultCachePath)
         {
-
-            //if (_cachePath == null) _cachePath = "~/";
-
-            //HttpContext context = HttpContext.Current;
-
-            //if (context != null)
-            //{
-            //    _cachePath = context.Server.MapPath(_cachePath);
-
-            //    if (!_cachePath.EndsWith("\\"))
-
-            //        _cachePath += "\\";
-            //}
+           // Empty, for now...
         }
 
         public FileCache(string cachePath)
         {
             Raise<ArgumentException>.IfIsEmpty(cachePath, ErrorMessages.NullOrEmptyCachePath);
+            
+           var context = HttpContext.Current;
+
+            if (context != null)
+            {
+                cachePath = context.Server.MapPath(cachePath);
+
+                if (!cachePath.EndsWith("\\"))
+
+                    cachePath += "\\";
+            }
 
             _cachePath = cachePath;
             _connectionString = CreateConnectionString(cachePath);
