@@ -11,9 +11,9 @@ namespace UnitTests
     [TestFixture]
     public sealed class FileCacheTests
     {
-        private const int SmallItemCount = 10;
-        private const int MediumItemCount = 100;
-        private const int LargeItemCount = 1000;
+        private const int SmallItemCount = 1;
+        private const int MediumItemCount = 10;
+        private const int LargeItemCount = 100;
         private const int MinItem = 10000;
         private const string BlankPath = "   ";
 
@@ -77,6 +77,25 @@ namespace UnitTests
             {
                 Assert.IsInstanceOf<ArgumentException>(ex);
                 Assert.AreEqual(ErrorMessages.NullOrEmptyCachePath, ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Add
+
+       [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Add_TwoTimes(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+               _fileCache.Add(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+               _fileCache.Add(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
         }
 

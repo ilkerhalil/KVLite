@@ -98,6 +98,7 @@
 
 if $(ConfigurationName) == Release (
     copy "KVLite.dll" "$(SolutionDir)NuGetPackager/lib/net40"
+    copy "KVLite.pdb" "$(SolutionDir)NuGetPackager/lib/net40"
     copy "KVLite.xml" "$(SolutionDir)NuGetPackager/lib/net40"
 )</PostBuildEvent>
   </PropertyGroup>

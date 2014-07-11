@@ -14,8 +14,6 @@ namespace KVLite
 {
     public sealed class FileCache : OutputCacheProvider
     {
-        private static readonly FileCache DefaultInstance = new FileCache();
-
         private readonly string _cachePath;
         private readonly string _connectionString;
 
@@ -29,14 +27,9 @@ namespace KVLite
             Raise<ArgumentException>.IfIsEmpty(cachePath, ErrorMessages.NullOrEmptyCachePath);
             
            var context = HttpContext.Current;
-
             if (context != null)
             {
                 cachePath = context.Server.MapPath(cachePath);
-
-                if (!cachePath.EndsWith("\\"))
-
-                    cachePath += "\\";
             }
 
             _cachePath = cachePath;
@@ -78,11 +71,6 @@ namespace KVLite
         private string CachePath
         {
             get { return _cachePath; }
-        }
-
-        public static FileCache Default
-        {
-            get { return DefaultInstance; }
         }
 
         public object this[string cacheKey]
@@ -215,16 +203,18 @@ namespace KVLite
                     if (item == null)
                     {
                         // Key not in the cache
-                        query = SQL
+                        var insert = SQL
                             .INSERT_INTO("[CACHE_ITEM]")
                             .VALUES(partition, key, formattedValue, utcExpiry, interval);
-                        ctx.Execute(query);
+                        ctx.Execute(insert);
                     }
                     else
                     {
-                        item.Value = formattedValue;
-                        item.Expiry = utcExpiry;
-                        ctx.Table<CacheItem>().Update(item);
+                       var update = SQL
+                          .UPDATE("[CACHE_ITEM]")
+                          .SET("[VALUE] = {0}, [EXPIRY] = {1}", SQL.Param(formattedValue), utcExpiry)
+                          .WHERE("[PARTITION] = {0} AND [KEY] = {1}", partition, key);
+                       ctx.Execute(update);
                     }
                     ctx.Transaction.Commit();
                 }
