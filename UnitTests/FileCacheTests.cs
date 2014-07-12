@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using KVLite;
 using NUnit.Framework;
 
@@ -110,6 +111,23 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsNull(_fileCache.Get(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        public void Get_EmptyCache_Concurrent(int itemCount)
+        {
+            var tasks = new List<Task<object>>();
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var l = i;
+                var task = Task.Factory.StartNew(() => _fileCache.Get(StringItems[l]));
+                tasks.Add(task);
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(tasks[i].Result);
             }
         }
 
