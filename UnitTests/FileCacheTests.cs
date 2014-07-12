@@ -11,6 +11,20 @@ namespace UnitTests
     [TestFixture]
     public sealed class FileCacheTests
     {
+        [SetUp]
+        public void SetUp()
+        {
+            _fileCache = new FileCache();
+            _fileCache.Clear(true);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _fileCache.Clear(true);
+            _fileCache = null;
+        }
+
         private const int SmallItemCount = 10;
         private const int MediumItemCount = 100;
         private const int LargeItemCount = 1000;
@@ -22,86 +36,46 @@ namespace UnitTests
 
         private FileCache _fileCache;
 
-        [SetUp]
-        public void SetUp()
-        {
-            _fileCache = new FileCache();
-            _fileCache.Clear(ignoreExpirationDate: true);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _fileCache.Clear(ignoreExpirationDate: true);
-            _fileCache = null;
-        }
-
-        #region Construction
-
-        [Test]
-        public void NewCache_NullPath()
-        {
-            try
-            {
-                new FileCache(null);
-            }
-            catch (Exception ex)
-            {
-                Assert.IsInstanceOf<ArgumentException>(ex);
-                Assert.AreEqual(ErrorMessages.NullOrEmptyCachePath, ex.Message);
-            }
-        }
-
-        [Test]
-        public void NewCache_EmptyPath()
-        {
-            try
-            {
-                new FileCache(String.Empty);
-            }
-            catch (Exception ex)
-            {
-                Assert.IsInstanceOf<ArgumentException>(ex);
-                Assert.AreEqual(ErrorMessages.NullOrEmptyCachePath, ex.Message);
-            }
-        }
-
-        [Test]
-        public void NewCache_BlankPath()
-        {
-            try
-            {
-                new FileCache(BlankPath);
-            }
-            catch (Exception ex)
-            {
-                Assert.IsInstanceOf<ArgumentException>(ex);
-                Assert.AreEqual(ErrorMessages.NullOrEmptyCachePath, ex.Message);
-            }
-        }
-
-        #endregion
-
-        #region Add
-
-       [TestCase(SmallItemCount)]
+        [TestCase(SmallItemCount)]
         [TestCase(MediumItemCount)]
         [TestCase(LargeItemCount)]
         public void Add_TwoTimes(int itemCount)
         {
             for (var i = 0; i < itemCount; ++i)
             {
-               _fileCache.Add(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                _fileCache.Add(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                Assert.True(_fileCache.Contains(StringItems[i]));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-               _fileCache.Add(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                _fileCache.Add(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                Assert.True(_fileCache.Contains(StringItems[i]));
             }
         }
 
-        #endregion
-
-        #region Get
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        public void Add_TwoTimes_Concurrent(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var l = i;
+                Task.Factory.StartNew(() =>
+                {
+                    _fileCache.Add(StringItems[l], StringItems[l], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                    _fileCache.Contains(StringItems[l]);
+                });
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var l = i;
+                Task.Factory.StartNew(() =>
+                {
+                    _fileCache.Add(StringItems[l], StringItems[l], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                    _fileCache.Contains(StringItems[l]);
+                });
+            }
+        }
 
         [TestCase(SmallItemCount)]
         [TestCase(MediumItemCount)]
@@ -163,6 +137,46 @@ namespace UnitTests
             }
         }
 
-        #endregion
+        [Test]
+        public void NewCache_BlankPath()
+        {
+            try
+            {
+                new FileCache(BlankPath);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOf<ArgumentException>(ex);
+                Assert.AreEqual(ErrorMessages.NullOrEmptyCachePath, ex.Message);
+            }
+        }
+
+        [Test]
+        public void NewCache_EmptyPath()
+        {
+            try
+            {
+                new FileCache(String.Empty);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOf<ArgumentException>(ex);
+                Assert.AreEqual(ErrorMessages.NullOrEmptyCachePath, ex.Message);
+            }
+        }
+
+        [Test]
+        public void NewCache_NullPath()
+        {
+            try
+            {
+                new FileCache(null);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOf<ArgumentException>(ex);
+                Assert.AreEqual(ErrorMessages.NullOrEmptyCachePath, ex.Message);
+            }
+        }
     }
 }

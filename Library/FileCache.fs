@@ -82,9 +82,9 @@ type public FileCache(cachePath) =
             
         try
             let query = (SQL
-                .SELECT("1")
-                .FROM("INFORMATION_SCHEMA.TABLES")
-                .WHERE("TABLE_NAME = {0}", "Cache_Item"))
+                        .SELECT("1")
+                        .FROM("INFORMATION_SCHEMA.TABLES")
+                        .WHERE("TABLE_NAME = {0}", "Cache_Item"))
                     
             let cacheReady = ctx.Exists(query)
             if not cacheReady then
@@ -123,11 +123,30 @@ type public FileCache(cachePath) =
         x.AddTimed(Settings.DefaultPartition, key, value, utcExpiry)
 
     member x.Clear(ignoreExpirationDate) =
-        use ctx = CacheContext.Create(connectionString)
         let clearCmd = (SQL
-            .DELETE_FROM("[CACHE_ITEM]")
-            ._If(not ignoreExpirationDate, "[EXPIRY] IS NOT NULL AND [EXPIRY] <= {0}", DateTime.UtcNow))
+                       .DELETE_FROM("[CACHE_ITEM]")
+                       ._If(not ignoreExpirationDate, "[EXPIRY] IS NOT NULL AND [EXPIRY] <= {0}", DateTime.UtcNow))
+
+        use ctx = CacheContext.Create(connectionString)
         ctx.Execute(clearCmd)
+      
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    member x.Contains(partition, key) =
+        let select = (SQL
+                     .SELECT("1")
+                     .FROM("[CACHE_ITEM]")
+                     .WHERE("[PARTITION] = {0} AND [KEY] = {1}", partition, key)
+                     .WHERE("([EXPIRY] IS NULL OR [EXPIRY] > {0})", DateTime.UtcNow))
+
+        use ctx = CacheContext.Create(connectionString)    
+        ctx.Exists(select)
+    
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    member x.Contains(key) = x.Contains(Settings.DefaultPartition, key)
 
     /// <summary>
     ///   TODO
