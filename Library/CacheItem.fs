@@ -3,9 +3,12 @@
 open System
 open System.Data.Linq.Mapping
 
+/// <summary>
+///   TODO
+/// </summary>
 [<Table(Name = "CACHE_ITEM")>]
 [<AllowNullLiteral>]
-type CacheItem() =
+type private CacheItem() =
     
     [<Column(IsPrimaryKey = true)>]
     member val Partition = "" with get, set

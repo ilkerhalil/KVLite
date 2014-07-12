@@ -10,6 +10,9 @@ open DbExtensions
 open Thrower
 open System.Data.SqlServerCe
 
+/// <summary>
+///   TODO
+/// </summary>
 type public FileCache(cachePath) =
     inherit OutputCacheProvider()
     
@@ -17,14 +20,10 @@ type public FileCache(cachePath) =
         Raise<ArgumentException>.IfIsEmpty(path, ErrorMessages.NullOrEmptyCachePath)
         match HttpContext.Current with
         | null -> path
-        | _ -> HttpContext.Current.Server.MapPath(path)
-
-    let CreateConnectionString (path: string) =
-        let fmt = Settings.ConnectionStringFormat
-        String.Format(fmt, path)
+        | _ -> HttpContext.Current.Server.MapPath(path)      
 
     let mappedCachePath = MapCachePath cachePath
-    let connectionString = CreateConnectionString mappedCachePath
+    let connectionString = String.Format(Settings.ConnectionStringFormat, mappedCachePath)
     let mutable defaultInstance = None
 
     let Deserialize (array: byte[]) =
@@ -49,20 +48,20 @@ type public FileCache(cachePath) =
 
         try
             let query = (SQL
-                .SELECT("*")
-                .FROM("[CACHE_ITEM]")
-                .WHERE("[PARTITION] = {0} AND [KEY] = {1}", partition, key))
+                        .SELECT("*")
+                        .FROM("[CACHE_ITEM]")
+                        .WHERE("[PARTITION] = {0} AND [KEY] = {1}", partition, key))
 
             if ctx.Exists(query) then
                 let update = (SQL
-                    .UPDATE("[CACHE_ITEM]")
-                    .SET("[VALUE] = {0}, [EXPIRY] = {1}", SQL.Param(formattedValue), utcExpiry)
-                    .WHERE("[PARTITION] = {0} AND [KEY] = {1}", partition, key))
+                             .UPDATE("[CACHE_ITEM]")
+                             .SET("[VALUE] = {0}, [EXPIRY] = {1}", SQL.Param(formattedValue), utcExpiry)
+                             .WHERE("[PARTITION] = {0} AND [KEY] = {1}", partition, key))
                 ctx.Execute(update) |> ignore
             else
                 let insert = (SQL
-                    .INSERT_INTO("[CACHE_ITEM]")
-                    .VALUES(partition, key, formattedValue, utcExpiry, interval))
+                             .INSERT_INTO("[CACHE_ITEM]")
+                             .VALUES(partition, key, formattedValue, utcExpiry, interval))
                 ctx.Execute(insert) |> ignore
 
             trx.Commit()
@@ -130,28 +129,47 @@ type public FileCache(cachePath) =
             ._If(not ignoreExpirationDate, "[EXPIRY] IS NOT NULL AND [EXPIRY] <= {0}", DateTime.UtcNow))
         ctx.Execute(clearCmd)
 
+    /// <summary>
+    ///   TODO
+    /// </summary>
     member x.Get(partition, key) =
-        use ctx = CacheContext.Create(connectionString)
-        let query = (SQL
-            .SELECT("[VALUE]")
-            .FROM("[CACHE_ITEM]")
-            .WHERE("[PARTITION] = {0} AND [KEY] = {1}", partition, key)
-            .WHERE("([EXPIRY] IS NULL OR [EXPIRY] > {0})", DateTime.UtcNow))
-                
-        let item = ctx.Map<CacheItem>(query).FirstOrDefault()
+        let select = (SQL
+                     .SELECT("[VALUE]")
+                     .FROM("[CACHE_ITEM]")
+                     .WHERE("[PARTITION] = {0} AND [KEY] = {1}", partition, key)
+                     .WHERE("([EXPIRY] IS NULL OR [EXPIRY] > {0})", DateTime.UtcNow))
+        
+        use ctx = CacheContext.Create(connectionString)    
+        let item = ctx.Map<CacheItem>(select).FirstOrDefault()
         if item = null || item.Value = null then null else Deserialize item.Value
-
-    override x.Get(key) =
-        x.Get(Settings.DefaultPartition, key)
-
+    
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    override x.Get(key) = x.Get(Settings.DefaultPartition, key)
+    
+    /// <summary>
+    ///   TODO
+    /// </summary>
     member x.Remove(partition, key) =
-        ignore 0
+        let delete = (SQL
+                     .DELETE_FROM("[CACHE_ITEM]")
+                     .WHERE("[PARTITION] = {0} AND [KEY] = {1}", partition, key))
 
-    override x.Remove(key) =
-        x.Remove(Settings.DefaultPartition, key)
-
-    member x.Set(partition, key, value, utcExpiry) =
-        ignore 0
-
-    override x.Set(key, value, utcExpiry) =
-        x.Set(Settings.DefaultPartition, key, value, utcExpiry)
+        use ctx = CacheContext.Create(connectionString)
+        ctx.Execute(delete) |> ignore
+    
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    override x.Remove(key) = x.Remove(Settings.DefaultPartition, key)
+    
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    member x.Set(partition, key, value, utcExpiry) = x.AddTimed(partition, key, value, utcExpiry) |> ignore
+    
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    override x.Set(key, value, utcExpiry) = x.Set(Settings.DefaultPartition, key, value, utcExpiry)
