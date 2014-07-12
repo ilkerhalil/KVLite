@@ -9,12 +9,12 @@ using NUnit.Framework;
 namespace UnitTests
 {
     [TestFixture]
-    public sealed class FileCacheTests
+    public sealed class PersistentCacheTests
     {
         [SetUp]
         public void SetUp()
         {
-            _fileCache = new FileCache();
+            _fileCache = new PersistentCache();
             _fileCache.Clear(true);
         }
 
@@ -34,7 +34,7 @@ namespace UnitTests
         private static readonly List<string> StringItems = (from x in Enumerable.Range(MinItem, LargeItemCount)
             select x.ToString(CultureInfo.InvariantCulture)).ToList();
 
-        private FileCache _fileCache;
+        private PersistentCache _fileCache;
 
         [TestCase(SmallItemCount)]
         [TestCase(MediumItemCount)]
@@ -142,7 +142,7 @@ namespace UnitTests
         {
             try
             {
-                new FileCache(BlankPath);
+                new PersistentCache(BlankPath);
             }
             catch (Exception ex)
             {
@@ -156,7 +156,7 @@ namespace UnitTests
         {
             try
             {
-                new FileCache(String.Empty);
+                new PersistentCache(String.Empty);
             }
             catch (Exception ex)
             {
@@ -170,7 +170,7 @@ namespace UnitTests
         {
             try
             {
-                new FileCache(null);
+                new PersistentCache(null);
             }
             catch (Exception ex)
             {

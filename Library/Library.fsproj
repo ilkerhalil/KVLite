@@ -65,7 +65,7 @@
     <Compile Include="Configuration.fs" />
     <Compile Include="CacheItem.fs" />
     <Compile Include="CacheContext.fs" />
-    <Compile Include="FileCache.fs" />
+    <Compile Include="PersistentCache.fs" />
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>

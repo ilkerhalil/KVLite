@@ -11,16 +11,16 @@ open System.Data.Linq.Mapping
 type private CacheItem() =
     
     [<Column(IsPrimaryKey = true)>]
-    member val Partition = "" with get, set
+    member val Partition = String.Empty with get, set
 
     [<Column(IsPrimaryKey = true)>]
-    member val Key = "" with get, set
+    member val Key = String.Empty with get, set
 
     [<Column(CanBeNull = false, DbType = "Image")>]
     member val Value = Array.empty<byte> with get, set
 
     [<Column(CanBeNull = true)>]
-    member val Expiry = new DateTime() with get, set
+    member val Expiry = new Nullable<DateTime>() with get, set
 
     [<Column(CanBeNull = true)>]
-    member val Interval = new TimeSpan() with get, set
+    member val Interval = new Nullable<TimeSpan>() with get, set

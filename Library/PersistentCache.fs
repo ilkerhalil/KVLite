@@ -13,7 +13,7 @@ open System.Data.SqlServerCe
 /// <summary>
 ///   TODO
 /// </summary>
-type public FileCache(cachePath) =
+type public PersistentCache(cachePath) =
     inherit OutputCacheProvider()
     
     let MapCachePath (path: string) =
@@ -94,11 +94,11 @@ type public FileCache(cachePath) =
         with
         | ex -> trx.Rollback(); raise ex    
 
-    new() = FileCache(Configuration.Instance.CachePath)
+    new() = PersistentCache(Configuration.Instance.CachePath)
 
     member x.Default = 
         match defaultInstance with
-        | None -> defaultInstance <- Some(new FileCache()); defaultInstance.Value
+        | None -> defaultInstance <- Some(new PersistentCache()); defaultInstance.Value
         | Some(_) -> defaultInstance.Value
 
     member x.AddPersistent(partition, key, value) =
