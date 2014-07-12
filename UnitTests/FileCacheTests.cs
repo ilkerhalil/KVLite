@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using KVLite;
-using KVLite.Properties;
 using NUnit.Framework;
 
 namespace UnitTests
@@ -144,22 +143,6 @@ namespace UnitTests
             {
                 Assert.IsNull(_fileCache.Get(StringItems[i]));
             }
-        }
-
-        #endregion
-
-        #region Settings
-
-        [Test]
-        public void Constants_AppSettings_CachePathKey()
-        {
-            Assert.IsNotEmpty(Settings.Default.AppSettings_CachePathKey.Trim());
-        }
-
-        [Test]
-        public void Constants_CacheCreationScript()
-        {
-            Assert.IsNotEmpty(Settings.Default.CacheCreationScript.Trim());
         }
 
         #endregion

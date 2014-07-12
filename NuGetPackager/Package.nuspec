@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<package >
+
+<package>
   <metadata>
     <id>PommaLabs.KVLite</id>
     <version>0.1.4</version>
@@ -21,16 +22,17 @@
     <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
     <copyright>Copyright  2014</copyright>
     <dependencies>
-         <dependency id="DbExtensions" />
-         <dependency id="Microsoft.SqlServer.Compact" />
-         <dependency id="Thrower" />
+      <dependency id="DbExtensions" />
+      <dependency id="Microsoft.SqlServer.Compact" />
+      <dependency id="Thrower" />
     </dependencies>
     <references></references>
-     <frameworkAssemblies>
+    <frameworkAssemblies>
       <frameworkAssembly assemblyName="System.Configuration" />
-  <frameworkAssembly assemblyName="System.Web"  />
-   </frameworkAssemblies>
-    <tags></tags>
+      <frameworkAssembly assemblyName="System.Web" />
+      <frameworkAssembly assemblyName="System.Xml" />
+    </frameworkAssemblies>
+    <tags>fsharp sql server compact key value store concurrent</tags>
   </metadata>
   <files>
     <file src="lib\" target="lib" />

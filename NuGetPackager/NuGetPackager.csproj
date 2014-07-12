@@ -61,8 +61,8 @@
     <Folder Include="lib\net40\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KVLite\Library.csproj">
-      <Project>{c10d083e-ff38-4d4a-a590-e5f2a6e38fb0}</Project>
+    <ProjectReference Include="..\Library\Library.fsproj">
+      <Project>{78130e16-8fbe-4582-a584-2eadf7f9ae79}</Project>
       <Name>Library</Name>
     </ProjectReference>
   </ItemGroup>
