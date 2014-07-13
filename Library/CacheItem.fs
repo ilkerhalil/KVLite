@@ -8,6 +8,7 @@ open System.Data.Linq.Mapping
 /// </summary>
 [<Table(Name = "CACHE_ITEM")>]
 [<AllowNullLiteral>]
+[<Sealed>]
 type private CacheItem() =
     
     [<Column(IsPrimaryKey = true)>]

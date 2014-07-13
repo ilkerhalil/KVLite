@@ -15,7 +15,8 @@ module private ConfigurationEntries =
 /// <summary>
 ///   TODO
 /// </summary>
-type public Configuration() =
+[<Sealed>]
+type public Configuration private() =
     inherit ConfigurationSection()
 
     static let _instance = ConfigurationManager.GetSection(ConfigurationEntries.SectionName) :?> Configuration

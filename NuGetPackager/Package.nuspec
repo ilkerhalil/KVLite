@@ -3,17 +3,17 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>0.1.4</version>
+    <version>0.1.5</version>
     <title>PommaLabs.KVLite</title>
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
     <description>
-      A long description of the package. This shows up in the right pane of the Add Package Dialog as well as in the Package Manager Console when listing packages using the Get-Package command.
+A long description of the package. This shows up in the right pane of the Add Package Dialog as well as in the Package Manager Console when listing packages using the Get-Package command.
     </description>
     <releaseNotes>
     </releaseNotes>
     <summary>
-      A short description of the package. If specified, this shows up in the middle pane of the Add Package Dialog. If not specified, a truncated version of the description is used instead.
+A short description of the package. If specified, this shows up in the middle pane of the Add Package Dialog. If not specified, a truncated version of the description is used instead.
     </summary>
     <language>en-US</language>
     <projectUrl>https://nuget.org/packages/NuGetPackager</projectUrl>

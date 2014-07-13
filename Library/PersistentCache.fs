@@ -13,6 +13,7 @@ open System.Data.SqlServerCe
 /// <summary>
 ///   TODO
 /// </summary>
+[<Sealed>]
 type public PersistentCache(cachePath) =
     inherit OutputCacheProvider()
     

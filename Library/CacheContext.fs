@@ -8,6 +8,7 @@ open DbExtensions
 /// <summary>
 ///   TODO
 /// </summary>
+[<Sealed>]
 type private CacheContext(connection: DbConnection, connectionString: string) =
     inherit Database(connection)
 
