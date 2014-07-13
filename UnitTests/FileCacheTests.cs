@@ -77,6 +77,51 @@ namespace UnitTests
             }
         }
 
+        [Test]
+        public void AddPersistent_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            _fileCache.AddPersistent(p, k, Tuple.Create(v1, v2));
+            var info = _fileCache.GetInfo(p, k);
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            var infoValue = info.Value as Tuple<string, string>;
+            Assert.AreEqual(v1, infoValue.Item1);
+            Assert.AreEqual(v2, infoValue.Item2);
+            Assert.IsNull(info.Expiry);
+            Assert.IsNull(info.Interval);
+        }
+
+        [Test]
+        public void AddTimed_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var e = DateTime.Now.AddMinutes(10);
+            _fileCache.AddTimed(p, k, Tuple.Create(v1, v2), e);
+            var info = _fileCache.GetInfo(p, k);
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            var infoValue = info.Value as Tuple<string, string>;
+            Assert.AreEqual(v1, infoValue.Item1);
+            Assert.AreEqual(v2, infoValue.Item2);
+
+            Assert.IsNotNull(info.Expiry);
+            Assert.AreEqual(e.Date, info.Expiry.Value.Date);
+            Assert.AreEqual(e.Hour, info.Expiry.Value.Hour);
+            Assert.AreEqual(e.Minute, info.Expiry.Value.Minute);
+            Assert.AreEqual(e.Second, info.Expiry.Value.Second);
+            
+            Assert.IsNull(info.Interval);
+        }
+
         [TestCase(SmallItemCount)]
         [TestCase(MediumItemCount)]
         [TestCase(LargeItemCount)]

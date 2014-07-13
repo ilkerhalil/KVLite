@@ -167,6 +167,27 @@ type public PersistentCache(cachePath) =
     ///   TODO
     /// </summary>
     override x.Get(key) = x.Get(Settings.DefaultPartition, key)
+
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    member x.GetInfo (partition, key) =
+        let select = (SQL
+                     .SELECT("*")
+                     .FROM("[CACHE_ITEM]")
+                     .WHERE("[PARTITION] = {0} AND [KEY] = {1}", partition, key)
+                     .WHERE("([EXPIRY] IS NULL OR [EXPIRY] > {0})", DateTime.UtcNow))
+        use ctx = CacheContext.Create connectionString    
+        let item = ctx.Map<CacheItem>(select).FirstOrDefault()
+        if item = null || item.Value = null then 
+            null // Item is not contained
+        else 
+            ItemInfo (item, Deserialize item.Value)
+
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    member x.GetInfo key = x.GetInfo (Settings.DefaultPartition, key)
     
     /// <summary>
     ///   TODO
