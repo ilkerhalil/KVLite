@@ -10,7 +10,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyTitle("KVLite")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
-[<assembly: AssemblyCompany("Microsoft")>]
+[<assembly: AssemblyCompany("PommaLabs")>]
 [<assembly: AssemblyProduct("KVLite")>]
 [<assembly: AssemblyCopyright("Copyright ? Microsoft 2011")>]
 [<assembly: AssemblyTrademark("")>]
@@ -33,7 +33,7 @@ open System.Runtime.InteropServices
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [<assembly: AssemblyVersion("1.0.*")>]
-[<assembly: AssemblyVersion("0.1.5.*")>]
-[<assembly: AssemblyFileVersion("0.1.5.*")>]
+[<assembly: AssemblyVersion("0.1.6.*")>]
+[<assembly: AssemblyFileVersion("0.1.6.*")>]
 
 ()

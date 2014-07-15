@@ -73,7 +73,7 @@ type public PersistentCache(cachePath) =
         value
     
     do
-        let cacheExists = File.Exists(cachePath)
+        let cacheExists = File.Exists(mappedCachePath)
         if not cacheExists then
             let engine = new SqlCeEngine(connectionString)
             engine.CreateDatabase()
