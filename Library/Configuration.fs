@@ -12,6 +12,9 @@ module private ConfigurationEntries =
     [<Literal>] 
     let CachePath = "CachePath"
 
+    [<Literal>]
+    let MaxCacheSize = "MaxCacheSize"
+
 /// <summary>
 ///   TODO
 /// </summary>
@@ -28,22 +31,29 @@ type public Configuration private() =
     /// </summary>
     [<ConfigurationProperty(ConfigurationEntries.CachePath, IsRequired = true)>]
     member x.CachePath = x.[ConfigurationEntries.CachePath] :?> string
+    
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    [<ConfigurationProperty(ConfigurationEntries.MaxCacheSize, IsRequired = true)>]
+    member x.MaxCacheSize = x.[ConfigurationEntries.MaxCacheSize] :?> int
 
 /// <summary>
 ///   TODO
 /// </summary>
 module private Settings =
-    let ConnectionStringFormat = "Data Source={0}; Persist Security Info=False;"
+    let ConnectionStringFormat = "Data Source={0}; Max Database Size={1}; Persist Security Info=False;"
     let DefaultPartition = "*"
     let MaxCachedConnectionCount = 10
-    let CacheCreationScript = "CREATE TABLE [Cache_Item] ( \n\
-                                   [Partition] NVARCHAR(100) NOT NULL, \n\
-                                   [Key] NVARCHAR(100) NOT NULL, \n\
-                                   [Value] IMAGE NOT NULL, \n\
-                                   [Expiry] DATETIME, \n\
-                                   [Interval] BIGINT, \n\
-                                   CONSTRAINT Cache_Item_PK PRIMARY KEY ([Partition], [Key]) \n\
-                               );"
+    let CacheCreationScript = """
+        CREATE TABLE [Cache_Item] (
+            [Partition] NVARCHAR(100) NOT NULL,
+            [Key] NVARCHAR(100) NOT NULL,
+            [Value] IMAGE NOT NULL,
+            [Expiry] DATETIME,
+            [Interval] BIGINT,
+            CONSTRAINT Cache_Item_PK PRIMARY KEY ([Partition], [Key])
+        );"""
 
 /// <summary>
 ///   TODO
