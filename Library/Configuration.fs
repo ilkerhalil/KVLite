@@ -15,6 +15,9 @@ module private ConfigurationEntries =
     [<Literal>]
     let MaxCacheSize = "MaxCacheSizeInMB"
 
+    [<Literal>]
+    let OpsCountBeforeCleanup = "OperationCountBeforeSoftCleanup"
+
 /// <summary>
 ///   TODO
 /// </summary>
@@ -37,6 +40,12 @@ type public Configuration private() =
     /// </summary>
     [<ConfigurationProperty(ConfigurationEntries.MaxCacheSize, IsRequired = true)>]
     member x.MaxCacheSize = x.[ConfigurationEntries.MaxCacheSize] :?> int
+    
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    [<ConfigurationProperty(ConfigurationEntries.OpsCountBeforeCleanup, IsRequired = true)>]
+    member x.OpsCountBeforeCleanup = x.[ConfigurationEntries.OpsCountBeforeCleanup] :?> int
 
 /// <summary>
 ///   TODO

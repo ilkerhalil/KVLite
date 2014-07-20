@@ -56,7 +56,21 @@ type public PersistentCache(cachePath) =
 
     let mappedCachePath = MapCachePath cachePath
     let connectionString = String.Format(Settings.ConnectionStringFormat, mappedCachePath, Configuration.Instance.MaxCacheSize)
-    let mutable defaultInstance = None   
+    let mutable defaultInstance = None
+
+    // This value is increased for each ADD operation; after this value reaches the "OperationCountBeforeSoftClear"
+    // configuration parameter, then we must reset it and do a SOFT cleanup.
+    let mutable operationCount = 0
+
+    let doClear ignoreExpirationDate =
+        let clearCmd = """
+            delete from [cache_item]
+             where @IgnoreExpirationDate = 1
+                or ([expiry] is not null and [expiry] <= @UtcNow)
+        """
+        let args = clearParams ignoreExpirationDate
+        use ctx = CacheContext.Create connectionString
+        ctx.Connection.Execute (clearCmd, args) |> ignore
 
     let DoAdd (partition: string) (key: string) value utcExpiry interval =
         Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition)
@@ -99,6 +113,16 @@ type public PersistentCache(cachePath) =
                 ctx.Connection.Execute(insert, item) |> ignore
 
             trx.Commit()
+
+            // Operation has concluded successfully, therefore we increment the operation counter.
+            // If it has reached the "OperationCountBeforeSoftClear" configuration parameter,
+            // then we must reset it and do a SOFT cleanup.
+            // Following code is not fully thread safe, but it does not matter, because the
+            // "OperationCountBeforeSoftClear" parameter should be just an hint on when to do the cleanup.
+            operationCount <- operationCount + 1
+            if operationCount = Configuration.Instance.OpsCountBeforeCleanup then
+                operationCount <- 0
+                doClear false
         with
             | ex -> trx.Rollback(); raise ex
 
@@ -153,18 +177,16 @@ type public PersistentCache(cachePath) =
     member x.AddTimed (key: string, value, utcExpiry: DateTime) =
         x.AddTimed (Settings.DefaultPartition, key, value, utcExpiry)
 
+    /// <summary>
+    ///   TODO
+    /// </summary>
     override x.Add (key, value, utcExpiry) =
         x.AddTimed (Settings.DefaultPartition, key, value, utcExpiry)
 
-    member x.Clear (ignoreExpirationDate: bool) =
-        let clearCmd = """
-            delete from [cache_item]
-             where @IgnoreExpirationDate = 1
-                or ([expiry] is not null and [expiry] <= @UtcNow)
-        """
-        let args = clearParams ignoreExpirationDate
-        use ctx = CacheContext.Create connectionString
-        ctx.Connection.Execute (clearCmd, args)
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    member x.Clear (ignoreExpirationDate: bool) = doClear ignoreExpirationDate       
       
     /// <summary>
     ///   TODO
@@ -234,7 +256,7 @@ type public PersistentCache(cachePath) =
     /// <summary>
     ///   TODO
     /// </summary>
-    member x.Remove (partition: string, key: string) =
+    member x.Remove (partition: string, key: string): unit =
         let delete = """
             delete from [cache_item]
              where [partition] = @Partition
