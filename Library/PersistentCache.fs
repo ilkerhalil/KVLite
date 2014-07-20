@@ -63,14 +63,49 @@ type public PersistentCache(cachePath) =
     let mutable operationCount = 0
 
     let doClear ignoreExpirationDate =
-        let clearCmd = """
+        let clear = """
             delete from [cache_item]
              where @IgnoreExpirationDate = 1
                 or ([expiry] is not null and [expiry] <= @UtcNow)
         """
         let args = clearParams ignoreExpirationDate
         use ctx = CacheContext.Create connectionString
-        ctx.Connection.Execute (clearCmd, args) |> ignore
+        ctx.Connection.Execute (clear, args) |> ignore
+    
+    let doGet partition key =
+        let get = """
+            select *
+              from [cache_item]
+             where [partition] = @Partition
+               and [key] = @Key
+               and ([expiry] is null or [expiry] > @UtcNow)
+        """
+        let args = getParams (partition, key)
+        
+        // For this kind of task, we need a transaction. In fact, since the value may be sliding,
+        // we may have to issue an update following the initial select.
+        use ctx = CacheContext.Create connectionString
+        use trx = ctx.Connection.BeginTransaction ()
+
+        try
+            let item = (ctx.Connection.Query<CacheItem> (get, args)).FirstOrDefault ()           
+            if item <> null && item.Interval.HasValue then
+                // Since item exists and it is sliding, then we need to update its expiration time.
+                let update = """
+                    update cache_item
+                       set [expiry] = [expiry] + [interval]
+                     where [partition] = @Partition
+                       and [key] = @Key
+                """
+                ctx.Connection.Execute (update, item) |> ignore 
+
+            // Commit must be the _last_ instruction in the try block, except for return.
+            trx.Commit ()
+
+            // We return the item we just found (or null if it does not exist).
+            item
+        with
+            | ex -> trx.Rollback (); raise ex
 
     let DoAdd (partition: string) (key: string) value utcExpiry interval =
         Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition)
@@ -111,20 +146,21 @@ type public PersistentCache(cachePath) =
                 item.Expiry <- utcExpiry
                 item.Interval <- interval
                 ctx.Connection.Execute(insert, item) |> ignore
-
+            
+            // Commit must be the _last_ instruction in the try block.
             trx.Commit()
-
-            // Operation has concluded successfully, therefore we increment the operation counter.
-            // If it has reached the "OperationCountBeforeSoftClear" configuration parameter,
-            // then we must reset it and do a SOFT cleanup.
-            // Following code is not fully thread safe, but it does not matter, because the
-            // "OperationCountBeforeSoftClear" parameter should be just an hint on when to do the cleanup.
-            operationCount <- operationCount + 1
-            if operationCount = Configuration.Instance.OpsCountBeforeCleanup then
-                operationCount <- 0
-                doClear false
         with
             | ex -> trx.Rollback(); raise ex
+
+        // Operation has concluded successfully, therefore we increment the operation counter.
+        // If it has reached the "OperationCountBeforeSoftClear" configuration parameter,
+        // then we must reset it and do a SOFT cleanup.
+        // Following code is not fully thread safe, but it does not matter, because the
+        // "OperationCountBeforeSoftClear" parameter should be just an hint on when to do the cleanup.
+        operationCount <- operationCount + 1
+        if operationCount = Configuration.Instance.OpsCountBeforeCleanup then
+            operationCount <- 0
+            doClear false
 
         // Value is returned
         value
@@ -147,6 +183,7 @@ type public PersistentCache(cachePath) =
             let cacheReady = ctx.Exists query
             if not cacheReady then
                 ctx.Connection.Execute(Settings.CacheCreationScript) |> ignore
+                ctx.Connection.Execute(Settings.IndexCreationScript) |> ignore
             
             trx.Commit()
         with
@@ -191,17 +228,7 @@ type public PersistentCache(cachePath) =
     /// <summary>
     ///   TODO
     /// </summary>
-    member x.Contains (partition: string, key: string) =
-        let select = """
-            select 1
-              from [cache_item]
-             where [partition] = @Partition
-               and [key] = @Key
-               and ([expiry] is null or [expiry] > @UtcNow)
-        """
-        let args = getParams (partition, key)
-        use ctx = CacheContext.Create connectionString    
-        ctx.Exists (select, args)
+    member x.Contains (partition: string, key: string) = (doGet partition key) <> null
     
     /// <summary>
     ///   TODO
@@ -212,16 +239,7 @@ type public PersistentCache(cachePath) =
     ///   TODO
     /// </summary>
     member x.Get (partition: string, key: string) =
-        let select = """
-            select [value]
-              from [cache_item]
-             where [partition] = @Partition
-               and [key] = @Key
-               and ([expiry] is null or [expiry] > @UtcNow)
-        """
-        let args = getParams (partition, key)
-        use ctx = CacheContext.Create connectionString    
-        let item = ctx.Connection.Query<CacheItem>(select, args).FirstOrDefault()
+        let item = doGet partition key
         if item = null || item.Value = null then null else Deserialize item.Value
     
     /// <summary>
@@ -233,16 +251,7 @@ type public PersistentCache(cachePath) =
     ///   TODO
     /// </summary>
     member x.GetInfo (partition: string, key: string) =
-        let select = """
-            select *
-              from [cache_item]
-             where [partition] = @Partition
-               and [key] = @Key
-               and ([expiry] is null or [expiry] > @UtcNow)
-        """
-        let args = getParams (partition, key) 
-        use ctx = CacheContext.Create connectionString
-        let item = ctx.Connection.Query<CacheItem>(select, args).FirstOrDefault()
+        let item = doGet partition key
         if item = null || item.Value = null then 
             null // Item is not contained
         else 

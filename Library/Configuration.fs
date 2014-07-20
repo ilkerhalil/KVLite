@@ -54,6 +54,7 @@ module private Settings =
     let ConnectionStringFormat = "Data Source={0}; Max Database Size={1}; Persist Security Info=False;"
     let DefaultPartition = "*"
     let MaxCachedConnectionCount = 10
+    let IndexCreationScript = "CREATE INDEX [Expiry_Idx] ON [Cache_Item] ([Expiry] ASC);"
     let CacheCreationScript = """
         CREATE TABLE [Cache_Item] (
             [Partition] NVARCHAR(100) NOT NULL,
@@ -62,7 +63,8 @@ module private Settings =
             [Expiry] DATETIME,
             [Interval] BIGINT,
             CONSTRAINT Cache_Item_PK PRIMARY KEY ([Partition], [Key])
-        );"""
+        );
+    """
 
 /// <summary>
 ///   TODO
