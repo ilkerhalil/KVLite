@@ -13,7 +13,7 @@ module private ConfigurationEntries =
     let CachePath = "CachePath"
 
     [<Literal>]
-    let MaxCacheSize = "MaxCacheSize"
+    let MaxCacheSize = "MaxCacheSizeInMB"
 
 /// <summary>
 ///   TODO

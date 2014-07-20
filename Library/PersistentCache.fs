@@ -10,8 +10,22 @@ open System.Web.Caching
 open Dapper
 open Thrower
 
-type private clearParams = {ignoreExpirationDate: bool; utcNow: DateTime}
-type private getParams = {partition: string; key: string; utcNow: DateTime}
+/// <summary>
+///   TODO
+/// </summary>
+[<Sealed>]
+type public clearParams public (ignoreExpirationDate) =
+    member x.IgnoreExpirationDate = if ignoreExpirationDate then 1 else 0
+    member x.UtcNow = DateTime.UtcNow
+
+/// <summary>
+///   TODO
+/// </summary>
+[<Sealed>]
+type public getParams public (partition, key) =
+    member x.Partition = partition
+    member x.Key = key
+    member x.UtcNow = DateTime.UtcNow
 
 /// <summary>
 ///   TODO
@@ -54,27 +68,35 @@ type public PersistentCache(cachePath) =
         use trx = ctx.Connection.BeginTransaction()
 
         try
-            let query = "select * from [cache_item] where [partition] = :partition and [key] = :key"
-            let item = (ctx.Connection.Query<CacheItem> query).FirstOrDefault ()
+            let args = getParams (partition, key)
+            let query = "select * from [cache_item] where [partition] = @Partition and [key] = @Key"
+            let item = (ctx.Connection.Query<CacheItem> (query, args)).FirstOrDefault ()
+            
             if item <> null then
+                let update = """
+                    update [cache_item]
+                       set [value] = @Value
+                         , [expiry] = @Expiry
+                         , [interval] = @Interval
+                     where [partition] = @Partition
+                       and [key] = @Key
+                """
                 item.Value <- formattedValue
                 item.Expiry <- utcExpiry
                 item.Interval <- interval
-                let update = """
-                    update [cache_item]
-                       set [value] = :Value
-                         , [expiry] = :Expiry
-                         , [interval] = :Interval
-                     where [partition] = :Partition
-                       and [key] = :Key
-                """
-                ctx.Connection.Execute(update) |> ignore
+                ctx.Connection.Execute (update, item) |> ignore
             else
                 let insert = """
                     insert into [cache_item] ([partition], [key], [value], [expiry], [interval])
-                    values (@partition, @key, @value, @expiry, @interval)
+                    values (@Partition, @Key, @Value, @Expiry, @Interval)
                 """
-                ctx.Connection.Execute(insert) |> ignore
+                let item = CacheItem ()
+                item.Partition <- partition
+                item.Key <- key
+                item.Value <- formattedValue
+                item.Expiry <- utcExpiry
+                item.Interval <- interval
+                ctx.Connection.Execute(insert, item) |> ignore
 
             trx.Commit()
         with
@@ -137,11 +159,12 @@ type public PersistentCache(cachePath) =
     member x.Clear (ignoreExpirationDate: bool) =
         let clearCmd = """
             delete from [cache_item]
-             where @ignoreExpirationDate
-                or ([expiry] is not null and [expiry] <= @utcNow)
+             where @IgnoreExpirationDate = 1
+                or ([expiry] is not null and [expiry] <= @UtcNow)
         """
-        use ctx = CacheContext.Create(connectionString)
-        ctx.Connection.Execute(clearCmd, {ignoreExpirationDate = ignoreExpirationDate; utcNow = DateTime.UtcNow})
+        let args = clearParams ignoreExpirationDate
+        use ctx = CacheContext.Create connectionString
+        ctx.Connection.Execute (clearCmd, args)
       
     /// <summary>
     ///   TODO
@@ -150,12 +173,12 @@ type public PersistentCache(cachePath) =
         let select = """
             select 1
               from [cache_item]
-             where [partition] = @partition
-               and [key] = @key
-               and ([expiry] is null or [expiry] > @utcNow)
+             where [partition] = @Partition
+               and [key] = @Key
+               and ([expiry] is null or [expiry] > @UtcNow)
         """
-        let args = {partition = partition; key = key; utcNow = DateTime.UtcNow}
-        use ctx = CacheContext.Create(connectionString)    
+        let args = getParams (partition, key)
+        use ctx = CacheContext.Create connectionString    
         ctx.Exists (select, args)
     
     /// <summary>
@@ -170,12 +193,12 @@ type public PersistentCache(cachePath) =
         let select = """
             select [value]
               from [cache_item]
-             where [partition] = @partition
-               and [key] = @key
-               and ([expiry] is null or [expiry] > @utcNow)
+             where [partition] = @Partition
+               and [key] = @Key
+               and ([expiry] is null or [expiry] > @UtcNow)
         """
-        let args = {partition = partition; key = key; utcNow = DateTime.UtcNow} 
-        use ctx = CacheContext.Create(connectionString)    
+        let args = getParams (partition, key)
+        use ctx = CacheContext.Create connectionString    
         let item = ctx.Connection.Query<CacheItem>(select, args).FirstOrDefault()
         if item = null || item.Value = null then null else Deserialize item.Value
     
@@ -191,11 +214,11 @@ type public PersistentCache(cachePath) =
         let select = """
             select *
               from [cache_item]
-             where [partition] = @partition
-               and [key] = @key
-               and [expiry] is null or [expiry] > @utcNow
+             where [partition] = @Partition
+               and [key] = @Key
+               and ([expiry] is null or [expiry] > @UtcNow)
         """
-        let args = {partition = partition; key = key; utcNow = DateTime.UtcNow} 
+        let args = getParams (partition, key) 
         use ctx = CacheContext.Create connectionString
         let item = ctx.Connection.Query<CacheItem>(select, args).FirstOrDefault()
         if item = null || item.Value = null then 
@@ -214,12 +237,12 @@ type public PersistentCache(cachePath) =
     member x.Remove (partition: string, key: string) =
         let delete = """
             delete from [cache_item]
-             where [partition] = @partition
-               and [key] = @key
+             where [partition] = @Partition
+               and [key] = @Key
         """
-        let args = {partition = partition; key = key; utcNow = DateTime.Now}
-        use ctx = CacheContext.Create(connectionString)
-        ctx.Connection.Execute(delete, args) |> ignore
+        let args = getParams (partition, key)
+        use ctx = CacheContext.Create connectionString
+        ctx.Connection.Execute (delete, args) |> ignore
     
     /// <summary>
     ///   TODO

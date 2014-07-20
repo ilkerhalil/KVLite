@@ -6,7 +6,7 @@ open System
 ///   TODO
 /// </summary>
 [<AllowNullLiteral; Sealed>]
-type internal CacheItem public () =
+type public CacheItem public () =
     
     member val Partition = String.Empty with get, set
     member val Key = String.Empty with get, set
