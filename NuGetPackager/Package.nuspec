@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>0.1.6</version>
+    <version>0.1.7</version>
     <title>PommaLabs.KVLite</title>
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -22,12 +22,13 @@ A short description of the package. If specified, this shows up in the middle pa
     <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
     <copyright>Copyright  2014</copyright>
     <dependencies>
-      <dependency id="DbExtensions" />
+      <dependency id="Dapper" />
       <dependency id="Microsoft.SqlServer.Compact" />
       <dependency id="Thrower" />
     </dependencies>
     <references></references>
     <frameworkAssemblies>
+      <frameworkAssembly assemblyName="FSharp.Core" />
       <frameworkAssembly assemblyName="System.Configuration" />
       <frameworkAssembly assemblyName="System.Web" />
       <frameworkAssembly assemblyName="System.Xml" />
