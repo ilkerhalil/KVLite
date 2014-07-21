@@ -77,6 +77,29 @@ namespace UnitTests
             }
         }
 
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Add_TwoTimes_CheckItems(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                _fileCache.Add(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                Assert.True(_fileCache.Contains(StringItems[i]));
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                _fileCache.Add(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                Assert.True(_fileCache.Contains(StringItems[i]));
+            }
+            var items = _fileCache.GetItems().ToList();
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var s = StringItems[i];
+                Assert.True(items.Count(x => x.Key == s && (string) x.Value == s) == 1);
+            }
+        }
+
         [Test]
         public void AddPersistent_RightInfo()
         {
@@ -85,7 +108,7 @@ namespace UnitTests
             var v1 = StringItems[2];
             var v2 = StringItems[3];
             _fileCache.AddPersistent(p, k, Tuple.Create(v1, v2));
-            var info = _fileCache.GetInfo(p, k);
+            var info = _fileCache.GetItem(p, k);
             Assert.IsNotNull(info);
             Assert.AreEqual(p, info.Partition);
             Assert.AreEqual(k, info.Key);
@@ -105,7 +128,7 @@ namespace UnitTests
             var v2 = StringItems[3];
             var e = DateTime.Now.AddMinutes(10);
             _fileCache.AddTimed(p, k, Tuple.Create(v1, v2), e);
-            var info = _fileCache.GetInfo(p, k);
+            var info = _fileCache.GetItem(p, k);
             Assert.IsNotNull(info);
             Assert.AreEqual(p, info.Partition);
             Assert.AreEqual(k, info.Key);

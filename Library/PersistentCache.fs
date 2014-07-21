@@ -1,6 +1,7 @@
 ﻿namespace KVLite
 
 open System
+open System.Collections.Generic
 open System.Data.SqlServerCe
 open System.IO
 open System.Linq
@@ -14,7 +15,7 @@ open Thrower
 ///   TODO
 /// </summary>
 [<Sealed>]
-type public clearParams public (ignoreExpirationDate) =
+type public clearParams internal (ignoreExpirationDate) =
     member x.IgnoreExpirationDate = if ignoreExpirationDate then 1 else 0
     member x.UtcNow = DateTime.UtcNow
 
@@ -22,7 +23,7 @@ type public clearParams public (ignoreExpirationDate) =
 ///   TODO
 /// </summary>
 [<Sealed>]
-type public getParams public (partition, key) =
+type public getParams internal (partition, key) =
     member x.Partition = partition
     member x.Key = key
     member x.UtcNow = DateTime.UtcNow
@@ -187,30 +188,54 @@ type public PersistentCache(cachePath) =
             
             trx.Commit()
         with
-        | ex -> trx.Rollback(); raise ex    
+        | ex -> trx.Rollback(); raise ex 
 
+    /// <summary>
+    ///   TODO
+    /// </summary>
     new() = PersistentCache(Configuration.Instance.CachePath)
 
+    /// <summary>
+    ///   TODO
+    /// </summary>
     member x.Default: PersistentCache = 
         match defaultInstance with
         | None -> defaultInstance <- Some(new PersistentCache()); defaultInstance.Value
         | Some(_) -> defaultInstance.Value
 
+    /// <summary>
+    ///   TODO
+    /// </summary>
     member x.AddPersistent (partition: string, key: string, value) =
         DoAdd partition key value nullable nullable
 
+    /// <summary>
+    ///   TODO
+    /// </summary>
     member x.AddPersistent (key: string, value) =
         x.AddPersistent (Settings.DefaultPartition, key, value)
 
+    /// <summary>
+    ///   TODO
+    /// </summary>
     member x.AddSliding (partition: string, key: string, value, interval: TimeSpan) =
         DoAdd partition key value (toNullable DateTime.UtcNow) (toNullable interval)
-    
+
+    /// <summary>
+    ///   TODO
+    /// </summary>
     member x.AddSliding (key: string, value, interval: TimeSpan) =
         x.AddSliding (Settings.DefaultPartition, key, value, interval)
 
+    /// <summary>
+    ///   TODO
+    /// </summary>
     member x.AddTimed (partition: string, key: string, value, utcExpiry: DateTime) =
         DoAdd partition key value (toNullable utcExpiry) nullable
-    
+
+    /// <summary>
+    ///   TODO
+    /// </summary>
     member x.AddTimed (key: string, value, utcExpiry: DateTime) =
         x.AddTimed (Settings.DefaultPartition, key, value, utcExpiry)
 
@@ -250,7 +275,7 @@ type public PersistentCache(cachePath) =
     /// <summary>
     ///   TODO
     /// </summary>
-    member x.GetInfo (partition: string, key: string) =
+    member x.GetItem (partition: string, key: string) =
         let item = doGet partition key
         if item = null || item.Value = null then 
             null // Item is not contained
@@ -260,12 +285,31 @@ type public PersistentCache(cachePath) =
     /// <summary>
     ///   TODO
     /// </summary>
-    member x.GetInfo key = x.GetInfo (Settings.DefaultPartition, key)
-    
+    member x.GetItem key = x.GetItem (Settings.DefaultPartition, key)
+
     /// <summary>
     ///   TODO
     /// </summary>
-    member x.Remove (partition: string, key: string): unit =
+    member x.GetItems () : IEnumerable<ItemInfo> =
+        let select = "select * from [cache_item]"
+        use ctx = CacheContext.Create connectionString
+        let items = ctx.Connection.Query<CacheItem> select
+        items |> Seq.map (fun i -> ItemInfo(i, Deserialize i.Value))
+
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    member x.GetItems (partition: string) : IEnumerable<ItemInfo> =
+        let select = "select * from [cache_item] where [partition] = @Partition"
+        let args = getParams (partition, String.Empty)
+        use ctx = CacheContext.Create connectionString
+        let items = ctx.Connection.Query<CacheItem> (select, args)
+        items |> Seq.map (fun i -> ItemInfo(i, Deserialize i.Value))
+
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    member x.Remove (partition: string, key: string) : unit =
         let delete = """
             delete from [cache_item]
              where [partition] = @Partition
