@@ -58,7 +58,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileCacheTests.cs" />
+    <Compile Include="PersistentCacheTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -92,8 +92,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Library\Library.fsproj">
-      <Project>{78130e16-8fbe-4582-a584-2eadf7f9ae79}</Project>
+    <ProjectReference Include="..\Library\Library.vbproj">
+      <Project>{420777f1-bac6-486b-b9cf-6ffdbf8d62e4}</Project>
       <Name>Library</Name>
     </ProjectReference>
   </ItemGroup>

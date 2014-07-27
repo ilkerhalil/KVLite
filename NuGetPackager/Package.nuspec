@@ -8,19 +8,19 @@
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
     <description>
-A long description of the package. This shows up in the right pane of the Add Package Dialog as well as in the Package Manager Console when listing packages using the Get-Package command.
+Very, very simple key value store based on SQL Server Compact.
     </description>
     <releaseNotes>
     </releaseNotes>
     <summary>
-A short description of the package. If specified, this shows up in the middle pane of the Add Package Dialog. If not specified, a truncated version of the description is used instead.
+Very, very simple key value store based on SQL Server Compact.
     </summary>
     <language>en-US</language>
     <projectUrl>https://nuget.org/packages/NuGetPackager</projectUrl>
     <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
-    <copyright>Copyright  2014</copyright>
+    <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <dependency id="Dapper" />
       <dependency id="Microsoft.SqlServer.Compact" />
@@ -33,7 +33,7 @@ A short description of the package. If specified, this shows up in the middle pa
       <frameworkAssembly assemblyName="System.Web" />
       <frameworkAssembly assemblyName="System.Xml" />
     </frameworkAssemblies>
-    <tags>fsharp sql server compact key value store concurrent</tags>
+    <tags>vbnet sql server compact key value store concurrent</tags>
   </metadata>
   <files>
     <file src="lib\" target="lib" />

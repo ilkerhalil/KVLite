@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using KVLite;
+using KVLite.My.Resources;
 using NUnit.Framework;
 
 namespace UnitTests
@@ -15,13 +16,13 @@ namespace UnitTests
         public void SetUp()
         {
             _fileCache = new PersistentCache();
-            _fileCache.Clear(true);
+            _fileCache.Clear(CacheClearMode.IgnoreExpirationDate);
         }
 
         [TearDown]
         public void TearDown()
         {
-            _fileCache.Clear(true);
+            _fileCache.Clear(CacheClearMode.IgnoreExpirationDate);
             _fileCache = null;
         }
 
@@ -115,7 +116,7 @@ namespace UnitTests
             var infoValue = info.Value as Tuple<string, string>;
             Assert.AreEqual(v1, infoValue.Item1);
             Assert.AreEqual(v2, infoValue.Item2);
-            Assert.IsNull(info.Expiry);
+            Assert.IsNull(info.UtcExpiry);
             Assert.IsNull(info.Interval);
         }
 
@@ -136,11 +137,11 @@ namespace UnitTests
             Assert.AreEqual(v1, infoValue.Item1);
             Assert.AreEqual(v2, infoValue.Item2);
 
-            Assert.IsNotNull(info.Expiry);
-            Assert.AreEqual(e.Date, info.Expiry.Value.Date);
-            Assert.AreEqual(e.Hour, info.Expiry.Value.Hour);
-            Assert.AreEqual(e.Minute, info.Expiry.Value.Minute);
-            Assert.AreEqual(e.Second, info.Expiry.Value.Second);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Value.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Value.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Value.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Value.Second);
             
             Assert.IsNull(info.Interval);
         }

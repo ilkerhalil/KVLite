@@ -60,12 +60,6 @@
   <ItemGroup>
     <Folder Include="lib\net40\" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Library\Library.fsproj">
-      <Project>{78130e16-8fbe-4582-a584-2eadf7f9ae79}</Project>
-      <Name>Library</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

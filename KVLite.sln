@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetPackager", "NuGetPackager\NuGetPackager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
+	ProjectSection(ProjectDependencies) = postProject
+		{420777F1-BAC6-486B-B9CF-6FFDBF8D62E4} = {420777F1-BAC6-486B-B9CF-6FFDBF8D62E4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{B41547F3-A41C-439A-98DA-F478B2D360C1}"
 EndProject
@@ -12,13 +15,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4A3E10
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Library", "Library\Library.fsproj", "{78130E16-8FBE-4582-A584-2EADF7F9AE79}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CB218631-52E1-43BC-971F-94784A43B73E}"
 	ProjectSection(SolutionItems) = preProject
 		CREDITS.md = CREDITS.md
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Library", "Library\Library.vbproj", "{420777F1-BAC6-486B-B9CF-6FFDBF8D62E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,10 +35,10 @@ Global
 		{B41547F3-A41C-439A-98DA-F478B2D360C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B41547F3-A41C-439A-98DA-F478B2D360C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B41547F3-A41C-439A-98DA-F478B2D360C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{78130E16-8FBE-4582-A584-2EADF7F9AE79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78130E16-8FBE-4582-A584-2EADF7F9AE79}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78130E16-8FBE-4582-A584-2EADF7F9AE79}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78130E16-8FBE-4582-A584-2EADF7F9AE79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{420777F1-BAC6-486B-B9CF-6FFDBF8D62E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{420777F1-BAC6-486B-B9CF-6FFDBF8D62E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{420777F1-BAC6-486B-B9CF-6FFDBF8D62E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{420777F1-BAC6-486B-B9CF-6FFDBF8D62E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
