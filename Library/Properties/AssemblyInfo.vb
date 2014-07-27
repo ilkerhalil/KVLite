@@ -46,7 +46,7 @@ Imports System.Runtime.InteropServices
 
 <assembly: ComVisible(False)>
 
-' The assembly version has following format :
+' The assembly version has following format:
 '
 ' Major.Minor.Build.Revision
 '
@@ -54,6 +54,7 @@ Imports System.Runtime.InteropServices
 ' numbers with the '*' character (the default):
 
 <Assembly: AssemblyVersion("0.1.7.*")> 
+<Assembly: AssemblyFileVersion("0.1.7.*")> 
 
 ' Common Language Specification (CLS) compliance generally refers to the claim 
 ' that CLS rules and restrictions are being followed.

@@ -37,6 +37,7 @@ Friend NotInheritable Class CacheContext
     Private Shared ReadOnly ConnectionPool As ConcurrentDictionary(Of String, ConcurrentStack(Of IDbConnection)) = New ConcurrentDictionary(Of String, ConcurrentStack(Of IDbConnection))
     
     Private ReadOnly _connection As IDbConnection
+    Private _disposed As Boolean = False
     
     #Region "Construction"
     
@@ -68,8 +69,10 @@ Friend NotInheritable Class CacheContext
     #Region "IDisposable Members"
     
     Public Sub Dispose() Implements IDisposable.Dispose
+        If Me._disposed Then Return
         If Not TryCacheConnection(Me._connection) Then Me._connection.Dispose()
         GC.SuppressFinalize(Me)
+        Me._disposed = True
     End Sub
     
     #End Region
