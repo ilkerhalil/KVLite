@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>0.1.7</version>
+    <version>0.1.7-alpha</version>
     <title>PommaLabs.KVLite</title>
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -16,10 +16,10 @@ Very, very simple key value store based on SQL Server Compact.
 Very, very simple key value store based on SQL Server Compact.
     </summary>
     <language>en-US</language>
-    <projectUrl>https://nuget.org/packages/NuGetPackager</projectUrl>
+    <projectUrl>https://bitbucket.org/pomma89/kvlite</projectUrl>
     <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <dependency id="Dapper" />
@@ -28,10 +28,8 @@ Very, very simple key value store based on SQL Server Compact.
     </dependencies>
     <references></references>
     <frameworkAssemblies>
-      <frameworkAssembly assemblyName="FSharp.Core" />
       <frameworkAssembly assemblyName="System.Configuration" />
       <frameworkAssembly assemblyName="System.Web" />
-      <frameworkAssembly assemblyName="System.Xml" />
     </frameworkAssemblies>
     <tags>vbnet sql server compact key value store concurrent</tags>
   </metadata>
