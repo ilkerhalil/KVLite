@@ -117,7 +117,7 @@
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <CustomToolNamespace>My</CustomToolNamespace>
-      <Generator>SettingsSingleFileGenerator</Generator>
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
   </ItemGroup>

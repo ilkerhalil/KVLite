@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using KVLite;
+using KVLite.My;
 using KVLite.My.Resources;
 using NUnit.Framework;
 
@@ -99,6 +100,20 @@ namespace UnitTests
                 var s = StringItems[i];
                 Assert.True(items.Count(x => x.Key == s && (string) x.Value == s) == 1);
             }
+        }
+
+        [Test]
+        public void Add_HugeValue()
+        {
+            var k = StringItems[1];
+            var v = new byte[20000];
+            _fileCache.Add(k, v, DateTime.UtcNow.AddMinutes(10));
+            var info = _fileCache.GetItem(k);
+            Assert.IsNotNull(info);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v, info.Value);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.IsNull(info.Interval);
         }
 
         [Test]

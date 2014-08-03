@@ -30,6 +30,7 @@ Imports System.IO
 Imports System.Runtime.Serialization.Formatters.Binary
 Imports System.Web
 Imports System.Web.Caching
+Imports Microsoft.VisualBasic.CompilerServices
 Imports Dapper
 Imports KVLite.My.Resources
 Imports System.Data.SqlServerCe
@@ -218,22 +219,26 @@ Public NotInheritable Class PersistentCache
         Raise(Of ArgumentException).IfIsEmpty(key, ErrorMessages.NullOrEmptyKey)
 
         Dim encodedValue = Serialize(value)
-        Dim ticks = If(interval.HasValue, interval.Value.Ticks, Nothing)
+        Dim expiry = If(utcExpiry.HasValue, TryCast(utcExpiry.Value, Object), DBNull.Value)
+        Dim ticks = If(interval.HasValue, TryCast(interval.Value.Ticks, Object), DBNull.Value)
 
         Using ctx = CacheContext.Create(Me._connectionString)
             Dim trx = ctx.Connection.BeginTransaction()
             Try
                 Dim args = New With {partition, [key]}
                 Dim item = ctx.Connection.Query(Of CacheItem)(Queries.DoAdd_Select, args).FirstOrDefault()
-                If item IsNot Nothing Then
-                    item.EncodedValue = encodedValue
-                    item.UtcExpiry = utcExpiry
-                    item.Interval = ticks
-                    ctx.Connection.Execute(Queries.DoAdd_Update, item)
-                Else
-                    item = New CacheItem With {.Partition = partition, .Key = key, .EncodedValue = encodedValue, .UtcExpiry = utcExpiry, .Interval = ticks}
-                    ctx.Connection.Execute(Queries.DoAdd_Insert, item)
-                End If
+
+                Dim cmd = ctx.Connection.CreateCommand()
+                cmd.CommandType = CommandType.Text
+                cmd.CommandText = If(item Is Nothing, Queries.DoAdd_Insert, Queries.DoAdd_Update)
+                cmd.Parameters.AddWithValue("Partition", partition).SqlDbType = SqlDbType.NVarChar
+                cmd.Parameters.AddWithValue("Key", key).SqlDbType = SqlDbType.NVarChar
+                cmd.Parameters.AddWithValue("EncodedValue", encodedValue).SqlDbType = SqlDbType.Image
+                cmd.Parameters.AddWithValue("UtcCreation", DateTime.UtcNow).SqlDbType = SqlDbType.DateTime
+                cmd.Parameters.AddWithValue("UtcExpiry", expiry).SqlDbType = SqlDbType.DateTime
+                cmd.Parameters.AddWithValue("Interval", ticks).SqlDbType = SqlDbType.BigInt
+                cmd.ExecuteNonQuery()
+
                 ' Commit must be the _last_ instruction in the try block.
                 trx.Commit()
             Catch

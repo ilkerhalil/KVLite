@@ -53,7 +53,7 @@ Public Structure ItemInfo
         Me.Value = value
         Me.UtcCreation = cacheItem.UtcCreation
         Me.UtcExpiry = cacheItem.UtcExpiry
-        Me.Interval = If(cacheItem.Interval.HasValue, TimeSpan.FromTicks(cacheItem.Interval.Value), Nothing)
+        Me.Interval = If(cacheItem.Interval.HasValue, TimeSpan.FromTicks(cacheItem.Interval.Value), New TimeSpan?())
     End Sub
     
     Public Property Partition As String

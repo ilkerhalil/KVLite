@@ -34,14 +34,14 @@ Imports Dapper
 Friend NotInheritable Class CacheContext
     Implements IDisposable    
     
-    Private Shared ReadOnly ConnectionPool As ConcurrentDictionary(Of String, ConcurrentStack(Of IDbConnection)) = New ConcurrentDictionary(Of String, ConcurrentStack(Of IDbConnection))
+    Private Shared ReadOnly ConnectionPool As ConcurrentDictionary(Of String, ConcurrentStack(Of SqlCeConnection)) = New ConcurrentDictionary(Of String, ConcurrentStack(Of SqlCeConnection))
     
-    Private ReadOnly _connection As IDbConnection
+    Private ReadOnly _connection As SqlCeConnection
     Private _disposed As Boolean = False
     
     #Region "Construction"
     
-    Private Sub New(connection As IDbConnection)
+    Private Sub New(connection As SqlCeConnection)
         Me._connection = connection
     End Sub
     
@@ -52,7 +52,7 @@ Friend NotInheritable Class CacheContext
     
     #End Region
     
-    Public ReadOnly Property Connection As IDbConnection
+    Public ReadOnly Property Connection As SqlCeConnection
         Get
             Return Me._connection
         End Get
@@ -79,7 +79,7 @@ Friend NotInheritable Class CacheContext
     
     #Region "Connection Retrieval"
     
-    Private Shared Function GetOrCreateConnection(connenctionString As String) As IDbConnection
+    Private Shared Function GetOrCreateConnection(connenctionString As String) As SqlCeConnection
         If ConnectionPool.ContainsKey(connenctionString) Then
             Return GetCachedConnection(connenctionString)
         Else
@@ -87,17 +87,17 @@ Friend NotInheritable Class CacheContext
         End If
     End Function
     
-    Private Shared Function CreateNewConnection(connectionString As String) As IDbConnection
+    Private Shared Function CreateNewConnection(connectionString As String) As SqlCeConnection
         Dim connection = New SqlCeConnection(connectionString)
         connection.Open()
         Return connection
     End Function
     
-    Private Shared Function GetCachedConnection(connectionString As String) As IDbConnection
-        Dim connectionList As ConcurrentStack(Of IDbConnection) = Nothing
+    Private Shared Function GetCachedConnection(connectionString As String) As SqlCeConnection
+        Dim connectionList As ConcurrentStack(Of SqlCeConnection) = Nothing
         ConnectionPool.TryGetValue(connectionString, connectionList)
         If connectionList Is Nothing OrElse connectionList.Count = 0 Then Return CreateNewConnection(connectionString)
-        Dim connection As IDbConnection = Nothing
+        Dim connection As SqlCeConnection = Nothing
         connectionList.TryPop(connection)
         Return If(connection Is Nothing, CreateNewConnection(connectionString), connection)
     End Function
@@ -106,7 +106,7 @@ Friend NotInheritable Class CacheContext
     
     #Region "Connection Caching"
     
-    Private Shared Function  TryCacheConnection(connection As IDbConnection) As Boolean
+    Private Shared Function TryCacheConnection(connection As SqlCeConnection) As Boolean
         If ConnectionPool.ContainsKey(connection.ConnectionString) Then
             Return TryStoreConnection(connection)
         Else
@@ -114,8 +114,8 @@ Friend NotInheritable Class CacheContext
         End If
     End Function
     
-    Private Shared Function TryStoreConnection(connection As IDbConnection) As Boolean
-        Dim connectionList As ConcurrentStack(Of IDbConnection) = Nothing
+    Private Shared Function TryStoreConnection(connection As SqlCeConnection) As Boolean
+        Dim connectionList As ConcurrentStack(Of SqlCeConnection) = Nothing
         ConnectionPool.TryGetValue(connection.ConnectionString, connectionList)
         Dim maxConnCount = Configuration.Instance.MaxCachedConnectionCount
         If connectionList Is Nothing Then Return AddFirstList(connection)
@@ -126,8 +126,8 @@ Friend NotInheritable Class CacheContext
         Return False
     End Function
     
-    Private Shared Function AddFirstList(connection As IDbConnection) As Boolean
-        Dim connectionList = New ConcurrentStack(Of IDbConnection)
+    Private Shared Function AddFirstList(connection As SqlCeConnection) As Boolean
+        Dim connectionList = New ConcurrentStack(Of SqlCeConnection)
         connectionList.Push(connection)
         Return ConnectionPool.TryAdd(connection.ConnectionString, connectionList)
     End Function
