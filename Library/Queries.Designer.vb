@@ -69,6 +69,7 @@ Namespace My.Resources
         '''    [Partition] NVARCHAR(4000) NOT NULL,
         '''    [Key] NVARCHAR(4000) NOT NULL,
         '''    [EncodedValue] IMAGE NOT NULL,
+        '''    [UtcCreation] DATETIME NOT NULL,
         '''    [UtcExpiry] DATETIME,
         '''    [Interval] BIGINT,
         '''    CONSTRAINT Cache_Item_PK PRIMARY KEY ([Partition], [Key])
@@ -81,8 +82,8 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to insert into [cache_item] ([partition], [key], [encodedValue], [utcExpiry], [interval])
-        '''values (@partition, @key, @encodedValue, @utcExpiry, @interval).
+        '''  Looks up a localized string similar to insert into [cache_item] ([partition], [key], [encodedValue], [utcCreation], [utcExpiry], [interval])
+        '''values (@partition, @key, @encodedValue, @utcCreation, @utcExpiry, @interval).
         '''</summary>
         Friend Shared ReadOnly Property DoAdd_Insert() As String
             Get
@@ -102,6 +103,7 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to update [cache_item]
         '''   set [encodedValue] = @encodedValue
+        '''     , [utcCreation] = @utcCreation
         '''     , [utcExpiry] = @utcExpiry
         '''     , [interval] = @interval
         ''' where [partition] = @partition

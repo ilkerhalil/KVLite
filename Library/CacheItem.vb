@@ -36,7 +36,8 @@ Friend NotInheritable Class CacheItem
     Public Property Partition As String = String.Empty
     Public Property Key As String = String.Empty
     Public Property EncodedValue As Byte() = EmptyValue
-    Public Property UtcExpiry As DateTime? = Nothing
+    Public Property UtcCreation As Date = Date.UtcNow
+    Public Property UtcExpiry As Date? = Nothing
     Public Property Interval As TimeSpan? = Nothing
     
 End Class
@@ -50,6 +51,7 @@ Public Structure ItemInfo
         Me.Partition = cacheItem.Partition
         Me.Key = cacheItem.Key
         Me.Value = value
+        Me.UtcCreation = cacheItem.UtcCreation
         Me.UtcExpiry = cacheItem.UtcExpiry
         Me.Interval = cacheItem.Interval
     End Sub
@@ -57,7 +59,8 @@ Public Structure ItemInfo
     Public Property Partition As String
     Public Property Key As String
     Public Property Value As Object
-    Public Property UtcExpiry As DateTime?
+    Public Property UtcCreation As Date
+    Public Property UtcExpiry As Date?
     Public Property Interval As TimeSpan?
     
 End Structure

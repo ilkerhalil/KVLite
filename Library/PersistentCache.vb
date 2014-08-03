@@ -34,7 +34,6 @@ Imports Dapper
 Imports KVLite.My.Resources
 Imports System.Data.SqlServerCe
 Imports System.Linq
-Imports System.Security
 Imports Thrower
 
 ''' <summary>

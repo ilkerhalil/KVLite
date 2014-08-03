@@ -122,14 +122,15 @@
     [Partition] NVARCHAR(4000) NOT NULL,
     [Key] NVARCHAR(4000) NOT NULL,
     [EncodedValue] IMAGE NOT NULL,
+    [UtcCreation] DATETIME NOT NULL,
     [UtcExpiry] DATETIME,
     [Interval] BIGINT,
     CONSTRAINT Cache_Item_PK PRIMARY KEY ([Partition], [Key])
 );</value>
   </data>
   <data name="DoAdd_Insert" xml:space="preserve">
-    <value>insert into [cache_item] ([partition], [key], [encodedValue], [utcExpiry], [interval])
-values (@partition, @key, @encodedValue, @utcExpiry, @interval)</value>
+    <value>insert into [cache_item] ([partition], [key], [encodedValue], [utcCreation], [utcExpiry], [interval])
+values (@partition, @key, @encodedValue, @utcCreation, @utcExpiry, @interval)</value>
   </data>
   <data name="DoAdd_Select" xml:space="preserve">
     <value>select * from [cache_item] where [partition] = @partition and [key] = @key</value>
@@ -137,6 +138,7 @@ values (@partition, @key, @encodedValue, @utcExpiry, @interval)</value>
   <data name="DoAdd_Update" xml:space="preserve">
     <value>update [cache_item]
    set [encodedValue] = @encodedValue
+     , [utcCreation] = @utcCreation
      , [utcExpiry] = @utcExpiry
      , [interval] = @interval
  where [partition] = @partition

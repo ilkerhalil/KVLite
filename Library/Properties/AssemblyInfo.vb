@@ -38,7 +38,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyCompany("PommaLabs")> 
 <Assembly: AssemblyProduct("KVLite")> 
 <Assembly: AssemblyCopyright("Copyright (c) 2014-2015 Alessio Parma <alessio.parma@gmail.com>")> 
-<assembly: AssemblyTrademark("")>
+<Assembly: AssemblyTrademark("PommaLabs")> 
 <assembly: AssemblyCulture("")>
 
 ' This sets the default COM visibility of types in the assembly to invisible.
@@ -53,8 +53,8 @@ Imports System.Runtime.InteropServices
 ' You can specify all values by your own or you can build default build and revision
 ' numbers with the '*' character (the default):
 
-<Assembly: AssemblyVersion("0.1.7")> 
-<Assembly: AssemblyFileVersion("0.1.7")> 
+<Assembly: AssemblyVersion("0.1.8")> 
+<Assembly: AssemblyFileVersion("0.1.8")> 
 
 ' Common Language Specification (CLS) compliance generally refers to the claim 
 ' that CLS rules and restrictions are being followed.
