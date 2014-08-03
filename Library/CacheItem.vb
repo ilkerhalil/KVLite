@@ -38,7 +38,7 @@ Friend NotInheritable Class CacheItem
     Public Property EncodedValue As Byte() = EmptyValue
     Public Property UtcCreation As Date = Date.UtcNow
     Public Property UtcExpiry As Date? = Nothing
-    Public Property Interval As TimeSpan? = Nothing
+    Public Property Interval As Long? = Nothing
     
 End Class
 
@@ -53,7 +53,7 @@ Public Structure ItemInfo
         Me.Value = value
         Me.UtcCreation = cacheItem.UtcCreation
         Me.UtcExpiry = cacheItem.UtcExpiry
-        Me.Interval = cacheItem.Interval
+        Me.Interval = If(cacheItem.Interval.HasValue, TimeSpan.FromTicks(cacheItem.Interval.Value), Nothing)
     End Sub
     
     Public Property Partition As String

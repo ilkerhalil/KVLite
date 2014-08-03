@@ -158,7 +158,7 @@ values (@partition, @key, @encodedValue, @utcCreation, @utcExpiry, @interval)</v
   </data>
   <data name="DoGet_UpdateExpiry" xml:space="preserve">
     <value>update cache_item
-   set [utcExpiry] = [utcExpiry] + [interval]
+   set [utcExpiry] = [utcExpiry] -- Interval is added by PersistentCache
  where [partition] = @partition
    and [key] = @key</value>
   </data>

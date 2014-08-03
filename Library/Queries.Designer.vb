@@ -141,7 +141,7 @@ Namespace My.Resources
         
         '''<summary>
         '''  Looks up a localized string similar to update cache_item
-        '''   set [utcExpiry] = [utcExpiry] + [interval]
+        '''   set [utcExpiry] = [utcExpiry] -- Interval is added by PersistentCache
         ''' where [partition] = @partition
         '''   and [key] = @key.
         '''</summary>

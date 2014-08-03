@@ -97,7 +97,7 @@ Public NotInheritable Class PersistentCache
     End Function
 
     Public Function AddSliding(partition As String, key As String, value As Object, interval As TimeSpan) As Object
-        Return DoAdd(partition, key, value, Date.UtcNow, interval)
+        Return DoAdd(partition, key, value, Date.UtcNow + interval, interval)
     End Function
 
     Public Function AddSliding(key As String, value As Object, interval As TimeSpan) As Object
@@ -218,6 +218,7 @@ Public NotInheritable Class PersistentCache
         Raise(Of ArgumentException).IfIsEmpty(key, ErrorMessages.NullOrEmptyKey)
 
         Dim encodedValue = Serialize(value)
+        Dim ticks = If(interval.HasValue, interval.Value.Ticks, Nothing)
 
         Using ctx = CacheContext.Create(Me._connectionString)
             Dim trx = ctx.Connection.BeginTransaction()
@@ -227,10 +228,10 @@ Public NotInheritable Class PersistentCache
                 If item IsNot Nothing Then
                     item.EncodedValue = encodedValue
                     item.UtcExpiry = utcExpiry
-                    item.Interval = interval
+                    item.Interval = ticks
                     ctx.Connection.Execute(Queries.DoAdd_Update, item)
                 Else
-                    item = New CacheItem With {.Partition = partition, .Key = key, .EncodedValue = encodedValue, .UtcExpiry = utcExpiry, .Interval = interval}
+                    item = New CacheItem With {.Partition = partition, .Key = key, .EncodedValue = encodedValue, .UtcExpiry = utcExpiry, .Interval = ticks}
                     ctx.Connection.Execute(Queries.DoAdd_Insert, item)
                 End If
                 ' Commit must be the _last_ instruction in the try block.
@@ -276,6 +277,7 @@ Public NotInheritable Class PersistentCache
                 Dim item = ctx.Connection.Query(Of CacheItem)(Queries.DoGet_Select, args).FirstOrDefault()
                 If item IsNot Nothing AndAlso item.Interval.HasValue Then
                     ' Since item exists and it is sliding, then we need to update its expiration time.
+                    item.UtcExpiry = item.UtcExpiry + TimeSpan.FromTicks(item.Interval.Value)
                     ctx.Connection.Execute(Queries.DoGet_UpdateExpiry, item)
                 End If
                 ' Commit must be the _last_ instruction in the try block, except for return.

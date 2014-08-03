@@ -121,6 +121,26 @@ namespace UnitTests
         }
 
         [Test]
+        public void AddSliding_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var i = TimeSpan.FromMinutes(10);
+            _fileCache.AddSliding(p, k, Tuple.Create(v1, v2), i);
+            var info = _fileCache.GetItem(p, k);
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            var infoValue = info.Value as Tuple<string, string>;
+            Assert.AreEqual(v1, infoValue.Item1);
+            Assert.AreEqual(v2, infoValue.Item2);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(i, info.Interval);
+        }
+
+        [Test]
         public void AddTimed_RightInfo()
         {
             var p = StringItems[0];
