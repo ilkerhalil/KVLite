@@ -64,8 +64,8 @@ Public NotInheritable Class PersistentCache
             Dim trx = ctx.Connection.BeginTransaction()
             Try
                 If Not ctx.Exists(Queries.SchemaIsReady) Then
-                    ctx.Connection.Execute(Queries.CacheSchema)
-                    ctx.Connection.Execute(Queries.IndexSchema)
+                    ctx.Connection.Execute(Queries.CacheSchema, trx)
+                    ctx.Connection.Execute(Queries.IndexSchema, trx)
                 End If
                 trx.Commit()
             Catch
@@ -228,11 +228,12 @@ Public NotInheritable Class PersistentCache
             Dim trx = ctx.Connection.BeginTransaction()
             Try
                 Dim args = New With {partition, [key]}
-                Dim item = ctx.Connection.Query(Of CacheItem)(Queries.DoAdd_Select, args).FirstOrDefault()
+                Dim item = ctx.Connection.Query(Of CacheItem)(Queries.DoAdd_Select, args, trx).FirstOrDefault()
 
                 Dim cmd = ctx.Connection.CreateCommand()
                 cmd.CommandType = CommandType.Text
                 cmd.CommandText = If(item Is Nothing, Queries.DoAdd_Insert, Queries.DoAdd_Update)
+                cmd.Transaction = trx
                 cmd.Parameters.AddWithValue("Partition", partition).SqlDbType = SqlDbType.NVarChar
                 cmd.Parameters.AddWithValue("Key", key).SqlDbType = SqlDbType.NVarChar
                 cmd.Parameters.AddWithValue("EncodedValue", encodedValue).SqlDbType = SqlDbType.Image
@@ -281,11 +282,11 @@ Public NotInheritable Class PersistentCache
             Dim trx = ctx.Connection.BeginTransaction()
             Try
                 Dim args = New With {partition, [key], Date.UtcNow}
-                Dim item = ctx.Connection.Query(Of CacheItem)(Queries.DoGet_Select, args).FirstOrDefault()
+                Dim item = ctx.Connection.Query(Of CacheItem)(Queries.DoGet_Select, args, trx).FirstOrDefault()
                 If item IsNot Nothing AndAlso item.Interval.HasValue Then
                     ' Since item exists and it is sliding, then we need to update its expiration time.
                     item.UtcExpiry = item.UtcExpiry + TimeSpan.FromTicks(item.Interval.Value)
-                    ctx.Connection.Execute(Queries.DoGet_UpdateExpiry, item)
+                    ctx.Connection.Execute(Queries.DoGet_UpdateExpiry, item, trx)
                 End If
                 ' Commit must be the _last_ instruction in the try block, except for return.
                 trx.Commit()
