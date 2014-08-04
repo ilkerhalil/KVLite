@@ -103,6 +103,15 @@ namespace UnitTests
         }
 
         [Test]
+        public void Add_TwoValues_SameKey()
+        {
+            PersistentCache.DefaultInstance.Add(StringItems[0], StringItems[1], DateTime.UtcNow.AddMinutes(10));
+            Assert.AreEqual(StringItems[1], PersistentCache.DefaultInstance.Get(StringItems[0]));
+            PersistentCache.DefaultInstance.Add(StringItems[0], StringItems[2], DateTime.UtcNow.AddMinutes(10));
+            Assert.AreEqual(StringItems[2], PersistentCache.DefaultInstance.Get(StringItems[0]));
+        }
+
+        [Test]
         public void Add_HugeValue()
         {
             var k = StringItems[1];

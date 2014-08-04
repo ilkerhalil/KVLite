@@ -26,15 +26,14 @@
 ' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 ' THE SOFTWARE.
 
+Imports System.Data.SqlServerCe
 Imports System.IO
+Imports System.Linq
 Imports System.Runtime.Serialization.Formatters.Binary
 Imports System.Web
 Imports System.Web.Caching
-Imports Microsoft.VisualBasic.CompilerServices
 Imports Dapper
 Imports KVLite.My.Resources
-Imports System.Data.SqlServerCe
-Imports System.Linq
 Imports Thrower
 
 ''' <summary>
@@ -74,6 +73,9 @@ Public NotInheritable Class PersistentCache
                 Throw
             End Try
         End Using
+
+        ' Initial cleanup
+        Clear(CacheClearMode.ConsiderExpirationDate)
     End Sub
 
     Public Sub New()
