@@ -291,5 +291,63 @@ namespace UnitTests
                 Assert.AreEqual(ErrorMessages.NullOrEmptyCachePath, ex.Message);
             }
         }
+
+       [Test]
+       public void Clean_AfterFixedNumberOfInserts_ValidValues()
+       {
+          for (var i = 0; i < Configuration.Instance.OperationCountBeforeSoftCleanup; ++i)
+          {
+             PersistentCache.DefaultInstance.Add(StringItems[i], StringItems[i], DateTime.UtcNow.AddMinutes(10));
+          }
+          Assert.AreEqual(Configuration.Instance.OperationCountBeforeSoftCleanup, PersistentCache.DefaultInstance.Count);
+       }
+
+       [Test]
+       public void Clean_AfterFixedNumberOfInserts_InvalidValues()
+       {
+          for (var i = 0; i < Configuration.Instance.OperationCountBeforeSoftCleanup; ++i)
+          {
+             PersistentCache.DefaultInstance.Add(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+          }
+          Assert.AreEqual(0, PersistentCache.DefaultInstance.Count);
+       }
+
+       [Test]
+       public void Clean_ValidValues()
+       {
+          foreach (var t in StringItems)
+          {
+             PersistentCache.DefaultInstance.Add(t, t, DateTime.UtcNow.AddMinutes(10));
+          }
+          PersistentCache.DefaultInstance.Clear();
+          Assert.AreEqual(StringItems.Count, PersistentCache.DefaultInstance.Count);
+          PersistentCache.DefaultInstance.Clear(CacheClearMode.ConsiderExpirationDate);
+          Assert.AreEqual(StringItems.Count, PersistentCache.DefaultInstance.Count);
+          PersistentCache.DefaultInstance.Clear(CacheClearMode.IgnoreExpirationDate);
+          Assert.AreEqual(0, PersistentCache.DefaultInstance.Count);
+       }
+
+       [Test]
+       public void Clean_InvalidValues()
+       {
+          foreach (var t in StringItems)
+          {
+             PersistentCache.DefaultInstance.Add(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+          }
+          PersistentCache.DefaultInstance.Clear();
+          Assert.AreEqual(0, PersistentCache.DefaultInstance.Count);
+          foreach (var t in StringItems)
+          {
+             PersistentCache.DefaultInstance.Add(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+          }
+          PersistentCache.DefaultInstance.Clear(CacheClearMode.ConsiderExpirationDate);
+          Assert.AreEqual(0, PersistentCache.DefaultInstance.Count);
+          foreach (var t in StringItems)
+          {
+             PersistentCache.DefaultInstance.Add(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+          }
+          PersistentCache.DefaultInstance.Clear(CacheClearMode.IgnoreExpirationDate);
+          Assert.AreEqual(0, PersistentCache.DefaultInstance.Count);
+       }
     }
 }
