@@ -32,6 +32,7 @@ Imports System.Linq
 Imports System.Runtime.Serialization.Formatters.Binary
 Imports System.Web
 Imports System.Web.Caching
+Imports System.IO.Compression
 Imports Dapper
 Imports KVLite.My.Resources
 Imports Thrower
@@ -124,7 +125,7 @@ Public NotInheritable Class PersistentCache
     End Sub
 
     Public Sub Clear()
-      Clear(CacheClearMode.ConsiderExpirationDate)
+        Clear(CacheClearMode.ConsiderExpirationDate)
     End Sub
 
     Public Function Contains(partition As String, key As String) As Boolean
@@ -136,205 +137,218 @@ Public NotInheritable Class PersistentCache
     ''' </summary>
     Public Function Contains(key As String) As Boolean
         Return Contains(My.Settings.DefaultPartition, key)
-   End Function
+    End Function
 
-   Public ReadOnly Property Count(mode As CacheClearMode) As Integer
-      Get
-         Dim ignoreExpirationDate = (mode = CacheClearMode.IgnoreExpirationDate)
-         Using ctx = CacheContext.Create(Me._connectionString)
-            Return ctx.Connection.Query(Of Integer)(Queries.Count, New With {ignoreExpirationDate, Date.UtcNow}).First()
-         End Using
-      End Get
-   End Property
+    Public ReadOnly Property Count(mode As CacheClearMode) As Integer
+        Get
+            Dim ignoreExpirationDate = (mode = CacheClearMode.IgnoreExpirationDate)
+            Using ctx = CacheContext.Create(Me._connectionString)
+                Return ctx.Connection.Query(Of Integer)(Queries.Count, New With {ignoreExpirationDate, Date.UtcNow}).First()
+            End Using
+        End Get
+    End Property
 
-   Public ReadOnly Property Count As Integer
-      Get
-         Return Me.Count(CacheClearMode.ConsiderExpirationDate)
-      End Get
-   End Property
+    Public ReadOnly Property Count As Integer
+        Get
+            Return Me.Count(CacheClearMode.ConsiderExpirationDate)
+        End Get
+    End Property
 
-   ''' <summary>
-   '''   TODO
-   ''' </summary>
-   Public Overloads Function [Get](partition As String, key As String) As Object
-      Dim item = DoGet(partition, key)
-      Return If(item Is Nothing OrElse item.EncodedValue Is Nothing, Nothing, Deserialize(item.EncodedValue))
-   End Function
+    ''' <summary>
+    '''   TODO
+    ''' </summary>
+    Public Overloads Function [Get](partition As String, key As String) As Object
+        Dim item = DoGet(partition, key)
+        Return If(item Is Nothing OrElse item.EncodedValue Is Nothing, Nothing, Deserialize(item.EncodedValue))
+    End Function
 
-   ''' <summary>
-   '''   TODO
-   ''' </summary>
-   Public Overrides Function [Get](ByVal key As String) As Object
-      Return [Get](My.Settings.DefaultPartition, key)
-   End Function
+    ''' <summary>
+    '''   TODO
+    ''' </summary>
+    Public Overrides Function [Get](ByVal key As String) As Object
+        Return [Get](My.Settings.DefaultPartition, key)
+    End Function
 
-   ''' <summary>
-   '''   TODO
-   ''' </summary>
-   Public Function GetItem(partition As String, key As String) As ItemInfo
-      Dim item = DoGet(partition, key)
-      Return If(item Is Nothing OrElse item.EncodedValue Is Nothing, Nothing, New ItemInfo(item, Deserialize(item.EncodedValue)))
-   End Function
+    ''' <summary>
+    '''   TODO
+    ''' </summary>
+    Public Function GetItem(partition As String, key As String) As ItemInfo
+        Dim item = DoGet(partition, key)
+        Return If(item Is Nothing OrElse item.EncodedValue Is Nothing, Nothing, New ItemInfo(item, Deserialize(item.EncodedValue)))
+    End Function
 
-   ''' <summary>
-   '''   TODO
-   ''' </summary>
-   Public Function GetItem(key As String) As ItemInfo
-      Return GetItem(My.Settings.DefaultPartition, key)
-   End Function
+    ''' <summary>
+    '''   TODO
+    ''' </summary>
+    Public Function GetItem(key As String) As ItemInfo
+        Return GetItem(My.Settings.DefaultPartition, key)
+    End Function
 
-   ''' <summary>
-   '''   TODO
-   ''' </summary>
-   Public Function GetItems() As IEnumerable(Of ItemInfo)
-      Using ctx = CacheContext.Create(Me._connectionString)
-         Dim items = ctx.Connection.Query(Of CacheItem)(Queries.GetItems_Select, New With {Date.UtcNow})
-         Return items.Select(Function(i) New ItemInfo(i, Deserialize(i.EncodedValue)))
-      End Using
-   End Function
+    ''' <summary>
+    '''   TODO
+    ''' </summary>
+    Public Function GetItems() As IEnumerable(Of ItemInfo)
+        Using ctx = CacheContext.Create(Me._connectionString)
+            Dim items = ctx.Connection.Query(Of CacheItem)(Queries.GetItems_Select, New With {Date.UtcNow})
+            Return items.Select(Function(i) New ItemInfo(i, Deserialize(i.EncodedValue)))
+        End Using
+    End Function
 
-   ''' <summary>
-   '''   TODO
-   ''' </summary>
-   Public Function GetItems(partition As String) As IEnumerable(Of ItemInfo)
-      Using ctx = CacheContext.Create(Me._connectionString)
-         Dim items = ctx.Connection.Query(Of CacheItem)(Queries.GetItems_SelectPartition, New With {partition, Date.UtcNow})
-         Return items.Select(Function(i) New ItemInfo(i, Deserialize(i.EncodedValue)))
-      End Using
-   End Function
+    ''' <summary>
+    '''   TODO
+    ''' </summary>
+    Public Function GetItems(partition As String) As IEnumerable(Of ItemInfo)
+        Using ctx = CacheContext.Create(Me._connectionString)
+            Dim items = ctx.Connection.Query(Of CacheItem)(Queries.GetItems_SelectPartition, New With {partition, Date.UtcNow})
+            Return items.Select(Function(i) New ItemInfo(i, Deserialize(i.EncodedValue)))
+        End Using
+    End Function
 
-   ''' <summary>
-   '''   TODO
-   ''' </summary>
-   Public Overloads Sub Remove(partition As String, key As String)
-      Using ctx = CacheContext.Create(Me._connectionString)
-         ctx.Connection.Execute(Queries.Remove, New With {partition, [key]})
-      End Using
-   End Sub
+    ''' <summary>
+    '''   TODO
+    ''' </summary>
+    Public Overloads Sub Remove(partition As String, key As String)
+        Using ctx = CacheContext.Create(Me._connectionString)
+            ctx.Connection.Execute(Queries.Remove, New With {partition, [key]})
+        End Using
+    End Sub
 
-   ''' <summary>
-   '''   TODO
-   ''' </summary>
-   Public Overrides Sub Remove(key As String)
-      Remove(My.Settings.DefaultPartition, key)
-   End Sub
+    ''' <summary>
+    '''   TODO
+    ''' </summary>
+    Public Overrides Sub Remove(key As String)
+        Remove(My.Settings.DefaultPartition, key)
+    End Sub
 
-   Public Overloads Sub [Set](partition As String, key As String, value As Object, utcExpiry As Date)
-      AddTimed(partition, key, value, utcExpiry)
-   End Sub
+    Public Overloads Sub [Set](partition As String, key As String, value As Object, utcExpiry As Date)
+        AddTimed(partition, key, value, utcExpiry)
+    End Sub
 
-   Public Overrides Sub [Set](key As String, value As Object, utcExpiry As Date)
-      AddTimed(My.Settings.DefaultPartition, key, value, utcExpiry)
-   End Sub
+    Public Overrides Sub [Set](key As String, value As Object, utcExpiry As Date)
+        AddTimed(My.Settings.DefaultPartition, key, value, utcExpiry)
+    End Sub
 
 #End Region
 
 #Region "Private Methods"
 
-   Private Function DoAdd(partition As String, key As String, value As Object, utcExpiry As Date?, interval As TimeSpan?) As Object
-      Raise(Of ArgumentException).IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition)
-      Raise(Of ArgumentException).IfIsEmpty(key, ErrorMessages.NullOrEmptyKey)
+    Private Function DoAdd(partition As String, key As String, value As Object, utcExpiry As Date?, interval As TimeSpan?) As Object
+        Raise(Of ArgumentException).IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition)
+        Raise(Of ArgumentException).IfIsEmpty(key, ErrorMessages.NullOrEmptyKey)
 
-      Dim encodedValue = Serialize(value)
-      Dim expiry = If(utcExpiry.HasValue, TryCast(utcExpiry.Value, Object), DBNull.Value)
-      Dim ticks = If(interval.HasValue, TryCast(interval.Value.Ticks, Object), DBNull.Value)
+        Dim encodedValue = Serialize(value)
+        Dim expiry = If(utcExpiry.HasValue, TryCast(utcExpiry.Value, Object), DBNull.Value)
+        Dim ticks = If(interval.HasValue, TryCast(interval.Value.Ticks, Object), DBNull.Value)
 
-      Using ctx = CacheContext.Create(Me._connectionString)
-         Dim trx = ctx.Connection.BeginTransaction()
-         Try
-            Dim args = New With {partition, [key]}
-            Dim item = ctx.Connection.Query(Of CacheItem)(Queries.DoAdd_Select, args, trx).FirstOrDefault()
+        Using ctx = CacheContext.Create(Me._connectionString)
+            Dim trx = ctx.Connection.BeginTransaction()
+            Try
+                Dim args = New With {partition, [key]}
+                Dim item = ctx.Connection.Query(Of CacheItem)(Queries.DoAdd_Select, args, trx).FirstOrDefault()
 
-            Dim cmd = ctx.Connection.CreateCommand()
-            cmd.CommandType = CommandType.Text
-            cmd.CommandText = If(item Is Nothing, Queries.DoAdd_Insert, Queries.DoAdd_Update)
-            cmd.Transaction = trx
-            cmd.Parameters.AddWithValue("Partition", partition).SqlDbType = SqlDbType.NVarChar
-            cmd.Parameters.AddWithValue("Key", key).SqlDbType = SqlDbType.NVarChar
-            cmd.Parameters.AddWithValue("EncodedValue", encodedValue).SqlDbType = SqlDbType.Image
-            cmd.Parameters.AddWithValue("UtcCreation", DateTime.UtcNow).SqlDbType = SqlDbType.DateTime
-            cmd.Parameters.AddWithValue("UtcExpiry", expiry).SqlDbType = SqlDbType.DateTime
-            cmd.Parameters.AddWithValue("Interval", ticks).SqlDbType = SqlDbType.BigInt
-            cmd.ExecuteNonQuery()
+                Dim cmd = ctx.Connection.CreateCommand()
+                cmd.CommandType = CommandType.Text
+                cmd.CommandText = If(item Is Nothing, Queries.DoAdd_Insert, Queries.DoAdd_Update)
+                cmd.Transaction = trx
+                cmd.Parameters.AddWithValue("Partition", partition).SqlDbType = SqlDbType.NVarChar
+                cmd.Parameters.AddWithValue("Key", key).SqlDbType = SqlDbType.NVarChar
+                cmd.Parameters.AddWithValue("EncodedValue", encodedValue).SqlDbType = SqlDbType.Image
+                cmd.Parameters.AddWithValue("UtcCreation", DateTime.UtcNow).SqlDbType = SqlDbType.DateTime
+                cmd.Parameters.AddWithValue("UtcExpiry", expiry).SqlDbType = SqlDbType.DateTime
+                cmd.Parameters.AddWithValue("Interval", ticks).SqlDbType = SqlDbType.BigInt
+                cmd.ExecuteNonQuery()
 
-            ' Commit must be the _last_ instruction in the try block.
-            trx.Commit()
-         Catch
-            trx.Rollback()
-            Throw
-         End Try
-      End Using
+                ' Commit must be the _last_ instruction in the try block.
+                trx.Commit()
+            Catch
+                trx.Rollback()
+                Throw
+            End Try
+        End Using
 
-      ' Operation has concluded successfully, therefore we increment the operation counter.
-      ' If it has reached the "OperationCountBeforeSoftClear" configuration parameter,
-      ' then we must reset it and do a SOFT cleanup.
-      ' Following code is not fully thread safe, but it does not matter, because the
-      ' "OperationCountBeforeSoftClear" parameter should be just an hint on when to do the cleanup.
-      Me._operationCount = Me._operationCount + 1S
-      If Me._operationCount = Configuration.Instance.OperationCountBeforeSoftCleanup Then
-         Me._operationCount = 0
-         DoClear(CacheClearMode.ConsiderExpirationDate)
-      End If
+        ' Operation has concluded successfully, therefore we increment the operation counter.
+        ' If it has reached the "OperationCountBeforeSoftClear" configuration parameter,
+        ' then we must reset it and do a SOFT cleanup.
+        ' Following code is not fully thread safe, but it does not matter, because the
+        ' "OperationCountBeforeSoftClear" parameter should be just an hint on when to do the cleanup.
+        Me._operationCount = Me._operationCount + 1S
+        If Me._operationCount = Configuration.Instance.OperationCountBeforeSoftCleanup Then
+            Me._operationCount = 0
+            DoClear(CacheClearMode.ConsiderExpirationDate)
+        End If
 
-      ' Value is returned
-      Return value
-   End Function
+        ' Value is returned
+        Return value
+    End Function
 
-   Private Sub DoClear(clearMode As CacheClearMode)
-      Dim ignoreExpirationDate = (clearMode = CacheClearMode.IgnoreExpirationDate)
-      Using ctx = CacheContext.Create(Me._connectionString)
-         ctx.Connection.Execute(Queries.DoClear, New With {ignoreExpirationDate, Date.UtcNow})
-      End Using
-   End Sub
+    Private Sub DoClear(clearMode As CacheClearMode)
+        Dim ignoreExpirationDate = (clearMode = CacheClearMode.IgnoreExpirationDate)
+        Using ctx = CacheContext.Create(Me._connectionString)
+            ctx.Connection.Execute(Queries.DoClear, New With {ignoreExpirationDate, Date.UtcNow})
+        End Using
+    End Sub
 
-   Private Function DoGet(partition As String, key As String) As CacheItem
-      Raise(Of ArgumentException).IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition)
-      Raise(Of ArgumentException).IfIsEmpty(key, ErrorMessages.NullOrEmptyKey)
+    Private Function DoGet(partition As String, key As String) As CacheItem
+        Raise(Of ArgumentException).IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition)
+        Raise(Of ArgumentException).IfIsEmpty(key, ErrorMessages.NullOrEmptyKey)
 
-      ' For this kind of task, we need a transaction. In fact, since the value may be sliding,
-      ' we may have to issue an update following the initial select.
-      Using ctx = CacheContext.Create(Me._connectionString)
-         Dim trx = ctx.Connection.BeginTransaction()
-         Try
-            Dim args = New With {partition, [key], Date.UtcNow}
-            Dim item = ctx.Connection.Query(Of CacheItem)(Queries.DoGet_Select, args, trx).FirstOrDefault()
-            If item IsNot Nothing AndAlso item.Interval.HasValue Then
-               ' Since item exists and it is sliding, then we need to update its expiration time.
-               item.UtcExpiry = item.UtcExpiry + TimeSpan.FromTicks(item.Interval.Value)
-               ctx.Connection.Execute(Queries.DoGet_UpdateExpiry, item, trx)
-            End If
-            ' Commit must be the _last_ instruction in the try block, except for return.
-            trx.Commit()
-            ' We return the item we just found (or null if it does not exist).
-            Return item
-         Catch
-            trx.Rollback()
-            Throw
-         End Try
-      End Using
-   End Function
+        ' For this kind of task, we need a transaction. In fact, since the value may be sliding,
+        ' we may have to issue an update following the initial select.
+        Using ctx = CacheContext.Create(Me._connectionString)
+            Dim trx = ctx.Connection.BeginTransaction()
+            Try
+                Dim args = New With {partition, [key], Date.UtcNow}
+                Dim item = ctx.Connection.Query(Of CacheItem)(Queries.DoGet_Select, args, trx).FirstOrDefault()
+                If item IsNot Nothing AndAlso item.Interval.HasValue Then
+                    ' Since item exists and it is sliding, then we need to update its expiration time.
+                    item.UtcExpiry = item.UtcExpiry + TimeSpan.FromTicks(item.Interval.Value)
+                    ctx.Connection.Execute(Queries.DoGet_UpdateExpiry, item, trx)
+                End If
+                ' Commit must be the _last_ instruction in the try block, except for return.
+                trx.Commit()
+                ' We return the item we just found (or null if it does not exist).
+                Return item
+            Catch
+                trx.Rollback()
+                Throw
+            End Try
+        End Using
+    End Function
 
-   Private Shared Function MapCachePath(path As String) As String
-      Raise(Of ArgumentException).IfIsEmpty(path, ErrorMessages.NullOrEmptyCachePath)
-      Return If(HttpContext.Current Is Nothing, path, HttpContext.Current.Server.MapPath(path))
-   End Function
+    Private Shared Function MapCachePath(path As String) As String
+        Raise(Of ArgumentException).IfIsEmpty(path, ErrorMessages.NullOrEmptyCachePath)
+        Return If(HttpContext.Current Is Nothing, path, HttpContext.Current.Server.MapPath(path))
+    End Function
 
 #End Region
 
 #Region "Serialization"
 
-   Private Function Deserialize(encodedValue As Byte()) As Object
-      Using stream = New MemoryStream(encodedValue)
-         Return Me._formatter.Deserialize(stream)
-      End Using
-   End Function
+    Private Function Deserialize(encodedValue As Byte()) As Object
+        Using decompressedStream = New MemoryStream()
+            Using compressedStream = New MemoryStream(encodedValue)
+                Using decompress = New DeflateStream(compressedStream, CompressionMode.Decompress, True)
+                    decompress.CopyTo(decompressedStream)
+                End Using
+                decompressedStream.Seek(0, SeekOrigin.Begin)
+                Return Me._formatter.Deserialize(decompressedStream)
+            End Using
+        End Using
+    End Function
 
-   Private Function Serialize(value As Object) As Byte()
-      Using stream = New MemoryStream()
-         Me._formatter.Serialize(stream, value)
-         Return stream.ToArray()
-      End Using
-   End Function
+    Private Function Serialize(value As Object) As Byte()
+        Using decompressedStream = New MemoryStream()
+            Me._formatter.Serialize(decompressedStream, value)
+            decompressedStream.Seek(0, SeekOrigin.Begin)
+            Using compressedStream = New MemoryStream()
+                Using compress = New DeflateStream(compressedStream, CompressionMode.Compress, True)
+                    decompressedStream.CopyTo(compress)
+                End Using
+                compressedStream.Seek(0, SeekOrigin.Begin)
+                Return compressedStream.ToArray()
+            End Using
+        End Using
+    End Function
 
 #End Region
 End Class

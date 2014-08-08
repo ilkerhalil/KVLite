@@ -205,7 +205,7 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized string similar to select 1
+        '''  Looks up a localized string similar to select count(*)
         '''  from INFORMATION_SCHEMA.TABLES
         ''' where table_name = &apos;Cache_Item&apos;.
         '''</summary>

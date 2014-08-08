@@ -53,8 +53,8 @@ Imports System.Runtime.InteropServices
 ' You can specify all values by your own or you can build default build and revision
 ' numbers with the '*' character (the default):
 
-<Assembly: AssemblyVersion("0.2.0")> 
-<Assembly: AssemblyFileVersion("0.2.0")> 
+<Assembly: AssemblyVersion("0.2.1")> 
+<Assembly: AssemblyFileVersion("0.2.1")> 
 
 ' Common Language Specification (CLS) compliance generally refers to the claim 
 ' that CLS rules and restrictions are being followed.

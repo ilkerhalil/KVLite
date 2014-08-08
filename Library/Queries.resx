@@ -186,7 +186,7 @@ values (@partition, @key, @encodedValue, @utcCreation, @utcExpiry, @interval)</v
    and [key] = @key</value>
   </data>
   <data name="SchemaIsReady" xml:space="preserve">
-    <value>select 1
+    <value>select count(*)
   from INFORMATION_SCHEMA.TABLES
  where table_name = 'Cache_Item'</value>
   </data>

@@ -59,11 +59,11 @@ Friend NotInheritable Class CacheContext
     End Property
     
     Public Function Exists(query As String, args As Object) As Boolean
-        Return Me._connection.Query(Of Integer)(query, args).Any()
+        Return Me._connection.ExecuteScalar(Of Integer)(query, args) > 0
     End Function
     
     Public Function Exists(query As String) As Boolean
-        Return Me._connection.Query(Of Integer)(query).Any()
+        Return Me._connection.ExecuteScalar(Of Integer)(query) > 0
     End Function
     
     #Region "IDisposable Members"

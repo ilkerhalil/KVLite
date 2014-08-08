@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>0.2.0-alpha</version>
+    <version>0.2.1</version>
     <title>PommaLabs.KVLite</title>
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -22,9 +22,9 @@ Very, very simple key value store based on SQL Server Compact.
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
-      <dependency id="Dapper" />
-      <dependency id="Microsoft.SqlServer.Compact" />
-      <dependency id="Thrower" />
+      <dependency id="Dapper" version="" />
+      <dependency id="Microsoft.SqlServer.Compact" version="" />
+      <dependency id="Thrower" version="" />
     </dependencies>
     <references></references>
     <frameworkAssemblies>
