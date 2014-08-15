@@ -75,7 +75,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Queries.resx</DependentUpon>
     </Compile>
-    <Compile Include="Web\VolatileCache.cs" />
+    <Compile Include="Web\HttpRuntimeCache.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

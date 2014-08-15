@@ -14,7 +14,7 @@ namespace Benchmarks
 {
     public static class Program
     {
-        private const int RandomDataTablesCount = 1000;
+        private const int RandomDataTablesCount = 10;
         private const int RowCount = 1000;
         private const int IterationCount = 5;
 
@@ -28,6 +28,11 @@ namespace Benchmarks
             var tables = GenerateRandomDataTables();
             _tableListSize = GetObjectSizeInMB(tables);
             Console.WriteLine(@"Tables generated, size in MB: {0}", _tableListSize);
+
+            for (var i = 0; i < IterationCount; ++i) {
+                FullyCleanCache();
+                RetrieveEachDataTable(tables, i);
+            }
 
             for (var i = 0; i < IterationCount; ++i) {
                 FullyCleanCache();
@@ -71,7 +76,7 @@ namespace Benchmarks
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            PersistentCache.DefaultInstance.AddPersistent("TABLE_LIST", tables);
+            PersistentCache.DefaultInstance.AddStatic("TABLE_LIST", tables);
             stopwatch.Stop();
 
             Debug.Assert(PersistentCache.DefaultInstance.Count() == 1);
@@ -89,7 +94,7 @@ namespace Benchmarks
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             foreach (var table in tables) {
-                PersistentCache.DefaultInstance.AddPersistent(table.TableName, table);
+                PersistentCache.DefaultInstance.AddStatic(table.TableName, table);
             }
             stopwatch.Stop();
 
@@ -97,6 +102,33 @@ namespace Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
 
             Console.WriteLine(@"Data tables stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize/stopwatch.Elapsed.Seconds);
+        }
+
+        private static void RetrieveEachDataTable(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"Retrieving each data table, iteration {0}...", iteration);
+
+            foreach (var table in tables) {
+                PersistentCache.DefaultInstance.AddStatic(table.TableName, table);
+            }
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            foreach (var table in tables) {
+                var returnedTable = PersistentCache.DefaultInstance.Get(table.TableName) as DataTable;
+                if (returnedTable == null || returnedTable.TableName != table.TableName) {
+                    throw new Exception("Wrong data table read from cache! :(");
+                }
+            }
+            
+            stopwatch.Stop();
+
+            Debug.Assert(PersistentCache.DefaultInstance.Count() == tables.Count);
+            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
+
+            Console.WriteLine(@"Data tables retrieved in: {0}", stopwatch.Elapsed);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize/stopwatch.Elapsed.Seconds);
         }
 

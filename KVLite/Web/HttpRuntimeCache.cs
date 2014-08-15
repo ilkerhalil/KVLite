@@ -7,13 +7,23 @@ using KVLite.Properties;
 
 namespace KVLite.Web
 {
-    public sealed class VolatileCache : ICache<VolatileCache>
+    public sealed class HttpRuntimeCache : ICache<HttpRuntimeCache>
     {
         private static readonly Cache HttpCache = HttpRuntime.Cache ?? new Cache();
 
         private readonly BinarySerializer _binarySerializer = new BinarySerializer();
 
-        public object AddPersistent(string partition, string key, object value)
+        public object this[string partition, string key]
+        {
+            get { return Get(partition, key); }
+        }
+
+        public object this[string key]
+        {
+            get { return Get(key); }
+        }
+
+        public object AddStatic(string partition, string key, object value)
         {
             var serializedKey = _binarySerializer.SerializeObject(Tuple.Create(partition, key));
             var serializedValue = _binarySerializer.SerializeObject(value);
@@ -21,9 +31,9 @@ namespace KVLite.Web
             return value;
         }
 
-        public object AddPersistent(string key, object value)
+        public object AddStatic(string key, object value)
         {
-            return AddPersistent(Settings.Default.DefaultPartition, key, value);
+            return AddStatic(Settings.Default.DefaultPartition, key, value);
         }
 
         public void Clear()
@@ -54,6 +64,26 @@ namespace KVLite.Web
         public long LongCount(CacheReadMode cacheReadMode)
         {
             throw new System.NotImplementedException();
+        }
+
+        public object Get(string partition, string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Get(string key)
+        {
+            return Get(Settings.Default.DefaultPartition, key);
+        }
+
+        public CacheItem GetItem(string partition, string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CacheItem GetItem(string key)
+        {
+            return GetItem(Settings.Default.DefaultPartition, key);
         }
     }
 }

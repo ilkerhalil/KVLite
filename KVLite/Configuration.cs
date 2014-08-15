@@ -1,5 +1,5 @@
 ﻿//
-// Configuration.vb
+// Configuration.cs
 // 
 // Author(s):
 //     Alessio Parma <alessio.parma@gmail.com>
