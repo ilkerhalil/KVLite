@@ -55,6 +55,7 @@ namespace Benchmarks
 
         private static void StoreAllDataTables(ICollection<DataTable> tables, int iteration)
         {
+            Console.WriteLine(); // Spacer
             Console.WriteLine(@"Storing all data tables, iteration {0}...", iteration);
 
             var stopwatch = new Stopwatch();

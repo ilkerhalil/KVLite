@@ -22,6 +22,7 @@
     <DefineConstants>TRACE;DEBUG;USETHROWER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,8 +31,12 @@
     <DefineConstants>USETHROWER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\KVLite.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LZ4">
+      <HintPath>..\packages\lz4net.1.0.5.93\lib\net40-client\LZ4.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -50,7 +55,6 @@
   <ItemGroup>
     <Compile Include="CacheContext.cs" />
     <Compile Include="CacheItem.cs" />
-    <Compile Include="Compression\QuickLZ.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Core\BinarySerializer.cs" />
     <Compile Include="ErrorMessages.Designer.cs">
