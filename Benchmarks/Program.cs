@@ -4,7 +4,6 @@ using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Net.Mail;
 using KVLite;
 using Thrower;
 
@@ -12,8 +11,9 @@ namespace Benchmarks
 {
     public static class Program
     {
-        private const int RandomDataTablesCount = 10;
-        private const int RowCount = 10;
+        private const int RandomDataTablesCount = 1000;
+        private const int RowCount = 1000;
+        private const int IterationCount = 20;
 
         private static readonly string[] ColumnNames = {"A", "B", "C", "D", "E"};
 
@@ -23,20 +23,14 @@ namespace Benchmarks
             var tables = GenerateRandomDataTables();
             Console.WriteLine(@"Tables generated!");
 
-            // Spacer
-            Console.WriteLine();
+            for (var i = 0; i < IterationCount; ++i) {
+                FullyCleanCache();
+                StoreAllDataTables(tables, i);
+            }
+            
             FullyCleanCache();
-            Console.WriteLine();
 
-            Console.WriteLine(@"Storing all data tables...");
-            var elapsed = StoreAllDataTables(tables);
-            Console.WriteLine(@"Data tables stored in: {0}", elapsed);
-
-            // Spacer
             Console.WriteLine();
-            FullyCleanCache();
-            Console.WriteLine();
-
             Console.Write(@"Press any key to exit...");
             Console.Read();
         }
@@ -53,13 +47,16 @@ namespace Benchmarks
 
         private static void FullyCleanCache()
         {
+            Console.WriteLine(); // Spacer
             Console.WriteLine(@"Fully cleaning cache...");
             PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpirationDate);
             Console.WriteLine(@"Cache cleaned!");
         }
 
-        private static TimeSpan StoreAllDataTables(ICollection<DataTable> tables)
+        private static void StoreAllDataTables(ICollection<DataTable> tables, int iteration)
         {
+            Console.WriteLine(@"Storing all data tables, iteration {0}...", iteration);
+
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             foreach (var table in tables) {
@@ -70,7 +67,7 @@ namespace Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.Count() == tables.Count);
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
 
-            return stopwatch.Elapsed;
+            Console.WriteLine(@"Data tables stored in: {0}", stopwatch.Elapsed);
         }
     }
 

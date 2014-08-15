@@ -25,7 +25,7 @@ namespace KVLite.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source={0};Version=3;Synchronous=Full;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source={0};Version=3;Synchronous=Off;Journal Mode=Off;Cache Size=2048000;")]
         public string ConnectionStringFormat {
             get {
                 return ((string)(this["ConnectionStringFormat"]));
