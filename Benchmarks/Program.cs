@@ -13,7 +13,7 @@ namespace Benchmarks
     {
         private const int RandomDataTablesCount = 1000;
         private const int RowCount = 1000;
-        private const int IterationCount = 20;
+        private const int IterationCount = 5;
 
         private static readonly string[] ColumnNames = {"A", "B", "C", "D", "E"};
 

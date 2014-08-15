@@ -1,7 +1,7 @@
 ﻿using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
-using KVLite.Compression;
 
 namespace KVLite.Core
 {
@@ -23,19 +23,29 @@ namespace KVLite.Core
 
         public byte[] SerializeObject(object obj)
         {
-            using (var memoryStream = new MemoryStream())
-            {
-                _binaryFormatter.Serialize(memoryStream, obj);
-                // Level 1 gives the fastest compression speed while level 3 gives the fastest decompression speed.
-                return QuickLZ.compress(memoryStream.ToArray(), 3);
-            }          
+            using (var decompressedStream = new MemoryStream()) {
+                _binaryFormatter.Serialize(decompressedStream, obj);
+                decompressedStream.Seek(0, SeekOrigin.Begin);
+                using (var compressedStream = new MemoryStream()) {
+                    using (var compress = new DeflateStream(compressedStream, CompressionMode.Compress, true)) {
+                        decompressedStream.CopyTo(compress);
+                    }
+                    compressedStream.Seek(0, SeekOrigin.Begin);
+                    return compressedStream.ToArray();
+                }
+            }
         }
 
         public object DeserializeObject(byte[] serialized)
         {
-            using (var memoryStream = new MemoryStream(QuickLZ.decompress(serialized)))
-            {
-                return _binaryFormatter.Deserialize(memoryStream);
+            using (var decompressedStream = new MemoryStream()) {
+                using (var compressedStream = new MemoryStream(serialized)) {
+                    using (var decompress = new DeflateStream(compressedStream, CompressionMode.Decompress, true)) {
+                        decompress.CopyTo(decompressedStream);
+                    }
+                    decompressedStream.Seek(0, SeekOrigin.Begin);
+                    return _binaryFormatter.Deserialize(decompressedStream);
+                }
             }
         }
     }
