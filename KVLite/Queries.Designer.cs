@@ -126,7 +126,8 @@ namespace KVLite {
         /// <summary>
         ///   Looks up a localized string similar to delete from Cache_Item
         /// where @ignoreExpirationDate = 1
-        ///    or (utcExpiry is not null and utcExpiry &lt;= @utcNow).
+        ///    or (utcExpiry is not null and utcExpiry &lt;= @utcNow);
+        ///vacuum; -- Makes DB file smaller.
         /// </summary>
         internal static string DoClear {
             get {

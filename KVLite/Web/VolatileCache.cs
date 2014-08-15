@@ -1,16 +1,24 @@
-﻿using System.Web;
+﻿using System;
+using System.Text;
+using System.Web;
 using System.Web.Caching;
+using KVLite.Core;
 using KVLite.Properties;
 
 namespace KVLite.Web
 {
     public sealed class VolatileCache : ICache<VolatileCache>
     {
-        private static readonly Cache HttpCache = HttpRuntime.Cache;
+        private static readonly Cache HttpCache = HttpRuntime.Cache ?? new Cache();
+
+        private readonly BinarySerializer _binarySerializer = new BinarySerializer();
 
         public object AddPersistent(string partition, string key, object value)
         {
-            throw new System.NotImplementedException();
+            var serializedKey = _binarySerializer.SerializeObject(Tuple.Create(partition, key));
+            var serializedValue = _binarySerializer.SerializeObject(value);
+            HttpCache.Add(Encoding.Default.GetString(serializedKey), serializedValue, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
+            return value;
         }
 
         public object AddPersistent(string key, object value)

@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
+using System.Runtime.Serialization.Formatters.Binary;
 using KVLite;
 using Thrower;
 
@@ -17,17 +20,25 @@ namespace Benchmarks
 
         private static readonly string[] ColumnNames = {"A", "B", "C", "D", "E"};
 
+        private static double _tableListSize;
+
         public static void Main()
         {
             Console.WriteLine(@"Generating random data tables...");
             var tables = GenerateRandomDataTables();
-            Console.WriteLine(@"Tables generated!");
+            _tableListSize = GetObjectSizeInMB(tables);
+            Console.WriteLine(@"Tables generated, size in MB: {0}", _tableListSize);
 
             for (var i = 0; i < IterationCount; ++i) {
                 FullyCleanCache();
-                StoreAllDataTables(tables, i);
+                StoreDataTableList(tables, i);
             }
-            
+
+            for (var i = 0; i < IterationCount; ++i) {
+                FullyCleanCache();
+                StoreEachDataTable(tables, i);
+            }
+
             FullyCleanCache();
 
             Console.WriteLine();
@@ -53,10 +64,27 @@ namespace Benchmarks
             Console.WriteLine(@"Cache cleaned!");
         }
 
-        private static void StoreAllDataTables(ICollection<DataTable> tables, int iteration)
+        private static void StoreDataTableList(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
-            Console.WriteLine(@"Storing all data tables, iteration {0}...", iteration);
+            Console.WriteLine(@"Storing data table list, iteration {0}...", iteration);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            PersistentCache.DefaultInstance.AddPersistent("TABLE_LIST", tables);
+            stopwatch.Stop();
+
+            Debug.Assert(PersistentCache.DefaultInstance.Count() == 1);
+            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == 1);
+
+            Console.WriteLine(@"Data table list stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize/stopwatch.Elapsed.Seconds);
+        }
+
+        private static void StoreEachDataTable(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"Storing each data table, iteration {0}...", iteration);
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -69,13 +97,25 @@ namespace Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
 
             Console.WriteLine(@"Data tables stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize/stopwatch.Elapsed.Seconds);
+        }
+
+        private static double GetObjectSizeInMB(object obj)
+        {
+            double size;
+            using (var s = new MemoryStream()) {
+                var formatter = new BinaryFormatter {TypeFormat = FormatterTypeStyle.TypesWhenNeeded};
+                formatter.Serialize(s, obj);
+                size = s.Length;
+            }
+            return size/(1024.0*1024.0);
         }
     }
 
     public sealed class RandomDataTableGenerator
     {
-        private readonly Random _random = new Random();
         private readonly string[] _columnNames;
+        private readonly Random _random = new Random();
 
         public RandomDataTableGenerator(params string[] columnNames)
         {
@@ -90,15 +130,12 @@ namespace Benchmarks
             Raise<ArgumentOutOfRangeException>.If(rowCount < 0);
 
             var dt = new DataTable("RANDOMLY_GENERATED_DATA_TABLE_" + _random.Next());
-            foreach (var columnName in _columnNames)
-            {
+            foreach (var columnName in _columnNames) {
                 dt.Columns.Add(columnName);
             }
-            for (var i = 0; i < rowCount; ++i)
-            {
+            for (var i = 0; i < rowCount; ++i) {
                 var row = new object[_columnNames.Length];
-                for (var j = 0; j < row.Length; ++j)
-                {
+                for (var j = 0; j < row.Length; ++j) {
                     row[j] = _random.Next(100, 999).ToString(CultureInfo.InvariantCulture);
                 }
                 dt.Rows.Add(row);

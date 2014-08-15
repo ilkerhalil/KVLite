@@ -153,7 +153,8 @@ values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval)
   <data name="DoClear" xml:space="preserve">
     <value>delete from Cache_Item
  where @ignoreExpirationDate = 1
-    or (utcExpiry is not null and utcExpiry &lt;= @utcNow)</value>
+    or (utcExpiry is not null and utcExpiry &lt;= @utcNow);
+vacuum; -- Makes DB file smaller</value>
   </data>
   <data name="DoGet_Select" xml:space="preserve">
     <value>select *
