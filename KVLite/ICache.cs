@@ -144,6 +144,23 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         object Get(string key);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [Pure]
+        Task<object> GetAsync(string partition, string key);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [Pure]
+        Task<object> GetAsync(string key);
         
         /// <summary>
         ///   TODO
@@ -161,6 +178,23 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         CacheItem GetItem(string key);
+        
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [Pure]
+        Task<CacheItem> GetItemAsync(string partition, string key);
+        
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [Pure]
+        Task<CacheItem> GetItemAsync(string key);
     }
 
     /// <summary>

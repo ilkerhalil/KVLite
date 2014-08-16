@@ -65,11 +65,12 @@ namespace KVLite
             using (var ctx = CacheContext.Create(_connectionString)) {
                 using (var trx = ctx.Connection.BeginTransaction()) {
                     try {
-                        if (!ctx.Exists(Queries.SchemaIsReady, trx)) {
+                        if (!ctx.Exists(Queries.Ctor_SchemaIsReady, trx)) {
                             // Creates the CacheItem table and the required indexes.
-                            ctx.ExecuteNonQuery(Queries.CacheSchema, trx);
+                            ctx.ExecuteNonQuery(Queries.Ctor_CacheSchema, trx);
                         }
-
+                        // Sets DB settings
+                        ctx.ExecuteNonQuery(Queries.Ctor_SetPragmas, trx);
                         // Commit must be the _last_ instruction in the try block.
                         trx.Commit();
                     } catch {
@@ -112,7 +113,7 @@ namespace KVLite
         {
             var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
             using (var ctx = CacheContext.Create(_connectionString)) {
-                using (var cmd = new SQLiteCommand(Queries.DoClear, ctx.Connection)) {
+                using (var cmd = new SQLiteCommand(Queries.Clear, ctx.Connection)) {
                     cmd.Parameters.AddWithValue("ignoreExpirationDate", ignoreExpirationDate);
                     cmd.Parameters.AddWithValue("utcNow", DateTime.UtcNow);
                     cmd.ExecuteNonQuery();

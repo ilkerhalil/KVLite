@@ -26,10 +26,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Caching;
 using KVLite.Core;
 using KVLite.Properties;
 
@@ -110,11 +107,31 @@ namespace KVLite
             return Get(Settings.Default.DefaultPartition, key);
         }
 
+        public Task<object> GetAsync(string partition, string key)
+        {
+            return Task.Factory.StartNew(() => Get(partition, key));
+        }
+
+        public Task<object> GetAsync(string key)
+        {
+            return Task.Factory.StartNew(() => Get(key));
+        }
+
         public abstract CacheItem GetItem(string partition, string key);
 
         public CacheItem GetItem(string key)
         {
             return GetItem(Settings.Default.DefaultPartition, key);
+        }
+
+        public Task<CacheItem> GetItemAsync(string partition, string key)
+        {
+            return Task.Factory.StartNew(() => GetItem(partition, key));
+        }
+
+        public Task<CacheItem> GetItemAsync(string key)
+        {
+            return Task.Factory.StartNew(() => GetItem(key));
         }
 
         #endregion

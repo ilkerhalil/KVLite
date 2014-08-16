@@ -117,8 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CacheSchema" xml:space="preserve">
-    <value>PRAGMA auto_vacuum = INCREMENTAL;
+  <data name="Clear" xml:space="preserve">
+    <value>delete from CacheItem
+ where @ignoreExpirationDate = 1
+    or (utcExpiry is not null and utcExpiry &lt;= @utcNow);</value>
+  </data>
+  <data name="Count" xml:space="preserve">
+    <value>select count(*)
+  from CacheItem
+ where @ignoreExpirationDate = 1
+    or (utcExpiry is null or utcExpiry &gt; @utcNow)</value>
+  </data>
+  <data name="Ctor_CacheSchema" xml:space="preserve">
+    <value>PRAGMA auto_vacuum = FULL;
 CREATE TABLE CacheItem (
     partition TEXT NOT NULL,
     key TEXT NOT NULL,
@@ -130,11 +141,13 @@ CREATE TABLE CacheItem (
 );
 CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);</value>
   </data>
-  <data name="Count" xml:space="preserve">
+  <data name="Ctor_SchemaIsReady" xml:space="preserve">
     <value>select count(*)
-  from CacheItem
- where @ignoreExpirationDate = 1
-    or (utcExpiry is null or utcExpiry &gt; @utcNow)</value>
+  from sqlite_master
+ where name = 'CacheItem'</value>
+  </data>
+  <data name="Ctor_SetPragmas" xml:space="preserve">
+    <value>PRAGMA journal_size_limit = 10240000; -- 10MB</value>
   </data>
   <data name="DoAdd_Insert" xml:space="preserve">
     <value>insert into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
@@ -151,11 +164,6 @@ values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval)
      , interval = @interval
  where partition = @partition
    and key = @key</value>
-  </data>
-  <data name="DoClear" xml:space="preserve">
-    <value>delete from CacheItem
- where @ignoreExpirationDate = 1
-    or (utcExpiry is not null and utcExpiry &lt;= @utcNow);</value>
   </data>
   <data name="DoGet_Select" xml:space="preserve">
     <value>select *
@@ -183,11 +191,6 @@ values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval)
     <value>delete from CacheItem
  where partition = @partition
    and key = @key</value>
-  </data>
-  <data name="SchemaIsReady" xml:space="preserve">
-    <value>select count(*)
-  from sqlite_master
- where name = 'CacheItem'</value>
   </data>
   <data name="Vacuum" xml:space="preserve">
     <value>vacuum; -- Clears free list and makes DB file smaller</value>
