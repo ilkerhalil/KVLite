@@ -42,6 +42,9 @@ namespace Benchmarks
 
             for (var i = 0; i < IterationCount; ++i) {
                 FullyCleanCache();
+                MegaMixAsync(tables, i);
+
+                FullyCleanCache();
                 StoreEachDataTable(tables, i);
 
                 FullyCleanCache();
@@ -218,6 +221,39 @@ namespace Benchmarks
 
             Console.WriteLine(@"Data tables retrieved in: {0}", stopwatch.Elapsed);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize/stopwatch.Elapsed.Seconds);
+        }
+
+        private static void MegaMixAsync(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"Retrieving and storing asynchronously, iteration {0}...", iteration);
+        
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var writeTasks = new List<Task>();
+            var readTasks = new List<Task<object>>();
+            foreach (var table in tables) {
+                writeTasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+            }
+            foreach (var table in tables) {
+                readTasks.Add(PersistentCache.DefaultInstance.GetAsync(table.TableName));
+            }
+            foreach (var table in tables) {
+                writeTasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+            }
+            foreach (var table in tables) {
+                readTasks.Add(PersistentCache.DefaultInstance.GetAsync(table.TableName));
+            }
+            foreach (var task in writeTasks) {
+                task.Wait();
+            }
+            foreach (var task in readTasks) {
+                task.Wait();
+            }
+            stopwatch.Stop();
+
+            Console.WriteLine(@"Data tables retrieved/stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize*4/stopwatch.Elapsed.Seconds);
         }
 
         private static double GetObjectSizeInMB(object obj)
