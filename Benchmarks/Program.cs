@@ -48,6 +48,9 @@ namespace Benchmarks
                 StoreEachDataTableAsync(tables, i);
 
                 FullyCleanCache();
+                StoreEachDataTableTwoTimesAsync(tables, i);
+
+                FullyCleanCache();
                 RetrieveEachDataTable(tables, i);
 
                 FullyCleanCache();
@@ -125,7 +128,7 @@ namespace Benchmarks
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var tasks = new List<Task<object>>();
+            var tasks = new List<Task>();
             foreach (var table in tables) {
                 tasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
             }
@@ -139,6 +142,32 @@ namespace Benchmarks
 
             Console.WriteLine(@"Data tables stored in: {0}", stopwatch.Elapsed);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize/stopwatch.Elapsed.Seconds);
+        }
+
+        private static void StoreEachDataTableTwoTimesAsync(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"Storing each data table (two times, asynchronously), iteration {0}...", iteration);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var tasks = new List<Task>();
+            foreach (var table in tables) {
+                tasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+            }
+            foreach (var table in tables) {
+                tasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+            }
+            foreach (var task in tasks) {
+                task.Wait();
+            }
+            stopwatch.Stop();
+
+            Debug.Assert(PersistentCache.DefaultInstance.Count() == tables.Count);
+            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
+
+            Console.WriteLine(@"Data tables stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize * 2/stopwatch.Elapsed.Seconds);
         }
 
         private static void RetrieveEachDataTable(ICollection<DataTable> tables, int iteration)

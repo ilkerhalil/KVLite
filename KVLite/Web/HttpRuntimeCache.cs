@@ -42,12 +42,21 @@ namespace KVLite.Web
 
         #region ICache Members
 
-        public override object AddStatic(string partition, string key, object value)
+        public override void AddSliding(string partition, string key, object value, TimeSpan interval)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void AddStatic(string partition, string key, object value)
         {
             var serializedKey = BinarySerializer.SerializeObject(Tuple.Create(partition, key));
             var serializedValue = BinarySerializer.SerializeObject(value);
             HttpCache.Add(Encoding.Default.GetString(serializedKey), serializedValue, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
-            return value;
+        }
+
+        public override void AddTimed(string partition, string key, object value, DateTime utcExpiry)
+        {
+            throw new NotImplementedException();
         }
 
         public override void Clear(CacheReadMode cacheReadMode)

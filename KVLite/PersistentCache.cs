@@ -104,9 +104,19 @@ namespace KVLite
 
         #region ICache<PersistentCache> Members
 
-        public override object AddStatic(string partition, string key, object value)
+        public override void AddSliding(string partition, string key, object value, TimeSpan interval)
         {
-            return DoAdd(partition, key, value, null, null);
+            DoAdd(partition, key, value, DateTime.UtcNow + interval, interval);
+        }
+
+        public override void AddStatic(string partition, string key, object value)
+        {
+            DoAdd(partition, key, value, null, null);
+        }
+
+        public override void AddTimed(string partition, string key, object value, DateTime utcExpiry)
+        {
+            DoAdd(partition, key, value, utcExpiry, null);
         }
 
         public override void Clear(CacheReadMode cacheReadMode)
@@ -149,7 +159,7 @@ namespace KVLite
 
         #region Private Methods
 
-        private object DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
+        private void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
         {
             Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
             Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
@@ -159,29 +169,14 @@ namespace KVLite
             var ticks = interval.HasValue ? interval.Value.Ticks as object : DBNull.Value;
 
             using (var ctx = CacheContext.Create(_connectionString)) {
-                using (var trx = ctx.Connection.BeginTransaction()) {
-                    try {
-                        var item = DoGetOneItem(Queries.DoAdd_Select, ctx.Connection, trx, partition, key);
-
-                        using (var cmd = ctx.Connection.CreateCommand()) {
-                            cmd.CommandType = CommandType.Text;
-                            cmd.CommandText = item == null ? Queries.DoAdd_Insert : Queries.DoAdd_Update;
-                            cmd.Transaction = trx;
-                            cmd.Parameters.AddWithValue("partition", partition);
-                            cmd.Parameters.AddWithValue("key", key);
-                            cmd.Parameters.AddWithValue("serializedValue", serializedValue);
-                            cmd.Parameters.AddWithValue("utcCreation", DateTime.UtcNow);
-                            cmd.Parameters.AddWithValue("utcExpiry", expiry);
-                            cmd.Parameters.AddWithValue("interval", ticks);
-                            cmd.ExecuteNonQuery();
-
-                            // Commit must be the _last_ instruction in the try block.
-                            trx.Commit();
-                        }
-                    } catch {
-                        trx.Rollback();
-                        throw;
-                    }
+                using (var cmd = new SQLiteCommand(Queries.DoAdd_Insert, ctx.Connection)) {
+                    cmd.Parameters.AddWithValue("partition", partition);
+                    cmd.Parameters.AddWithValue("key", key);
+                    cmd.Parameters.AddWithValue("serializedValue", serializedValue);
+                    cmd.Parameters.AddWithValue("utcCreation", DateTime.UtcNow);
+                    cmd.Parameters.AddWithValue("utcExpiry", expiry);
+                    cmd.Parameters.AddWithValue("interval", ticks);
+                    cmd.ExecuteNonQuery();
                 }
             }
 
@@ -195,9 +190,6 @@ namespace KVLite
                 _operationCount = 0;
                 Clear(CacheReadMode.ConsiderExpirationDate);
             }
-
-            // Value is returned.
-            return value;
         }
 
         private CacheItem DoGet(string partition, string key)
@@ -208,30 +200,7 @@ namespace KVLite
             // For this kind of task, we need a transaction. In fact, since the value may be sliding,
             // we may have to issue an update following the initial select.
             using (var ctx = CacheContext.Create(_connectionString)) {
-                using (var trx = ctx.Connection.BeginTransaction()) {
-                    try {
-                        var item = DoGetOneItem(Queries.DoGet_Select, ctx.Connection, trx, partition, key);
-                        if (item != null && item.Interval.HasValue) {
-                            // Since item exists and it is sliding, then we need to update its expiration time.
-                            item.UtcExpiry = item.UtcExpiry + item.Interval.Value;
-                            using (var cmd = new SQLiteCommand(Queries.DoGet_UpdateExpiry, ctx.Connection, trx)) {
-                                cmd.Parameters.AddWithValue("partition", partition);
-                                cmd.Parameters.AddWithValue("key", key);
-                                cmd.Parameters.AddWithValue("utcExpiry", item.UtcExpiry);
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
-
-                        // Commit must be the _last_ instruction in the try block, except for return.
-                        trx.Commit();
-
-                        // We return the item we just found (or null if it does not exist).
-                        return item;
-                    } catch {
-                        trx.Rollback();
-                        throw;
-                    }
-                }
+                return DoGetOneItem(Queries.DoGet_Select, ctx.Connection, null, partition, key);
             }
         }
 

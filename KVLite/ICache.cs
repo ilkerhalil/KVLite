@@ -26,6 +26,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 
@@ -59,16 +60,18 @@ namespace KVLite
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <param name="value"></param>
+        /// <param name="interval"></param>
         /// <returns></returns>
-        object AddStatic(string partition, string key, object value);
+        void AddSliding(string partition, string key, object value, TimeSpan interval);
 
         /// <summary>
         ///   TODO
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
+        /// <param name="interval"></param>
         /// <returns></returns>
-        object AddStatic(string key, object value);
+        void AddSliding(string key, object value, TimeSpan interval);
 
         /// <summary>
         ///   TODO
@@ -77,7 +80,7 @@ namespace KVLite
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        Task<object> AddStaticAsync(string partition, string key, object value);
+        void AddStatic(string partition, string key, object value);
 
         /// <summary>
         ///   TODO
@@ -85,7 +88,41 @@ namespace KVLite
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        Task<object> AddStaticAsync(string key, object value);
+        void AddStatic(string key, object value);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        Task AddStaticAsync(string partition, string key, object value);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        Task AddStaticAsync(string key, object value);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="utcExpiry"></param>
+        void AddTimed(string partition, string key, object value, DateTime utcExpiry);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="utcExpiry"></param>
+        void AddTimed(string key, object value, DateTime utcExpiry);
 
         /// <summary>
         ///   TODO

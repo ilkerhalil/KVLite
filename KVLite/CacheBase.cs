@@ -26,6 +26,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Threading.Tasks;
 using KVLite.Core;
 using KVLite.Properties;
@@ -59,21 +60,35 @@ namespace KVLite
             get { return Get(key); }
         }
 
-        public abstract object AddStatic(string partition, string key, object value);
+        public abstract void AddSliding(string partition, string key, object value, TimeSpan interval);
 
-        public object AddStatic(string key, object value)
+        public void AddSliding(string key, object value, TimeSpan interval)
         {
-            return AddStatic(Settings.Default.DefaultPartition, key, value);
+            AddSliding(Settings.Default.DefaultPartition, key, value, interval);
         }
 
-        public Task<object> AddStaticAsync(string partition, string key, object value)
+        public abstract void AddStatic(string partition, string key, object value);
+
+        public void AddStatic(string key, object value)
+        {
+            AddStatic(Settings.Default.DefaultPartition, key, value);
+        }
+
+        public Task AddStaticAsync(string partition, string key, object value)
         {
             return Task.Factory.StartNew(() => AddStatic(partition, key, value));
         }
 
-        public Task<object> AddStaticAsync(string key, object value)
+        public Task AddStaticAsync(string key, object value)
         {
             return Task.Factory.StartNew(() => AddStatic(key, value));
+        }
+
+        public abstract void AddTimed(string partition, string key, object value, DateTime utcExpiry);
+
+        public void AddTimed(string key, object value, DateTime utcExpiry)
+        {
+            AddTimed(Settings.Default.DefaultPartition, key, value, utcExpiry);
         }
 
         public void Clear()

@@ -147,10 +147,11 @@ CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);</value>
  where name = 'CacheItem'</value>
   </data>
   <data name="Ctor_SetPragmas" xml:space="preserve">
-    <value>PRAGMA journal_size_limit = 10240000; -- 10MB</value>
+    <value>PRAGMA read_uncommitted = 1; -- Unsafe
+PRAGMA journal_size_limit = 10240000; -- 10MB</value>
   </data>
   <data name="DoAdd_Insert" xml:space="preserve">
-    <value>insert into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
+    <value>insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
 values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval)</value>
   </data>
   <data name="DoAdd_Select" xml:space="preserve">
@@ -166,7 +167,12 @@ values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval)
    and key = @key</value>
   </data>
   <data name="DoGet_Select" xml:space="preserve">
-    <value>select *
+    <value>update CacheItem
+   set utcExpiry = utcExpiry + interval
+ where partition = @partition
+   and key = @key
+   and interval is not null;
+select *
   from CacheItem
  where partition = @partition
    and key = @key
@@ -174,7 +180,7 @@ values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval)
   </data>
   <data name="DoGet_UpdateExpiry" xml:space="preserve">
     <value>update CacheItem
-   set utcExpiry = @utcExpiry -- Interval is added by PersistentCache
+   set utcExpiry = utcExpiry + interval
  where partition = @partition
    and key = @key</value>
   </data>
