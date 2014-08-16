@@ -249,6 +249,34 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         Task<CacheItem> GetItemAsync(string key);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        void Remove(string partition, string key);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        void Remove(string key);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task RemoveAsync(string partition, string key);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task RemoveAsync(string key);
     }
 
     /// <summary>

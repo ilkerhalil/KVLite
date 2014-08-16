@@ -156,6 +156,23 @@ namespace KVLite
             return Task.Factory.StartNew(() => GetItem(key));
         }
 
+        public abstract void Remove(string partition, string key);
+
+        public void Remove(string key)
+        {
+            Remove(Settings.Default.DefaultPartition, key);
+        }
+
+        public Task RemoveAsync(string partition, string key)
+        {
+            return Task.Factory.StartNew(() => Remove(partition, key));
+        }
+
+        public Task RemoveAsync(string key)
+        {
+            return Task.Factory.StartNew(() => Remove(key));
+        }
+
         #endregion
     }
 }

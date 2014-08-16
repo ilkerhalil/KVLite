@@ -54,6 +54,12 @@ namespace Benchmarks
                 StoreEachDataTableTwoTimesAsync(tables, i);
 
                 FullyCleanCache();
+                RemoveEachDataTable(tables, i);
+
+                FullyCleanCache();
+                RemoveEachDataTableAsync(tables, i);
+
+                FullyCleanCache();
                 RetrieveEachDataTable(tables, i);
 
                 FullyCleanCache();
@@ -220,6 +226,56 @@ namespace Benchmarks
             stopwatch.Stop();
 
             Console.WriteLine(@"Data tables retrieved in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize/stopwatch.Elapsed.Seconds);
+        }
+
+        private static void RemoveEachDataTable(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"Removing each data table, iteration {0}...", iteration);
+
+            foreach (var table in tables) {
+                PersistentCache.DefaultInstance.AddTimed(table.TableName, table, DateTime.Now.AddHours(1));
+            }
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            foreach (var table in tables) {
+                PersistentCache.DefaultInstance.Remove(table.TableName);
+            }            
+            stopwatch.Stop();
+
+            Debug.Assert(PersistentCache.DefaultInstance.Count() == 0);
+            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == 0);
+
+            Console.WriteLine(@"Data tables removed in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize/stopwatch.Elapsed.Seconds);
+        }
+
+        private static void RemoveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"Removing each data table asynchronously, iteration {0}...", iteration);
+
+            foreach (var table in tables) {
+                PersistentCache.DefaultInstance.AddTimed(table.TableName, table, DateTime.Now.AddHours(1));
+            }
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var tasks = new List<Task>();
+            foreach (var table in tables) {
+                tasks.Add(PersistentCache.DefaultInstance.RemoveAsync(table.TableName));
+            }
+            foreach (var task in tasks) {
+                task.Wait();
+            }
+            stopwatch.Stop();
+
+            Debug.Assert(PersistentCache.DefaultInstance.Count() == 0);
+            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == 0);
+
+            Console.WriteLine(@"Data tables removed in: {0}", stopwatch.Elapsed);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize/stopwatch.Elapsed.Seconds);
         }
 

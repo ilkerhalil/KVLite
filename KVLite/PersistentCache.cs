@@ -196,6 +196,16 @@ namespace KVLite
             }
         }
 
+        public override void Remove(string partition, string key)
+        {
+            using (var scope = CacheContext.OpenTransactionScope()) {
+                using (var ctx = CacheContext.Create(_connectionString)) {
+                    ctx.Connection.Execute(Queries.Remove, new {partition, key});
+                    scope.Complete();
+                }
+            }  
+        }
+
         #endregion
 
         #region Private Methods

@@ -36,6 +36,11 @@ namespace KVLite
     /// </summary>
     public sealed class CacheItem
     {
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        public CacheItem() {}
+
         internal CacheItem(DbCacheItem original, BinarySerializer serializer)
         {
             Partition = original.Partition;

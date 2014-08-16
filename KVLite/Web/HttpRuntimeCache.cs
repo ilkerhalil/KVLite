@@ -84,6 +84,11 @@ namespace KVLite.Web
             throw new NotImplementedException();
         }
 
+        public override void Remove(string partition, string key)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }
