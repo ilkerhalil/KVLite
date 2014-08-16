@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheBase.cs" />
     <Compile Include="CacheContext.cs" />
     <Compile Include="CacheItem.cs" />
     <Compile Include="Configuration.cs" />

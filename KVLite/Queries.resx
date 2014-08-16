@@ -155,8 +155,7 @@ values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval)
   <data name="DoClear" xml:space="preserve">
     <value>delete from CacheItem
  where @ignoreExpirationDate = 1
-    or (utcExpiry is not null and utcExpiry &lt;= @utcNow);
---PRAGMA incremental_vacuum(10240); -- Clears up to 10MB</value>
+    or (utcExpiry is not null and utcExpiry &lt;= @utcNow);</value>
   </data>
   <data name="DoGet_Select" xml:space="preserve">
     <value>select *
@@ -191,6 +190,6 @@ values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval)
  where name = 'CacheItem'</value>
   </data>
   <data name="Vacuum" xml:space="preserve">
-    <value>PRAGMA incremental_vacuum; -- Clears free list and makes DB file smaller</value>
+    <value>vacuum; -- Clears free list and makes DB file smaller</value>
   </data>
 </root>

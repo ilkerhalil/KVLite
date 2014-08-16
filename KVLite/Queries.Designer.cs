@@ -128,8 +128,7 @@ namespace KVLite {
         /// <summary>
         ///   Looks up a localized string similar to delete from CacheItem
         /// where @ignoreExpirationDate = 1
-        ///    or (utcExpiry is not null and utcExpiry &lt;= @utcNow);
-        ///--PRAGMA incremental_vacuum(10240); -- Clears up to 10MB.
+        ///    or (utcExpiry is not null and utcExpiry &lt;= @utcNow);.
         /// </summary>
         internal static string DoClear {
             get {
@@ -206,7 +205,7 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PRAGMA incremental_vacuum; -- Clears free list and makes DB file smaller.
+        ///   Looks up a localized string similar to vacuum; -- Clears free list and makes DB file smaller.
         /// </summary>
         internal static string Vacuum {
             get {

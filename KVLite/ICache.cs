@@ -27,57 +27,163 @@
 // THE SOFTWARE.
 
 using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 
 namespace KVLite
 {
+    /// <summary>
+    ///   TODO
+    /// </summary>
     public interface ICache
     {
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         [Pure]
         object this[string partition, string key] { get; }
         
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         [Pure]
         object this[string key] { get; }
 
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         object AddStatic(string partition, string key, object value);
 
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         object AddStatic(string key, object value);
 
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        Task<object> AddStaticAsync(string partition, string key, object value);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        Task<object> AddStaticAsync(string key, object value);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
         void Clear();
 
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="cacheReadMode"></param>
         void Clear(CacheReadMode cacheReadMode);
 
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
         [Pure]
         int Count();
         
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="cacheReadMode"></param>
+        /// <returns></returns>
         [Pure]
         int Count(CacheReadMode cacheReadMode);
         
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
         [Pure]
         long LongCount();
         
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="cacheReadMode"></param>
+        /// <returns></returns>
         [Pure]
         long LongCount(CacheReadMode cacheReadMode);
         
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         [Pure]
         object Get(string partition, string key);
         
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         [Pure]
         object Get(string key);
         
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         [Pure]
         CacheItem GetItem(string partition, string key);
         
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         [Pure]
         CacheItem GetItem(string key);
     }
 
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    /// <typeparam name="TCache"></typeparam>
     public interface ICache<TCache> : ICache where TCache : class, ICache<TCache>, new()
     {
     }
 
+    /// <summary>
+    ///   TODO
+    /// </summary>
     public enum CacheReadMode : byte
     {
+        /// <summary>
+        ///   TODO
+        /// </summary>
         IgnoreExpirationDate = 0,
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
         ConsiderExpirationDate = 1
     }
 }

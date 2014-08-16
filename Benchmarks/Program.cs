@@ -29,7 +29,10 @@ namespace Benchmarks
             var tables = GenerateRandomDataTables();
             _tableListSize = GetObjectSizeInMB(tables);
             GC.Collect();
-            Console.WriteLine(@"Tables generated, size in MB: {0}", _tableListSize);
+            Console.WriteLine(@"Tables generated!");
+            Console.WriteLine(@"Table Count: {0}", RandomDataTablesCount);
+            Console.WriteLine(@"Row Count: {0}", RowCount);
+            Console.WriteLine(@"Total Size: {0:.0} MB", _tableListSize);
 
             for (var i = 0; i < IterationCount; ++i) {
                 FullyCleanCache();

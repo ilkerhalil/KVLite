@@ -30,25 +30,33 @@ using System;
 using System.Data;
 using System.Data.SQLite;
 using System.Web;
-using KVLite.Core;
 using KVLite.Properties;
 using Thrower;
 
 namespace KVLite
 {
-    public sealed class PersistentCache : ICache<PersistentCache>
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    public sealed class PersistentCache : CacheBase<PersistentCache>
     {
-        private static readonly PersistentCache CachedDefaultInstance = new PersistentCache();
-
-        private readonly BinarySerializer _binarySerializer = new BinarySerializer();
         private readonly string _connectionString;
 
         // This value is increased for each ADD operation; after this value reaches the "OperationCountBeforeSoftClear"
         // configuration parameter, then we must reset it and do a SOFT cleanup.
         private short _operationCount;
 
+        #region Construction
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
         public PersistentCache() : this(Configuration.Instance.DefaultCachePath) {}
 
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="cachePath"></param>
         public PersistentCache(string cachePath)
         {
             var mappedCachePath = MapPath(cachePath);
@@ -75,39 +83,32 @@ namespace KVLite
             Clear(CacheReadMode.ConsiderExpirationDate);
         }
 
-        public static PersistentCache DefaultInstance
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        public void Vacuum()
         {
-            get { return CachedDefaultInstance; }
+            using (var ctx = CacheContext.Create(_connectionString)) {
+                using (var cmd = new SQLiteCommand(Queries.Vacuum, ctx.Connection)) {
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
+
+        #endregion
 
         #region ICache<PersistentCache> Members
 
-        public object this[string partition, string key]
-        {
-            get { return Get(partition, key); }
-        }
-
-        public object this[string key]
-        {
-            get { return Get(key); }
-        }
-
-        public object AddStatic(string partition, string key, object value)
+        public override object AddStatic(string partition, string key, object value)
         {
             return DoAdd(partition, key, value, null, null);
         }
 
-        public object AddStatic(string key, object value)
-        {
-            return AddStatic(Settings.Default.DefaultPartition, key, value);
-        }
-
-        public void Clear()
-        {
-            Clear(CacheReadMode.ConsiderExpirationDate);
-        }
-
-        public void Clear(CacheReadMode cacheReadMode)
+        public override void Clear(CacheReadMode cacheReadMode)
         {
             var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
             using (var ctx = CacheContext.Create(_connectionString)) {
@@ -119,22 +120,7 @@ namespace KVLite
             }
         }
 
-        public int Count()
-        {
-            return (int) LongCount(CacheReadMode.ConsiderExpirationDate);
-        }
-
-        public int Count(CacheReadMode cacheReadMode)
-        {
-            return (int) LongCount(cacheReadMode);
-        }
-
-        public long LongCount()
-        {
-            return Count(CacheReadMode.ConsiderExpirationDate);
-        }
-
-        public long LongCount(CacheReadMode cacheReadMode)
+        public override long LongCount(CacheReadMode cacheReadMode)
         {
             var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
             using (var ctx = CacheContext.Create(_connectionString)) {
@@ -146,26 +132,16 @@ namespace KVLite
             }
         }
 
-        public object Get(string partition, string key)
+        public override object Get(string partition, string key)
         {
-            return _binarySerializer.DeserializeObject(DoGet(partition, key).SerializedValue);
+            return BinarySerializer.DeserializeObject(DoGet(partition, key).SerializedValue);
         }
 
-        public object Get(string key)
-        {
-            return Get(Settings.Default.DefaultPartition, key);
-        }
-
-        public CacheItem GetItem(string partition, string key)
+        public override CacheItem GetItem(string partition, string key)
         {
             var item = DoGet(partition, key);
-            item.Value = _binarySerializer.DeserializeObject(item.SerializedValue);
+            item.Value = BinarySerializer.DeserializeObject(item.SerializedValue);
             return item;
-        }
-
-        public CacheItem GetItem(string key)
-        {
-            return GetItem(Settings.Default.DefaultPartition, key);
         }
 
         #endregion
@@ -177,7 +153,7 @@ namespace KVLite
             Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
             Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
 
-            var serializedValue = _binarySerializer.SerializeObject(value);
+            var serializedValue = BinarySerializer.SerializeObject(value);
             var expiry = utcExpiry.HasValue ? utcExpiry.Value as object : DBNull.Value;
             var ticks = interval.HasValue ? interval.Value.Ticks as object : DBNull.Value;
 
