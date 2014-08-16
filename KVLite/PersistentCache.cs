@@ -27,9 +27,10 @@
 // THE SOFTWARE.
 
 using System;
-using System.Data;
-using System.Data.SQLite;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
+using Dapper;
 using KVLite.Properties;
 using Thrower;
 
@@ -62,21 +63,15 @@ namespace KVLite
             var mappedCachePath = MapPath(cachePath);
             _connectionString = String.Format(Settings.Default.ConnectionStringFormat, mappedCachePath, Configuration.Instance.MaxCacheSizeInMB);
 
-            using (var ctx = CacheContext.Create(_connectionString)) {
-                using (var trx = ctx.Connection.BeginTransaction()) {
-                    try {
-                        if (!ctx.Exists(Queries.Ctor_SchemaIsReady, trx)) {
-                            // Creates the CacheItem table and the required indexes.
-                            ctx.ExecuteNonQuery(Queries.Ctor_CacheSchema, trx);
-                        }
-                        // Sets DB settings
-                        ctx.ExecuteNonQuery(Queries.Ctor_SetPragmas, trx);
-                        // Commit must be the _last_ instruction in the try block.
-                        trx.Commit();
-                    } catch {
-                        trx.Rollback();
-                        throw;
+            using (var scope = CacheContext.OpenTransactionScope()) {
+                using (var ctx = CacheContext.Create(_connectionString)) {
+                    if (!ctx.Exists(Queries.Ctor_SchemaIsReady)) {
+                        // Creates the CacheItem table and the required indexes.
+                        ctx.Connection.Execute(Queries.Ctor_CacheSchema);
                     }
+                    // Sets DB settings
+                    ctx.Connection.Execute(Queries.Ctor_SetPragmas);
+                    scope.Complete();
                 }
             }
             
@@ -93,11 +88,21 @@ namespace KVLite
         /// </summary>
         public void Vacuum()
         {
-            using (var ctx = CacheContext.Create(_connectionString)) {
-                using (var cmd = new SQLiteCommand(Queries.Vacuum, ctx.Connection)) {
-                    cmd.ExecuteNonQuery();
+            using (var scope = CacheContext.OpenTransactionScope()) {
+                using (var ctx = CacheContext.Create(_connectionString)) {
+                    ctx.Connection.Execute(Queries.Vacuum);
+                    scope.Complete();
                 }
             }
+        }
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        public Task VacuumAsync()
+        {
+            return Task.Factory.StartNew(Vacuum);
         }
 
         #endregion
@@ -122,46 +127,38 @@ namespace KVLite
         public override void Clear(CacheReadMode cacheReadMode)
         {
             var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
-            using (var ctx = CacheContext.Create(_connectionString)) {
-                using (var cmd = new SQLiteCommand(Queries.Clear, ctx.Connection)) {
-                    cmd.Parameters.AddWithValue("ignoreExpirationDate", ignoreExpirationDate);
-                    cmd.Parameters.AddWithValue("utcNow", DateTime.UtcNow);
-                    cmd.ExecuteNonQuery();
+            using (var scope = CacheContext.OpenTransactionScope()) {
+                using (var ctx = CacheContext.Create(_connectionString)) {
+                    ctx.Connection.Execute(Queries.Clear, new {ignoreExpirationDate, DateTime.UtcNow});
+                    scope.Complete();
                 }
-            }
+            }           
         }
 
         public override bool Contains(string partition, string key)
         {
+            // We use DoGet, even if we do not need the full item, because it applies sliding logic.
             return DoGet(partition, key) != null;
         }
 
         public override long LongCount(CacheReadMode cacheReadMode)
         {
             var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
+            // No need for a transaction, since it is just a select.
             using (var ctx = CacheContext.Create(_connectionString)) {
-                using (var cmd = new SQLiteCommand(Queries.Count, ctx.Connection)) {
-                    cmd.Parameters.AddWithValue("ignoreExpirationDate", ignoreExpirationDate);
-                    cmd.Parameters.AddWithValue("utcNow", DateTime.UtcNow);
-                    return (long) cmd.ExecuteScalar(CommandBehavior.SingleResult);
-                }
+                return ctx.Connection.ExecuteScalar<long>(Queries.Count, new {ignoreExpirationDate, DateTime.UtcNow});
             }
         }
 
         public override object Get(string partition, string key)
         {
             var item = DoGet(partition, key);
-            return item == null ? null : BinarySerializer.DeserializeObject(item.SerializedValue);
+            return item == null ? null : item.Value;
         }
 
         public override CacheItem GetItem(string partition, string key)
         {
-            var item = DoGet(partition, key);
-            if (item == null) {
-                return null;
-            }
-            item.Value = BinarySerializer.DeserializeObject(item.SerializedValue);
-            return item;
+            return DoGet(partition, key);
         }
 
         #endregion
@@ -173,21 +170,24 @@ namespace KVLite
             Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
             Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
 
+            // Serializing may be pretty expensive, therefore we keep it out of the transaction.
             var serializedValue = BinarySerializer.SerializeObject(value);
-            var expiry = utcExpiry.HasValue ? utcExpiry.Value as object : DBNull.Value;
-            var ticks = interval.HasValue ? interval.Value.Ticks as object : DBNull.Value;
 
-            using (var ctx = CacheContext.Create(_connectionString)) {
-                using (var cmd = new SQLiteCommand(Queries.DoAdd, ctx.Connection)) {
-                    cmd.Parameters.AddWithValue("partition", partition);
-                    cmd.Parameters.AddWithValue("key", key);
-                    cmd.Parameters.AddWithValue("serializedValue", serializedValue);
-                    cmd.Parameters.AddWithValue("utcCreation", DateTime.UtcNow);
-                    cmd.Parameters.AddWithValue("utcExpiry", expiry);
-                    cmd.Parameters.AddWithValue("interval", ticks);
-                    cmd.ExecuteNonQuery();
+            using (var scope = CacheContext.OpenTransactionScope()) {
+                using (var ctx = CacheContext.Create(_connectionString)) {
+                    var dbItem = new DbCacheItem {
+                        Partition = partition,
+                        Key = key,
+                        SerializedValue = serializedValue,
+                        UtcCreation = DateTime.UtcNow.Ticks,
+                        UtcExpiry = utcExpiry.HasValue ? utcExpiry.Value.Ticks : new long?(),
+                        Interval = interval.HasValue ? interval.Value.Ticks : new long?()
+                    };
+                    var exists = ctx.Exists(Queries.DoAdd_SelectItem, dbItem);
+                    ctx.Connection.Execute(exists ? Queries.DoAdd_UpdateItem : Queries.DoAdd_InsertItem, dbItem);
+                    scope.Complete();
                 }
-            }
+            }          
 
             // Operation has concluded successfully, therefore we increment the operation counter.
             // If it has reached the "OperationCountBeforeSoftClear" configuration parameter,
@@ -208,26 +208,16 @@ namespace KVLite
 
             // For this kind of task, we need a transaction. In fact, since the value may be sliding,
             // we may have to issue an update following the initial select.
-            using (var ctx = CacheContext.Create(_connectionString)) {
-                using (var cmd = new SQLiteCommand(Queries.DoGet, ctx.Connection)) {
-                    cmd.Parameters.AddWithValue("partition", partition);
-                    cmd.Parameters.AddWithValue("key", key);
-                    cmd.Parameters.AddWithValue("utcNow", DateTime.UtcNow);
-                    var reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
-                    if (!reader.Read()) {
-                        // Cache does not contain given item
-                        return null;
+            using (var scope = CacheContext.OpenTransactionScope()) {
+                using (var ctx = CacheContext.Create(_connectionString)) {
+                    var dbItem = ctx.Connection.Query<DbCacheItem>(Queries.DoGet_SelectItem, new {partition, key, DateTime.UtcNow}).FirstOrDefault();
+                    if (dbItem != null && dbItem.Interval.HasValue) {
+                        ctx.Connection.Execute(Queries.DoGet_UpdateExpiry, dbItem);
                     }
-                    return new CacheItem {
-                        Partition = reader.GetString(CacheItem.PartitionDbIndex),
-                        Key = reader.GetString(CacheItem.KeyDbIndex),
-                        SerializedValue = reader.GetValue(CacheItem.SerializedValueDbIndex) as byte[],
-                        UtcCreation = reader.GetDateTime(CacheItem.UtcCreationDbIndex),
-                        UtcExpiry = reader.IsDBNull(CacheItem.UtcExpiryDbIndex) ? new DateTime?() : reader.GetDateTime(CacheItem.UtcExpiryDbIndex),
-                        Interval = reader.IsDBNull(CacheItem.IntervalDbIndex) ? new TimeSpan?() : TimeSpan.FromTicks(reader.GetInt64(CacheItem.IntervalDbIndex))
-                    };
+                    scope.Complete();
+                    return new CacheItem(dbItem, BinarySerializer);
                 }
-            }
+            }         
         }
 
         private static string MapPath(string path)

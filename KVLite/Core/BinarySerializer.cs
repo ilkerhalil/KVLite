@@ -30,7 +30,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
-using LZ4;
 
 namespace KVLite.Core
 {
@@ -47,21 +46,29 @@ namespace KVLite.Core
 
         public byte[] SerializeObject(object obj)
         {
-            using (var memoryStream = new MemoryStream()) {
-                using (var compressor = new LZ4Stream(memoryStream, CompressionMode.Compress)) {
-                    _binaryFormatter.Serialize(compressor, obj);
-                }
-                return memoryStream.GetBuffer();
-            }
+            using (var decompressedStream = new MemoryStream()) {
+			    _binaryFormatter.Serialize(decompressedStream, obj);
+			    decompressedStream.Seek(0, SeekOrigin.Begin);
+			    using (var compressedStream = new MemoryStream()) {
+				    using (var compress = new DeflateStream(compressedStream, CompressionMode.Compress, true)) {
+					    decompressedStream.CopyTo(compress);
+				    }
+				    return compressedStream.GetBuffer();
+			    }
+		    }
         }
 
         public object DeserializeObject(byte[] serialized)
         {
-            using (var memoryStream = new MemoryStream(serialized)) {
-                using (var decompressor = new LZ4Stream(memoryStream, CompressionMode.Decompress)) {
-                    return _binaryFormatter.Deserialize(decompressor);
-                }
-            }
+            using (var decompressedStream = new MemoryStream()) {
+			    using (var compressedStream = new MemoryStream(serialized)) {
+				    using (var decompress = new DeflateStream(compressedStream, CompressionMode.Decompress, true)) {
+					    decompress.CopyTo(decompressedStream);
+				    }
+				    decompressedStream.Seek(0, SeekOrigin.Begin);
+				    return _binaryFormatter.Deserialize(decompressedStream);
+			    }
+		    }
         }
     }
 }

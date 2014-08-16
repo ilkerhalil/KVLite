@@ -30,6 +30,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Data;
 using System.Data.SQLite;
+using System.Transactions;
+using Dapper;
+using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace KVLite
 {
@@ -38,51 +41,48 @@ namespace KVLite
     /// </summary>
     internal sealed class CacheContext : IDisposable
     {
-        private static readonly ConcurrentDictionary<string, ConcurrentStack<SQLiteConnection>> ConnectionPool =
-            new ConcurrentDictionary<string, ConcurrentStack<SQLiteConnection>>();
+        private static readonly ConcurrentDictionary<string, ConcurrentStack<IDbConnection>> ConnectionPool =
+            new ConcurrentDictionary<string, ConcurrentStack<IDbConnection>>();
 
-        private readonly SQLiteConnection _connection;
+        private static readonly TransactionOptions TransactionOptions = new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted};
+
+        private readonly IDbConnection _connection;
         private bool _disposed;
 
         #region Construction
 
-        private CacheContext(SQLiteConnection connection)
+        private CacheContext(IDbConnection connection)
         {
             _connection = connection;
         }
 
         public static CacheContext Create(string connectionString)
         {
-            dynamic connection = GetOrCreateConnection(connectionString);
-            return new CacheContext(connection);
+            return new CacheContext(GetOrCreateConnection(connectionString));
         }
 
         #endregion
 
         #region DB Interaction
 
-        public SQLiteConnection Connection
+        public IDbConnection Connection
         {
             get { return _connection; }
         }
 
-        public void ExecuteNonQuery(string query, SQLiteTransaction transaction)
+        public static TransactionScope OpenTransactionScope()
         {
-            using (var cmd = new SQLiteCommand(query, Connection, transaction)) {
-                cmd.ExecuteNonQuery();
-            }
+            return new TransactionScope(TransactionScopeOption.Required, TransactionOptions);
         }
 
-        //public bool Exists(string query, object args)
-        //{
-        //    return _connection.ExecuteScalar<int>(query, args) > 0;
-        //}
-
-        public bool Exists(string query, SQLiteTransaction transaction)
+        public bool Exists(string query, object args)
         {
-            using (var cmd = new SQLiteCommand(query, Connection, transaction)) {
-                return ((long) cmd.ExecuteScalar(CommandBehavior.SingleResult)) > 0;
-            }
+            return _connection.ExecuteScalar<long>(query, args) > 0;
+        }
+
+        public bool Exists(string query)
+        {
+            return _connection.ExecuteScalar<long>(query) > 0;
         }
 
         #endregion
@@ -105,7 +105,7 @@ namespace KVLite
 
         #region Connection Retrieval
 
-        private static SQLiteConnection GetOrCreateConnection(string connenctionString)
+        private static IDbConnection GetOrCreateConnection(string connenctionString)
         {
             if (ConnectionPool.ContainsKey(connenctionString)) {
                 return GetCachedConnection(connenctionString);
@@ -113,21 +113,21 @@ namespace KVLite
             return CreateNewConnection(connenctionString);
         }
 
-        private static SQLiteConnection CreateNewConnection(string connectionString)
+        private static IDbConnection CreateNewConnection(string connectionString)
         {
             var connection = new SQLiteConnection(connectionString);
             connection.Open();
             return connection;
         }
 
-        private static SQLiteConnection GetCachedConnection(string connectionString)
+        private static IDbConnection GetCachedConnection(string connectionString)
         {
-            ConcurrentStack<SQLiteConnection> connectionList;
+            ConcurrentStack<IDbConnection> connectionList;
             ConnectionPool.TryGetValue(connectionString, out connectionList);
             if (connectionList == null || connectionList.Count == 0) {
                 return CreateNewConnection(connectionString);
             }
-            SQLiteConnection connection;
+            IDbConnection connection;
             connectionList.TryPop(out connection);
             return connection ?? CreateNewConnection(connectionString);
         }
@@ -136,16 +136,16 @@ namespace KVLite
 
         #region Connection Caching
 
-        private static bool TryCacheConnection(SQLiteConnection connection)
+        private static bool TryCacheConnection(IDbConnection connection)
         {
             return ConnectionPool.ContainsKey(connection.ConnectionString)
                 ? TryStoreConnection(connection)
                 : AddFirstList(connection);
         }
 
-        private static bool TryStoreConnection(SQLiteConnection connection)
+        private static bool TryStoreConnection(IDbConnection connection)
         {
-            ConcurrentStack<SQLiteConnection> connectionList;
+            ConcurrentStack<IDbConnection> connectionList;
             ConnectionPool.TryGetValue(connection.ConnectionString, out connectionList);
             dynamic maxConnCount = Configuration.Instance.MaxCachedConnectionCount;
             if (connectionList == null) {
@@ -158,9 +158,9 @@ namespace KVLite
             return false;
         }
 
-        private static bool AddFirstList(SQLiteConnection connection)
+        private static bool AddFirstList(IDbConnection connection)
         {
-            var connectionList = new ConcurrentStack<SQLiteConnection>();
+            var connectionList = new ConcurrentStack<IDbConnection>();
             connectionList.Push(connection);
             return ConnectionPool.TryAdd(connection.ConnectionString, connectionList);
         }

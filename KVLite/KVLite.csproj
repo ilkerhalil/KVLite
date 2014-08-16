@@ -34,8 +34,8 @@
     <DocumentationFile>bin\Release\KVLite.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LZ4">
-      <HintPath>..\packages\lz4net.1.0.5.93\lib\net40-client\LZ4.dll</HintPath>
+    <Reference Include="Dapper">
+      <HintPath>..\packages\Dapper.1.30\lib\net40\Dapper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -47,6 +47,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.93.0\lib\net40\System.Data.SQLite.dll</HintPath>
     </Reference>
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="Thrower">
       <HintPath>..\packages\Thrower.0.12.0\lib\net40-client\Thrower.dll</HintPath>

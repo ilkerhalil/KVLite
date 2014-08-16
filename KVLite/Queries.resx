@@ -126,7 +126,7 @@
     <value>select count(*)
   from CacheItem
  where @ignoreExpirationDate = 1
-    or (utcExpiry is null or utcExpiry &gt; @utcNow)</value>
+    or (utcExpiry is null or utcExpiry &gt; @utcNow);</value>
   </data>
   <data name="Ctor_CacheSchema" xml:space="preserve">
     <value>PRAGMA auto_vacuum = FULL;
@@ -144,41 +144,54 @@ CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);</value>
   <data name="Ctor_SchemaIsReady" xml:space="preserve">
     <value>select count(*)
   from sqlite_master
- where name = 'CacheItem'</value>
+ where name = 'CacheItem';</value>
   </data>
   <data name="Ctor_SetPragmas" xml:space="preserve">
-    <value>PRAGMA read_uncommitted = 1; -- Unsafe
-PRAGMA journal_size_limit = 10240000; -- 10MB</value>
+    <value>PRAGMA journal_size_limit = 10240000; -- 10MB</value>
   </data>
-  <data name="DoAdd" xml:space="preserve">
-    <value>insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
-values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval)</value>
+  <data name="DoAdd_InsertItem" xml:space="preserve">
+    <value>insert into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
+values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval);</value>
   </data>
-  <data name="DoGet" xml:space="preserve">
+  <data name="DoAdd_SelectItem" xml:space="preserve">
+    <value>select count(*) from CacheItem where partition = @partition and key = @key</value>
+  </data>
+  <data name="DoAdd_UpdateItem" xml:space="preserve">
     <value>update CacheItem
-   set utcExpiry = utcExpiry + interval
+   set serializedValue = @serializedValue
+     , utcCreation = @utcCreation
+     , utcExpiry = @utcExpiry
+     , interval = @interval
  where partition = @partition
-   and key = @key
-   and interval is not null;
-select *
+   and key = @key</value>
+  </data>
+  <data name="DoGet_SelectItem" xml:space="preserve">
+    <value>select *
   from CacheItem
  where partition = @partition
    and key = @key
    and (utcExpiry is null or utcExpiry &gt; @utcNow)</value>
   </data>
+  <data name="DoGet_UpdateExpiry" xml:space="preserve">
+    <value>update CacheItem
+   set utcExpiry = utcExpiry + interval
+ where partition = @partition
+   and key = @key
+   and interval is not null;</value>
+  </data>
   <data name="GetItems_Select" xml:space="preserve">
     <value>select * from CacheItem
- where (utcExpiry is null or utcExpiry &gt; @utcNow)</value>
+ where (utcExpiry is null or utcExpiry &gt; @utcNow);</value>
   </data>
   <data name="GetItems_SelectPartition" xml:space="preserve">
     <value>select * from CacheItem
  where partition = @partition
-   and (utcExpiry is null or utcExpiry &gt; @utcNow)</value>
+   and (utcExpiry is null or utcExpiry &gt; @utcNow);</value>
   </data>
   <data name="Remove" xml:space="preserve">
     <value>delete from CacheItem
  where partition = @partition
-   and key = @key</value>
+   and key = @key;</value>
   </data>
   <data name="Vacuum" xml:space="preserve">
     <value>vacuum; -- Clears free list and makes DB file smaller</value>

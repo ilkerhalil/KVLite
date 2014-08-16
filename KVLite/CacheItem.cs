@@ -27,6 +27,7 @@
 // THE SOFTWARE.
 
 using System;
+using KVLite.Core;
 
 namespace KVLite
 {
@@ -35,16 +36,14 @@ namespace KVLite
     /// </summary>
     public sealed class CacheItem
     {
-        internal const byte PartitionDbIndex = 0;
-        internal const byte KeyDbIndex = 1;
-        internal const byte SerializedValueDbIndex = 2;
-        internal const byte UtcCreationDbIndex = 3;
-        internal const byte UtcExpiryDbIndex = 4;
-        internal const byte IntervalDbIndex = 5;
-
-        public CacheItem()
+        internal CacheItem(DbCacheItem original, BinarySerializer serializer)
         {
-            UtcCreation = DateTime.UtcNow;
+            Partition = original.Partition;
+            Key = original.Key;
+            Value = serializer.DeserializeObject(original.SerializedValue);
+            UtcCreation = DateTime.MinValue.AddTicks(original.UtcCreation);
+            UtcExpiry = original.UtcExpiry == null ? new DateTime?() : DateTime.MinValue.AddTicks(original.UtcExpiry.Value);
+            Interval = original.Interval == null ? new TimeSpan?() : TimeSpan.FromTicks(original.Interval.Value);
         }
 
         public string Partition { get; set; }
@@ -53,7 +52,15 @@ namespace KVLite
         public DateTime UtcCreation { get; set; }
         public DateTime? UtcExpiry { get; set; }
         public TimeSpan? Interval { get; set; }
+    }
 
-        internal byte[] SerializedValue { get; set; }
+    internal sealed class DbCacheItem
+    {
+        public string Partition { get; set; }
+        public string Key { get; set; }
+        public byte[] SerializedValue { get; set; }
+        public long UtcCreation { get; set; }
+        public long? UtcExpiry { get; set; }
+        public long? Interval { get; set; }
     }
 }
