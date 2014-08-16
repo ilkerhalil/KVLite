@@ -31,6 +31,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
+using Snappy;
 
 namespace KVLite.Core
 {
@@ -50,27 +51,15 @@ namespace KVLite.Core
         {
             using (var decompressedStream = new MemoryStream()) {
 			    _binaryFormatter.Serialize(decompressedStream, obj);
-			    decompressedStream.Seek(0, SeekOrigin.Begin);
-			    using (var compressedStream = new MemoryStream()) {
-				    using (var compress = new DeflateStream(compressedStream, CompressionMode.Compress, true)) {
-					    decompressedStream.CopyTo(compress);
-				    }
-				    return compressedStream.GetBuffer();
-			    }
-		    }
+                return SnappyCodec.Compress(decompressedStream.GetBuffer());
+            }
         }
 
         public object DeserializeObject(byte[] serialized)
         {
-            using (var decompressedStream = new MemoryStream()) {
-			    using (var compressedStream = new MemoryStream(serialized)) {
-				    using (var decompress = new DeflateStream(compressedStream, CompressionMode.Decompress, true)) {
-					    decompress.CopyTo(decompressedStream);
-				    }
-				    decompressedStream.Seek(0, SeekOrigin.Begin);
-				    return _binaryFormatter.Deserialize(decompressedStream);
-			    }
-		    }
+			using (var compressedStream = new MemoryStream(SnappyCodec.Uncompress(serialized))) {
+				return _binaryFormatter.Deserialize(compressedStream);
+			}
         }
     }
 }

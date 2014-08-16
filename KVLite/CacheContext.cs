@@ -118,6 +118,10 @@ namespace KVLite
         {
             var connection = new SQLiteConnection(connectionString);
             connection.Open();
+            // Sets PRAGMAs for this new connection.
+            var journalSizeLimitInBytes = Configuration.Instance.MaxLogSizeInMB*1024*1024;
+            var pragmas = String.Format(Queries.Ctor_SetPragmas, journalSizeLimitInBytes);
+            connection.Execute(pragmas);
             return connection;
         }
 

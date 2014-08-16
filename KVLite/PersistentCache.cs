@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -42,8 +43,7 @@ namespace KVLite
     [Serializable]
     public sealed class PersistentCache : CacheBase<PersistentCache>
     {
-        private const string ConnectionStringFormat =
-            @"Data Source={0};Version=3;Synchronous=Off;Journal Mode=WAL;Cache Size=4096000;DateTimeFormat=Ticks;Page Size=1024;Max Page Count={1};";
+        private const string ConnectionStringFormat = @"Data Source={0};Version=3;Max Page Count={1};Synchronous=Off;Journal Mode=WAL;DateTimeFormat=Ticks;Page Size=32768;";
 
         private readonly string _connectionString;
 
@@ -65,7 +65,7 @@ namespace KVLite
         public PersistentCache(string cachePath)
         {
             var mappedCachePath = MapPath(cachePath);
-            _connectionString = String.Format(ConnectionStringFormat, mappedCachePath, Configuration.Instance.MaxCacheSizeInMB * 1024);
+            _connectionString = String.Format(ConnectionStringFormat, mappedCachePath, Configuration.Instance.MaxCacheSizeInMB*256);
 
             using (var scope = CacheContext.OpenTransactionScope()) {
                 using (var ctx = CacheContext.Create(_connectionString)) {
@@ -73,9 +73,6 @@ namespace KVLite
                         // Creates the CacheItem table and the required indexes.
                         ctx.Connection.Execute(Queries.Ctor_CacheSchema);
                     }
-                    // Sets DB settings
-                    var pragmas = String.Format(Queries.Ctor_SetPragmas, Configuration.Instance.MaxLogSizeInMB*1024*1024);
-                    ctx.Connection.Execute(pragmas);
                     scope.Complete();
                 }
             }
