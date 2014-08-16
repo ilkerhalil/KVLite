@@ -138,6 +138,23 @@ namespace KVLite
         /// <summary>
         ///   TODO
         /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [Pure]
+        bool Contains(string partition, string key);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [Pure]
+        bool Contains(string key);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
         /// <returns></returns>
         [Pure]
         int Count();

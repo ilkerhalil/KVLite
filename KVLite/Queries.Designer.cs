@@ -127,33 +127,9 @@ namespace KVLite {
         ///   Looks up a localized string similar to insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
         ///values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval).
         /// </summary>
-        internal static string DoAdd_Insert {
+        internal static string DoAdd {
             get {
-                return ResourceManager.GetString("DoAdd_Insert", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to select * from CacheItem where partition = @partition and key = @key.
-        /// </summary>
-        internal static string DoAdd_Select {
-            get {
-                return ResourceManager.GetString("DoAdd_Select", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to update CacheItem
-        ///   set serializedValue = @serializedValue
-        ///     , utcCreation = @utcCreation
-        ///     , utcExpiry = @utcExpiry
-        ///     , interval = @interval
-        /// where partition = @partition
-        ///   and key = @key.
-        /// </summary>
-        internal static string DoAdd_Update {
-            get {
-                return ResourceManager.GetString("DoAdd_Update", resourceCulture);
+                return ResourceManager.GetString("DoAdd", resourceCulture);
             }
         }
         
@@ -169,21 +145,9 @@ namespace KVLite {
         ///   and key = @key
         ///   and (utcExpiry is null or utcExpiry &gt; @utcNow).
         /// </summary>
-        internal static string DoGet_Select {
+        internal static string DoGet {
             get {
-                return ResourceManager.GetString("DoGet_Select", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to update CacheItem
-        ///   set utcExpiry = utcExpiry + interval
-        /// where partition = @partition
-        ///   and key = @key.
-        /// </summary>
-        internal static string DoGet_UpdateExpiry {
-            get {
-                return ResourceManager.GetString("DoGet_UpdateExpiry", resourceCulture);
+                return ResourceManager.GetString("DoGet", resourceCulture);
             }
         }
         

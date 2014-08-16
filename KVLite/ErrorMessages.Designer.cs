@@ -22,7 +22,7 @@ namespace KVLite {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ErrorMessages {
+    public class ErrorMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace KVLite {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("KVLite.ErrorMessages", typeof(ErrorMessages).Assembly);
@@ -51,7 +51,7 @@ namespace KVLite {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace KVLite {
         /// <summary>
         ///   Looks up a localized string similar to Cache path cannot be null or empty..
         /// </summary>
-        internal static string NullOrEmptyCachePath {
+        public static string NullOrEmptyCachePath {
             get {
                 return ResourceManager.GetString("NullOrEmptyCachePath", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace KVLite {
         /// <summary>
         ///   Looks up a localized string similar to Key cannot be null or empty..
         /// </summary>
-        internal static string NullOrEmptyKey {
+        public static string NullOrEmptyKey {
             get {
                 return ResourceManager.GetString("NullOrEmptyKey", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace KVLite {
         /// <summary>
         ///   Looks up a localized string similar to Partition cannot be null or empty..
         /// </summary>
-        internal static string NullOrEmptyPartition {
+        public static string NullOrEmptyPartition {
             get {
                 return ResourceManager.GetString("NullOrEmptyPartition", resourceCulture);
             }

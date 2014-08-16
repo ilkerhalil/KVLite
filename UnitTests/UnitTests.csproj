@@ -93,9 +93,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Library\Library.vbproj">
-      <Project>{420777f1-bac6-486b-b9cf-6ffdbf8d62e4}</Project>
-      <Name>Library</Name>
+    <ProjectReference Include="..\KVLite\KVLite.csproj">
+      <Project>{f056179d-90b8-4aba-9ab4-1026e5941fb7}</Project>
+      <Name>KVLite</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

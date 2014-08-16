@@ -131,6 +131,11 @@ namespace KVLite
             }
         }
 
+        public override bool Contains(string partition, string key)
+        {
+            return DoGet(partition, key) != null;
+        }
+
         public override long LongCount(CacheReadMode cacheReadMode)
         {
             var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
@@ -145,12 +150,16 @@ namespace KVLite
 
         public override object Get(string partition, string key)
         {
-            return BinarySerializer.DeserializeObject(DoGet(partition, key).SerializedValue);
+            var item = DoGet(partition, key);
+            return item == null ? null : BinarySerializer.DeserializeObject(item.SerializedValue);
         }
 
         public override CacheItem GetItem(string partition, string key)
         {
             var item = DoGet(partition, key);
+            if (item == null) {
+                return null;
+            }
             item.Value = BinarySerializer.DeserializeObject(item.SerializedValue);
             return item;
         }
@@ -169,7 +178,7 @@ namespace KVLite
             var ticks = interval.HasValue ? interval.Value.Ticks as object : DBNull.Value;
 
             using (var ctx = CacheContext.Create(_connectionString)) {
-                using (var cmd = new SQLiteCommand(Queries.DoAdd_Insert, ctx.Connection)) {
+                using (var cmd = new SQLiteCommand(Queries.DoAdd, ctx.Connection)) {
                     cmd.Parameters.AddWithValue("partition", partition);
                     cmd.Parameters.AddWithValue("key", key);
                     cmd.Parameters.AddWithValue("serializedValue", serializedValue);
@@ -200,29 +209,24 @@ namespace KVLite
             // For this kind of task, we need a transaction. In fact, since the value may be sliding,
             // we may have to issue an update following the initial select.
             using (var ctx = CacheContext.Create(_connectionString)) {
-                return DoGetOneItem(Queries.DoGet_Select, ctx.Connection, null, partition, key);
-            }
-        }
-
-        private static CacheItem DoGetOneItem(string query, SQLiteConnection connection, SQLiteTransaction transaction, string partition, string key)
-        {
-            using (var cmd = new SQLiteCommand(query, connection, transaction)) {
-                cmd.Parameters.AddWithValue("partition", partition);
-                cmd.Parameters.AddWithValue("key", key);
-                cmd.Parameters.AddWithValue("utcNow", DateTime.UtcNow);
-                var reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
-                if (!reader.Read()) {
-                    // Cache does not contain given item
-                    return null;
+                using (var cmd = new SQLiteCommand(Queries.DoGet, ctx.Connection)) {
+                    cmd.Parameters.AddWithValue("partition", partition);
+                    cmd.Parameters.AddWithValue("key", key);
+                    cmd.Parameters.AddWithValue("utcNow", DateTime.UtcNow);
+                    var reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
+                    if (!reader.Read()) {
+                        // Cache does not contain given item
+                        return null;
+                    }
+                    return new CacheItem {
+                        Partition = reader.GetString(CacheItem.PartitionDbIndex),
+                        Key = reader.GetString(CacheItem.KeyDbIndex),
+                        SerializedValue = reader.GetValue(CacheItem.SerializedValueDbIndex) as byte[],
+                        UtcCreation = reader.GetDateTime(CacheItem.UtcCreationDbIndex),
+                        UtcExpiry = reader.IsDBNull(CacheItem.UtcExpiryDbIndex) ? new DateTime?() : reader.GetDateTime(CacheItem.UtcExpiryDbIndex),
+                        Interval = reader.IsDBNull(CacheItem.IntervalDbIndex) ? new TimeSpan?() : TimeSpan.FromTicks(reader.GetInt64(CacheItem.UtcExpiryDbIndex))
+                    };
                 }
-                return new CacheItem {
-                    Partition = reader.GetString(CacheItem.PartitionDbIndex),
-                    Key = reader.GetString(CacheItem.KeyDbIndex),
-                    SerializedValue = reader.GetValue(CacheItem.SerializedValueDbIndex) as byte[],
-                    UtcCreation = reader.GetDateTime(CacheItem.UtcCreationDbIndex),
-                    UtcExpiry = reader.IsDBNull(CacheItem.UtcExpiryDbIndex) ? new DateTime?() : reader.GetDateTime(CacheItem.UtcExpiryDbIndex),
-                    Interval = reader.IsDBNull(CacheItem.IntervalDbIndex) ? new TimeSpan?() : TimeSpan.FromTicks(reader.GetInt64(CacheItem.UtcExpiryDbIndex))
-                };
             }
         }
 

@@ -40,7 +40,7 @@ namespace KVLite
         internal const byte SerializedValueDbIndex = 2;
         internal const byte UtcCreationDbIndex = 3;
         internal const byte UtcExpiryDbIndex = 4;
-        internal const byte IntervalDbIndex = 4;
+        internal const byte IntervalDbIndex = 5;
 
         public CacheItem()
         {

@@ -98,6 +98,13 @@ namespace KVLite
 
         public abstract void Clear(CacheReadMode cacheReadMode);
 
+        public abstract bool Contains(string partition, string key);
+
+        public bool Contains(string key)
+        {
+            return Contains(Settings.Default.DefaultPartition, key);
+        }
+
         public int Count()
         {
             return (int) LongCount(CacheReadMode.ConsiderExpirationDate);

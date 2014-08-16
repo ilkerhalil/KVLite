@@ -64,6 +64,11 @@ namespace KVLite.Web
             throw new NotImplementedException();
         }
 
+        public override bool Contains(string partition, string key)
+        {
+            throw new NotImplementedException();
+        }
+
         public override long LongCount(CacheReadMode cacheReadMode)
         {
             throw new NotImplementedException();
