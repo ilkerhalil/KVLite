@@ -127,7 +127,8 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PRAGMA journal_size_limit = 10240000; -- 10MB.
+        ///   Looks up a localized string similar to PRAGMA read_uncommitted = 1;
+        ///PRAGMA journal_size_limit = {0};.
         /// </summary>
         internal static string Ctor_SetPragmas {
             get {

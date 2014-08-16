@@ -61,7 +61,7 @@ namespace KVLite
         public PersistentCache(string cachePath)
         {
             var mappedCachePath = MapPath(cachePath);
-            _connectionString = String.Format(Settings.Default.ConnectionStringFormat, mappedCachePath, Configuration.Instance.MaxCacheSizeInMB);
+            _connectionString = String.Format(Settings.Default.ConnectionStringFormat, mappedCachePath, Configuration.Instance.MaxCacheSizeInMB * 1024);
 
             using (var scope = CacheContext.OpenTransactionScope()) {
                 using (var ctx = CacheContext.Create(_connectionString)) {
@@ -70,7 +70,8 @@ namespace KVLite
                         ctx.Connection.Execute(Queries.Ctor_CacheSchema);
                     }
                     // Sets DB settings
-                    ctx.Connection.Execute(Queries.Ctor_SetPragmas);
+                    var pragmas = String.Format(Queries.Ctor_SetPragmas, Configuration.Instance.MaxLogSizeInMB*1024*1024);
+                    ctx.Connection.Execute(pragmas);
                     scope.Complete();
                 }
             }

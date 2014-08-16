@@ -154,7 +154,8 @@ CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);</value>
  where name = 'CacheItem';</value>
   </data>
   <data name="Ctor_SetPragmas" xml:space="preserve">
-    <value>PRAGMA journal_size_limit = 10240000; -- 10MB</value>
+    <value>PRAGMA read_uncommitted = 1;
+PRAGMA journal_size_limit = {0};</value>
   </data>
   <data name="DoAdd_InsertItem" xml:space="preserve">
     <value>insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)

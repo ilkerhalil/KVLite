@@ -39,6 +39,7 @@ namespace KVLite
         private const string SectionName = "KVLiteConfiguration";
         private const string DefaultCachePathKey = "DefaultCachePath";
         private const string MaxCacheSizeInMBKey = "MaxCacheSizeInMB";
+        private const string MaxLogSizeInMBKey = "MaxLogSizeInMB";
         private const string MaxCachedConnectionCountKey = "MaxCachedConnectionCount";
         private const string OperationCountBeforeSoftCleanupKey = "OperationCountBeforeSoftCleanup";
 
@@ -65,6 +66,12 @@ namespace KVLite
         public int MaxCacheSizeInMB
         {
             get { return Convert.ToInt32(this[MaxCacheSizeInMBKey]); }
+        }
+
+        [ConfigurationProperty(MaxLogSizeInMBKey, IsRequired = true)]
+        public int MaxLogSizeInMB
+        {
+            get { return Convert.ToInt32(this[MaxLogSizeInMBKey]); }
         }
 
         [ConfigurationProperty(OperationCountBeforeSoftCleanupKey, IsRequired = false, DefaultValue = 100)]
