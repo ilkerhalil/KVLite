@@ -161,12 +161,19 @@ PRAGMA journal_size_limit = {0};</value>
     <value>insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
 values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval);</value>
   </data>
-  <data name="GetItems_Select" xml:space="preserve">
-    <value>select * from CacheItem
+  <data name="DoGetAllItems" xml:space="preserve">
+    <value>update CacheItem
+   set utcExpiry = utcExpiry + interval
+ where interval is not null;
+select * from CacheItem
  where (utcExpiry is null or utcExpiry &gt; @utcNow);</value>
   </data>
-  <data name="GetItems_SelectPartition" xml:space="preserve">
-    <value>select * from CacheItem
+  <data name="DoGetPartitionItems" xml:space="preserve">
+    <value>update CacheItem
+   set utcExpiry = utcExpiry + interval
+ where partition = @partition
+   and interval is not null;
+select * from CacheItem
  where partition = @partition
    and (utcExpiry is null or utcExpiry &gt; @utcNow);</value>
   </data>

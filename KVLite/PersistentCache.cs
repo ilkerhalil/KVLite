@@ -27,6 +27,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -169,12 +170,6 @@ namespace KVLite
             }
         }
 
-        public override object Get(string partition, string key)
-        {
-            var item = GetItem(partition, key);
-            return item == null ? null : item.Value;
-        }
-
         public override CacheItem GetItem(string partition, string key)
         {
             Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
@@ -205,6 +200,34 @@ namespace KVLite
                     scope.Complete();
                 }
             }  
+        }
+
+        #endregion
+
+        #region CacheBase Members
+
+        protected override IEnumerable<CacheItem> DoGetAllItems()
+        {
+            using (var scope = CacheContext.OpenTransactionScope()) {
+                using (var ctx = CacheContext.Create(_connectionString)) {
+                    foreach (var dbItem in ctx.Connection.Query<DbCacheItem>(Queries.DoGetAllItems, new {DateTime.UtcNow})) {
+                        yield return new CacheItem(dbItem, BinarySerializer);
+                    }
+                    scope.Complete();
+                }
+            }  
+        }
+
+        protected override IEnumerable<CacheItem> DoGetPartitionItems(string partition)
+        {
+            using (var scope = CacheContext.OpenTransactionScope()) {
+                using (var ctx = CacheContext.Create(_connectionString)) {
+                    foreach (var dbItem in ctx.Connection.Query<DbCacheItem>(Queries.DoGetPartitionItems, new {partition, DateTime.UtcNow})) {
+                        yield return new CacheItem(dbItem, BinarySerializer);
+                    }
+                    scope.Complete();
+                }
+            } 
         }
 
         #endregion

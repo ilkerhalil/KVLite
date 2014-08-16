@@ -27,6 +27,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using KVLite.Core;
 using KVLite.Properties;
@@ -127,7 +129,11 @@ namespace KVLite
 
         public abstract long LongCount(CacheReadMode cacheReadMode);
 
-        public abstract object Get(string partition, string key);
+        public object Get(string partition, string key)
+        {
+            var item = GetItem(partition, key);
+            return item == null ? null : item.Value;
+        }
 
         public object Get(string key)
         {
@@ -161,6 +167,46 @@ namespace KVLite
             return Task.Factory.StartNew(() => GetItem(key));
         }
 
+        public IList<object> GetAll()
+        {
+            return DoGetAllItems().Select(x => x.Value).ToList();
+        }
+
+        public Task<IList<object>> GetAllAsync()
+        {
+            return Task.Factory.StartNew((Func<IList<object>>) GetAll);
+        }
+
+        public IList<object> GetPartition(string partition)
+        {
+            return DoGetPartitionItems(partition).Select(x => x.Value).ToList();
+        }
+
+        public Task<IList<object>> GetPartitionAsync(string partition)
+        {
+            return Task.Factory.StartNew(() => GetPartition(partition));
+        }
+
+        public IList<CacheItem> GetAllItems()
+        {
+            return DoGetAllItems().ToList();
+        }
+
+        public Task<IList<CacheItem>> GetAllItemsAsync()
+        {
+            return Task.Factory.StartNew((Func<IList<CacheItem>>) GetAllItems);
+        }
+
+        public IList<CacheItem> GetPartitionItems(string partition)
+        {
+            return DoGetPartitionItems(partition).ToList();
+        }
+
+        public Task<IList<CacheItem>> GetPartitionItemsAsync(string partition)
+        {
+            return Task.Factory.StartNew(() => GetPartitionItems(partition));
+        }
+
         public abstract void Remove(string partition, string key);
 
         public void Remove(string key)
@@ -177,6 +223,14 @@ namespace KVLite
         {
             return Task.Factory.StartNew(() => Remove(key));
         }
+
+        #endregion
+
+        #region Protected Members
+
+        protected abstract IEnumerable<CacheItem> DoGetAllItems();
+
+        protected abstract IEnumerable<CacheItem> DoGetPartitionItems(string partition);
 
         #endregion
     }

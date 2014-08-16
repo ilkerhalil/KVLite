@@ -27,6 +27,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 
@@ -249,6 +250,62 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         Task<CacheItem> GetItemAsync(string key);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Pure]
+        IList<object> GetAll();
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Pure]
+        Task<IList<object>> GetAllAsync();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Pure]
+        IList<object> GetPartition(string partition); 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Pure]
+        Task<IList<object>> GetPartitionAsync(string partition); 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Pure]
+        IList<CacheItem> GetAllItems();
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Pure]
+        Task<IList<CacheItem>> GetAllItemsAsync();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Pure]
+        IList<CacheItem> GetPartitionItems(string partition); 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Pure]
+        Task<IList<CacheItem>> GetPartitionItemsAsync(string partition); 
 
         /// <summary>
         /// 

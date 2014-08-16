@@ -27,6 +27,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
@@ -74,17 +75,26 @@ namespace KVLite.Web
             throw new NotImplementedException();
         }
 
-        public override object Get(string partition, string key)
-        {
-            throw new NotImplementedException();
-        }
-
         public override CacheItem GetItem(string partition, string key)
         {
             throw new NotImplementedException();
         }
 
         public override void Remove(string partition, string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region CacheBase Members
+
+        protected override IEnumerable<CacheItem> DoGetAllItems()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override IEnumerable<CacheItem> DoGetPartitionItems(string partition)
         {
             throw new NotImplementedException();
         }

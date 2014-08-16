@@ -49,6 +49,7 @@
     </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
     <Reference Include="Thrower">
       <HintPath>..\packages\Thrower.0.12.0\lib\net40-client\Thrower.dll</HintPath>
     </Reference>
@@ -78,7 +79,9 @@
       <DependentUpon>Queries.resx</DependentUpon>
     </Compile>
     <Compile Include="VolatileCache.cs" />
+    <Compile Include="Web\BaseStatePersister.cs" />
     <Compile Include="Web\HttpRuntimeCache.cs" />
+    <Compile Include="Web\ViewStateStorageSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="x64\SQLite.Interop.dll">

@@ -147,6 +147,34 @@ namespace KVLite {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to update CacheItem
+        ///   set utcExpiry = utcExpiry + interval
+        /// where interval is not null;
+        ///select * from CacheItem
+        /// where (utcExpiry is null or utcExpiry &gt; @utcNow);.
+        /// </summary>
+        internal static string DoGetAllItems {
+            get {
+                return ResourceManager.GetString("DoGetAllItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to update CacheItem
+        ///   set utcExpiry = utcExpiry + interval
+        /// where partition = @partition
+        ///   and interval is not null;
+        ///select * from CacheItem
+        /// where partition = @partition
+        ///   and (utcExpiry is null or utcExpiry &gt; @utcNow);.
+        /// </summary>
+        internal static string DoGetPartitionItems {
+            get {
+                return ResourceManager.GetString("DoGetPartitionItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to select *
         ///  from CacheItem
         /// where partition = @partition
@@ -169,27 +197,6 @@ namespace KVLite {
         internal static string GetItem_UpdateExpiry {
             get {
                 return ResourceManager.GetString("GetItem_UpdateExpiry", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to select * from CacheItem
-        /// where (utcExpiry is null or utcExpiry &gt; @utcNow);.
-        /// </summary>
-        internal static string GetItems_Select {
-            get {
-                return ResourceManager.GetString("GetItems_Select", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to select * from CacheItem
-        /// where partition = @partition
-        ///   and (utcExpiry is null or utcExpiry &gt; @utcNow);.
-        /// </summary>
-        internal static string GetItems_SelectPartition {
-            get {
-                return ResourceManager.GetString("GetItems_SelectPartition", resourceCulture);
             }
         }
         

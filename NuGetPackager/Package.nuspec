@@ -23,14 +23,11 @@ Very, very simple key value store based on SQL Server Compact.
     <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <dependency id="Dapper" version="" />
-      <dependency id="Microsoft.SqlServer.Compact" version="" />
+      <dependency id="System.Data.SQLite.Core" version="" />
       <dependency id="Thrower" version="" />
     </dependencies>
     <references></references>
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System.Configuration" />
-      <frameworkAssembly assemblyName="System.Web" />
-    </frameworkAssemblies>
+    <frameworkAssemblies></frameworkAssemblies>
     <tags>vbnet sql server compact key value store concurrent</tags>
   </metadata>
   <files>
