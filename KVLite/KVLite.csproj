@@ -80,7 +80,9 @@
     </Compile>
     <Compile Include="VolatileCache.cs" />
     <Compile Include="Web\BaseStatePersister.cs" />
+    <Compile Include="Web\VolatileOutputCacheProvider.cs" />
     <Compile Include="Web\HttpRuntimeCache.cs" />
+    <Compile Include="Web\PersistentOutputCacheProvider.cs" />
     <Compile Include="Web\ViewStateStorageSettings.cs" />
   </ItemGroup>
   <ItemGroup>
