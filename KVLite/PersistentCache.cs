@@ -137,8 +137,25 @@ namespace KVLite
 
         public override bool Contains(string partition, string key)
         {
-            // We use DoGet, even if we do not need the full item, because it applies sliding logic.
-            return DoGet(partition, key) != null;
+            Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
+            Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
+
+            // For this kind of task, we need a transaction. In fact, since the value may be sliding,
+            // we may have to issue an update following the initial select.
+            using (var scope = CacheContext.OpenTransactionScope()) {
+                using (var ctx = CacheContext.Create(_connectionString)) {
+                    var args = new {partition, key, DateTime.UtcNow};
+                    var sliding = ctx.Connection.ExecuteScalar<bool?>(Queries.Contains_ItemExists, args);
+                    if (!sliding.HasValue) {
+                        return false;
+                    }
+                    if (sliding.Value) {
+                        ctx.Connection.Execute(Queries.GetItem_UpdateExpiry, args);
+                    }
+                    scope.Complete();
+                    return true;
+                }
+            }
         }
 
         public override long LongCount(CacheReadMode cacheReadMode)
@@ -152,13 +169,30 @@ namespace KVLite
 
         public override object Get(string partition, string key)
         {
-            var item = DoGet(partition, key);
+            var item = GetItem(partition, key);
             return item == null ? null : item.Value;
         }
 
         public override CacheItem GetItem(string partition, string key)
         {
-            return DoGet(partition, key);
+            Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
+            Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
+
+            // For this kind of task, we need a transaction. In fact, since the value may be sliding,
+            // we may have to issue an update following the initial select.
+            using (var scope = CacheContext.OpenTransactionScope()) {
+                using (var ctx = CacheContext.Create(_connectionString)) {
+                    var dbItem = ctx.Connection.Query<DbCacheItem>(Queries.GetItem_SelectItem, new {partition, key, DateTime.UtcNow}).FirstOrDefault();
+                    if (dbItem == null) {
+                        return null;
+                    }
+                    if (dbItem.Interval.HasValue) {
+                        ctx.Connection.Execute(Queries.GetItem_UpdateExpiry, dbItem);
+                    }
+                    scope.Complete();
+                    return new CacheItem(dbItem, BinarySerializer);
+                }
+            }
         }
 
         #endregion
@@ -183,8 +217,7 @@ namespace KVLite
                         UtcExpiry = utcExpiry.HasValue ? utcExpiry.Value.Ticks : new long?(),
                         Interval = interval.HasValue ? interval.Value.Ticks : new long?()
                     };
-                    var exists = ctx.Exists(Queries.DoAdd_SelectItem, dbItem);
-                    ctx.Connection.Execute(exists ? Queries.DoAdd_UpdateItem : Queries.DoAdd_InsertItem, dbItem);
+                    ctx.Connection.Execute(Queries.DoAdd_InsertItem, dbItem);
                     scope.Complete();
                 }
             }          
@@ -199,25 +232,6 @@ namespace KVLite
                 _operationCount = 0;
                 Clear(CacheReadMode.ConsiderExpirationDate);
             }
-        }
-
-        private CacheItem DoGet(string partition, string key)
-        {
-            Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
-            Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
-
-            // For this kind of task, we need a transaction. In fact, since the value may be sliding,
-            // we may have to issue an update following the initial select.
-            using (var scope = CacheContext.OpenTransactionScope()) {
-                using (var ctx = CacheContext.Create(_connectionString)) {
-                    var dbItem = ctx.Connection.Query<DbCacheItem>(Queries.DoGet_SelectItem, new {partition, key, DateTime.UtcNow}).FirstOrDefault();
-                    if (dbItem != null && dbItem.Interval.HasValue) {
-                        ctx.Connection.Execute(Queries.DoGet_UpdateExpiry, dbItem);
-                    }
-                    scope.Complete();
-                    return new CacheItem(dbItem, BinarySerializer);
-                }
-            }         
         }
 
         private static string MapPath(string path)

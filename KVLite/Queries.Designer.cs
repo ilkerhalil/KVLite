@@ -72,6 +72,19 @@ namespace KVLite {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to select interval is not null as sliding
+        ///  from CacheItem
+        /// where partition = @partition
+        ///   and key = @key
+        ///   and (utcExpiry is null or utcExpiry &gt; @utcNow).
+        /// </summary>
+        internal static string Contains_ItemExists {
+            get {
+                return ResourceManager.GetString("Contains_ItemExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to select count(*)
         ///  from CacheItem
         /// where @ignoreExpirationDate = 1
@@ -123,36 +136,12 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to insert into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
+        ///   Looks up a localized string similar to insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
         ///values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval);.
         /// </summary>
         internal static string DoAdd_InsertItem {
             get {
                 return ResourceManager.GetString("DoAdd_InsertItem", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to select count(*) from CacheItem where partition = @partition and key = @key.
-        /// </summary>
-        internal static string DoAdd_SelectItem {
-            get {
-                return ResourceManager.GetString("DoAdd_SelectItem", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to update CacheItem
-        ///   set serializedValue = @serializedValue
-        ///     , utcCreation = @utcCreation
-        ///     , utcExpiry = @utcExpiry
-        ///     , interval = @interval
-        /// where partition = @partition
-        ///   and key = @key.
-        /// </summary>
-        internal static string DoAdd_UpdateItem {
-            get {
-                return ResourceManager.GetString("DoAdd_UpdateItem", resourceCulture);
             }
         }
         
@@ -163,9 +152,9 @@ namespace KVLite {
         ///   and key = @key
         ///   and (utcExpiry is null or utcExpiry &gt; @utcNow).
         /// </summary>
-        internal static string DoGet_SelectItem {
+        internal static string GetItem_SelectItem {
             get {
-                return ResourceManager.GetString("DoGet_SelectItem", resourceCulture);
+                return ResourceManager.GetString("GetItem_SelectItem", resourceCulture);
             }
         }
         
@@ -176,9 +165,9 @@ namespace KVLite {
         ///   and key = @key
         ///   and interval is not null;.
         /// </summary>
-        internal static string DoGet_UpdateExpiry {
+        internal static string GetItem_UpdateExpiry {
             get {
-                return ResourceManager.GetString("DoGet_UpdateExpiry", resourceCulture);
+                return ResourceManager.GetString("GetItem_UpdateExpiry", resourceCulture);
             }
         }
         
