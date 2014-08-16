@@ -32,7 +32,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Dapper;
-using KVLite.Properties;
 using Thrower;
 
 namespace KVLite
@@ -43,6 +42,9 @@ namespace KVLite
     [Serializable]
     public sealed class PersistentCache : CacheBase<PersistentCache>
     {
+        private const string ConnectionStringFormat =
+            @"Data Source={0};Version=3;Synchronous=Off;Journal Mode=WAL;Cache Size=4096000;DateTimeFormat=Ticks;Page Size=1024;Max Page Count={1};";
+
         private readonly string _connectionString;
 
         // This value is increased for each ADD operation; after this value reaches the "OperationCountBeforeSoftClear"
@@ -63,7 +65,7 @@ namespace KVLite
         public PersistentCache(string cachePath)
         {
             var mappedCachePath = MapPath(cachePath);
-            _connectionString = String.Format(Settings.Default.ConnectionStringFormat, mappedCachePath, Configuration.Instance.MaxCacheSizeInMB * 1024);
+            _connectionString = String.Format(ConnectionStringFormat, mappedCachePath, Configuration.Instance.MaxCacheSizeInMB * 1024);
 
             using (var scope = CacheContext.OpenTransactionScope()) {
                 using (var ctx = CacheContext.Create(_connectionString)) {

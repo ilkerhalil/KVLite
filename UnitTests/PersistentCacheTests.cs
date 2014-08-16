@@ -114,6 +114,7 @@ namespace UnitTests
 
         [TestCase(SmallItemCount)]
         [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
         public void Get_EmptyCache_Concurrent(int itemCount)
         {
             var tasks = new List<Task<object>>();

@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KVLite.Core;
-using KVLite.Properties;
 
 namespace KVLite
 {
@@ -42,6 +41,8 @@ namespace KVLite
     [Serializable]
     public abstract class CacheBase<TCache> : ICache<TCache> where TCache : CacheBase<TCache>, ICache<TCache>, new()
     {
+        protected const string DefaultPartition = "_DEFAULT_PARTITION_";
+
         private static readonly TCache CachedDefaultInstance = new TCache();
 
         internal readonly BinarySerializer BinarySerializer = new BinarySerializer();
@@ -71,14 +72,14 @@ namespace KVLite
 
         public void AddSliding(string key, object value, TimeSpan interval)
         {
-            AddSliding(Settings.Default.DefaultPartition, key, value, interval);
+            AddSliding(DefaultPartition, key, value, interval);
         }
 
         public abstract void AddStatic(string partition, string key, object value);
 
         public void AddStatic(string key, object value)
         {
-            AddStatic(Settings.Default.DefaultPartition, key, value);
+            AddStatic(DefaultPartition, key, value);
         }
 
         public Task AddStaticAsync(string partition, string key, object value)
@@ -95,7 +96,7 @@ namespace KVLite
 
         public void AddTimed(string key, object value, DateTime utcExpiry)
         {
-            AddTimed(Settings.Default.DefaultPartition, key, value, utcExpiry);
+            AddTimed(DefaultPartition, key, value, utcExpiry);
         }
 
         public void Clear()
@@ -109,7 +110,7 @@ namespace KVLite
 
         public bool Contains(string key)
         {
-            return Contains(Settings.Default.DefaultPartition, key);
+            return Contains(DefaultPartition, key);
         }
 
         public int Count()
@@ -137,7 +138,7 @@ namespace KVLite
 
         public object Get(string key)
         {
-            return Get(Settings.Default.DefaultPartition, key);
+            return Get(DefaultPartition, key);
         }
 
         public Task<object> GetAsync(string partition, string key)
@@ -154,7 +155,7 @@ namespace KVLite
 
         public CacheItem GetItem(string key)
         {
-            return GetItem(Settings.Default.DefaultPartition, key);
+            return GetItem(DefaultPartition, key);
         }
 
         public Task<CacheItem> GetItemAsync(string partition, string key)
@@ -211,7 +212,7 @@ namespace KVLite
 
         public void Remove(string key)
         {
-            Remove(Settings.Default.DefaultPartition, key);
+            Remove(DefaultPartition, key);
         }
 
         public Task RemoveAsync(string partition, string key)
