@@ -34,6 +34,7 @@ namespace KVLite
     /// <summary>
     ///   TODO
     /// </summary>
+    [Serializable]
     public sealed class CacheItem
     {
         /// <summary>
@@ -58,7 +59,8 @@ namespace KVLite
         public DateTime? UtcExpiry { get; set; }
         public TimeSpan? Interval { get; set; }
     }
-
+    
+    [Serializable]
     internal sealed class DbCacheItem
     {
         public string Partition { get; set; }

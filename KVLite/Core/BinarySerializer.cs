@@ -26,6 +26,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
@@ -33,6 +34,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace KVLite.Core
 {
+    [Serializable]
     internal sealed class BinarySerializer
     {
         // Indicates that types can be stated only for arrays of objects, object members of type Object, and ISerializable non-primitive value types.

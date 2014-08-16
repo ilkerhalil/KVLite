@@ -34,6 +34,7 @@ namespace KVLite
     /// <summary>
     ///   TODO
     /// </summary>
+    [Serializable]
     public sealed class Configuration : ConfigurationSection
     {
         private const string SectionName = "KVLiteConfiguration";

@@ -39,6 +39,7 @@ namespace KVLite
     /// <summary>
     ///   TODO
     /// </summary>
+    [Serializable]
     public sealed class PersistentCache : CacheBase<PersistentCache>
     {
         private readonly string _connectionString;

@@ -33,6 +33,11 @@ using KVLite.Properties;
 
 namespace KVLite
 {
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    /// <typeparam name="TCache"></typeparam>
+    [Serializable]
     public abstract class CacheBase<TCache> : ICache<TCache> where TCache : CacheBase<TCache>, ICache<TCache>, new()
     {
         private static readonly TCache CachedDefaultInstance = new TCache();

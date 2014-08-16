@@ -39,6 +39,7 @@ namespace KVLite
     /// <summary>
     ///   TODO
     /// </summary>
+    [Serializable]
     internal sealed class CacheContext : IDisposable
     {
         private static readonly ConcurrentDictionary<string, ConcurrentStack<IDbConnection>> ConnectionPool =
