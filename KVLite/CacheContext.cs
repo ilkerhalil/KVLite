@@ -106,12 +106,9 @@ namespace KVLite
 
         #region Connection Retrieval
 
-        private static IDbConnection GetOrCreateConnection(string connenctionString)
+        private static IDbConnection GetOrCreateConnection(string connStr)
         {
-            if (ConnectionPool.ContainsKey(connenctionString)) {
-                return GetCachedConnection(connenctionString);
-            }
-            return CreateNewConnection(connenctionString);
+            return ConnectionPool.ContainsKey(connStr) ? GetCachedConnection(connStr) : CreateNewConnection(connStr);
         }
 
         private static IDbConnection CreateNewConnection(string connectionString)
