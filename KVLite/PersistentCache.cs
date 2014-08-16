@@ -224,7 +224,7 @@ namespace KVLite
                         SerializedValue = reader.GetValue(CacheItem.SerializedValueDbIndex) as byte[],
                         UtcCreation = reader.GetDateTime(CacheItem.UtcCreationDbIndex),
                         UtcExpiry = reader.IsDBNull(CacheItem.UtcExpiryDbIndex) ? new DateTime?() : reader.GetDateTime(CacheItem.UtcExpiryDbIndex),
-                        Interval = reader.IsDBNull(CacheItem.IntervalDbIndex) ? new TimeSpan?() : TimeSpan.FromTicks(reader.GetInt64(CacheItem.UtcExpiryDbIndex))
+                        Interval = reader.IsDBNull(CacheItem.IntervalDbIndex) ? new TimeSpan?() : TimeSpan.FromTicks(reader.GetInt64(CacheItem.IntervalDbIndex))
                     };
                 }
             }
