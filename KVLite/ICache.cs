@@ -26,12 +26,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Diagnostics.Contracts;
+
 namespace KVLite
 {
     public interface ICache
     {
+        [Pure]
         object this[string partition, string key] { get; }
-
+        
+        [Pure]
         object this[string key] { get; }
 
         object AddStatic(string partition, string key, object value);
@@ -42,20 +46,28 @@ namespace KVLite
 
         void Clear(CacheReadMode cacheReadMode);
 
+        [Pure]
         int Count();
-
+        
+        [Pure]
         int Count(CacheReadMode cacheReadMode);
-
+        
+        [Pure]
         long LongCount();
-
+        
+        [Pure]
         long LongCount(CacheReadMode cacheReadMode);
-
+        
+        [Pure]
         object Get(string partition, string key);
-
+        
+        [Pure]
         object Get(string key);
-
+        
+        [Pure]
         CacheItem GetItem(string partition, string key);
-
+        
+        [Pure]
         CacheItem GetItem(string key);
     }
 

@@ -1,5 +1,5 @@
 ﻿//
-// CacheContext.vb
+// CacheContext.cs
 // 
 // Author(s):
 //     Alessio Parma <alessio.parma@gmail.com>
@@ -81,7 +81,7 @@ namespace KVLite
         public bool Exists(string query, SQLiteTransaction transaction)
         {
             using (var cmd = new SQLiteCommand(query, Connection, transaction)) {
-                return ((long) cmd.ExecuteScalar()) > 0;
+                return ((long) cmd.ExecuteScalar(CommandBehavior.SingleResult)) > 0;
             }
         }
 
@@ -91,10 +91,12 @@ namespace KVLite
 
         public void Dispose()
         {
-            if (_disposed)
+            if (_disposed) {
                 return;
-            if (!TryCacheConnection(_connection))
+            }
+            if (!TryCacheConnection(_connection)) {
                 _connection.Dispose();
+            }
             GC.SuppressFinalize(this);
             _disposed = true;
         }
@@ -105,8 +107,7 @@ namespace KVLite
 
         private static SQLiteConnection GetOrCreateConnection(string connenctionString)
         {
-            if (ConnectionPool.ContainsKey(connenctionString))
-            {
+            if (ConnectionPool.ContainsKey(connenctionString)) {
                 return GetCachedConnection(connenctionString);
             }
             return CreateNewConnection(connenctionString);
@@ -121,11 +122,12 @@ namespace KVLite
 
         private static SQLiteConnection GetCachedConnection(string connectionString)
         {
-            ConcurrentStack<SQLiteConnection> connectionList = null;
+            ConcurrentStack<SQLiteConnection> connectionList;
             ConnectionPool.TryGetValue(connectionString, out connectionList);
-            if (connectionList == null || connectionList.Count == 0)
+            if (connectionList == null || connectionList.Count == 0) {
                 return CreateNewConnection(connectionString);
-            SQLiteConnection connection = null;
+            }
+            SQLiteConnection connection;
             connectionList.TryPop(out connection);
             return connection ?? CreateNewConnection(connectionString);
         }
@@ -143,13 +145,13 @@ namespace KVLite
 
         private static bool TryStoreConnection(SQLiteConnection connection)
         {
-            ConcurrentStack<SQLiteConnection> connectionList = null;
+            ConcurrentStack<SQLiteConnection> connectionList;
             ConnectionPool.TryGetValue(connection.ConnectionString, out connectionList);
             dynamic maxConnCount = Configuration.Instance.MaxCachedConnectionCount;
-            if (connectionList == null)
+            if (connectionList == null) {
                 return AddFirstList(connection);
-            if (connectionList.Count <= maxConnCount)
-            {
+            }
+            if (connectionList.Count <= maxConnCount) {
                 connectionList.Push(connection);
                 return true;
             }

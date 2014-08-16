@@ -36,14 +36,13 @@ namespace KVLite
     /// </summary>
     public sealed class Configuration : ConfigurationSection
     {
-
         private const string SectionName = "KVLiteConfiguration";
         private const string DefaultCachePathKey = "DefaultCachePath";
         private const string MaxCacheSizeInMBKey = "MaxCacheSizeInMB";
         private const string MaxCachedConnectionCountKey = "MaxCachedConnectionCount";
         private const string OperationCountBeforeSoftCleanupKey = "OperationCountBeforeSoftCleanup";
 
-        private static readonly Configuration CachedInstance = (Configuration)ConfigurationManager.GetSection(SectionName);
+        private static readonly Configuration CachedInstance = (Configuration) ConfigurationManager.GetSection(SectionName);
 
         public static Configuration Instance
         {

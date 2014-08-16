@@ -14,9 +14,10 @@ namespace Benchmarks
 {
     public static class Program
     {
-        private const int RandomDataTablesCount = 10;
         private const int RowCount = 1000;
         private const int IterationCount = 5;
+        
+        private static readonly int RandomDataTablesCount = Configuration.Instance.OperationCountBeforeSoftCleanup * 10;
 
         private static readonly string[] ColumnNames = {"A", "B", "C", "D", "E"};
 
@@ -27,21 +28,18 @@ namespace Benchmarks
             Console.WriteLine(@"Generating random data tables...");
             var tables = GenerateRandomDataTables();
             _tableListSize = GetObjectSizeInMB(tables);
+            GC.Collect();
             Console.WriteLine(@"Tables generated, size in MB: {0}", _tableListSize);
 
             for (var i = 0; i < IterationCount; ++i) {
                 FullyCleanCache();
-                RetrieveEachDataTable(tables, i);
-            }
+                StoreEachDataTable(tables, i);
 
-            for (var i = 0; i < IterationCount; ++i) {
+                FullyCleanCache();
+                RetrieveEachDataTable(tables, i);
+
                 FullyCleanCache();
                 StoreDataTableList(tables, i);
-            }
-
-            for (var i = 0; i < IterationCount; ++i) {
-                FullyCleanCache();
-                StoreEachDataTable(tables, i);
             }
 
             FullyCleanCache();
@@ -121,8 +119,7 @@ namespace Benchmarks
                 if (returnedTable == null || returnedTable.TableName != table.TableName) {
                     throw new Exception("Wrong data table read from cache! :(");
                 }
-            }
-            
+            }            
             stopwatch.Stop();
 
             Debug.Assert(PersistentCache.DefaultInstance.Count() == tables.Count);

@@ -118,31 +118,33 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CacheSchema" xml:space="preserve">
-    <value>CREATE TABLE Cache_Item (
+    <value>PRAGMA auto_vacuum = INCREMENTAL;
+CREATE TABLE CacheItem (
     partition TEXT NOT NULL,
     key TEXT NOT NULL,
     serializedValue BLOB NOT NULL,
     utcCreation BIGINT NOT NULL,
     utcExpiry BIGINT,
     interval BIGINT,
-    CONSTRAINT Cache_Item_PK PRIMARY KEY (partition, key)
-);</value>
+    CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key)
+);
+CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);</value>
   </data>
   <data name="Count" xml:space="preserve">
     <value>select count(*)
-  from Cache_Item
+  from CacheItem
  where @ignoreExpirationDate = 1
     or (utcExpiry is null or utcExpiry &gt; @utcNow)</value>
   </data>
   <data name="DoAdd_Insert" xml:space="preserve">
-    <value>insert into Cache_Item (partition, key, serializedValue, utcCreation, utcExpiry, interval)
+    <value>insert into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
 values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval)</value>
   </data>
   <data name="DoAdd_Select" xml:space="preserve">
-    <value>select * from Cache_Item where partition = @partition and key = @key</value>
+    <value>select * from CacheItem where partition = @partition and key = @key</value>
   </data>
   <data name="DoAdd_Update" xml:space="preserve">
-    <value>update Cache_Item
+    <value>update CacheItem
    set serializedValue = @serializedValue
      , utcCreation = @utcCreation
      , utcExpiry = @utcExpiry
@@ -151,44 +153,44 @@ values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval)
    and key = @key</value>
   </data>
   <data name="DoClear" xml:space="preserve">
-    <value>delete from Cache_Item
+    <value>delete from CacheItem
  where @ignoreExpirationDate = 1
     or (utcExpiry is not null and utcExpiry &lt;= @utcNow);
-vacuum; -- Makes DB file smaller</value>
+--PRAGMA incremental_vacuum(10240); -- Clears up to 10MB</value>
   </data>
   <data name="DoGet_Select" xml:space="preserve">
     <value>select *
-  from Cache_Item
+  from CacheItem
  where partition = @partition
    and key = @key
    and (utcExpiry is null or utcExpiry &gt; @utcNow)</value>
   </data>
   <data name="DoGet_UpdateExpiry" xml:space="preserve">
-    <value>update Cache_Item
+    <value>update CacheItem
    set utcExpiry = @utcExpiry -- Interval is added by PersistentCache
  where partition = @partition
    and key = @key</value>
   </data>
   <data name="GetItems_Select" xml:space="preserve">
-    <value>select * from [cache_item]
- where ([utcExpiry] is null or [utcExpiry] &gt; @utcNow)</value>
+    <value>select * from CacheItem
+ where (utcExpiry is null or utcExpiry &gt; @utcNow)</value>
   </data>
   <data name="GetItems_SelectPartition" xml:space="preserve">
-    <value>select * from [cache_item]
- where [partition] = @partition
-   and ([utcExpiry] is null or [utcExpiry] &gt; @utcNow)</value>
-  </data>
-  <data name="IndexSchema" xml:space="preserve">
-    <value>CREATE INDEX UtcExpiry_Idx ON Cache_Item (utcExpiry ASC);</value>
+    <value>select * from CacheItem
+ where partition = @partition
+   and (utcExpiry is null or utcExpiry &gt; @utcNow)</value>
   </data>
   <data name="Remove" xml:space="preserve">
-    <value>delete from [cache_item]
- where [partition] = @partition
-   and [key] = @key</value>
+    <value>delete from CacheItem
+ where partition = @partition
+   and key = @key</value>
   </data>
   <data name="SchemaIsReady" xml:space="preserve">
     <value>select count(*)
   from sqlite_master
- where name = 'Cache_Item'</value>
+ where name = 'CacheItem'</value>
+  </data>
+  <data name="Vacuum" xml:space="preserve">
+    <value>PRAGMA incremental_vacuum; -- Clears free list and makes DB file smaller</value>
   </data>
 </root>

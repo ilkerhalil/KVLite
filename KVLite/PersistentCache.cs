@@ -1,8 +1,34 @@
-﻿using System;
+﻿//
+// PersistentCache.cs
+// 
+// Author(s):
+//     Alessio Parma <alessio.parma@gmail.com>
+//
+// The MIT License (MIT)
+// 
+// Copyright (c) 2014-2015 Alessio Parma <alessio.parma@gmail.com>
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using System;
 using System.Data;
 using System.Data.SQLite;
-using System.IO;
-using System.IO.Ports;
 using System.Web;
 using KVLite.Core;
 using KVLite.Properties;
@@ -28,16 +54,12 @@ namespace KVLite
             var mappedCachePath = MapPath(cachePath);
             _connectionString = String.Format(Settings.Default.ConnectionStringFormat, mappedCachePath, Configuration.Instance.MaxCacheSizeInMB);
 
-            if (!File.Exists(mappedCachePath)) {
-                // ???
-            }
-
             using (var ctx = CacheContext.Create(_connectionString)) {
                 using (var trx = ctx.Connection.BeginTransaction()) {
                     try {
                         if (!ctx.Exists(Queries.SchemaIsReady, trx)) {
+                            // Creates the CacheItem table and the required indexes.
                             ctx.ExecuteNonQuery(Queries.CacheSchema, trx);
-                            ctx.ExecuteNonQuery(Queries.IndexSchema, trx);
                         }
 
                         // Commit must be the _last_ instruction in the try block.
@@ -48,6 +70,9 @@ namespace KVLite
                     }
                 }
             }
+            
+            // Initial cleanup
+            Clear(CacheReadMode.ConsiderExpirationDate);
         }
 
         public static PersistentCache DefaultInstance
@@ -84,7 +109,14 @@ namespace KVLite
 
         public void Clear(CacheReadMode cacheReadMode)
         {
-            DoClear(cacheReadMode);
+            var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
+            using (var ctx = CacheContext.Create(_connectionString)) {
+                using (var cmd = new SQLiteCommand(Queries.DoClear, ctx.Connection)) {
+                    cmd.Parameters.AddWithValue("ignoreExpirationDate", ignoreExpirationDate);
+                    cmd.Parameters.AddWithValue("utcNow", DateTime.UtcNow);
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
 
         public int Count()
@@ -107,9 +139,9 @@ namespace KVLite
             var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
             using (var ctx = CacheContext.Create(_connectionString)) {
                 using (var cmd = new SQLiteCommand(Queries.Count, ctx.Connection)) {
-                    cmd.Parameters.AddWithValue("ignoreExpirationDate", ignoreExpirationDate).DbType = DbType.Boolean;
-                    cmd.Parameters.AddWithValue("utcNow", DateTime.UtcNow).DbType = DbType.DateTime;
-                    return (long) cmd.ExecuteScalar();
+                    cmd.Parameters.AddWithValue("ignoreExpirationDate", ignoreExpirationDate);
+                    cmd.Parameters.AddWithValue("utcNow", DateTime.UtcNow);
+                    return (long) cmd.ExecuteScalar(CommandBehavior.SingleResult);
                 }
             }
         }
@@ -160,10 +192,10 @@ namespace KVLite
                             cmd.Transaction = trx;
                             cmd.Parameters.AddWithValue("partition", partition);
                             cmd.Parameters.AddWithValue("key", key);
-                            cmd.Parameters.AddWithValue("serializedValue", serializedValue).DbType = DbType.Binary;
-                            cmd.Parameters.AddWithValue("utcCreation", DateTime.UtcNow).DbType = DbType.DateTime;
-                            cmd.Parameters.AddWithValue("utcExpiry", expiry).DbType = DbType.DateTime;
-                            cmd.Parameters.AddWithValue("interval", ticks).DbType = DbType.Int64;
+                            cmd.Parameters.AddWithValue("serializedValue", serializedValue);
+                            cmd.Parameters.AddWithValue("utcCreation", DateTime.UtcNow);
+                            cmd.Parameters.AddWithValue("utcExpiry", expiry);
+                            cmd.Parameters.AddWithValue("interval", ticks);
                             cmd.ExecuteNonQuery();
 
                             // Commit must be the _last_ instruction in the try block.
@@ -184,23 +216,11 @@ namespace KVLite
             _operationCount++;
             if (_operationCount == Configuration.Instance.OperationCountBeforeSoftCleanup) {
                 _operationCount = 0;
-                DoClear(CacheReadMode.ConsiderExpirationDate);
+                Clear(CacheReadMode.ConsiderExpirationDate);
             }
 
             // Value is returned.
             return value;
-        }
-
-        private void DoClear(CacheReadMode readMode)
-        {
-            var ignoreExpirationDate = (readMode == CacheReadMode.IgnoreExpirationDate);
-            using (var ctx = CacheContext.Create(_connectionString)) {
-                using (var cmd = new SQLiteCommand(Queries.DoClear, ctx.Connection)) {
-                    cmd.Parameters.AddWithValue("ignoreExpirationDate", ignoreExpirationDate);
-                    cmd.Parameters.AddWithValue("utcNow", DateTime.UtcNow);
-                    cmd.ExecuteNonQuery();
-                }
-            }
         }
 
         private CacheItem DoGet(string partition, string key)
@@ -216,7 +236,7 @@ namespace KVLite
                         var item = DoGetOneItem(Queries.DoGet_Select, ctx.Connection, trx, partition, key);
                         if (item != null && item.Interval.HasValue) {
                             // Since item exists and it is sliding, then we need to update its expiration time.
-                            item.UtcExpiry = item.UtcExpiry + TimeSpan.FromTicks(item.Interval.Value);
+                            item.UtcExpiry = item.UtcExpiry + item.Interval.Value;
                             using (var cmd = new SQLiteCommand(Queries.DoGet_UpdateExpiry, ctx.Connection, trx)) {
                                 cmd.Parameters.AddWithValue("partition", partition);
                                 cmd.Parameters.AddWithValue("key", key);
@@ -252,9 +272,10 @@ namespace KVLite
                 return new CacheItem {
                     Partition = reader.GetString(CacheItem.PartitionDbIndex),
                     Key = reader.GetString(CacheItem.KeyDbIndex),
-                    SerializedValue = reader.GetValue(2) as byte[],
-                    UtcCreation = reader.GetDateTime(3),
-                    UtcExpiry = reader.IsDBNull(3) ? new DateTime?() : reader.GetDateTime(3)
+                    SerializedValue = reader.GetValue(CacheItem.SerializedValueDbIndex) as byte[],
+                    UtcCreation = reader.GetDateTime(CacheItem.UtcCreationDbIndex),
+                    UtcExpiry = reader.IsDBNull(CacheItem.UtcExpiryDbIndex) ? new DateTime?() : reader.GetDateTime(CacheItem.UtcExpiryDbIndex),
+                    Interval = reader.IsDBNull(CacheItem.IntervalDbIndex) ? new TimeSpan?() : TimeSpan.FromTicks(reader.GetInt64(CacheItem.UtcExpiryDbIndex))
                 };
             }
         }

@@ -61,15 +61,17 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CREATE TABLE Cache_Item (
+        ///   Looks up a localized string similar to PRAGMA auto_vacuum = INCREMENTAL;
+        ///CREATE TABLE CacheItem (
         ///    partition TEXT NOT NULL,
         ///    key TEXT NOT NULL,
         ///    serializedValue BLOB NOT NULL,
         ///    utcCreation BIGINT NOT NULL,
         ///    utcExpiry BIGINT,
         ///    interval BIGINT,
-        ///    CONSTRAINT Cache_Item_PK PRIMARY KEY (partition, key)
-        ///);.
+        ///    CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key)
+        ///);
+        ///CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);.
         /// </summary>
         internal static string CacheSchema {
             get {
@@ -79,7 +81,7 @@ namespace KVLite {
         
         /// <summary>
         ///   Looks up a localized string similar to select count(*)
-        ///  from Cache_Item
+        ///  from CacheItem
         /// where @ignoreExpirationDate = 1
         ///    or (utcExpiry is null or utcExpiry &gt; @utcNow).
         /// </summary>
@@ -90,7 +92,7 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to insert into Cache_Item (partition, key, serializedValue, utcCreation, utcExpiry, interval)
+        ///   Looks up a localized string similar to insert into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
         ///values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval).
         /// </summary>
         internal static string DoAdd_Insert {
@@ -100,7 +102,7 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to select * from Cache_Item where partition = @partition and key = @key.
+        ///   Looks up a localized string similar to select * from CacheItem where partition = @partition and key = @key.
         /// </summary>
         internal static string DoAdd_Select {
             get {
@@ -109,7 +111,7 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to update Cache_Item
+        ///   Looks up a localized string similar to update CacheItem
         ///   set serializedValue = @serializedValue
         ///     , utcCreation = @utcCreation
         ///     , utcExpiry = @utcExpiry
@@ -124,10 +126,10 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to delete from Cache_Item
+        ///   Looks up a localized string similar to delete from CacheItem
         /// where @ignoreExpirationDate = 1
         ///    or (utcExpiry is not null and utcExpiry &lt;= @utcNow);
-        ///vacuum; -- Makes DB file smaller.
+        ///--PRAGMA incremental_vacuum(10240); -- Clears up to 10MB.
         /// </summary>
         internal static string DoClear {
             get {
@@ -137,7 +139,7 @@ namespace KVLite {
         
         /// <summary>
         ///   Looks up a localized string similar to select *
-        ///  from Cache_Item
+        ///  from CacheItem
         /// where partition = @partition
         ///   and key = @key
         ///   and (utcExpiry is null or utcExpiry &gt; @utcNow).
@@ -149,7 +151,7 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to update Cache_Item
+        ///   Looks up a localized string similar to update CacheItem
         ///   set utcExpiry = @utcExpiry -- Interval is added by PersistentCache
         /// where partition = @partition
         ///   and key = @key.
@@ -161,8 +163,8 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to select * from [cache_item]
-        /// where ([utcExpiry] is null or [utcExpiry] &gt; @utcNow).
+        ///   Looks up a localized string similar to select * from CacheItem
+        /// where (utcExpiry is null or utcExpiry &gt; @utcNow).
         /// </summary>
         internal static string GetItems_Select {
             get {
@@ -171,9 +173,9 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to select * from [cache_item]
-        /// where [partition] = @partition
-        ///   and ([utcExpiry] is null or [utcExpiry] &gt; @utcNow).
+        ///   Looks up a localized string similar to select * from CacheItem
+        /// where partition = @partition
+        ///   and (utcExpiry is null or utcExpiry &gt; @utcNow).
         /// </summary>
         internal static string GetItems_SelectPartition {
             get {
@@ -182,18 +184,9 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CREATE INDEX UtcExpiry_Idx ON Cache_Item (utcExpiry ASC);.
-        /// </summary>
-        internal static string IndexSchema {
-            get {
-                return ResourceManager.GetString("IndexSchema", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to delete from [cache_item]
-        /// where [partition] = @partition
-        ///   and [key] = @key.
+        ///   Looks up a localized string similar to delete from CacheItem
+        /// where partition = @partition
+        ///   and key = @key.
         /// </summary>
         internal static string Remove {
             get {
@@ -204,11 +197,20 @@ namespace KVLite {
         /// <summary>
         ///   Looks up a localized string similar to select count(*)
         ///  from sqlite_master
-        /// where name = &apos;Cache_Item&apos;.
+        /// where name = &apos;CacheItem&apos;.
         /// </summary>
         internal static string SchemaIsReady {
             get {
                 return ResourceManager.GetString("SchemaIsReady", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PRAGMA incremental_vacuum; -- Clears free list and makes DB file smaller.
+        /// </summary>
+        internal static string Vacuum {
+            get {
+                return ResourceManager.GetString("Vacuum", resourceCulture);
             }
         }
     }
