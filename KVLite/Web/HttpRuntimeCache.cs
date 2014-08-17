@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
+using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite.Web
 {

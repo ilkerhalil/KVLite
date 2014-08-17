@@ -42,6 +42,7 @@ namespace PommaLabs.KVLite
         private const string MaxCacheSizeInMBKey = "MaxCacheSizeInMB";
         private const string MaxLogSizeInMBKey = "MaxLogSizeInMB";
         private const string MaxCachedConnectionCountKey = "MaxCachedConnectionCount";
+        private const string MaxCachedSerializerCountKey = "MaxCachedSerializerCount";
         private const string OperationCountBeforeSoftCleanupKey = "OperationCountBeforeSoftCleanup";
 
         private static readonly Configuration CachedInstance = (Configuration) ConfigurationManager.GetSection(SectionName);
@@ -61,6 +62,12 @@ namespace PommaLabs.KVLite
         public int MaxCachedConnectionCount
         {
             get { return Convert.ToInt16(this[MaxCachedConnectionCountKey]); }
+        }
+
+        [ConfigurationProperty(MaxCachedSerializerCountKey, IsRequired = false, DefaultValue = 10)]
+        public int MaxCachedSerializerCount
+        {
+            get { return Convert.ToInt16(this[MaxCachedSerializerCountKey]); }
         }
 
         [ConfigurationProperty(MaxCacheSizeInMBKey, IsRequired = true)]

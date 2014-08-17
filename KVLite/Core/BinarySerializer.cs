@@ -26,17 +26,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
+using CodeProject.ObjectPool;
 using Snappy;
 
 namespace PommaLabs.KVLite.Core
 {
-    [Serializable]
-    internal sealed class BinarySerializer
+    internal static class BinarySerializer
     {
+        private static readonly ObjectPool<PooledObjectWrapper<BinaryFormatter>> FormatterPool = new ObjectPool<PooledObjectWrapper<BinaryFormatter>>(
+            1, Configuration.Instance.MaxCachedSerializerCount, CreatePooledBinaryFormatter);
+
+        public static byte[] SerializeObject(object obj)
+        {
+            using (var decompressedStream = new MemoryStream()) {
+                using (var binaryFormatter = FormatterPool.GetObject()) {
+                    binaryFormatter.InternalResource.Serialize(decompressedStream, obj);
+                }
+                return SnappyCodec.Compress(decompressedStream.GetBuffer());
+            }
+        }
+
+        public static object DeserializeObject(byte[] serialized)
+        {
+            using (var compressedStream = new MemoryStream(SnappyCodec.Uncompress(serialized))) {
+                using (var binaryFormatter = FormatterPool.GetObject()) {
+                    return binaryFormatter.InternalResource.Deserialize(compressedStream);
+                }
+            }
+        }
+
         // Indicates that types can be stated only for arrays of objects, object members of type Object, and ISerializable non-primitive value types.
         // The XsdString and TypesWhenNeeded settings are meant for high performance serialization between services built on the same version of the .NET Framework. 
         // These two values do not support VTS (Version Tolerant Serialization) because they intentionally omit type information that VTS uses to skip or add optional fields and properties. 
@@ -44,21 +65,9 @@ namespace PommaLabs.KVLite.Core
         // Serializing and deserializing on computers running different versions of the .NET Framework causes the formatter to skip serialization of type information, 
         // thus making it impossible for the deserializer to skip optional fields if they are not present in certain types that may exist in the other version of the .NET Framework. 
         // If you must use XsdString or TypesWhenNeeded in such a scenario, you must provide custom serialization for types that have changed from one version of the .NET Framework to the other.
-        private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter {TypeFormat = FormatterTypeStyle.TypesWhenNeeded};
-
-        public byte[] SerializeObject(object obj)
+        private static PooledObjectWrapper<BinaryFormatter> CreatePooledBinaryFormatter()
         {
-            using (var decompressedStream = new MemoryStream()) {
-                _binaryFormatter.Serialize(decompressedStream, obj);
-                return SnappyCodec.Compress(decompressedStream.GetBuffer());
-            }
-        }
-
-        public object DeserializeObject(byte[] serialized)
-        {
-            using (var compressedStream = new MemoryStream(SnappyCodec.Uncompress(serialized))) {
-                return _binaryFormatter.Deserialize(compressedStream);
-            }
+            return new PooledObjectWrapper<BinaryFormatter>(new BinaryFormatter {TypeFormat = FormatterTypeStyle.TypesWhenNeeded});
         }
     }
 }

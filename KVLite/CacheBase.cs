@@ -45,8 +45,6 @@ namespace PommaLabs.KVLite
 
         private static readonly TCache CachedDefaultInstance = new TCache();
 
-        internal readonly BinarySerializer BinarySerializer = new BinarySerializer();
-
         #region Public Properties
 
         /// <summary>

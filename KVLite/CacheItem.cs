@@ -42,11 +42,11 @@ namespace PommaLabs.KVLite
         /// </summary>
         public CacheItem() {}
 
-        internal CacheItem(DbCacheItem original, BinarySerializer serializer)
+        internal CacheItem(DbCacheItem original)
         {
             Partition = original.Partition;
             Key = original.Key;
-            Value = serializer.DeserializeObject(original.SerializedValue);
+            Value = BinarySerializer.DeserializeObject(original.SerializedValue);
             UtcCreation = DateTime.MinValue.AddTicks(original.UtcCreation);
             UtcExpiry = original.UtcExpiry == null ? new DateTime?() : DateTime.MinValue.AddTicks(original.UtcExpiry.Value);
             Interval = original.Interval == null ? new TimeSpan?() : TimeSpan.FromTicks(original.Interval.Value);
