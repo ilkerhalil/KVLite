@@ -30,9 +30,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using KVLite.Core;
+using PommaLabs.KVLite.Core;
 
-namespace KVLite
+namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   TODO
@@ -59,7 +59,7 @@ namespace KVLite
 
         #endregion
 
-        #region ICache Members
+        #region ICache<TCache> Members
 
         public object this[string partition, string key]
         {
@@ -250,8 +250,6 @@ namespace KVLite
 
         #endregion
 
-        #region Protected Members
-
         /// <summary>
         ///   TODO
         /// </summary>
@@ -264,7 +262,5 @@ namespace KVLite
         /// <param name="partition"></param>
         /// <returns></returns>
         protected abstract IList<CacheItem> DoGetPartitionItems(string partition);
-
-        #endregion
     }
 }

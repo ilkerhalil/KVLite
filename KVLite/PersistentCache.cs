@@ -34,7 +34,7 @@ using System.Web;
 using Dapper;
 using Thrower;
 
-namespace KVLite
+namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   TODO
@@ -245,7 +245,8 @@ namespace KVLite
             using (var ctx = CacheContext.Create(_connectionString)) {
                 using (var trx = ctx.BeginTransaction()) {
                     try {
-                        items.AddRange(ctx.Connection.Query<DbCacheItem>(Queries.DoGetPartitionItems, new {partition, DateTime.UtcNow}, trx).Select(x => new CacheItem(x, BinarySerializer)));
+                        items.AddRange(
+                            ctx.Connection.Query<DbCacheItem>(Queries.DoGetPartitionItems, new {partition, DateTime.UtcNow}, trx).Select(x => new CacheItem(x, BinarySerializer)));
                         trx.Commit();
                         return items;
                     } catch {

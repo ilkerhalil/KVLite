@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KVLite {
+namespace PommaLabs.KVLite {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace KVLite {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("KVLite.Queries", typeof(Queries).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PommaLabs.KVLite.Queries", typeof(Queries).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

@@ -21,7 +21,7 @@ using System;
 using System.Text;
 using System.Web.UI;
 
-namespace KVLite.Web
+namespace PommaLabs.KVLite.Web
 {
     internal abstract class BaseStatePersister : PageStatePersister
     {

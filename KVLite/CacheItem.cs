@@ -27,9 +27,9 @@
 // THE SOFTWARE.
 
 using System;
-using KVLite.Core;
+using PommaLabs.KVLite.Core;
 
-namespace KVLite
+namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   TODO
@@ -59,7 +59,7 @@ namespace KVLite
         public DateTime? UtcExpiry { get; set; }
         public TimeSpan? Interval { get; set; }
     }
-    
+
     [Serializable]
     internal sealed class DbCacheItem
     {

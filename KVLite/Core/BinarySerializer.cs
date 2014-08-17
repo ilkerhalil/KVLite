@@ -28,12 +28,11 @@
 
 using System;
 using System.IO;
-using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using Snappy;
 
-namespace KVLite.Core
+namespace PommaLabs.KVLite.Core
 {
     [Serializable]
     internal sealed class BinarySerializer
@@ -50,16 +49,16 @@ namespace KVLite.Core
         public byte[] SerializeObject(object obj)
         {
             using (var decompressedStream = new MemoryStream()) {
-			    _binaryFormatter.Serialize(decompressedStream, obj);
+                _binaryFormatter.Serialize(decompressedStream, obj);
                 return SnappyCodec.Compress(decompressedStream.GetBuffer());
             }
         }
 
         public object DeserializeObject(byte[] serialized)
         {
-			using (var compressedStream = new MemoryStream(SnappyCodec.Uncompress(serialized))) {
-				return _binaryFormatter.Deserialize(compressedStream);
-			}
+            using (var compressedStream = new MemoryStream(SnappyCodec.Uncompress(serialized))) {
+                return _binaryFormatter.Deserialize(compressedStream);
+            }
         }
     }
 }

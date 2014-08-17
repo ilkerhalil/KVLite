@@ -29,7 +29,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace KVLite
+namespace PommaLabs.KVLite
 {
     [Serializable]
     public sealed class VolatileCache : CacheBase<VolatileCache>

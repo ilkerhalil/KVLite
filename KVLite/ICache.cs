@@ -29,10 +29,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace KVLite
+namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   TODO
@@ -47,7 +46,7 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         object this[string partition, string key] { get; }
-        
+
         /// <summary>
         ///   TODO
         /// </summary>
@@ -196,7 +195,7 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         int Count();
-        
+
         /// <summary>
         ///   TODO
         /// </summary>
@@ -204,14 +203,14 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         int Count(CacheReadMode cacheReadMode);
-        
+
         /// <summary>
         ///   TODO
         /// </summary>
         /// <returns></returns>
         [Pure]
         long LongCount();
-        
+
         /// <summary>
         ///   TODO
         /// </summary>
@@ -219,7 +218,7 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         long LongCount(CacheReadMode cacheReadMode);
-        
+
         /// <summary>
         ///   TODO
         /// </summary>
@@ -228,7 +227,7 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         object Get(string partition, string key);
-        
+
         /// <summary>
         ///   TODO
         /// </summary>
@@ -253,7 +252,7 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         Task<object> GetAsync(string key);
-        
+
         /// <summary>
         ///   TODO
         /// </summary>
@@ -262,7 +261,7 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         CacheItem GetItem(string partition, string key);
-        
+
         /// <summary>
         ///   TODO
         /// </summary>
@@ -270,7 +269,7 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         CacheItem GetItem(string key);
-        
+
         /// <summary>
         ///   TODO
         /// </summary>
@@ -279,7 +278,7 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         Task<CacheItem> GetItemAsync(string partition, string key);
-        
+
         /// <summary>
         ///   TODO
         /// </summary>
@@ -294,7 +293,7 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         IList<object> GetAll();
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -307,14 +306,14 @@ namespace KVLite
         /// </summary>
         /// <returns></returns>
         [Pure]
-        IList<object> GetPartition(string partition); 
+        IList<object> GetPartition(string partition);
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         [Pure]
-        Task<IList<object>> GetPartitionAsync(string partition); 
+        Task<IList<object>> GetPartitionAsync(string partition);
 
         /// <summary>
         /// 
@@ -322,7 +321,7 @@ namespace KVLite
         /// <returns></returns>
         [Pure]
         IList<CacheItem> GetAllItems();
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -335,14 +334,14 @@ namespace KVLite
         /// </summary>
         /// <returns></returns>
         [Pure]
-        IList<CacheItem> GetPartitionItems(string partition); 
+        IList<CacheItem> GetPartitionItems(string partition);
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         [Pure]
-        Task<IList<CacheItem>> GetPartitionItemsAsync(string partition); 
+        Task<IList<CacheItem>> GetPartitionItemsAsync(string partition);
 
         /// <summary>
         /// 
@@ -377,9 +376,7 @@ namespace KVLite
     ///   TODO
     /// </summary>
     /// <typeparam name="TCache"></typeparam>
-    public interface ICache<TCache> : ICache where TCache : class, ICache<TCache>, new()
-    {
-    }
+    public interface ICache<TCache> : ICache where TCache : class, ICache<TCache>, new() {}
 
     /// <summary>
     ///   TODO

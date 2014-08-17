@@ -32,7 +32,7 @@ using System.Text;
 using System.Web;
 using System.Web.Caching;
 
-namespace KVLite.Web
+namespace PommaLabs.KVLite.Web
 {
     /// <summary>
     ///   TODO
@@ -40,8 +40,6 @@ namespace KVLite.Web
     public sealed class HttpRuntimeCache : CacheBase<HttpRuntimeCache>
     {
         private static readonly Cache HttpCache = HttpRuntime.Cache ?? new Cache();
-
-        #region ICache Members
 
         public override void AddSliding(string partition, string key, object value, TimeSpan interval)
         {
@@ -85,10 +83,6 @@ namespace KVLite.Web
             throw new NotImplementedException();
         }
 
-        #endregion
-
-        #region CacheBase Members
-
         protected override IList<CacheItem> DoGetAllItems()
         {
             throw new NotImplementedException();
@@ -98,7 +92,5 @@ namespace KVLite.Web
         {
             throw new NotImplementedException();
         }
-
-        #endregion
     }
 }

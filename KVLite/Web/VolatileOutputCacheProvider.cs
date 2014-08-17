@@ -29,7 +29,7 @@
 using System;
 using System.Web.Caching;
 
-namespace KVLite.Web
+namespace PommaLabs.KVLite.Web
 {
     public sealed class VolatileOutputCacheProvider : OutputCacheProvider
     {

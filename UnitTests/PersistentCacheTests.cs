@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using KVLite;
 using NUnit.Framework;
+using PommaLabs.KVLite;
 
 namespace UnitTests
 {
