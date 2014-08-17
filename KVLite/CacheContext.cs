@@ -111,6 +111,8 @@ namespace KVLite
         {
             var connection = new SQLiteConnection(connectionString);
             connection.Open();
+            // Settings ten minutes as timeout should be more than enough...
+            connection.DefaultTimeout = 600; 
             // Sets PRAGMAs for this new connection.
             var journalSizeLimitInBytes = Configuration.Instance.MaxLogSizeInMB*1024*1024;
             var pragmas = String.Format(Queries.SetPragmas, journalSizeLimitInBytes);

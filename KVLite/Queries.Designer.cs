@@ -190,6 +190,7 @@ namespace KVLite {
         
         /// <summary>
         ///   Looks up a localized string similar to PRAGMA read_uncommitted = 1;
+        ///PRAGMA cache_spill=1;
         ///PRAGMA temp_store = MEMORY;
         ///PRAGMA count_changes = 0; /* Not required by our queries */
         ///PRAGMA cache_size = 128; /* Number of pages of 32KB */
