@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace KVLite
@@ -80,6 +81,25 @@ namespace KVLite
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <param name="value"></param>
+        /// <param name="interval"></param>
+        /// <returns></returns>
+        Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="interval"></param>
+        /// <returns></returns>
+        Task AddSlidingAsync(string key, object value, TimeSpan interval);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
         void AddStatic(string partition, string key, object value);
 
@@ -124,6 +144,23 @@ namespace KVLite
         /// <param name="value"></param>
         /// <param name="utcExpiry"></param>
         void AddTimed(string key, object value, DateTime utcExpiry);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="utcExpiry"></param>
+        Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="utcExpiry"></param>
+        Task AddTimedAsync(string key, object value, DateTime utcExpiry);
 
         /// <summary>
         ///   TODO

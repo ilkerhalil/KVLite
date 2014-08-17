@@ -41,7 +41,7 @@ namespace KVLite
     [Serializable]
     public abstract class CacheBase<TCache> : ICache<TCache> where TCache : CacheBase<TCache>, ICache<TCache>, new()
     {
-        protected const string DefaultPartition = "_DEFAULT_PARTITION_";
+        private const string DefaultPartition = "_DEFAULT_PARTITION_";
 
         private static readonly TCache CachedDefaultInstance = new TCache();
 
@@ -49,6 +49,9 @@ namespace KVLite
 
         #region Public Properties
 
+        /// <summary>
+        ///   TODO
+        /// </summary>
         public static TCache DefaultInstance
         {
             get { return CachedDefaultInstance; }
@@ -75,6 +78,16 @@ namespace KVLite
             AddSliding(DefaultPartition, key, value, interval);
         }
 
+        public Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval)
+        {
+            return Task.Factory.StartNew(() => AddSliding(partition, key, value, interval));
+        }
+
+        public Task AddSlidingAsync(string key, object value, TimeSpan interval)
+        {
+            return Task.Factory.StartNew(() => AddSliding(key, value, interval));
+        }
+
         public abstract void AddStatic(string partition, string key, object value);
 
         public void AddStatic(string key, object value)
@@ -97,6 +110,16 @@ namespace KVLite
         public void AddTimed(string key, object value, DateTime utcExpiry)
         {
             AddTimed(DefaultPartition, key, value, utcExpiry);
+        }
+
+        public Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry)
+        {
+            return Task.Factory.StartNew(() => AddTimed(partition, key, value, utcExpiry));
+        }
+
+        public Task AddTimedAsync(string key, object value, DateTime utcExpiry)
+        {
+            return Task.Factory.StartNew(() => AddTimed(key, value, utcExpiry));
         }
 
         public void Clear()
@@ -229,8 +252,17 @@ namespace KVLite
 
         #region Protected Members
 
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
         protected abstract IEnumerable<CacheItem> DoGetAllItems();
 
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <returns></returns>
         protected abstract IEnumerable<CacheItem> DoGetPartitionItems(string partition);
 
         #endregion

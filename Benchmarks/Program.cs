@@ -235,7 +235,7 @@ namespace Benchmarks
             Console.WriteLine(@"Removing each data table, iteration {0}...", iteration);
 
             foreach (var table in tables) {
-                PersistentCache.DefaultInstance.AddTimed(table.TableName, table, DateTime.Now.AddHours(1));
+                PersistentCache.DefaultInstance.AddTimed(table.TableName, table, DateTime.UtcNow.AddHours(1));
             }
 
             var stopwatch = new Stopwatch();
@@ -258,7 +258,7 @@ namespace Benchmarks
             Console.WriteLine(@"Removing each data table asynchronously, iteration {0}...", iteration);
 
             foreach (var table in tables) {
-                PersistentCache.DefaultInstance.AddTimed(table.TableName, table, DateTime.Now.AddHours(1));
+                PersistentCache.DefaultInstance.AddTimed(table.TableName, table, DateTime.UtcNow.AddHours(1));
             }
 
             var stopwatch = new Stopwatch();
@@ -289,13 +289,13 @@ namespace Benchmarks
             var writeTasks = new List<Task>();
             var readTasks = new List<Task<object>>();
             foreach (var table in tables) {
-                writeTasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+                writeTasks.Add(PersistentCache.DefaultInstance.AddSlidingAsync(table.TableName, table, TimeSpan.FromMinutes(10)));
             }
             foreach (var table in tables) {
                 readTasks.Add(PersistentCache.DefaultInstance.GetAsync(table.TableName));
             }
             foreach (var table in tables) {
-                writeTasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+                writeTasks.Add(PersistentCache.DefaultInstance.AddTimedAsync(table.TableName, table, DateTime.UtcNow.AddHours(1)));
             }
             foreach (var table in tables) {
                 readTasks.Add(PersistentCache.DefaultInstance.GetAsync(table.TableName));
@@ -307,6 +307,9 @@ namespace Benchmarks
                 task.Wait();
             }
             stopwatch.Stop();
+
+            Debug.Assert(PersistentCache.DefaultInstance.Count() == tables.Count);
+            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
 
             Console.WriteLine(@"Data tables retrieved/stored in: {0}", stopwatch.Elapsed);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize*4/stopwatch.Elapsed.Seconds);
