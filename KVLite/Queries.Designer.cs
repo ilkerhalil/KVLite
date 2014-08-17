@@ -61,6 +61,25 @@ namespace KVLite {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to PRAGMA auto_vacuum = FULL;
+        ///CREATE TABLE CacheItem (
+        ///    partition TEXT NOT NULL,
+        ///    key TEXT NOT NULL,
+        ///    serializedValue BLOB NOT NULL,
+        ///    utcCreation BIGINT NOT NULL,
+        ///    utcExpiry BIGINT,
+        ///    interval BIGINT,
+        ///    CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key)
+        ///);
+        ///CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);.
+        /// </summary>
+        internal static string CacheSchema {
+            get {
+                return ResourceManager.GetString("CacheSchema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to delete from CacheItem
         /// where @ignoreExpirationDate = 1
         ///    or (utcExpiry is not null and utcExpiry &lt;= @utcNow);.
@@ -78,9 +97,9 @@ namespace KVLite {
         ///   and key = @key
         ///   and (utcExpiry is null or utcExpiry &gt; @utcNow).
         /// </summary>
-        internal static string Contains_ItemExists {
+        internal static string Contains {
             get {
-                return ResourceManager.GetString("Contains_ItemExists", resourceCulture);
+                return ResourceManager.GetString("Contains", resourceCulture);
             }
         }
         
@@ -97,59 +116,18 @@ namespace KVLite {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PRAGMA auto_vacuum = FULL;
-        ///CREATE TABLE CacheItem (
-        ///    partition TEXT NOT NULL,
-        ///    key TEXT NOT NULL,
-        ///    serializedValue BLOB NOT NULL,
-        ///    utcCreation BIGINT NOT NULL,
-        ///    utcExpiry BIGINT,
-        ///    interval BIGINT,
-        ///    CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key)
-        ///);
-        ///CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);.
-        /// </summary>
-        internal static string Ctor_CacheSchema {
-            get {
-                return ResourceManager.GetString("Ctor_CacheSchema", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to select count(*)
-        ///  from sqlite_master
-        /// where name = &apos;CacheItem&apos;;.
-        /// </summary>
-        internal static string Ctor_SchemaIsReady {
-            get {
-                return ResourceManager.GetString("Ctor_SchemaIsReady", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to PRAGMA read_uncommitted = 1;
-        ///PRAGMA cache_size = 128; /* Number of pages of 32KB */
-        ///PRAGMA journal_size_limit = {0}; /* Size in bytes */.
-        /// </summary>
-        internal static string Ctor_SetPragmas {
-            get {
-                return ResourceManager.GetString("Ctor_SetPragmas", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
-        ///values (@partition, @key, @serializedValue, @utcCreation, @utcExpiry, @interval);.
+        ///values (@partition, @key, @serializedValue, datetime(&apos;now&apos;), @utcExpiry, @interval);.
         /// </summary>
-        internal static string DoAdd_InsertItem {
+        internal static string DoAdd {
             get {
-                return ResourceManager.GetString("DoAdd_InsertItem", resourceCulture);
+                return ResourceManager.GetString("DoAdd", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to update CacheItem
-        ///   set utcExpiry = utcExpiry + interval
+        ///   set utcExpiry = datetime(&apos;now&apos;) + interval
         /// where interval is not null;
         ///select * from CacheItem
         /// where (utcExpiry is null or utcExpiry &gt; @utcNow);.
@@ -162,7 +140,7 @@ namespace KVLite {
         
         /// <summary>
         ///   Looks up a localized string similar to update CacheItem
-        ///   set utcExpiry = utcExpiry + interval
+        ///   set utcExpiry = datetime(&apos;now&apos;) + interval
         /// where partition = @partition
         ///   and interval is not null;
         ///select * from CacheItem
@@ -182,22 +160,9 @@ namespace KVLite {
         ///   and key = @key
         ///   and (utcExpiry is null or utcExpiry &gt; @utcNow).
         /// </summary>
-        internal static string GetItem_SelectItem {
+        internal static string GetItem {
             get {
-                return ResourceManager.GetString("GetItem_SelectItem", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to update CacheItem
-        ///   set utcExpiry = utcExpiry + interval
-        /// where partition = @partition
-        ///   and key = @key
-        ///   and interval is not null;.
-        /// </summary>
-        internal static string GetItem_UpdateExpiry {
-            get {
-                return ResourceManager.GetString("GetItem_UpdateExpiry", resourceCulture);
+                return ResourceManager.GetString("GetItem", resourceCulture);
             }
         }
         
@@ -209,6 +174,43 @@ namespace KVLite {
         internal static string Remove {
             get {
                 return ResourceManager.GetString("Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to select count(*)
+        ///  from sqlite_master
+        /// where name = &apos;CacheItem&apos;;.
+        /// </summary>
+        internal static string SchemaIsReady {
+            get {
+                return ResourceManager.GetString("SchemaIsReady", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PRAGMA read_uncommitted = 1;
+        ///PRAGMA temp_store = MEMORY;
+        ///PRAGMA count_changes = 0; /* Not required by our queries */
+        ///PRAGMA cache_size = 128; /* Number of pages of 32KB */
+        ///PRAGMA journal_size_limit = {0}; /* Size in bytes */.
+        /// </summary>
+        internal static string SetPragmas {
+            get {
+                return ResourceManager.GetString("SetPragmas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to update CacheItem
+        ///   set utcExpiry = datetime(&apos;now&apos;) + interval
+        /// where partition = @partition
+        ///   and key = @key
+        ///   and interval is not null;.
+        /// </summary>
+        internal static string UpdateExpiry {
+            get {
+                return ResourceManager.GetString("UpdateExpiry", resourceCulture);
             }
         }
         

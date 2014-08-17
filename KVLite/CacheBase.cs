@@ -213,7 +213,7 @@ namespace KVLite
 
         public IList<CacheItem> GetAllItems()
         {
-            return DoGetAllItems().ToList();
+            return DoGetAllItems();
         }
 
         public Task<IList<CacheItem>> GetAllItemsAsync()
@@ -223,7 +223,7 @@ namespace KVLite
 
         public IList<CacheItem> GetPartitionItems(string partition)
         {
-            return DoGetPartitionItems(partition).ToList();
+            return DoGetPartitionItems(partition);
         }
 
         public Task<IList<CacheItem>> GetPartitionItemsAsync(string partition)
@@ -256,14 +256,14 @@ namespace KVLite
         ///   TODO
         /// </summary>
         /// <returns></returns>
-        protected abstract IEnumerable<CacheItem> DoGetAllItems();
+        protected abstract IList<CacheItem> DoGetAllItems();
 
         /// <summary>
         ///   TODO
         /// </summary>
         /// <param name="partition"></param>
         /// <returns></returns>
-        protected abstract IEnumerable<CacheItem> DoGetPartitionItems(string partition);
+        protected abstract IList<CacheItem> DoGetPartitionItems(string partition);
 
         #endregion
     }

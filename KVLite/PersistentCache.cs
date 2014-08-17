@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -43,7 +42,7 @@ namespace KVLite
     [Serializable]
     public sealed class PersistentCache : CacheBase<PersistentCache>
     {
-        private const string ConnectionStringFormat = @"Data Source={0};Version=3;Max Page Count={1};Synchronous=Off;Journal Mode=WAL;DateTimeFormat=Ticks;Page Size=32768;";
+        private const string ConnectionStringFormat = @"Data Source={0};Version=3;Synchronous=Off;Journal Mode=WAL;DateTimeFormat=Ticks;Page Size=32768;Max Page Count={1};";
 
         private readonly string _connectionString;
 
@@ -65,18 +64,24 @@ namespace KVLite
         public PersistentCache(string cachePath)
         {
             var mappedCachePath = MapPath(cachePath);
-            _connectionString = String.Format(ConnectionStringFormat, mappedCachePath, Configuration.Instance.MaxCacheSizeInMB*256);
+            var maxPageCount = Configuration.Instance.MaxCacheSizeInMB*256; // Each page is 32KB large
+            _connectionString = String.Format(ConnectionStringFormat, mappedCachePath, maxPageCount);
 
-            using (var scope = CacheContext.OpenTransactionScope()) {
-                using (var ctx = CacheContext.Create(_connectionString)) {
-                    if (!ctx.Exists(Queries.Ctor_SchemaIsReady)) {
-                        // Creates the CacheItem table and the required indexes.
-                        ctx.Connection.Execute(Queries.Ctor_CacheSchema);
+            using (var ctx = CacheContext.Create(_connectionString)) {
+                using (var trx = ctx.BeginTransaction()) {
+                    try {
+                        if (!ctx.Exists(Queries.SchemaIsReady, trx)) {
+                            // Creates the CacheItem table and the required indexes.
+                            ctx.Connection.Execute(Queries.CacheSchema, null, trx);
+                        }
+                        trx.Commit();
+                    } catch {
+                        trx.Rollback();
+                        throw;
                     }
-                    scope.Complete();
                 }
             }
-            
+
             // Initial cleanup
             Clear(CacheReadMode.ConsiderExpirationDate);
         }
@@ -90,11 +95,9 @@ namespace KVLite
         /// </summary>
         public void Vacuum()
         {
-            using (var scope = CacheContext.OpenTransactionScope()) {
-                using (var ctx = CacheContext.Create(_connectionString)) {
-                    ctx.Connection.Execute(Queries.Vacuum);
-                    scope.Complete();
-                }
+            // Vacuum cannot be run within a transaction.
+            using (var ctx = CacheContext.Create(_connectionString)) {
+                ctx.Connection.Execute(Queries.Vacuum);
             }
         }
 
@@ -108,8 +111,6 @@ namespace KVLite
         }
 
         #endregion
-
-        #region ICache<PersistentCache> Members
 
         public override void AddSliding(string partition, string key, object value, TimeSpan interval)
         {
@@ -129,12 +130,17 @@ namespace KVLite
         public override void Clear(CacheReadMode cacheReadMode)
         {
             var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
-            using (var scope = CacheContext.OpenTransactionScope()) {
-                using (var ctx = CacheContext.Create(_connectionString)) {
-                    ctx.Connection.Execute(Queries.Clear, new {ignoreExpirationDate, DateTime.UtcNow});
-                    scope.Complete();
+            using (var ctx = CacheContext.Create(_connectionString)) {
+                using (var trx = ctx.BeginTransaction()) {
+                    try {
+                        ctx.Connection.Execute(Queries.Clear, new {ignoreExpirationDate, DateTime.UtcNow}, trx);
+                        trx.Commit();
+                    } catch {
+                        trx.Rollback();
+                        throw;
+                    }
                 }
-            }           
+            }
         }
 
         public override bool Contains(string partition, string key)
@@ -144,18 +150,23 @@ namespace KVLite
 
             // For this kind of task, we need a transaction. In fact, since the value may be sliding,
             // we may have to issue an update following the initial select.
-            using (var scope = CacheContext.OpenTransactionScope()) {
-                using (var ctx = CacheContext.Create(_connectionString)) {
-                    var args = new {partition, key, DateTime.UtcNow};
-                    var sliding = ctx.Connection.ExecuteScalar<bool?>(Queries.Contains_ItemExists, args);
-                    if (!sliding.HasValue) {
-                        return false;
+            using (var ctx = CacheContext.Create(_connectionString)) {
+                using (var trx = ctx.BeginTransaction()) {
+                    try {
+                        var args = new {partition, key, DateTime.UtcNow};
+                        var sliding = ctx.Connection.ExecuteScalar<bool?>(Queries.Contains, args, trx);
+                        if (!sliding.HasValue) {
+                            return false;
+                        }
+                        if (sliding.Value) {
+                            ctx.Connection.Execute(Queries.UpdateExpiry, args, trx);
+                        }
+                        trx.Commit();
+                        return true;
+                    } catch {
+                        trx.Rollback();
+                        throw;
                     }
-                    if (sliding.Value) {
-                        ctx.Connection.Execute(Queries.GetItem_UpdateExpiry, args);
-                    }
-                    scope.Complete();
-                    return true;
                 }
             }
         }
@@ -176,60 +187,74 @@ namespace KVLite
 
             // For this kind of task, we need a transaction. In fact, since the value may be sliding,
             // we may have to issue an update following the initial select.
-            using (var scope = CacheContext.OpenTransactionScope()) {
-                using (var ctx = CacheContext.Create(_connectionString)) {
-                    var dbItem = ctx.Connection.Query<DbCacheItem>(Queries.GetItem_SelectItem, new {partition, key, DateTime.UtcNow}).FirstOrDefault();
-                    if (dbItem == null) {
-                        return null;
+            using (var ctx = CacheContext.Create(_connectionString)) {
+                using (var trx = ctx.BeginTransaction()) {
+                    try {
+                        var dbItem = ctx.Connection.Query<DbCacheItem>(Queries.GetItem, new {partition, key, DateTime.UtcNow}, trx).FirstOrDefault();
+                        if (dbItem == null) {
+                            return null;
+                        }
+                        if (dbItem.Interval.HasValue) {
+                            ctx.Connection.Execute(Queries.UpdateExpiry, dbItem, trx);
+                        }
+                        trx.Commit();
+                        return new CacheItem(dbItem, BinarySerializer);
+                    } catch {
+                        trx.Rollback();
+                        throw;
                     }
-                    if (dbItem.Interval.HasValue) {
-                        ctx.Connection.Execute(Queries.GetItem_UpdateExpiry, dbItem);
-                    }
-                    scope.Complete();
-                    return new CacheItem(dbItem, BinarySerializer);
                 }
             }
         }
 
         public override void Remove(string partition, string key)
         {
-            using (var scope = CacheContext.OpenTransactionScope()) {
-                using (var ctx = CacheContext.Create(_connectionString)) {
-                    ctx.Connection.Execute(Queries.Remove, new {partition, key});
-                    scope.Complete();
-                }
-            }  
-        }
-
-        #endregion
-
-        #region CacheBase Members
-
-        protected override IEnumerable<CacheItem> DoGetAllItems()
-        {
-            using (var scope = CacheContext.OpenTransactionScope()) {
-                using (var ctx = CacheContext.Create(_connectionString)) {
-                    foreach (var dbItem in ctx.Connection.Query<DbCacheItem>(Queries.DoGetAllItems, new {DateTime.UtcNow})) {
-                        yield return new CacheItem(dbItem, BinarySerializer);
+            using (var ctx = CacheContext.Create(_connectionString)) {
+                using (var trx = ctx.BeginTransaction()) {
+                    try {
+                        ctx.Connection.Execute(Queries.Remove, new {partition, key}, trx);
+                        trx.Commit();
+                    } catch {
+                        trx.Rollback();
+                        throw;
                     }
-                    scope.Complete();
                 }
-            }  
+            }
         }
 
-        protected override IEnumerable<CacheItem> DoGetPartitionItems(string partition)
+        protected override IList<CacheItem> DoGetAllItems()
         {
-            using (var scope = CacheContext.OpenTransactionScope()) {
-                using (var ctx = CacheContext.Create(_connectionString)) {
-                    foreach (var dbItem in ctx.Connection.Query<DbCacheItem>(Queries.DoGetPartitionItems, new {partition, DateTime.UtcNow})) {
-                        yield return new CacheItem(dbItem, BinarySerializer);
+            var items = new List<CacheItem>();
+            using (var ctx = CacheContext.Create(_connectionString)) {
+                using (var trx = ctx.BeginTransaction()) {
+                    try {
+                        items.AddRange(ctx.Connection.Query<DbCacheItem>(Queries.DoGetAllItems, new {DateTime.UtcNow}, trx).Select(x => new CacheItem(x, BinarySerializer)));
+                        trx.Commit();
+                        return items;
+                    } catch {
+                        trx.Rollback();
+                        throw;
                     }
-                    scope.Complete();
                 }
-            } 
+            }
         }
 
-        #endregion
+        protected override IList<CacheItem> DoGetPartitionItems(string partition)
+        {
+            var items = new List<CacheItem>();
+            using (var ctx = CacheContext.Create(_connectionString)) {
+                using (var trx = ctx.BeginTransaction()) {
+                    try {
+                        items.AddRange(ctx.Connection.Query<DbCacheItem>(Queries.DoGetPartitionItems, new {partition, DateTime.UtcNow}, trx).Select(x => new CacheItem(x, BinarySerializer)));
+                        trx.Commit();
+                        return items;
+                    } catch {
+                        trx.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
 
         #region Private Methods
 
@@ -241,20 +266,24 @@ namespace KVLite
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
             var serializedValue = BinarySerializer.SerializeObject(value);
 
-            using (var scope = CacheContext.OpenTransactionScope()) {
-                using (var ctx = CacheContext.Create(_connectionString)) {
-                    var dbItem = new DbCacheItem {
-                        Partition = partition,
-                        Key = key,
-                        SerializedValue = serializedValue,
-                        UtcCreation = DateTime.UtcNow.Ticks,
-                        UtcExpiry = utcExpiry.HasValue ? utcExpiry.Value.Ticks : new long?(),
-                        Interval = interval.HasValue ? interval.Value.Ticks : new long?()
-                    };
-                    ctx.Connection.Execute(Queries.DoAdd_InsertItem, dbItem);
-                    scope.Complete();
+            using (var ctx = CacheContext.Create(_connectionString)) {
+                using (var trx = ctx.BeginTransaction()) {
+                    try {
+                        var dbItem = new DbCacheItem {
+                            Partition = partition,
+                            Key = key,
+                            SerializedValue = serializedValue,
+                            UtcExpiry = utcExpiry.HasValue ? utcExpiry.Value.Ticks : new long?(),
+                            Interval = interval.HasValue ? interval.Value.Ticks : new long?()
+                        };
+                        ctx.Connection.Execute(Queries.DoAdd, dbItem, trx);
+                        trx.Commit();
+                    } catch {
+                        trx.Rollback();
+                        throw;
+                    }
                 }
-            }          
+            }
 
             // Operation has concluded successfully, therefore we increment the operation counter.
             // If it has reached the "OperationCountBeforeSoftClear" configuration parameter,

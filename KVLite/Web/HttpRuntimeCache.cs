@@ -89,12 +89,12 @@ namespace KVLite.Web
 
         #region CacheBase Members
 
-        protected override IEnumerable<CacheItem> DoGetAllItems()
+        protected override IList<CacheItem> DoGetAllItems()
         {
             throw new NotImplementedException();
         }
 
-        protected override IEnumerable<CacheItem> DoGetPartitionItems(string partition)
+        protected override IList<CacheItem> DoGetPartitionItems(string partition)
         {
             throw new NotImplementedException();
         }

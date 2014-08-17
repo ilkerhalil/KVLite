@@ -30,9 +30,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Data;
 using System.Data.SQLite;
-using System.Transactions;
 using Dapper;
-using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace KVLite
 {
@@ -44,8 +42,6 @@ namespace KVLite
     {
         private static readonly ConcurrentDictionary<string, ConcurrentStack<IDbConnection>> ConnectionPool =
             new ConcurrentDictionary<string, ConcurrentStack<IDbConnection>>();
-
-        private static readonly TransactionOptions TransactionOptions = new TransactionOptions {IsolationLevel = IsolationLevel.ReadCommitted};
 
         private readonly IDbConnection _connection;
         private bool _disposed;
@@ -71,19 +67,19 @@ namespace KVLite
             get { return _connection; }
         }
 
-        public static TransactionScope OpenTransactionScope()
+        public IDbTransaction BeginTransaction()
         {
-            return new TransactionScope(TransactionScopeOption.Required, TransactionOptions);
+            return _connection.BeginTransaction(IsolationLevel.ReadCommitted);
         }
 
-        public bool Exists(string query, object args)
+        public bool Exists(string query, object args, IDbTransaction transaction)
         {
-            return _connection.ExecuteScalar<long>(query, args) > 0;
+            return _connection.ExecuteScalar<long>(query, args, transaction) > 0;
         }
 
-        public bool Exists(string query)
+        public bool Exists(string query, IDbTransaction transaction)
         {
-            return _connection.ExecuteScalar<long>(query) > 0;
+            return Exists(query, null, transaction);
         }
 
         #endregion
@@ -117,7 +113,7 @@ namespace KVLite
             connection.Open();
             // Sets PRAGMAs for this new connection.
             var journalSizeLimitInBytes = Configuration.Instance.MaxLogSizeInMB*1024*1024;
-            var pragmas = String.Format(Queries.Ctor_SetPragmas, journalSizeLimitInBytes);
+            var pragmas = String.Format(Queries.SetPragmas, journalSizeLimitInBytes);
             connection.Execute(pragmas);
             return connection;
         }
