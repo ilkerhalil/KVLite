@@ -108,9 +108,9 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release (
-    copy "KVLite.dll" "$(SolutionDir)NuGetPackager/lib/net40"
-    copy "KVLite.pdb" "$(SolutionDir)NuGetPackager/lib/net40"
-    copy "KVLite.xml" "$(SolutionDir)NuGetPackager/lib/net40"
+    copy "PommaLabs.KVLite.dll" "$(SolutionDir)NuGetPackager/lib/net40"
+    copy "PommaLabs.KVLite.pdb" "$(SolutionDir)NuGetPackager/lib/net40"
+    copy "PommaLabs.KVLite.xml" "$(SolutionDir)NuGetPackager/lib/net40"
 )</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
