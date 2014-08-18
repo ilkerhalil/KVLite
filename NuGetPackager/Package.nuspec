@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>0.3.4</version>
+    <version>0.3.5</version>
     <title>PommaLabs.KVLite</title>
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -23,6 +23,7 @@ Very, very simple key value store based on SQLite.
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
+      <dependency id="CodeProject.ObjectPool" version="" />
       <dependency id="Dapper" version="" />
       <dependency id="Snappy.NET" version="" />
       <dependency id="System.Data.SQLite.Core.MSIL" version="" />

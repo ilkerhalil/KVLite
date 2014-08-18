@@ -78,7 +78,7 @@
     <Compile Include="Core\Queries.cs" />
     <Compile Include="VolatileCache.cs" />
     <Compile Include="Web\BaseStatePersister.cs" />
-    <Compile Include="Web\CacheViewStatePersister.cs" />
+    <Compile Include="Web\PersistentViewStatePersister.cs" />
     <Compile Include="Web\VolatileOutputCacheProvider.cs" />
     <Compile Include="Web\HttpRuntimeCache.cs" />
     <Compile Include="Web\PersistentOutputCacheProvider.cs" />
