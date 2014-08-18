@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {

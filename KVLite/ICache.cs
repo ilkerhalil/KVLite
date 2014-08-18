@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
-using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
@@ -385,21 +384,6 @@ namespace PommaLabs.KVLite
     [Serializable]
     public sealed class CacheItem
     {
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        public CacheItem() {}
-
-        internal CacheItem(PersistentCache.DbCacheItem original)
-        {
-            Partition = original.Partition;
-            Key = original.Key;
-            Value = BinarySerializer.DeserializeObject(original.SerializedValue);
-            UtcCreation = DateTime.MinValue.AddTicks(original.UtcCreation);
-            UtcExpiry = original.UtcExpiry == null ? new DateTime?() : DateTime.MinValue.AddTicks(original.UtcExpiry.Value);
-            Interval = original.Interval == null ? new TimeSpan?() : TimeSpan.FromTicks(original.Interval.Value);
-        }
-
         public string Partition { get; set; }
         public string Key { get; set; }
         public object Value { get; set; }

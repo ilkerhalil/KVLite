@@ -82,7 +82,7 @@ namespace PommaLabs.KVLite {
         /// <summary>
         ///   Looks up a localized string similar to delete from CacheItem
         /// where @ignoreExpirationDate = 1
-        ///    or (utcExpiry is not null and utcExpiry &lt;= @utcNow);.
+        ///    or (utcExpiry is not null and utcExpiry &lt;= strftime(&apos;%s&apos;, &apos;now&apos;));.
         /// </summary>
         internal static string Clear {
             get {
@@ -95,7 +95,7 @@ namespace PommaLabs.KVLite {
         ///  from CacheItem
         /// where partition = @partition
         ///   and key = @key
-        ///   and (utcExpiry is null or utcExpiry &gt; @utcNow).
+        ///   and (utcExpiry is null or utcExpiry &gt; strftime(&apos;%s&apos;, &apos;now&apos;)).
         /// </summary>
         internal static string Contains {
             get {
@@ -107,7 +107,7 @@ namespace PommaLabs.KVLite {
         ///   Looks up a localized string similar to select count(*)
         ///  from CacheItem
         /// where @ignoreExpirationDate = 1
-        ///    or (utcExpiry is null or utcExpiry &gt; @utcNow);.
+        ///    or (utcExpiry is null or utcExpiry &gt; strftime(&apos;%s&apos;, &apos;now&apos;));.
         /// </summary>
         internal static string Count {
             get {
@@ -117,7 +117,7 @@ namespace PommaLabs.KVLite {
         
         /// <summary>
         ///   Looks up a localized string similar to insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
-        ///values (@partition, @key, @serializedValue, datetime(&apos;now&apos;), @utcExpiry, @interval);.
+        ///values (@partition, @key, @serializedValue, strftime(&apos;%s&apos;, &apos;now&apos;), @utcExpiry, @interval);.
         /// </summary>
         internal static string DoAdd {
             get {
@@ -127,10 +127,10 @@ namespace PommaLabs.KVLite {
         
         /// <summary>
         ///   Looks up a localized string similar to update CacheItem
-        ///   set utcExpiry = datetime(&apos;now&apos;) + interval
+        ///   set utcExpiry = strftime(&apos;%s&apos;, &apos;now&apos;) + interval
         /// where interval is not null;
         ///select * from CacheItem
-        /// where (utcExpiry is null or utcExpiry &gt; @utcNow);.
+        /// where (utcExpiry is null or utcExpiry &gt; strftime(&apos;%s&apos;, &apos;now&apos;));.
         /// </summary>
         internal static string DoGetAllItems {
             get {
@@ -140,12 +140,12 @@ namespace PommaLabs.KVLite {
         
         /// <summary>
         ///   Looks up a localized string similar to update CacheItem
-        ///   set utcExpiry = datetime(&apos;now&apos;) + interval
+        ///   set utcExpiry = strftime(&apos;%s&apos;, &apos;now&apos;) + interval
         /// where partition = @partition
         ///   and interval is not null;
         ///select * from CacheItem
         /// where partition = @partition
-        ///   and (utcExpiry is null or utcExpiry &gt; @utcNow);.
+        ///   and (utcExpiry is null or utcExpiry &gt; strftime(&apos;%s&apos;, &apos;now&apos;));.
         /// </summary>
         internal static string DoGetPartitionItems {
             get {
@@ -158,7 +158,7 @@ namespace PommaLabs.KVLite {
         ///  from CacheItem
         /// where partition = @partition
         ///   and key = @key
-        ///   and (utcExpiry is null or utcExpiry &gt; @utcNow).
+        ///   and (utcExpiry is null or utcExpiry &gt; strftime(&apos;%s&apos;, &apos;now&apos;)).
         /// </summary>
         internal static string GetItem {
             get {
@@ -204,7 +204,7 @@ namespace PommaLabs.KVLite {
         
         /// <summary>
         ///   Looks up a localized string similar to update CacheItem
-        ///   set utcExpiry = datetime(&apos;now&apos;) + interval
+        ///   set utcExpiry = strftime(&apos;%s&apos;, &apos;now&apos;) + interval
         /// where partition = @partition
         ///   and key = @key
         ///   and interval is not null;.

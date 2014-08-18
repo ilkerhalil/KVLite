@@ -133,47 +133,47 @@ CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);</value>
   <data name="Clear" xml:space="preserve">
     <value>delete from CacheItem
  where @ignoreExpirationDate = 1
-    or (utcExpiry is not null and utcExpiry &lt;= @utcNow);</value>
+    or (utcExpiry is not null and utcExpiry &lt;= strftime('%s', 'now'));</value>
   </data>
   <data name="Contains" xml:space="preserve">
     <value>select interval is not null as sliding
   from CacheItem
  where partition = @partition
    and key = @key
-   and (utcExpiry is null or utcExpiry &gt; @utcNow)</value>
+   and (utcExpiry is null or utcExpiry &gt; strftime('%s', 'now'))</value>
   </data>
   <data name="Count" xml:space="preserve">
     <value>select count(*)
   from CacheItem
  where @ignoreExpirationDate = 1
-    or (utcExpiry is null or utcExpiry &gt; @utcNow);</value>
+    or (utcExpiry is null or utcExpiry &gt; strftime('%s', 'now'));</value>
   </data>
   <data name="DoAdd" xml:space="preserve">
     <value>insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
-values (@partition, @key, @serializedValue, datetime('now'), @utcExpiry, @interval);</value>
+values (@partition, @key, @serializedValue, strftime('%s', 'now'), @utcExpiry, @interval);</value>
   </data>
   <data name="DoGetAllItems" xml:space="preserve">
     <value>update CacheItem
-   set utcExpiry = datetime('now') + interval
+   set utcExpiry = strftime('%s', 'now') + interval
  where interval is not null;
 select * from CacheItem
- where (utcExpiry is null or utcExpiry &gt; @utcNow);</value>
+ where (utcExpiry is null or utcExpiry &gt; strftime('%s', 'now'));</value>
   </data>
   <data name="DoGetPartitionItems" xml:space="preserve">
     <value>update CacheItem
-   set utcExpiry = datetime('now') + interval
+   set utcExpiry = strftime('%s', 'now') + interval
  where partition = @partition
    and interval is not null;
 select * from CacheItem
  where partition = @partition
-   and (utcExpiry is null or utcExpiry &gt; @utcNow);</value>
+   and (utcExpiry is null or utcExpiry &gt; strftime('%s', 'now'));</value>
   </data>
   <data name="GetItem" xml:space="preserve">
     <value>select *
   from CacheItem
  where partition = @partition
    and key = @key
-   and (utcExpiry is null or utcExpiry &gt; @utcNow)</value>
+   and (utcExpiry is null or utcExpiry &gt; strftime('%s', 'now'))</value>
   </data>
   <data name="Remove" xml:space="preserve">
     <value>delete from CacheItem
@@ -195,7 +195,7 @@ PRAGMA journal_size_limit = {0}; /* Size in bytes */</value>
   </data>
   <data name="UpdateExpiry" xml:space="preserve">
     <value>update CacheItem
-   set utcExpiry = datetime('now') + interval
+   set utcExpiry = strftime('%s', 'now') + interval
  where partition = @partition
    and key = @key
    and interval is not null;</value>

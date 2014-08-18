@@ -47,7 +47,8 @@ namespace PommaLabs.KVLite
     public sealed class PersistentCache : CacheBase<PersistentCache>
     {
         private const string ConnectionStringFormat = @"Data Source={0};Version=3;Synchronous=Off;Journal Mode=WAL;DateTimeFormat=Ticks;Page Size=32768;Max Page Count={1};";
-
+        
+        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private static readonly ParameterizedObjectPool<string, PooledObjectWrapper<IDbConnection>> ConnectionPool = new ParameterizedObjectPool<string, PooledObjectWrapper<IDbConnection>>(
             1, Configuration.Instance.MaxCachedConnectionCount, CreatePooledConnection); 
 
@@ -142,7 +143,7 @@ namespace PommaLabs.KVLite
             using (var ctx = ConnectionPool.GetObject(_connectionString)) {
                 using (var trx = BeginTransaction(ctx)) {
                     try {
-                        ctx.InternalResource.Execute(Queries.Clear, new {ignoreExpirationDate, DateTime.UtcNow}, trx);
+                        ctx.InternalResource.Execute(Queries.Clear, new {ignoreExpirationDate}, trx);
                         trx.Commit();
                     } catch {
                         trx.Rollback();
@@ -162,7 +163,7 @@ namespace PommaLabs.KVLite
             using (var ctx = ConnectionPool.GetObject(_connectionString)) {
                 using (var trx = BeginTransaction(ctx)) {
                     try {
-                        var args = new {partition, key, DateTime.UtcNow};
+                        var args = new {partition, key};
                         var sliding = ctx.InternalResource.ExecuteScalar<bool?>(Queries.Contains, args, trx);
                         if (!sliding.HasValue) {
                             return false;
@@ -185,7 +186,7 @@ namespace PommaLabs.KVLite
             var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
             // No need for a transaction, since it is just a select.
             using (var ctx = ConnectionPool.GetObject(_connectionString)) {
-                return ctx.InternalResource.ExecuteScalar<long>(Queries.Count, new {ignoreExpirationDate, DateTime.UtcNow});
+                return ctx.InternalResource.ExecuteScalar<long>(Queries.Count, new {ignoreExpirationDate});
             }
         }
 
@@ -199,7 +200,7 @@ namespace PommaLabs.KVLite
             using (var ctx = ConnectionPool.GetObject(_connectionString)) {
                 using (var trx = BeginTransaction(ctx)) {
                     try {
-                        var dbItem = ctx.InternalResource.Query<DbCacheItem>(Queries.GetItem, new {partition, key, DateTime.UtcNow}, trx).FirstOrDefault();
+                        var dbItem = ctx.InternalResource.Query<DbCacheItem>(Queries.GetItem, new {partition, key}, trx).FirstOrDefault();
                         if (dbItem == null) {
                             return null;
                         }
@@ -207,7 +208,7 @@ namespace PommaLabs.KVLite
                             ctx.InternalResource.Execute(Queries.UpdateExpiry, dbItem, trx);
                         }
                         trx.Commit();
-                        return new CacheItem(dbItem);
+                        return ToCacheItem(dbItem);
                     } catch {
                         trx.Rollback();
                         throw;
@@ -237,7 +238,7 @@ namespace PommaLabs.KVLite
             using (var ctx = ConnectionPool.GetObject(_connectionString)) {
                 using (var trx = BeginTransaction(ctx)) {
                     try {
-                        items.AddRange(ctx.InternalResource.Query<DbCacheItem>(Queries.DoGetAllItems, new {DateTime.UtcNow}, trx).Select(x => new CacheItem(x)));
+                        items.AddRange(ctx.InternalResource.Query<DbCacheItem>(Queries.DoGetAllItems, null, trx).Select(ToCacheItem));
                         trx.Commit();
                         return items;
                     } catch {
@@ -254,8 +255,7 @@ namespace PommaLabs.KVLite
             using (var ctx = ConnectionPool.GetObject(_connectionString)) {
                 using (var trx = BeginTransaction(ctx)) {
                     try {
-                        var args = new {partition, DateTime.UtcNow};
-                        items.AddRange(ctx.InternalResource.Query<DbCacheItem>(Queries.DoGetPartitionItems, args, trx).Select(x => new CacheItem(x)));
+                        items.AddRange(ctx.InternalResource.Query<DbCacheItem>(Queries.DoGetPartitionItems, new {partition}, trx).Select(ToCacheItem));
                         trx.Commit();
                         return items;
                     } catch {
@@ -303,8 +303,8 @@ namespace PommaLabs.KVLite
                             Partition = partition,
                             Key = key,
                             SerializedValue = serializedValue,
-                            UtcExpiry = utcExpiry.HasValue ? utcExpiry.Value.Ticks : new long?(),
-                            Interval = interval.HasValue ? interval.Value.Ticks : new long?()
+                            UtcExpiry = utcExpiry.HasValue ? (long) (utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(),
+                            Interval = interval.HasValue ? (long) interval.Value.TotalSeconds : new long?()
                         };
                         ctx.InternalResource.Execute(Queries.DoAdd, dbItem, trx);
                         trx.Commit();
@@ -331,6 +331,18 @@ namespace PommaLabs.KVLite
         {
             Raise<ArgumentException>.IfIsEmpty(path, ErrorMessages.NullOrEmptyCachePath);
             return HttpContext.Current == null ? path : HttpContext.Current.Server.MapPath(path);
+        }
+        
+        private static CacheItem ToCacheItem(DbCacheItem original)
+        {
+            return new CacheItem {
+                Partition = original.Partition,
+                Key = original.Key,
+                Value = BinarySerializer.DeserializeObject(original.SerializedValue),
+                UtcCreation = DateTime.MinValue.AddTicks(original.UtcCreation),
+                UtcExpiry = original.UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(original.UtcExpiry.Value),
+                Interval = original.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(original.Interval.Value)
+            };
         }
 
         #endregion
