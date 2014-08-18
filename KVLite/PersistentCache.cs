@@ -334,5 +334,16 @@ namespace PommaLabs.KVLite
         }
 
         #endregion
+
+        [Serializable]
+        internal sealed class DbCacheItem
+        {
+            public string Partition { get; set; }
+            public string Key { get; set; }
+            public byte[] SerializedValue { get; set; }
+            public long UtcCreation { get; set; }
+            public long? UtcExpiry { get; set; }
+            public long? Interval { get; set; }
+        }
     }
 }

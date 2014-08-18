@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CacheBase.cs" />
-    <Compile Include="CacheItem.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Core\BinarySerializer.cs" />
     <Compile Include="ErrorMessages.Designer.cs">
@@ -83,6 +82,7 @@
     </Compile>
     <Compile Include="VolatileCache.cs" />
     <Compile Include="Web\BaseStatePersister.cs" />
+    <Compile Include="Web\CacheViewStatePersister.cs" />
     <Compile Include="Web\VolatileOutputCacheProvider.cs" />
     <Compile Include="Web\HttpRuntimeCache.cs" />
     <Compile Include="Web\PersistentOutputCacheProvider.cs" />
