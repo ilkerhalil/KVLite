@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PommaLabs.KVLite;
@@ -369,6 +370,55 @@ namespace UnitTests
             }
         }
 
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void GetAll_RightItems_AfterAddSliding_InvalidTime(int itemCount)
+        {
+            AddSliding(PersistentCache.DefaultInstance, itemCount, TimeSpan.FromSeconds(1));
+            Thread.Sleep(2000); // Waits to seconds, to let the value expire...
+            var items = new HashSet<string>(PersistentCache.DefaultInstance.GetAll().Cast<string>());
+            for (var i = 0; i < itemCount; ++i) {
+                Assert.False(items.Contains(StringItems[i]));
+            }
+            items = new HashSet<string>(PersistentCache.DefaultInstance.GetAllAsync().Result.Cast<string>());
+            for (var i = 0; i < itemCount; ++i) {
+                Assert.False(items.Contains(StringItems[i]));
+            }
+            items = new HashSet<string>(PersistentCache.DefaultInstance.GetAllItems().Select(x => (string) x.Value));
+            for (var i = 0; i < itemCount; ++i) {
+                Assert.False(items.Contains(StringItems[i]));
+            }
+            items = new HashSet<string>(PersistentCache.DefaultInstance.GetAllItemsAsync().Result.Select(x => (string) x.Value));
+            for (var i = 0; i < itemCount; ++i) {
+                Assert.False(items.Contains(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void GetAll_RightItems_AfterAddStatic(int itemCount)
+        {
+            AddStatic(PersistentCache.DefaultInstance, itemCount);
+            var items = new HashSet<string>(PersistentCache.DefaultInstance.GetAll().Cast<string>());
+            for (var i = 0; i < itemCount; ++i) {
+                Assert.True(items.Contains(StringItems[i]));
+            }
+            items = new HashSet<string>(PersistentCache.DefaultInstance.GetAllAsync().Result.Cast<string>());
+            for (var i = 0; i < itemCount; ++i) {
+                Assert.True(items.Contains(StringItems[i]));
+            }
+            items = new HashSet<string>(PersistentCache.DefaultInstance.GetAllItems().Select(x => (string) x.Value));
+            for (var i = 0; i < itemCount; ++i) {
+                Assert.True(items.Contains(StringItems[i]));
+            }
+            items = new HashSet<string>(PersistentCache.DefaultInstance.GetAllItemsAsync().Result.Select(x => (string) x.Value));
+            for (var i = 0; i < itemCount; ++i) {
+                Assert.True(items.Contains(StringItems[i]));
+            }
+        }
+
         [Test]
         public void NewCache_BlankPath()
         {
@@ -403,6 +453,13 @@ namespace UnitTests
         }
 
         #region Private Methods
+
+        private static void AddStatic(ICache instance, int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i) {
+                instance.AddStatic(StringItems[i], StringItems[i]);
+            }
+        }
 
         private static void AddSliding(ICache instance, int itemCount, TimeSpan interval)
         {

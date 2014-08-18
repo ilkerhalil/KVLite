@@ -75,11 +75,7 @@
     <Compile Include="ICache.cs" />
     <Compile Include="PersistentCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Queries.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Queries.resx</DependentUpon>
-    </Compile>
+    <Compile Include="Core\Queries.cs" />
     <Compile Include="VolatileCache.cs" />
     <Compile Include="Web\BaseStatePersister.cs" />
     <Compile Include="Web\CacheViewStatePersister.cs" />
@@ -95,10 +91,6 @@
     <EmbeddedResource Include="ErrorMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Queries.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Queries.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
