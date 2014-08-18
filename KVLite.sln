@@ -27,6 +27,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarks", "Benchmarks\Be
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectLogo", "ProjectLogo", "{FDFAC957-0093-481B-82B5-465777E8160B}"
 	ProjectSection(SolutionItems) = preProject
+		ProjectLogo\logo-128.png = ProjectLogo\logo-128.png
+		ProjectLogo\logo-256.png = ProjectLogo\logo-256.png
+		ProjectLogo\logo-32.png = ProjectLogo\logo-32.png
+		ProjectLogo\logo-64.png = ProjectLogo\logo-64.png
+		ProjectLogo\logo-modified.png = ProjectLogo\logo-modified.png
 		ProjectLogo\logo-original.png = ProjectLogo\logo-original.png
 	EndProjectSection
 EndProject
