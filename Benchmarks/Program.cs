@@ -51,6 +51,9 @@ namespace Benchmarks
                 StoreEachDataTableTwoTimesAsync(tables, i);
 
                 FullyCleanCache();
+                StoreAndRetrieveEachDataTableAsync(tables, i);
+
+                FullyCleanCache();
                 RemoveEachDataTable(tables, i);
 
                 FullyCleanCache();
@@ -224,6 +227,36 @@ namespace Benchmarks
 
             Console.WriteLine(@"Data tables retrieved in: {0}", stopwatch.Elapsed);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize/stopwatch.Elapsed.TotalSeconds);
+        }
+
+        private static void StoreAndRetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"Storing and retrieving each data table asynchronously, iteration {0}...", iteration);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var writeTasks = new List<Task>();
+            foreach (var table in tables) {
+                writeTasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+            }
+            var readTasks = new List<Task<object>>();
+            foreach (var table in tables) {
+                readTasks.Add(PersistentCache.DefaultInstance.GetAsync(table.TableName));
+            }
+            foreach (var task in writeTasks) {
+                task.Wait();
+            }
+            foreach (var task in readTasks) {
+                task.Wait();
+            }
+            stopwatch.Stop();
+
+            Debug.Assert(PersistentCache.DefaultInstance.Count() == tables.Count);
+            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
+
+            Console.WriteLine(@"Data tables stored and retrieved in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize*2/stopwatch.Elapsed.TotalSeconds);
         }
 
         private static void RemoveEachDataTable(ICollection<DataTable> tables, int iteration)
