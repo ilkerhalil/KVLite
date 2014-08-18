@@ -34,10 +34,6 @@
     <DocumentationFile>bin\Release\PommaLabs.KVLite.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeProject.ObjectPool, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CodeProject.ObjectPool.1.0.3\lib\net40\CodeProject.ObjectPool.dll</HintPath>
-    </Reference>
     <Reference Include="Crc32C.NET">
       <HintPath>..\packages\Crc32C.NET.1.0.5.0\lib\net20\Crc32C.NET.dll</HintPath>
     </Reference>
