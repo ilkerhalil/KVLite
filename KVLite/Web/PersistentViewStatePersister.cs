@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite.Web
     /// <summary>
     ///   This class is an example of a BaseStatePersister implementation.
     /// </summary>
-    internal sealed class PersistentViewStatePersister : BaseStatePersister
+    public sealed class PersistentViewStatePersister : BaseStatePersister
     {
         private const string ViewStatePartition = "KVLite.Web.ViewStates";
 

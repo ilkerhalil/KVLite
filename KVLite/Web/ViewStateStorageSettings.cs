@@ -27,7 +27,7 @@ namespace PommaLabs.KVLite.Web
     /// Represents the group of options used by the Flesk.Accelerator.Page class
     /// to determine the storage method of the ViewState object.
     /// </summary>
-    internal sealed class ViewStateStorageSettings : ICloneable
+    public sealed class ViewStateStorageSettings : ICloneable
     {
         private ViewStateStorageBehavior _behavior;
         private bool _compressed;

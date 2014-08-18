@@ -339,7 +339,7 @@ namespace PommaLabs.KVLite
                 Partition = original.Partition,
                 Key = original.Key,
                 Value = BinarySerializer.DeserializeObject(original.SerializedValue),
-                UtcCreation = DateTime.MinValue.AddTicks(original.UtcCreation),
+                UtcCreation = UnixEpoch.AddSeconds(original.UtcCreation),
                 UtcExpiry = original.UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(original.UtcExpiry.Value),
                 Interval = original.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(original.Interval.Value)
             };

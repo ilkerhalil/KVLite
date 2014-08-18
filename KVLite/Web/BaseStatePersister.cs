@@ -23,7 +23,7 @@ using System.Web.UI;
 
 namespace PommaLabs.KVLite.Web
 {
-    internal abstract class BaseStatePersister : PageStatePersister
+    public abstract class BaseStatePersister : PageStatePersister
     {
         public const string HiddenFieldName = "__VIEWSTATE_ID";
 
