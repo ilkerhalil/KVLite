@@ -72,7 +72,7 @@ namespace PommaLabs.KVLite
         public PersistentCache(string cachePath)
         {
             var mappedCachePath = MapPath(cachePath);
-            var maxPageCount = Configuration.Instance.MaxCacheSizeInMB*256; // Each page is 32KB large
+            var maxPageCount = Configuration.Instance.MaxCacheSizeInMB*32; // Each page is 32KB large - Multiply by 1024*1024/32768
             _connectionString = String.Format(ConnectionStringFormat, mappedCachePath, maxPageCount);
 
             using (var ctx = ConnectionPool.GetObject(_connectionString)) {
@@ -348,7 +348,7 @@ namespace PommaLabs.KVLite
         #endregion
 
         [Serializable]
-        internal sealed class DbCacheItem
+        private sealed class DbCacheItem
         {
             public string Partition { get; set; }
             public string Key { get; set; }
