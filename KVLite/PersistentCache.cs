@@ -294,7 +294,7 @@ namespace PommaLabs.KVLite
             Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
 
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
-            var serializedValue = BinarySerializer.SerializeObject(value);
+            var serializedValue = Task.Factory.StartNew<byte[]>(BinarySerializer.SerializeObject, value);
 
             using (var ctx = ConnectionPool.GetObject(_connectionString)) {
                 using (var trx = BeginTransaction(ctx)) {
@@ -302,7 +302,7 @@ namespace PommaLabs.KVLite
                         var dbItem = new DbCacheItem {
                             Partition = partition,
                             Key = key,
-                            SerializedValue = serializedValue,
+                            SerializedValue = serializedValue.Result,
                             UtcExpiry = utcExpiry.HasValue ? (long) (utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(),
                             Interval = interval.HasValue ? (long) interval.Value.TotalSeconds : new long?()
                         };

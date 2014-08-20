@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -41,6 +42,21 @@ namespace UnitTests
             select x.ToString(CultureInfo.InvariantCulture)).ToList();
 
         private PersistentCache _fileCache;
+
+        [Test]
+        public void Get_LargeDataTable()
+        {
+            var dt = new RandomDataTableGenerator("A123", "Test", "Pi", "<3", "Pu").GenerateDataTable(LargeItemCount);
+            PersistentCache.DefaultInstance.AddStatic(dt.TableName, dt);
+            var storedDt = PersistentCache.DefaultInstance.Get(dt.TableName) as DataTable;
+            Assert.AreEqual(dt.Rows.Count, storedDt.Rows.Count);
+            for (var i = 0; i < dt.Rows.Count; ++i) {
+                Assert.AreEqual(dt.Rows[i].ItemArray.Length, storedDt.Rows[i].ItemArray.Length);
+                for (var j = 0; j < dt.Rows[i].ItemArray.Length; ++j) {
+                    Assert.AreEqual(dt.Rows[i].ItemArray[j], storedDt.Rows[i].ItemArray[j]);
+                }
+            }
+        }
 
         [TestCase(SmallItemCount)]
         [TestCase(MediumItemCount)]
@@ -476,5 +492,32 @@ namespace UnitTests
         }
 
         #endregion
+    }
+
+    public sealed class RandomDataTableGenerator
+    {
+        private readonly string[] _columnNames;
+        private readonly Random _random = new Random();
+
+        public RandomDataTableGenerator(params string[] columnNames)
+        {
+            _columnNames = columnNames.Clone() as string[];
+        }
+
+        public DataTable GenerateDataTable(int rowCount)
+        {
+            var dt = new DataTable("RANDOMLY_GENERATED_DATA_TABLE_" + _random.Next());
+            foreach (var columnName in _columnNames) {
+                dt.Columns.Add(columnName);
+            }
+            for (var i = 0; i < rowCount; ++i) {
+                var row = new object[_columnNames.Length];
+                for (var j = 0; j < row.Length; ++j) {
+                    row[j] = _random.Next(100, 999).ToString(CultureInfo.InvariantCulture);
+                }
+                dt.Rows.Add(row);
+            }
+            return dt;
+        }
     }
 }

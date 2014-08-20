@@ -50,7 +50,7 @@ namespace PommaLabs.KVLite.Core
                         binaryFormatter.InternalResource.Serialize(decompressedStream, obj);
                     }
                 }
-                return compressedStream.ToArray();
+                return compressedStream.GetBuffer();
             }
         }
 
