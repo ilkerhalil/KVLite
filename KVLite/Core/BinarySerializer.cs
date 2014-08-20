@@ -28,10 +28,10 @@
 
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using CodeProject.ObjectPool;
-using Snappy;
 using Thrower;
 
 namespace PommaLabs.KVLite.Core
@@ -44,19 +44,23 @@ namespace PommaLabs.KVLite.Core
         public static byte[] SerializeObject(object obj)
         {
             Raise<ArgumentException>.IfNot(obj.GetType().IsSerializable, ErrorMessages.NotSerializableType);
-            using (var decompressedStream = new MemoryStream()) {
-                using (var binaryFormatter = FormatterPool.GetObject()) {
-                    binaryFormatter.InternalResource.Serialize(decompressedStream, obj);
+            using (var compressedStream = new MemoryStream()) {
+                using (var decompressedStream = new DeflateStream(compressedStream, CompressionMode.Compress)) {
+                    using (var binaryFormatter = FormatterPool.GetObject()) {
+                        binaryFormatter.InternalResource.Serialize(decompressedStream, obj);
+                    }
                 }
-                return SnappyCodec.Compress(decompressedStream.GetBuffer());
+                return compressedStream.ToArray();
             }
         }
 
         public static object DeserializeObject(byte[] serialized)
         {
-            using (var compressedStream = new MemoryStream(SnappyCodec.Uncompress(serialized))) {
-                using (var binaryFormatter = FormatterPool.GetObject()) {
-                    return binaryFormatter.InternalResource.Deserialize(compressedStream);
+            using (var compressedStream = new MemoryStream(serialized)) {
+                using (var decompressedStream = new DeflateStream(compressedStream, CompressionMode.Decompress)) {
+                    using (var binaryFormatter = FormatterPool.GetObject()) {
+                        return binaryFormatter.InternalResource.Deserialize(decompressedStream);
+                    }
                 }
             }
         }
