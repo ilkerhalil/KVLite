@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>0.3.8</version>
+    <version>0.3.9</version>
     <title>PommaLabs.KVLite</title>
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -11,8 +11,7 @@
 Very, very simple key value store based on SQLite.
     </description>
     <releaseNotes>
-      * Fixed setting of max cache size.
-      * Improved detection of non serializable types.
+* Reverting to standard .NET compression.
     </releaseNotes>
     <summary>
 Very, very simple key value store based on SQLite.
@@ -26,7 +25,6 @@ Very, very simple key value store based on SQLite.
     <dependencies>
       <dependency id="CodeProject.ObjectPool" version="" />
       <dependency id="Dapper" version="" />
-      <dependency id="Snappy.NET" version="" />
       <dependency id="System.Data.SQLite.Core.MSIL" version="" />
       <dependency id="Thrower" version="" />
     </dependencies>
