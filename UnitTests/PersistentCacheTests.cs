@@ -282,6 +282,20 @@ namespace UnitTests
         }
 
         [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Add_NullValue()
+        {
+            PersistentCache.DefaultInstance.AddStatic(StringItems[0], null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void Add_NotSerializableValue()
+        {
+            PersistentCache.DefaultInstance.AddStatic(StringItems[0], new NotSerializableClass());
+        }
+
+        [Test]
         public void Add_HugeValue()
         {
             var k = StringItems[1];
@@ -534,6 +548,11 @@ namespace UnitTests
         }
 
         #endregion
+    }
+
+    internal sealed class NotSerializableClass
+    {
+        public string Pino = "Gino";
     }
 
     public sealed class RandomDataTableGenerator

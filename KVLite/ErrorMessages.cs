@@ -35,5 +35,6 @@ namespace PommaLabs.KVLite
         public const string NullOrEmptyCachePath = @"Cache path cannot be null or empty.";
         public const string NullKey = @"Key cannot be null.";
         public const string NullPartition = @"Partition cannot be null.";
+        public const string NullValue = @"Value cannot be null.";
     }
 }
