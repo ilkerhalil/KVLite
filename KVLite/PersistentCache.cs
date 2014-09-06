@@ -30,13 +30,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using CodeProject.ObjectPool;
 using Dapper;
 using PommaLabs.KVLite.Core;
-using Thrower;
 
 namespace PommaLabs.KVLite
 {
@@ -71,7 +71,9 @@ namespace PommaLabs.KVLite
         /// <param name="cachePath"></param>
         public PersistentCache(string cachePath)
         {
-            var mappedCachePath = MapPath(cachePath);
+            Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(cachePath), ErrorMessages.NullOrEmptyCachePath);
+
+            var mappedCachePath = HttpContext.Current == null ? cachePath : HttpContext.Current.Server.MapPath(cachePath);
             var maxPageCount = Configuration.Instance.MaxCacheSizeInMB*32; // Each page is 32KB large - Multiply by 1024*1024/32768
             _connectionString = String.Format(ConnectionStringFormat, mappedCachePath, maxPageCount);
 
@@ -155,9 +157,6 @@ namespace PommaLabs.KVLite
 
         public override bool Contains(string partition, string key)
         {
-            Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
-            Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
-
             // For this kind of task, we need a transaction. In fact, since the value may be sliding,
             // we may have to issue an update following the initial select.
             using (var ctx = ConnectionPool.GetObject(_connectionString)) {
@@ -192,9 +191,6 @@ namespace PommaLabs.KVLite
 
         public override CacheItem GetItem(string partition, string key)
         {
-            Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
-            Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
-
             // For this kind of task, we need a transaction. In fact, since the value may be sliding,
             // we may have to issue an update following the initial select.
             using (var ctx = ConnectionPool.GetObject(_connectionString)) {
@@ -290,9 +286,6 @@ namespace PommaLabs.KVLite
 
         private void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
         {
-            Raise<ArgumentException>.IfIsEmpty(partition, ErrorMessages.NullOrEmptyPartition);
-            Raise<ArgumentException>.IfIsEmpty(key, ErrorMessages.NullOrEmptyKey);
-
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
             var serializedValue = Task.Factory.StartNew<byte[]>(BinarySerializer.SerializeObject, value);
 
@@ -325,12 +318,6 @@ namespace PommaLabs.KVLite
                 _operationCount = 0;
                 Clear(CacheReadMode.ConsiderExpirationDate);
             }
-        }
-
-        private static string MapPath(string path)
-        {
-            Raise<ArgumentException>.IfIsEmpty(path, ErrorMessages.NullOrEmptyCachePath);
-            return HttpContext.Current == null ? path : HttpContext.Current.Server.MapPath(path);
         }
         
         private static CacheItem ToCacheItem(DbCacheItem original)

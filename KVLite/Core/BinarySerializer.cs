@@ -26,13 +26,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using CodeProject.ObjectPool;
-using Thrower;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -43,7 +41,6 @@ namespace PommaLabs.KVLite.Core
 
         public static byte[] SerializeObject(object obj)
         {
-            Raise<ArgumentException>.IfNot(obj.GetType().IsSerializable, ErrorMessages.NotSerializableType);
             using (var compressedStream = new MemoryStream()) {
                 using (var decompressedStream = new DeflateStream(compressedStream, CompressionMode.Compress)) {
                     using (var binaryFormatter = FormatterPool.GetObject()) {

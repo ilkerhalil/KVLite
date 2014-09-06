@@ -30,12 +30,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
+using PommaLabs.KVLite.Contracts;
 
 namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   TODO
     /// </summary>
+    [ContractClass(typeof(CacheContract))]
     public interface ICache
     {
         /// <summary>

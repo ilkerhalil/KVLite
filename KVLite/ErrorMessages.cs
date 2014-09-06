@@ -30,9 +30,10 @@ namespace PommaLabs.KVLite
 {
     public static class ErrorMessages
     {
-        public const string NotSerializableType = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
+        public const string InvalidEnumValue = "Given enumeration value is not valid.";
+        public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
         public const string NullOrEmptyCachePath = @"Cache path cannot be null or empty.";
-        public const string NullOrEmptyKey = @"Key cannot be null or empty.";
-        public const string NullOrEmptyPartition = @"Partition cannot be null or empty.";
+        public const string NullKey = @"Key cannot be null.";
+        public const string NullPartition = @"Partition cannot be null.";
     }
 }

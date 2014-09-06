@@ -11,7 +11,7 @@ using PommaLabs.KVLite;
 namespace UnitTests
 {
     [TestFixture]
-    public sealed class PersistentCacheTests
+    sealed class PersistentCacheTests
     {
         #region Setup/Teardown
 
@@ -42,6 +42,48 @@ namespace UnitTests
             select x.ToString(CultureInfo.InvariantCulture)).ToList();
 
         private PersistentCache _fileCache;
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AddSliding_NullPartition()
+        {
+            PersistentCache.DefaultInstance.AddSliding(null, StringItems[0], StringItems[1], TimeSpan.FromSeconds(10));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AddStatic_NullPartition()
+        {
+            PersistentCache.DefaultInstance.AddStatic(null, StringItems[0], StringItems[1]);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AddTimed_NullPartition()
+        {
+            PersistentCache.DefaultInstance.AddTimed(null, StringItems[0], StringItems[1], DateTime.UtcNow);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AddSliding_NullKey()
+        {
+            PersistentCache.DefaultInstance.AddSliding(null, StringItems[1], TimeSpan.FromSeconds(10));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AddStatic_NullKey()
+        {
+            PersistentCache.DefaultInstance.AddStatic(null, StringItems[1]);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AddTimed_NullKey()
+        {
+            PersistentCache.DefaultInstance.AddTimed(null, StringItems[1], DateTime.UtcNow);
+        }
 
         [Test]
         public void Get_LargeDataTable()
@@ -442,7 +484,7 @@ namespace UnitTests
                 new PersistentCache(BlankPath);
             } catch (Exception ex) {
                 Assert.IsInstanceOf<ArgumentException>(ex);
-                Assert.AreEqual(ErrorMessages.NullOrEmptyCachePath, ex.Message);
+                Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));
             }
         }
 
@@ -453,7 +495,7 @@ namespace UnitTests
                 new PersistentCache(String.Empty);
             } catch (Exception ex) {
                 Assert.IsInstanceOf<ArgumentException>(ex);
-                Assert.AreEqual(ErrorMessages.NullOrEmptyCachePath, ex.Message);
+                Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));
             }
         }
 
@@ -464,7 +506,7 @@ namespace UnitTests
                 new PersistentCache(null);
             } catch (Exception ex) {
                 Assert.IsInstanceOf<ArgumentException>(ex);
-                Assert.AreEqual(ErrorMessages.NullOrEmptyCachePath, ex.Message);
+                Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));
             }
         }
 
