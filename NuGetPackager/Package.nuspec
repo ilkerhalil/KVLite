@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>0.3.9</version>
+    <version>0.4.0</version>
     <title>PommaLabs.KVLite</title>
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -11,7 +11,7 @@
 Very, very simple key value store based on SQLite.
     </description>
     <releaseNotes>
-* Reverting to standard .NET compression.
+* Using Code Contracts for validation.
     </releaseNotes>
     <summary>
 Very, very simple key value store based on SQLite.
@@ -26,7 +26,6 @@ Very, very simple key value store based on SQLite.
       <dependency id="CodeProject.ObjectPool" version="" />
       <dependency id="Dapper" version="" />
       <dependency id="System.Data.SQLite.Core.MSIL" version="" />
-      <dependency id="Thrower" version="" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>

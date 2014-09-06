@@ -109,9 +109,9 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeProject.ObjectPool, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="CodeProject.ObjectPool, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CodeProject.ObjectPool.1.0.5\lib\net40\CodeProject.ObjectPool.dll</HintPath>
+      <HintPath>..\packages\CodeProject.ObjectPool.1.0.6\lib\net40\CodeProject.ObjectPool.dll</HintPath>
     </Reference>
     <Reference Include="Dapper">
       <HintPath>..\packages\Dapper.1.30\lib\net40\Dapper.dll</HintPath>
@@ -131,9 +131,6 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
-    <Reference Include="Thrower">
-      <HintPath>..\packages\Thrower.0.12.0\lib\net40-client\Thrower.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CacheBase.cs" />
