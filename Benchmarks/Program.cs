@@ -8,8 +8,8 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
+using PommaLabs.GRAMPA.Diagnostics;
 using PommaLabs.KVLite;
-using Thrower;
 
 namespace Benchmarks
 {
