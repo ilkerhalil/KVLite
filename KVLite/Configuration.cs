@@ -39,6 +39,7 @@ namespace PommaLabs.KVLite
     {
         private const string SectionName = "KVLiteConfiguration";
         private const string DefaultCachePathKey = "DefaultCachePath";
+        private const string DefaultStaticIntervalInDaysKey = "DefaultStaticIntervalInDays";
         private const string MaxCacheSizeInMBKey = "MaxCacheSizeInMB";
         private const string MaxLogSizeInMBKey = "MaxLogSizeInMB";
         private const string MaxCachedConnectionCountKey = "MaxCachedConnectionCount";
@@ -56,6 +57,12 @@ namespace PommaLabs.KVLite
         public string DefaultCachePath
         {
             get { return Convert.ToString(this[DefaultCachePathKey]); }
+        }
+
+        [ConfigurationProperty(DefaultStaticIntervalInDaysKey, IsRequired = false, DefaultValue = 30)]
+        public int DefaultStaticIntervalInDays
+        {
+            get { return Convert.ToInt32(this[DefaultStaticIntervalInDaysKey]); }
         }
 
         [ConfigurationProperty(MaxCachedConnectionCountKey, IsRequired = false, DefaultValue = 10)]

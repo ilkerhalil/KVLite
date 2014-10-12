@@ -85,7 +85,10 @@ namespace PommaLabs.KVLite
             return Task.Factory.StartNew(() => AddSliding(key, value, interval));
         }
 
-        public abstract void AddStatic(string partition, string key, object value);
+        public void AddStatic(string partition, string key, object value)
+        {
+            AddSliding(partition, key, value, TimeSpan.FromDays(Configuration.Instance.DefaultStaticIntervalInDays));
+        }
 
         public void AddStatic(string key, object value)
         {

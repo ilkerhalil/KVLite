@@ -47,13 +47,6 @@ namespace PommaLabs.KVLite.Web
             throw new NotImplementedException();
         }
 
-        public override void AddStatic(string partition, string key, object value)
-        {
-            var serializedKey = BinarySerializer.SerializeObject(Tuple.Create(partition, key));
-            var serializedValue = BinarySerializer.SerializeObject(value);
-            HttpCache.Add(Encoding.Default.GetString(serializedKey), serializedValue, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
-        }
-
         public override void AddTimed(string partition, string key, object value, DateTime utcExpiry)
         {
             throw new NotImplementedException();

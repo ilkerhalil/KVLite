@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>0.4.0</version>
+    <version>0.4.1</version>
     <title>PommaLabs.KVLite</title>
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -11,7 +11,7 @@
 Very, very simple key value store based on SQLite.
     </description>
     <releaseNotes>
-* Using Code Contracts for validation.
+* Static values are now stored as sliding with a very large interval (one month). Default interval can be changed with the "DefaultStaticIntervalInDays" configuration entry.
     </releaseNotes>
     <summary>
 Very, very simple key value store based on SQLite.
@@ -23,9 +23,9 @@ Very, very simple key value store based on SQLite.
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
-      <dependency id="CodeProject.ObjectPool" version="" />
-      <dependency id="Dapper" version="" />
-      <dependency id="System.Data.SQLite.Core.MSIL" version="" />
+      <dependency id="CodeProject.ObjectPool" version="1.0.6" />
+      <dependency id="Dapper" version="1.35" />
+      <dependency id="System.Data.SQLite.Core.MSIL" version="1.0.93.0" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>

@@ -129,11 +129,6 @@ namespace PommaLabs.KVLite
             DoAdd(partition, key, value, DateTime.UtcNow + interval, interval);
         }
 
-        public override void AddStatic(string partition, string key, object value)
-        {
-            DoAdd(partition, key, value, null, null);
-        }
-
         public override void AddTimed(string partition, string key, object value, DateTime utcExpiry)
         {
             DoAdd(partition, key, value, utcExpiry, null);

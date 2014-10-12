@@ -1,5 +1,5 @@
 ﻿//
-// ICache.cs
+// CacheContract.cs
 // 
 // Author(s):
 //     Alessio Parma <alessio.parma@gmail.com>

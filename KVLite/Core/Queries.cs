@@ -37,7 +37,7 @@ namespace PommaLabs.KVLite.Core
                 key TEXT NOT NULL,
                 serializedValue BLOB NOT NULL,
                 utcCreation BIGINT NOT NULL,
-                utcExpiry BIGINT,
+                utcExpiry BIGINT NOT NULL,
                 interval BIGINT,
                 CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key)
             );
@@ -47,7 +47,7 @@ namespace PommaLabs.KVLite.Core
         public const string Clear = @"
             delete from CacheItem
              where @ignoreExpirationDate = 1
-                or (utcExpiry is not null and utcExpiry <= strftime('%s', 'now')); -- Clear only invalid rows
+                or utcExpiry <= strftime('%s', 'now'); -- Clear only invalid rows
         ";
 
         public const string Contains = @"
@@ -55,14 +55,14 @@ namespace PommaLabs.KVLite.Core
               from CacheItem
              where partition = @partition
                and key = @key
-               and (utcExpiry is null or utcExpiry > strftime('%s', 'now')); -- Select only valid rows
+               and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
         ";
 
         public const string Count = @"
             select count(*)
               from CacheItem
              where @ignoreExpirationDate = 1
-                or (utcExpiry is null or utcExpiry > strftime('%s', 'now')); -- Select only valid rows
+                or utcExpiry > strftime('%s', 'now'); -- Select only valid rows
         ";
 
         public const string DoAdd = @"
@@ -74,10 +74,10 @@ namespace PommaLabs.KVLite.Core
             update CacheItem
                set utcExpiry = strftime('%s', 'now') + interval
              where interval is not null
-               and (utcExpiry is null or utcExpiry > strftime('%s', 'now')); -- Update only valid rows
+               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
             select *
               from CacheItem
-             where (utcExpiry is null or utcExpiry > strftime('%s', 'now')); -- Select only valid rows
+             where utcExpiry > strftime('%s', 'now'); -- Select only valid rows
         ";
 
         public const string DoGetPartitionItems = @"
@@ -85,11 +85,11 @@ namespace PommaLabs.KVLite.Core
                set utcExpiry = strftime('%s', 'now') + interval
              where partition = @partition
                and interval is not null
-               and (utcExpiry is null or utcExpiry > strftime('%s', 'now')); -- Update only valid rows
+               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
             select * 
               from CacheItem
              where partition = @partition
-               and (utcExpiry is null or utcExpiry > strftime('%s', 'now')); -- Select only valid rows
+               and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
         ";
 
         public const string GetItem = @"
@@ -97,7 +97,7 @@ namespace PommaLabs.KVLite.Core
               from CacheItem
              where partition = @partition
                and key = @key
-               and (utcExpiry is null or utcExpiry > strftime('%s', 'now'))-- Select only valid rows
+               and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
         ";
 
         public const string Remove = @"
@@ -127,7 +127,7 @@ namespace PommaLabs.KVLite.Core
              where partition = @partition
                and key = @key
                and interval is not null
-               and (utcExpiry is null or utcExpiry > strftime('%s', 'now')); -- Update only valid rows
+               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
         ";
 
         public const string Vacuum = @"vacuum; -- Clears free list and makes DB file smaller";

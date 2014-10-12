@@ -39,11 +39,6 @@ namespace PommaLabs.KVLite
             throw new NotImplementedException();
         }
 
-        public override void AddStatic(string partition, string key, object value)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void AddTimed(string partition, string key, object value, DateTime utcExpiry)
         {
             throw new NotImplementedException();
