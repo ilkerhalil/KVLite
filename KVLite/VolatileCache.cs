@@ -34,6 +34,11 @@ namespace PommaLabs.KVLite
     [Serializable]
     public sealed class VolatileCache : CacheBase<VolatileCache>
     {
+        public override CacheKind Kind
+        {
+            get { return CacheKind.Volatile; }
+        }
+
         public override void AddSliding(string partition, string key, object value, TimeSpan interval)
         {
             throw new NotImplementedException();

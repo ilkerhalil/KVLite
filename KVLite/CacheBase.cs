@@ -58,6 +58,8 @@ namespace PommaLabs.KVLite
 
         #region ICache<TCache> Members
 
+        public abstract CacheKind Kind { get; }
+
         public object this[string partition, string key]
         {
             get { return Get(partition, key); }

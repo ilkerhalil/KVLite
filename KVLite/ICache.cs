@@ -34,12 +34,23 @@ using PommaLabs.KVLite.Contracts;
 
 namespace PommaLabs.KVLite
 {
+    public enum CacheKind : byte
+    {
+        Persistent = 1,
+        Volatile = 2
+    }
+
     /// <summary>
     ///   TODO
     /// </summary>
     [ContractClass(typeof(CacheContract))]
     public interface ICache
     {
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        CacheKind Kind { get; }
+
         /// <summary>
         ///   TODO
         /// </summary>

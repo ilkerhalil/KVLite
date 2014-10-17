@@ -37,9 +37,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("PommaLabs.KVLite")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("PommaLabs")]
 [assembly: AssemblyProduct("PommaLabs.KVLite")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright (c) 2014-2015 Alessio Parma <alessio.parma@gmail.com>")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

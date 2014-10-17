@@ -36,6 +36,15 @@ namespace PommaLabs.KVLite.Contracts
     [ContractClassFor(typeof(ICache))]
     internal abstract class CacheContract : ICache
     {
+        public CacheKind Kind
+        {
+            get
+            {
+                Contract.Ensures(Enum.IsDefined(typeof(CacheKind), Contract.Result<CacheKind>()));
+                return default(CacheKind);
+            }
+        }
+
         object ICache.this[string partition, string key]
         {
             get

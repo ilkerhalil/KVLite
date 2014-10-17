@@ -124,6 +124,11 @@ namespace PommaLabs.KVLite
 
         #region ICache Members
 
+        public override CacheKind Kind
+        {
+            get { return CacheKind.Persistent; }
+        }
+
         public override void AddSliding(string partition, string key, object value, TimeSpan interval)
         {
             DoAdd(partition, key, value, DateTime.UtcNow + interval, interval);

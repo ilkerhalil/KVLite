@@ -140,7 +140,6 @@
     <Compile Include="Core\BinarySerializer.cs" />
     <Compile Include="ErrorMessages.cs" />
     <Compile Include="ICache.cs" />
-    <Compile Include="Nancy\CachedResponse.cs" />
     <Compile Include="Nancy\CachingBootstrapper.cs" />
     <Compile Include="Nancy\ContextExtensions.cs" />
     <Compile Include="PersistentCache.cs" />

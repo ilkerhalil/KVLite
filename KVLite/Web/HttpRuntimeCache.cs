@@ -42,6 +42,11 @@ namespace PommaLabs.KVLite.Web
     {
         private static readonly Cache HttpCache = HttpRuntime.Cache ?? new Cache();
 
+        public override CacheKind Kind
+        {
+            get { return CacheKind.Volatile; }
+        }
+
         public override void AddSliding(string partition, string key, object value, TimeSpan interval)
         {
             throw new NotImplementedException();
