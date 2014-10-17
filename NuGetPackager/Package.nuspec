@@ -11,7 +11,8 @@
 Very, very simple key value store based on SQLite.
     </description>
     <releaseNotes>
-* Static values are now stored as sliding with a very large interval (one month). Default interval can be changed with the "DefaultStaticIntervalInDays" configuration entry.
+* Fixed a wrong usage of a DB transaction.
+* Initial work on NancyFX caching.
     </releaseNotes>
     <summary>
 Very, very simple key value store based on SQLite.
