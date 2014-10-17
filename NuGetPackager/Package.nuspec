@@ -24,7 +24,7 @@ Very, very simple key value store based on SQLite.
     <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <dependency id="CodeProject.ObjectPool" version="1.0.6" />
-      <dependency id="Dapper" version="1.35" />
+      <dependency id="Dapper" version="1.36" />
       <dependency id="System.Data.SQLite.Core.MSIL" version="1.0.93.0" />
     </dependencies>
     <references></references>
