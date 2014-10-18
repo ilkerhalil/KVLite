@@ -114,9 +114,10 @@ namespace PommaLabs.KVLite.Core
 
         public const string SetPragmas = @"
             PRAGMA cache_spill = 1;
-            PRAGMA temp_store = MEMORY;
             PRAGMA count_changes = 0; /* Not required by our queries */
             PRAGMA journal_size_limit = {0}; /* Size in bytes */
+            PRAGMA read_uncommitted = 1; /* Allows multiple readers */
+            PRAGMA temp_store = MEMORY;
         ";
 
         public const string UpdateExpiry = @"
