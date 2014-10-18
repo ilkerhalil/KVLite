@@ -46,12 +46,10 @@ namespace PommaLabs.KVLite
     [Serializable]
     public sealed class PersistentCache : CacheBase<PersistentCache>
     {
-        private const string ConnectionStringFormat = @"Data Source={0};Version=3;Synchronous=Off;Journal Mode=WAL;DateTimeFormat=Ticks;Page Size=32768;Max Page Count={1};";
-
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         private static readonly ParameterizedObjectPool<string, PooledObjectWrapper<SQLiteConnection>> ConnectionPool = new ParameterizedObjectPool<string, PooledObjectWrapper<SQLiteConnection>>(
-            1, Configuration.Instance.MaxCachedConnectionCount, CreatePooledConnection);
+            3, Configuration.Instance.MaxCachedConnectionCount, CreatePooledConnection);
 
         private readonly string _connectionString;
 
@@ -75,10 +73,37 @@ namespace PommaLabs.KVLite
         public PersistentCache(string cachePath)
         {
             Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(cachePath), ErrorMessages.NullOrEmptyCachePath);
-
+            
             var mappedCachePath = HttpContext.Current == null ? cachePath : HttpContext.Current.Server.MapPath(cachePath);
             var maxPageCount = Configuration.Instance.MaxCacheSizeInMB*32; // Each page is 32KB large - Multiply by 1024*1024/32768
-            _connectionString = String.Format(ConnectionStringFormat, mappedCachePath, maxPageCount);
+            
+            var builder = new SQLiteConnectionStringBuilder
+            {
+                BaseSchemaName = "kvlite",
+                BinaryGUID = true,
+                BrowsableConnectionString = false,
+                /* Number of pages of 32KB */
+                CacheSize = 128,
+                DataSource = mappedCachePath,
+                DateTimeFormat = SQLiteDateFormats.Ticks,
+                DateTimeKind = DateTimeKind.Utc,
+                DefaultIsolationLevel = IsolationLevel.ReadCommitted,
+                /* Settings ten minutes as timeout should be more than enough... */
+                DefaultTimeout = 600,
+                FailIfMissing = false,
+                ForeignKeys = false,
+                JournalMode = SQLiteJournalModeEnum.Wal,
+                LegacyFormat = false,
+                MaxPageCount = maxPageCount,
+                PageSize = 32768,
+                /* We use a custom object pool */
+                Pooling = false,
+                ReadOnly = false,
+                SyncMode = SynchronizationModes.Off,
+                Version = 3
+            };
+            
+            _connectionString = builder.ToString();
 
             using (var ctx = ConnectionPool.GetObject(_connectionString))
             using (var trx = BeginTransaction(ctx))
@@ -251,8 +276,6 @@ namespace PommaLabs.KVLite
         {
             var connection = new SQLiteConnection(connectionString);
             connection.Open();
-            // Settings ten minutes as timeout should be more than enough...
-            connection.DefaultTimeout = 600;
             // Sets PRAGMAs for this new connection.
             var journalSizeLimitInBytes = Configuration.Instance.MaxLogSizeInMB*1024*1024;
             var pragmas = String.Format(Queries.SetPragmas, journalSizeLimitInBytes);
