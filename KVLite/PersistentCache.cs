@@ -106,7 +106,7 @@ namespace PommaLabs.KVLite
             _connectionString = builder.ToString();
 
             using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = BeginTransaction(ctx))
+            using (var trx = ctx.InternalResource.BeginTransaction())
             {
                 if (ctx.InternalResource.ExecuteScalar<long>(Queries.SchemaIsReady, trx) == 0)
                 {
@@ -168,7 +168,7 @@ namespace PommaLabs.KVLite
         {
             var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
             using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = BeginTransaction(ctx))
+            using (var trx = ctx.InternalResource.BeginTransaction())
             {
                 ctx.InternalResource.Execute(Queries.Clear, new {ignoreExpirationDate}, trx);
                 trx.Commit();
@@ -177,24 +177,21 @@ namespace PommaLabs.KVLite
 
         public override bool Contains(string partition, string key)
         {
+            bool? sliding;
             // For this kind of task, we need a transaction. In fact, since the value may be sliding,
             // we may have to issue an update following the initial select.
             using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = BeginTransaction(ctx))
+            using (var trx = ctx.InternalResource.BeginTransaction())
             {
                 var args = new {partition, key};
-                var sliding = ctx.InternalResource.ExecuteScalar<bool?>(Queries.Contains, args, trx);
-                if (!sliding.HasValue)
-                {
-                    return false;
-                }
-                if (sliding.Value)
+                sliding = ctx.InternalResource.ExecuteScalar<bool?>(Queries.Contains, args, trx);
+                if (sliding != null && sliding.Value)
                 {
                     ctx.InternalResource.Execute(Queries.UpdateExpiry, args, trx);
                 }
                 trx.Commit();
             }
-            return true;
+            return sliding != null;
         }
 
         public override long LongCount(CacheReadMode cacheReadMode)
@@ -213,26 +210,22 @@ namespace PommaLabs.KVLite
             // For this kind of task, we need a transaction. In fact, since the value may be sliding,
             // we may have to issue an update following the initial select.
             using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = BeginTransaction(ctx))
+            using (var trx = ctx.InternalResource.BeginTransaction())
             {
                 dbItem = ctx.InternalResource.Query<DbCacheItem>(Queries.GetItem, new {partition, key}, trx).FirstOrDefault();
-                if (dbItem == null)
-                {
-                    return null;
-                }
-                if (dbItem.Interval.HasValue)
+                if (dbItem != null && dbItem.Interval.HasValue)
                 {
                     ctx.InternalResource.Execute(Queries.UpdateExpiry, dbItem, trx);
                 }
                 trx.Commit();
             }
-            return ToCacheItem(dbItem);
+            return (dbItem == null) ? null : ToCacheItem(dbItem);
         }
 
         public override void Remove(string partition, string key)
         {
             using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = BeginTransaction(ctx))
+            using (var trx = ctx.InternalResource.BeginTransaction())
             {
                 ctx.InternalResource.Execute(Queries.Remove, new {partition, key}, trx);
                 trx.Commit();
@@ -243,7 +236,7 @@ namespace PommaLabs.KVLite
         {
             var items = new List<CacheItem>();
             using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = BeginTransaction(ctx))
+            using (var trx = ctx.InternalResource.BeginTransaction())
             {
                 items.AddRange(ctx.InternalResource.Query<DbCacheItem>(Queries.DoGetAllItems, null, trx).Select(ToCacheItem));
                 trx.Commit();
@@ -255,7 +248,7 @@ namespace PommaLabs.KVLite
         {
             var items = new List<CacheItem>();
             using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = BeginTransaction(ctx))
+            using (var trx = ctx.InternalResource.BeginTransaction())
             {
                 items.AddRange(ctx.InternalResource.Query<DbCacheItem>(Queries.DoGetPartitionItems, new {partition}, trx).Select(ToCacheItem));
                 trx.Commit();
@@ -266,11 +259,6 @@ namespace PommaLabs.KVLite
         #endregion
 
         #region Private Methods
-
-        private static SQLiteTransaction BeginTransaction(PooledObjectWrapper<SQLiteConnection> connectionWrapper)
-        {
-            return connectionWrapper.InternalResource.BeginTransaction(IsolationLevel.ReadCommitted);
-        }
 
         private static PooledObjectWrapper<SQLiteConnection> CreatePooledConnection(string connectionString)
         {
@@ -289,7 +277,7 @@ namespace PommaLabs.KVLite
             var serializedValue = Task.Factory.StartNew<byte[]>(BinarySerializer.SerializeObject, value);
 
             using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = BeginTransaction(ctx))
+            using (var trx = ctx.InternalResource.BeginTransaction())
             {
                 var dbItem = new DbCacheItem
                 {
