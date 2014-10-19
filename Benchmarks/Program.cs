@@ -48,10 +48,10 @@ namespace Benchmarks
                 RetrieveEachDataTable(tables, i);
 
                 FullyCleanCache();
-                RetrieveEachDataTableAsync(tables, i);
+                StoreEachDataTableAsync(tables, i);
 
                 FullyCleanCache();
-                StoreEachDataTableAsync(tables, i);
+                RetrieveEachDataTableAsync(tables, i);
 
                 FullyCleanCache();
                 StoreEachDataTableTwoTimesAsync(tables, i);
