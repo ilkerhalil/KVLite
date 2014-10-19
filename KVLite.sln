@@ -27,7 +27,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite", "KVLite\KVLite.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarks", "Benchmarks\Benchmarks.csproj", "{B082811A-E830-4CB0-8D7F-5FB31B001052}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectLogo", "ProjectLogo", "{FDFAC957-0093-481B-82B5-465777E8160B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Logo", "Project Logo", "{FDFAC957-0093-481B-82B5-465777E8160B}"
 	ProjectSection(SolutionItems) = preProject
 		ProjectLogo\logo-128.png = ProjectLogo\logo-128.png
 		ProjectLogo\logo-256.png = ProjectLogo\logo-256.png
@@ -35,6 +35,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectLogo", "ProjectLogo"
 		ProjectLogo\logo-64.png = ProjectLogo\logo-64.png
 		ProjectLogo\logo-modified.png = ProjectLogo\logo-modified.png
 		ProjectLogo\logo-original.png = ProjectLogo\logo-original.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{EFEDDCD8-239A-4197-B666-9A0D3795F8BC}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\SQLite Performance Tuning - MozillaWiki.pdf = Documentation\SQLite Performance Tuning - MozillaWiki.pdf
 	EndProjectSection
 EndProject
 Global
