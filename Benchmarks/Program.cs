@@ -45,6 +45,12 @@ namespace Benchmarks
                 StoreEachDataTable(tables, i);
 
                 FullyCleanCache();
+                RetrieveEachDataTable(tables, i);
+
+                FullyCleanCache();
+                RetrieveEachDataTableAsync(tables, i);
+
+                FullyCleanCache();
                 StoreEachDataTableAsync(tables, i);
 
                 FullyCleanCache();
@@ -58,12 +64,6 @@ namespace Benchmarks
 
                 FullyCleanCache();
                 RemoveEachDataTableAsync(tables, i);
-
-                FullyCleanCache();
-                RetrieveEachDataTable(tables, i);
-
-                FullyCleanCache();
-                RetrieveEachDataTableAsync(tables, i);
 
                 FullyCleanCache();
                 StoreDataTableList(tables, i);

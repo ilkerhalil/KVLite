@@ -101,13 +101,13 @@ namespace PommaLabs.KVLite
                 Pooling = false,
                 ReadOnly = false,
                 SyncMode = SynchronizationModes.Off,
-                Version = 3
+                Version = 3,
             };
             
             _connectionString = builder.ToString();
 
             using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = ctx.InternalResource.BeginTransaction(IsolationLevel.ReadCommitted))
+            using (var trx = ctx.InternalResource.BeginTransaction())
             {
                 if (ctx.InternalResource.ExecuteScalar<long>(Queries.SchemaIsReady, trx) == 0)
                 {
@@ -178,21 +178,7 @@ namespace PommaLabs.KVLite
 
         public override bool Contains(string partition, string key)
         {
-            bool? sliding;
-            // For this kind of task, we need a transaction. In fact, since the value may be sliding,
-            // we may have to issue an update following the initial select.
-            using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = ctx.InternalResource.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                var args = new {partition, key};
-                sliding = ctx.InternalResource.ExecuteScalar<bool?>(Queries.Contains, args, trx);
-                if (sliding != null && sliding.Value)
-                {
-                    ctx.InternalResource.Execute(Queries.UpdateExpiry, args, trx);
-                }
-                trx.Commit();
-            }
-            return sliding != null;
+            return Get(partition, key) != null;
         }
 
         public override long LongCount(CacheReadMode cacheReadMode)
@@ -214,10 +200,6 @@ namespace PommaLabs.KVLite
             using (var trx = ctx.InternalResource.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 dbItem = ctx.InternalResource.Query<DbCacheItem>(Queries.GetItem, new {partition, key}, trx).FirstOrDefault();
-                if (dbItem != null && dbItem.Interval.HasValue)
-                {
-                    ctx.InternalResource.Execute(Queries.UpdateExpiry, dbItem, trx);
-                }
                 trx.Commit();
             }
             return (dbItem == null) ? null : ToCacheItem(dbItem);

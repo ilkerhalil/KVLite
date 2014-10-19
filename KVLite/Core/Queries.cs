@@ -35,10 +35,10 @@ namespace PommaLabs.KVLite.Core
             CREATE TABLE CacheItem (
                 partition TEXT NOT NULL,
                 key TEXT NOT NULL,
-                serializedValue BLOB NOT NULL,
                 utcCreation BIGINT NOT NULL,
                 utcExpiry BIGINT NOT NULL,
                 interval BIGINT,
+                serializedValue BLOB NOT NULL,
                 CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key)
             );
             CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);
@@ -48,14 +48,6 @@ namespace PommaLabs.KVLite.Core
             delete from CacheItem
              where @ignoreExpirationDate = 1
                 or utcExpiry <= strftime('%s', 'now'); -- Clear only invalid rows
-        ";
-
-        public const string Contains = @"
-            select interval is not null as sliding
-              from CacheItem
-             where partition = @partition
-               and key = @key
-               and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
         ";
 
         public const string Count = @"
@@ -93,6 +85,12 @@ namespace PommaLabs.KVLite.Core
         ";
 
         public const string GetItem = @"
+            update CacheItem
+               set utcExpiry = strftime('%s', 'now') + interval
+             where partition = @partition
+               and key = @key
+               and interval is not null
+               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows            
             select *
               from CacheItem
              where partition = @partition
@@ -116,17 +114,7 @@ namespace PommaLabs.KVLite.Core
             PRAGMA cache_spill = 1;
             PRAGMA count_changes = 0; /* Not required by our queries */
             PRAGMA journal_size_limit = {0}; /* Size in bytes */
-            PRAGMA read_uncommitted = 1; /* Allows multiple readers */
             PRAGMA temp_store = MEMORY;
-        ";
-
-        public const string UpdateExpiry = @"
-            update CacheItem
-               set utcExpiry = strftime('%s', 'now') + interval
-             where partition = @partition
-               and key = @key
-               and interval is not null
-               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
         ";
 
         public const string Vacuum = @"vacuum; -- Clears free list and makes DB file smaller";
