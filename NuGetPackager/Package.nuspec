@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>0.4.2</version>
+    <version>0.4.3</version>
     <title>PommaLabs.KVLite</title>
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -11,8 +11,9 @@
 Very, very simple key value store based on SQLite.
     </description>
     <releaseNotes>
-* Fixed a wrong usage of a DB transaction.
-* Initial work on NancyFX caching.
+* Updated SQLite.
+* Simplified transaction usage.
+* Prototype for NancyFX cache.
     </releaseNotes>
     <summary>
 Very, very simple key value store based on SQLite.
@@ -26,7 +27,7 @@ Very, very simple key value store based on SQLite.
     <dependencies>
       <dependency id="CodeProject.ObjectPool" version="1.0.6" />
       <dependency id="Dapper" version="1.36" />
-      <dependency id="System.Data.SQLite.Core.MSIL" version="1.0.93.0" />
+      <dependency id="System.Data.SQLite.Core.MSIL" version="1.0.94.0" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>
