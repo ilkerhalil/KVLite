@@ -46,9 +46,16 @@ namespace PommaLabs.KVLite
     [Serializable]
     public sealed class PersistentCache : CacheBase<PersistentCache>
     {
+        #region Constants
+
+        private const int PageSizeInBytes = 32768;
+
+        #endregion
+
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        private static readonly ParameterizedObjectPool<string, PooledObjectWrapper<SQLiteConnection>> ConnectionPool = new ParameterizedObjectPool<string, PooledObjectWrapper<SQLiteConnection>>(
+        private static readonly ParameterizedObjectPool<string, PooledObjectWrapper<SQLiteConnection>> ConnectionPool = new ParameterizedObjectPool
+            <string, PooledObjectWrapper<SQLiteConnection>>(
             3, Configuration.Instance.MaxCachedConnectionCount, CreatePooledConnection);
 
         private readonly string _connectionString;
@@ -62,9 +69,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   TODO
         /// </summary>
-        public PersistentCache() : this(Configuration.Instance.DefaultCachePath)
-        {
-        }
+        public PersistentCache() : this(Configuration.Instance.DefaultCachePath) {}
 
         /// <summary>
         ///   TODO
@@ -73,12 +78,11 @@ namespace PommaLabs.KVLite
         public PersistentCache(string cachePath)
         {
             Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(cachePath), ErrorMessages.NullOrEmptyCachePath);
-            
+
             var mappedCachePath = HttpContext.Current == null ? cachePath : HttpContext.Current.Server.MapPath(cachePath);
             var maxPageCount = Configuration.Instance.MaxCacheSizeInMB*32; // Each page is 32KB large - Multiply by 1024*1024/32768
-            
-            var builder = new SQLiteConnectionStringBuilder
-            {
+
+            var builder = new SQLiteConnectionStringBuilder {
                 BaseSchemaName = "kvlite",
                 BinaryGUID = true,
                 BrowsableConnectionString = false,
@@ -96,25 +100,24 @@ namespace PommaLabs.KVLite
                 JournalMode = SQLiteJournalModeEnum.Wal,
                 LegacyFormat = false,
                 MaxPageCount = maxPageCount,
-                PageSize = 32768,
+                PageSize = PageSizeInBytes,
                 /* We use a custom object pool */
                 Pooling = false,
                 ReadOnly = false,
                 SyncMode = SynchronizationModes.Off,
                 Version = 3,
             };
-            
+
             _connectionString = builder.ToString();
 
-            using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = ctx.InternalResource.BeginTransaction())
-            {
-                if (ctx.InternalResource.ExecuteScalar<long>(Queries.SchemaIsReady, trx) == 0)
-                {
-                    // Creates the CacheItem table and the required indexes.
-                    ctx.InternalResource.Execute(Queries.CacheSchema, null, trx);
+            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+                using (var trx = ctx.InternalResource.BeginTransaction()) {
+                    if (ctx.InternalResource.ExecuteScalar<long>(Queries.SchemaIsReady, trx) == 0) {
+                        // Creates the CacheItem table and the required indexes.
+                        ctx.InternalResource.Execute(Queries.CacheSchema, null, trx);
+                    }
+                    trx.Commit();
                 }
-                trx.Commit();
             }
 
             // Initial cleanup
@@ -131,8 +134,7 @@ namespace PommaLabs.KVLite
         public void Vacuum()
         {
             // Vacuum cannot be run within a transaction.
-            using (var ctx = ConnectionPool.GetObject(_connectionString))
-            {
+            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
                 ctx.InternalResource.Execute(Queries.Vacuum);
             }
         }
@@ -147,8 +149,6 @@ namespace PommaLabs.KVLite
         }
 
         #endregion
-
-        #region ICache Members
 
         public override CacheKind Kind
         {
@@ -167,12 +167,11 @@ namespace PommaLabs.KVLite
 
         public override void Clear(CacheReadMode cacheReadMode)
         {
-            var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
-            using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = ctx.InternalResource.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                ctx.InternalResource.Execute(Queries.Clear, new {ignoreExpirationDate}, trx);
-                trx.Commit();
+            var p = new DynamicParameters();
+            p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.IgnoreExpirationDate), DbType.Boolean);
+
+            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+                ctx.InternalResource.Execute(Queries.Clear, p);
             }
         }
 
@@ -183,63 +182,59 @@ namespace PommaLabs.KVLite
 
         public override long LongCount(CacheReadMode cacheReadMode)
         {
-            var ignoreExpirationDate = (cacheReadMode == CacheReadMode.IgnoreExpirationDate);
+            var p = new DynamicParameters();
+            p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.IgnoreExpirationDate), DbType.Boolean);
+
             // No need for a transaction, since it is just a select.
-            using (var ctx = ConnectionPool.GetObject(_connectionString))
-            {
-                return ctx.InternalResource.ExecuteScalar<long>(Queries.Count, new {ignoreExpirationDate});
+            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+                return ctx.InternalResource.ExecuteScalar<long>(Queries.Count, p);
             }
         }
 
         public override CacheItem GetItem(string partition, string key)
         {
-            DbCacheItem dbItem;
-            // For this kind of task, we need a transaction. In fact, since the value may be sliding,
-            // we may have to issue an update following the initial select.
-            using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = ctx.InternalResource.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                dbItem = ctx.InternalResource.Query<DbCacheItem>(Queries.GetItem, new {partition, key}, trx).FirstOrDefault();
-                trx.Commit();
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", key, DbType.String);
+            
+            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+                var dbItem = ctx.InternalResource.Query<DbCacheItem>(Queries.Get, p).FirstOrDefault();
+                return (dbItem == null) ? null : ToCacheItem(dbItem);
             }
-            return (dbItem == null) ? null : ToCacheItem(dbItem);
         }
 
         public override void Remove(string partition, string key)
         {
-            using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = ctx.InternalResource.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                ctx.InternalResource.Execute(Queries.Remove, new {partition, key}, trx);
-                trx.Commit();
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", key, DbType.String);
+
+            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+                ctx.InternalResource.Execute(Queries.Remove, p);
             }
         }
 
         protected override IList<CacheItem> DoGetAllItems()
         {
-            var items = new List<CacheItem>();
-            using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = ctx.InternalResource.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                items.AddRange(ctx.InternalResource.Query<DbCacheItem>(Queries.DoGetAllItems, null, trx).Select(ToCacheItem));
-                trx.Commit();
+            var p = new DynamicParameters();
+            p.Add("partition", null, DbType.String);
+            p.Add("key", null, DbType.String);
+
+            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+                return ctx.InternalResource.Query<DbCacheItem>(Queries.Get, p).Select(ToCacheItem).ToList();
             }
-            return items;
         }
 
         protected override IList<CacheItem> DoGetPartitionItems(string partition)
         {
-            var items = new List<CacheItem>();
-            using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = ctx.InternalResource.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                items.AddRange(ctx.InternalResource.Query<DbCacheItem>(Queries.DoGetPartitionItems, new {partition}, trx).Select(ToCacheItem));
-                trx.Commit();
-            }
-            return items;
-        }
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", null, DbType.String);
 
-        #endregion
+            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+                return ctx.InternalResource.Query<DbCacheItem>(Queries.Get, p).Select(ToCacheItem).ToList();
+            }
+        }
 
         #region Private Methods
 
@@ -249,7 +244,8 @@ namespace PommaLabs.KVLite
             connection.Open();
             // Sets PRAGMAs for this new connection.
             var journalSizeLimitInBytes = Configuration.Instance.MaxLogSizeInMB*1024*1024;
-            var pragmas = String.Format(Queries.SetPragmas, journalSizeLimitInBytes);
+            var walAutoCheckpointInPages = journalSizeLimitInBytes/PageSizeInBytes/3;
+            var pragmas = String.Format(Queries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
             connection.Execute(pragmas);
             return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
@@ -257,21 +253,16 @@ namespace PommaLabs.KVLite
         private void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
-            var serializedValue = Task.Factory.StartNew<byte[]>(BinarySerializer.SerializeObject, value);
+            var dbItem = new DbCacheItem {
+                Partition = partition,
+                Key = key,
+                SerializedValue = BinarySerializer.SerializeObject(value),
+                UtcExpiry = utcExpiry.HasValue ? (long) (utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(),
+                Interval = interval.HasValue ? (long) interval.Value.TotalSeconds : new long?()
+            };
 
-            using (var ctx = ConnectionPool.GetObject(_connectionString))
-            using (var trx = ctx.InternalResource.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                var dbItem = new DbCacheItem
-                {
-                    Partition = partition,
-                    Key = key,
-                    SerializedValue = serializedValue.Result,
-                    UtcExpiry = utcExpiry.HasValue ? (long) (utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(),
-                    Interval = interval.HasValue ? (long) interval.Value.TotalSeconds : new long?()
-                };
-                ctx.InternalResource.Execute(Queries.DoAdd, dbItem, trx);
-                trx.Commit();
+            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+                ctx.InternalResource.Execute(Queries.Add, dbItem);
             }
 
             // Operation has concluded successfully, therefore we increment the operation counter.
@@ -280,8 +271,7 @@ namespace PommaLabs.KVLite
             // Following code is not fully thread safe, but it does not matter, because the
             // "OperationCountBeforeSoftClear" parameter should be just an hint on when to do the cleanup.
             _operationCount++;
-            if (_operationCount == Configuration.Instance.OperationCountBeforeSoftCleanup)
-            {
+            if (_operationCount == Configuration.Instance.OperationCountBeforeSoftCleanup) {
                 _operationCount = 0;
                 Clear(CacheReadMode.ConsiderExpirationDate);
             }
@@ -289,8 +279,7 @@ namespace PommaLabs.KVLite
 
         private static CacheItem ToCacheItem(DbCacheItem original)
         {
-            return new CacheItem
-            {
+            return new CacheItem {
                 Partition = original.Partition,
                 Key = original.Key,
                 Value = BinarySerializer.DeserializeObject(original.SerializedValue),
@@ -302,6 +291,8 @@ namespace PommaLabs.KVLite
 
         #endregion
 
+        #region Nested type: DbCacheItem
+
         [Serializable]
         private sealed class DbCacheItem
         {
@@ -312,5 +303,7 @@ namespace PommaLabs.KVLite
             public long? UtcExpiry { get; set; }
             public long? Interval { get; set; }
         }
+
+        #endregion
     }
 }

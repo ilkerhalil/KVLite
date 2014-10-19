@@ -44,6 +44,11 @@ namespace PommaLabs.KVLite.Core
             CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);
         ";
 
+        public const string Add = @"
+            insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
+            values (@partition, @key, @serializedValue, strftime('%s', 'now'), @utcExpiry, @interval);
+        ";
+
         public const string Clear = @"
             delete from CacheItem
              where @ignoreExpirationDate = 1
@@ -57,44 +62,17 @@ namespace PommaLabs.KVLite.Core
                 or utcExpiry > strftime('%s', 'now'); -- Select only valid rows
         ";
 
-        public const string DoAdd = @"
-            insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
-            values (@partition, @key, @serializedValue, strftime('%s', 'now'), @utcExpiry, @interval);
-        ";
-
-        public const string DoGetAllItems = @"
+        public const string Get = @"
             update CacheItem
                set utcExpiry = strftime('%s', 'now') + interval
-             where interval is not null
-               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
-            select *
-              from CacheItem
-             where utcExpiry > strftime('%s', 'now'); -- Select only valid rows
-        ";
-
-        public const string DoGetPartitionItems = @"
-            update CacheItem
-               set utcExpiry = strftime('%s', 'now') + interval
-             where partition = @partition
-               and interval is not null
-               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
-            select * 
-              from CacheItem
-             where partition = @partition
-               and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
-        ";
-
-        public const string GetItem = @"
-            update CacheItem
-               set utcExpiry = strftime('%s', 'now') + interval
-             where partition = @partition
-               and key = @key
+             where (@partition is null or partition = @partition)
+               and (@key is null or key = @key)
                and interval is not null
                and utcExpiry > strftime('%s', 'now'); -- Update only valid rows            
             select *
               from CacheItem
-             where partition = @partition
-               and key = @key
+             where (@partition is null or partition = @partition)
+               and (@key is null or key = @key)
                and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
         ";
 
@@ -114,6 +92,7 @@ namespace PommaLabs.KVLite.Core
             PRAGMA cache_spill = 1;
             PRAGMA count_changes = 0; /* Not required by our queries */
             PRAGMA journal_size_limit = {0}; /* Size in bytes */
+            PRAGMA wal_autocheckpoint = {1};
             PRAGMA temp_store = MEMORY;
         ";
 
