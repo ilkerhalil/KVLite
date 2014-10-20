@@ -11,9 +11,7 @@
 Very, very simple key value store based on SQLite.
     </description>
     <releaseNotes>
-* Updated SQLite.
-* Simplified transaction usage.
-* Prototype for NancyFX cache.
+* Working on volatile cache.
     </releaseNotes>
     <summary>
 Very, very simple key value store based on SQLite.
