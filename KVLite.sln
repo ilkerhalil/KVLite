@@ -42,6 +42,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Documentation\SQLite Performance Tuning - MozillaWiki.pdf = Documentation\SQLite Performance Tuning - MozillaWiki.pdf
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External Libraries", "External Libraries", "{BA5453F1-0FEB-49EB-B8C7-F593C32A8CCE}"
+	ProjectSection(SolutionItems) = preProject
+		External Libraries\System.Data.SQLite.dll = External Libraries\System.Data.SQLite.dll
+		External Libraries\System.Data.SQLite.dll.config = External Libraries\System.Data.SQLite.dll.config
+		External Libraries\System.Data.SQLite.pdb = External Libraries\System.Data.SQLite.pdb
+		External Libraries\System.Data.SQLite.xml = External Libraries\System.Data.SQLite.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
