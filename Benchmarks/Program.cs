@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
-using PommaLabs.GRAMPA.Diagnostics;
+using PommaLabs.GRAMPA.Testing;
 using PommaLabs.KVLite;
 
 namespace Benchmarks
@@ -318,38 +317,6 @@ namespace Benchmarks
                 size = s.Length;
             }
             return size/(1024.0*1024.0);
-        }
-    }
-
-    public sealed class RandomDataTableGenerator
-    {
-        private readonly string[] _columnNames;
-        private readonly Random _random = new Random();
-
-        public RandomDataTableGenerator(params string[] columnNames)
-        {
-            Raise<ArgumentNullException>.IfIsNull(columnNames);
-            Raise<ArgumentException>.If(columnNames.Any(String.IsNullOrEmpty));
-
-            _columnNames = columnNames.Clone() as string[];
-        }
-
-        public DataTable GenerateDataTable(int rowCount)
-        {
-            Raise<ArgumentOutOfRangeException>.If(rowCount < 0);
-
-            var dt = new DataTable("RANDOMLY_GENERATED_DATA_TABLE_" + _random.Next());
-            foreach (var columnName in _columnNames) {
-                dt.Columns.Add(columnName);
-            }
-            for (var i = 0; i < rowCount; ++i) {
-                var row = new object[_columnNames.Length];
-                for (var j = 0; j < row.Length; ++j) {
-                    row[j] = _random.Next(100, 999).ToString(CultureInfo.InvariantCulture);
-                }
-                dt.Rows.Add(row);
-            }
-            return dt;
         }
     }
 }

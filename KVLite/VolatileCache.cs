@@ -64,7 +64,7 @@ namespace PommaLabs.KVLite
             Partition = partition,
             Key = key,
             UtcCreation = DateTime.UtcNow,
-            UtcExpiry = null,
+            UtcExpiry = DateTime.UtcNow + interval,
             Interval = interval,
             Value = value
          };
