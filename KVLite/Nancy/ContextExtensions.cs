@@ -30,6 +30,9 @@ using Nancy;
 
 namespace PommaLabs.KVLite.Nancy
 {
+    /// <summary>
+    ///   TODO
+    /// </summary>
     public static class ContextExtensions
     {
         internal const string OutputCacheTimeKey = "_output_cache_time_";
@@ -40,7 +43,7 @@ namespace PommaLabs.KVLite.Nancy
        /// </summary>
        /// <param name="context">Current context.</param>
        /// <param name="seconds">Seconds to cache for.</param>
-       public static void EnableOutputCache<T>(this NancyContext context, int seconds)
+       public static void EnableOutputCache(this NancyContext context, int seconds)
         {
             context.Items[OutputCacheTimeKey] = seconds;
             context.Items[OutputCacheArgsKey] = null;
