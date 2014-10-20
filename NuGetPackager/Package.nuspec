@@ -27,6 +27,7 @@ Very, very simple key value store based on SQLite.
     <dependencies>
       <dependency id="CodeProject.ObjectPool" version="1.0.6" />
       <dependency id="Dapper" version="1.36" />
+      <dependency id="PommaLabs.GRAMPA" version="0.18.0" />
       <dependency id="System.Data.SQLite.Core.MSIL" version="1.0.94.0" />
     </dependencies>
     <references></references>

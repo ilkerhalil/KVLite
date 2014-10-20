@@ -120,6 +120,12 @@
     <Reference Include="Nancy">
       <HintPath>..\packages\Nancy.0.23.2\lib\net40\Nancy.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PommaLabs.GRAMPA">
+      <HintPath>..\packages\PommaLabs.GRAMPA.0.18.0\lib\net40-client\PommaLabs.GRAMPA.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -130,14 +136,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\System.Data.SQLite.Core.MSIL.1.0.94.0\lib\net40\System.Data.SQLite.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CacheBase.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Contracts\CacheContract.cs" />
     <Compile Include="Core\BinarySerializer.cs" />
+    <Compile Include="Core\CacheBase.cs" />
     <Compile Include="ErrorMessages.cs" />
     <Compile Include="ICache.cs" />
     <Compile Include="Nancy\CachingBootstrapper.cs" />
@@ -149,7 +156,6 @@
     <Compile Include="Web\BaseStatePersister.cs" />
     <Compile Include="Web\PersistentViewStatePersister.cs" />
     <Compile Include="Web\VolatileOutputCacheProvider.cs" />
-    <Compile Include="Web\HttpRuntimeCache.cs" />
     <Compile Include="Web\PersistentOutputCacheProvider.cs" />
     <Compile Include="Web\ViewStateStorageSettings.cs" />
   </ItemGroup>

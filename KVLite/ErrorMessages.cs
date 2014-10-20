@@ -30,6 +30,8 @@ namespace PommaLabs.KVLite
 {
     public static class ErrorMessages
     {
+       public const string Web_HttpRuntimeCache_CannotClear = "It is not possible to clear the HttpRuntime cache.";
+
         public const string InvalidEnumValue = "Given enumeration value is not valid.";
         public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
         public const string NullOrEmptyCachePath = @"Cache path cannot be null or empty.";

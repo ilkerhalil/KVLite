@@ -28,60 +28,109 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Runtime.Caching;
+using Newtonsoft.Json;
+using PommaLabs.GRAMPA;
+using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
-    [Serializable]
-    public sealed class VolatileCache : CacheBase<VolatileCache>
-    {
-        public override CacheKind Kind
-        {
-            get { return CacheKind.Volatile; }
-        }
+   [Serializable]
+   public sealed class VolatileCache : CacheBase<VolatileCache>
+   {
+      private readonly MemoryCache _memoryCache;
 
-        public override void AddSliding(string partition, string key, object value, TimeSpan interval)
-        {
-            throw new NotImplementedException();
-        }
+      public VolatileCache() : this(MemoryCache.Default)
+      {
+      }
 
-        public override void AddTimed(string partition, string key, object value, DateTime utcExpiry)
-        {
-            throw new NotImplementedException();
-        }
+      public VolatileCache(MemoryCache memoryCache)
+      {
+         Contract.Requires<ArgumentNullException>(memoryCache != null);
+         _memoryCache = memoryCache;
+      }
 
-        public override void Clear(CacheReadMode cacheReadMode)
-        {
-            throw new NotImplementedException();
-        }
+      public override CacheKind Kind
+      {
+         get { return CacheKind.Volatile; }
+      }
 
-        public override bool Contains(string partition, string key)
-        {
-            throw new NotImplementedException();
-        }
+      public override void AddSliding(string partition, string key, object value, TimeSpan interval)
+      {
+         var item = new CacheItem
+         {
+            Partition = partition,
+            Key = key,
+            UtcCreation = DateTime.UtcNow,
+            UtcExpiry = null,
+            Interval = interval,
+            Value = value
+         };
+         _memoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy {SlidingExpiration = interval});
+      }
 
-        public override long LongCount(CacheReadMode cacheReadMode)
-        {
-            throw new NotImplementedException();
-        }
+      public override void AddTimed(string partition, string key, object value, DateTime utcExpiry)
+      {
+         var item = new CacheItem
+         {
+            Partition = partition,
+            Key = key,
+            UtcCreation = DateTime.UtcNow,
+            UtcExpiry = utcExpiry,
+            Interval = null,
+            Value = value
+         };
+         _memoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy {AbsoluteExpiration = utcExpiry.ToLocalTime()});
+      }
 
-        public override CacheItem GetItem(string partition, string key)
-        {
-            throw new NotImplementedException();
-        }
+      public override void Clear(CacheReadMode cacheReadMode)
+      {
+         var items = _memoryCache.Where(x => x.Value is CacheItem).Select(x => x.Key).ToList();
+         foreach (var item in items)
+         {
+            _memoryCache.Remove(item);
+         }
+      }
 
-        public override void Remove(string partition, string key)
-        {
-            throw new NotImplementedException();
-        }
+      public override bool Contains(string partition, string key)
+      {
+         return _memoryCache.Contains(CreateKey(partition, key));
+      }
 
-        protected override IList<CacheItem> DoGetAllItems()
-        {
-            throw new NotImplementedException();
-        }
+      public override long LongCount(CacheReadMode cacheReadMode)
+      {
+         return _memoryCache.GetCount();
+      }
 
-        protected override IList<CacheItem> DoGetPartitionItems(string partition)
-        {
-            throw new NotImplementedException();
-        }
-    }
+      public override CacheItem GetItem(string partition, string key)
+      {
+         return _memoryCache.Get(CreateKey(partition, key)) as CacheItem;
+      }
+
+      public override void Remove(string partition, string key)
+      {
+         _memoryCache.Remove(CreateKey(partition, key));
+      }
+
+      protected override IList<CacheItem> DoGetAllItems()
+      {
+         return _memoryCache.Where(x => x.Value is CacheItem).Select(x => x.Value as CacheItem).ToList();
+      }
+
+      protected override IList<CacheItem> DoGetPartitionItems(string partition)
+      {
+         return _memoryCache.Where(x =>
+         {
+            var val = x.Value as CacheItem;
+            return val != null && val.Partition == partition;
+         }).Select(x => x.Value as CacheItem).ToList();
+      }
+
+      private static string CreateKey(string partition, string key)
+      {
+         return JsonConvert.SerializeObject(GPair.Create(partition, key));
+      }
+   }
 }
