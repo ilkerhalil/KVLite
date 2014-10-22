@@ -105,7 +105,8 @@ namespace PommaLabs.KVLite.Nancy
 
             context.Response = cachedSummary.ToResponse();
         }
-
+        
+        [Serializable]
         private sealed class ResponseSummary
         {
             private readonly string _contentType;
