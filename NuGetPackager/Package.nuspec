@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>0.4.7</version>
+    <version>0.5.0</version>
     <title>PommaLabs.KVLite</title>
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -12,6 +12,7 @@ Very, very simple key value store based on SQLite.
     </description>
     <releaseNotes>
 * Working on Nancy response caching.
+* Configuration section now named "pommaLabs.kvlite" instead of "KVLiteConfiguration"
     </releaseNotes>
     <summary>
 Very, very simple key value store based on SQLite.

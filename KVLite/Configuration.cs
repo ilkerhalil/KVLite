@@ -37,7 +37,7 @@ namespace PommaLabs.KVLite
     [Serializable]
     public sealed class Configuration : ConfigurationSection
     {
-        private const string SectionName = "PommaLabs.KVLite";
+        private const string SectionName = "pommaLabs.kvlite";
         private const string DefaultCachePathKey = "DefaultCachePath";
         private const string DefaultStaticIntervalInDaysKey = "DefaultStaticIntervalInDays";
         private const string MaxCacheSizeInMBKey = "MaxCacheSizeInMB";
