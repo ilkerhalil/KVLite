@@ -134,11 +134,7 @@ namespace PommaLabs.KVLite.Nancy
                     ContentType = _contentType,
                     Headers = _headers,
                     StatusCode = _statusCode,
-                    Contents = stream =>
-                    {
-                        var writer = new StreamWriter(stream) { AutoFlush = true };
-                        writer.Write(_contents);
-                    }
+                    Contents = stream => stream.Write(_contents, 0, _contents.Length)
                 };
             }
         }
