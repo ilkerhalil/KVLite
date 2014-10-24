@@ -36,7 +36,8 @@ using Nancy.TinyIoc;
 
 namespace PommaLabs.KVLite.Nancy
 {
-    public class CachingBootstrapper : DefaultNancyBootstrapper
+    [CLSCompliant(false)]
+    public abstract class CachingBootstrapper : DefaultNancyBootstrapper
     {
         private const string NancyCachePartition = "KVLite.NancyResponseCache";
 
@@ -69,7 +70,7 @@ namespace PommaLabs.KVLite.Nancy
         /// </summary>
         /// <param name="context">Current context.</param>
         /// <returns>Response or null.</returns>
-        public Response CheckCache(NancyContext context)
+        public static Response CheckCache(NancyContext context)
         {
             var cachedSummary = Cache[NancyCachePartition, context.Request.Path] as ResponseSummary;
             return (cachedSummary == null) ? null : cachedSummary.ToResponse();
@@ -80,7 +81,7 @@ namespace PommaLabs.KVLite.Nancy
         ///   Only stores by Path and stores the response in a KVLite cache.
         /// </summary>
         /// <param name="context">Current context.</param>
-        public void SetCache(NancyContext context)
+        public static void SetCache(NancyContext context)
         {
             if (context.Response.StatusCode != HttpStatusCode.OK)
             {

@@ -26,6 +26,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using Nancy;
 
 namespace PommaLabs.KVLite.Nancy
@@ -33,6 +34,7 @@ namespace PommaLabs.KVLite.Nancy
     /// <summary>
     ///   TODO
     /// </summary>
+    [CLSCompliant(false)]
     public static class ContextExtensions
     {
         internal const string OutputCacheTimeKey = "_output_cache_time_";
