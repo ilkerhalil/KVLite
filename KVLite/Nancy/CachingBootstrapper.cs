@@ -33,6 +33,7 @@ using System.IO;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
+using PommaLabs.GRAMPA.Extensions;
 
 namespace PommaLabs.KVLite.Nancy
 {
@@ -50,7 +51,7 @@ namespace PommaLabs.KVLite.Nancy
                     case CacheKind.Persistent:
                         return PersistentCache.DefaultInstance;
                     case CacheKind.Volatile:
-                        return null;
+                        return VolatileCache.DefaultInstance;
                     default:
                         throw new ConfigurationErrorsException();
                 }
@@ -70,9 +71,10 @@ namespace PommaLabs.KVLite.Nancy
         /// </summary>
         /// <param name="context">Current context.</param>
         /// <returns>Response or null.</returns>
-        public static Response CheckCache(NancyContext context)
+        private static Response CheckCache(NancyContext context)
         {
-            var cachedSummary = Cache[NancyCachePartition, context.Request.Path] as ResponseSummary;
+            var cacheKey = new {context.Request.Path, context.Request.Form}.ToMd5String();
+            var cachedSummary = Cache[NancyCachePartition, cacheKey] as ResponseSummary;
             return (cachedSummary == null) ? null : cachedSummary.ToResponse();
         }
 
@@ -81,7 +83,7 @@ namespace PommaLabs.KVLite.Nancy
         ///   Only stores by Path and stores the response in a KVLite cache.
         /// </summary>
         /// <param name="context">Current context.</param>
-        public static void SetCache(NancyContext context)
+        private static void SetCache(NancyContext context)
         {
             if (context.Response.StatusCode != HttpStatusCode.OK)
             {
@@ -99,12 +101,14 @@ namespace PommaLabs.KVLite.Nancy
             {
                 return;
             }
-
+            
+            var cacheKey = new {context.Request.Path, context.Request.Form}.ToMd5String();
             var cachedSummary = new ResponseSummary(context.Response);
-
-            Cache.AddTimedAsync(NancyCachePartition, context.Request.Path, cachedSummary, DateTime.UtcNow.AddSeconds(cacheSeconds));
+            Cache.AddTimedAsync(NancyCachePartition, cacheKey, cachedSummary, DateTime.UtcNow.AddSeconds(cacheSeconds));
 
             context.Response = cachedSummary.ToResponse();
+
+            context.Items.Remove(ContextExtensions.OutputCacheTimeKey);
         }
         
         [Serializable]
@@ -121,9 +125,8 @@ namespace PommaLabs.KVLite.Nancy
                 _headers = response.Headers;
                 _statusCode = response.StatusCode;
 
-                using (var memoryStream = new MemoryStream())
-                {
-                    response.Contents.Invoke(memoryStream);
+                using (var memoryStream = new MemoryStream()) {
+                    response.Contents(memoryStream);
                     _contents = memoryStream.GetBuffer();
                 }
             }

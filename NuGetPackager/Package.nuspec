@@ -25,7 +25,7 @@ Very, very simple key value store based on SQLite.
     <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <dependency id="CodeProject.ObjectPool" version="1.0.6" />
-      <dependency id="Dapper" version="1.36" />
+      <dependency id="Dapper" version="1.37" />
       <dependency id="PommaLabs.GRAMPA" version="0.18.0" />
     </dependencies>
     <references>

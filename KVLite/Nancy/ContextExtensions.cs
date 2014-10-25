@@ -38,29 +38,15 @@ namespace PommaLabs.KVLite.Nancy
     public static class ContextExtensions
     {
         internal const string OutputCacheTimeKey = "_output_cache_time_";
-        internal const string OutputCacheArgsKey = "_output_cache_args_";
 
-       /// <summary>
-       ///   Enable output caching for this route.
-       /// </summary>
-       /// <param name="context">Current context.</param>
-       /// <param name="seconds">Seconds to cache for.</param>
-       public static void EnableOutputCache(this NancyContext context, int seconds)
+        /// <summary>
+        ///   Enable output caching for this route.
+        /// </summary>
+        /// <param name="context">Current context.</param>
+        /// <param name="seconds">Seconds to cache for.</param>
+        public static void EnableOutputCache(this NancyContext context, int seconds)
         {
             context.Items[OutputCacheTimeKey] = seconds;
-            context.Items[OutputCacheArgsKey] = null;
-        }
-
-       /// <summary>
-       ///   Enable output caching for this route.
-       /// </summary>
-       /// <param name="context">Current context.</param>
-       /// <param name="seconds">Seconds to cache for.</param>
-       /// <param name="args">Arguments used to discriminate between requests at the same URL.</param>
-       public static void EnableOutputCache<T>(this NancyContext context, int seconds, T args)
-        {
-            context.Items[OutputCacheTimeKey] = seconds;
-            context.Items[OutputCacheArgsKey] = args;
         }
 
         /// <summary>
