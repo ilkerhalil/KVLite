@@ -62,6 +62,8 @@
   <ItemGroup>
     <Folder Include="content\" />
     <Folder Include="lib\net40\" />
+    <Folder Include="lib\net451\" />
+    <Folder Include="lib\net45\" />
     <Folder Include="tools\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

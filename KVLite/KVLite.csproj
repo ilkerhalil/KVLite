@@ -64,7 +64,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>USETHROWER</DefineConstants>
@@ -184,7 +184,8 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetDir)PommaLabs.KVLite.* "$(SolutionDir)NuGetPackager/lib/net40"
-copy $(TargetDir)System.Data.SQLite.* "$(SolutionDir)NuGetPackager/lib/net40"</PostBuildEvent>
+copy $(TargetDir)PommaLabs.KVLite.* "$(SolutionDir)NuGetPackager/lib/net45"
+copy $(TargetDir)PommaLabs.KVLite.* "$(SolutionDir)NuGetPackager/lib/net451"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.94.0\build\net40\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.94.0\build\net40\System.Data.SQLite.Core.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
