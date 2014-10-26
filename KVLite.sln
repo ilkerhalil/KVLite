@@ -42,14 +42,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Documentation\SQLite Performance Tuning - MozillaWiki.pdf = Documentation\SQLite Performance Tuning - MozillaWiki.pdf
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External Libraries", "External Libraries", "{BA5453F1-0FEB-49EB-B8C7-F593C32A8CCE}"
-	ProjectSection(SolutionItems) = preProject
-		External Libraries\System.Data.SQLite.dll = External Libraries\System.Data.SQLite.dll
-		External Libraries\System.Data.SQLite.dll.config = External Libraries\System.Data.SQLite.dll.config
-		External Libraries\System.Data.SQLite.pdb = External Libraries\System.Data.SQLite.pdb
-		External Libraries\System.Data.SQLite.xml = External Libraries\System.Data.SQLite.xml
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestService.Nancy", "RestService.Nancy\RestService.Nancy.csproj", "{ED638DD5-E755-4B7A-940D-5C94AB425686}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestService.Mvc", "RestService.Mvc\RestService.Mvc.csproj", "{00CCC8C6-1415-4F6B-B830-1CBBB7F87CCF}"

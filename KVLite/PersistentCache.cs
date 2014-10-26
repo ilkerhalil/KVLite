@@ -31,7 +31,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using CodeProject.ObjectPool;
@@ -65,6 +67,13 @@ namespace PommaLabs.KVLite
         private short _operationCount;
 
         #region Construction
+
+        static PersistentCache()
+        {
+            // Make SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
+            var nativePath = Path.Combine(Environment.CurrentDirectory, "KVLite/");
+            Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", Path.GetDirectoryName(nativePath));
+        }
 
         /// <summary>
         ///   TODO
