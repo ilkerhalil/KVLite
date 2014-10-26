@@ -35,6 +35,8 @@ Very, very simple key value store based on SQLite.
     <tags>sqlite key value store concurrent persistent volatile cache provider</tags>
   </metadata>
   <files>
+    <file src="content\" target="content" />
     <file src="lib\" target="lib" />
+    <file src="tools\" target="tools" />
   </files>
 </package>
