@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using PommaLabs.KVLite.Contracts;
 
 namespace PommaLabs.KVLite
@@ -394,14 +395,37 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   TODO
     /// </summary>
-    [Serializable]
+    [Serializable, JsonObject]
     public sealed class CacheItem
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public string Partition { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string Key { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public object Value { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime UtcCreation { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime? UtcExpiry { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public TimeSpan? Interval { get; set; }
     }
 

@@ -27,7 +27,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using Nancy;
+using PommaLabs.GRAMPA.Extensions;
 
 namespace PommaLabs.KVLite.Nancy
 {
@@ -56,6 +58,26 @@ namespace PommaLabs.KVLite.Nancy
         public static void DisableOutputCache(this NancyContext context)
         {
             context.Items.Remove(OutputCacheTimeKey);
+        }
+
+        internal static string GetRequestFingerPrint(this NancyContext context)
+        {
+            return new {path = context.Request.Path, body = context.ReadAllBody()}.ToMD5String();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        internal static string ReadAllBody(this NancyContext context)
+        {
+            string body;
+            using (var streamReader = new StreamReader(context.Request.Body)) {
+                body = streamReader.ReadToEnd();
+                context.Request.Body.Seek(0, SeekOrigin.Begin);
+            }
+            return body;
         }
     }
 }

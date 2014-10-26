@@ -33,7 +33,6 @@ using System.IO;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
-using PommaLabs.GRAMPA.Extensions;
 
 namespace PommaLabs.KVLite.Nancy
 {
@@ -73,7 +72,7 @@ namespace PommaLabs.KVLite.Nancy
         /// <returns>Response or null.</returns>
         private static Response CheckCache(NancyContext context)
         {
-            var cacheKey = new {context.Request.Path, context.Request.Form}.ToMd5String();
+            var cacheKey = context.GetRequestFingerPrint();
             var cachedSummary = Cache[NancyCachePartition, cacheKey] as ResponseSummary;
             return (cachedSummary == null) ? null : cachedSummary.ToResponse();
         }
@@ -102,7 +101,7 @@ namespace PommaLabs.KVLite.Nancy
                 return;
             }
             
-            var cacheKey = new {context.Request.Path, context.Request.Form}.ToMd5String();
+            var cacheKey = context.GetRequestFingerPrint();
             var cachedSummary = new ResponseSummary(context.Response);
             Cache.AddTimedAsync(NancyCachePartition, cacheKey, cachedSummary, DateTime.UtcNow.AddSeconds(cacheSeconds));
 
