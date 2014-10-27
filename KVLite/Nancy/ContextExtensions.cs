@@ -60,7 +60,7 @@ namespace PommaLabs.KVLite.Nancy
             context.Items.Remove(OutputCacheTimeKey);
         }
 
-        internal static string GetRequestFingerPrint(this NancyContext context)
+        internal static string GetRequestFingerprint(this NancyContext context)
         {
             return new {path = context.Request.Path, body = context.ReadAllBody()}.ToMD5String();
         }

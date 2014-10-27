@@ -38,6 +38,8 @@ using System.Threading.Tasks;
 using System.Web;
 using CodeProject.ObjectPool;
 using Dapper;
+using PommaLabs.GRAMPA;
+using PommaLabs.GRAMPA.Extensions;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
@@ -71,8 +73,8 @@ namespace PommaLabs.KVLite
         static PersistentCache()
         {
             // Make SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
-            var nativePath = Path.Combine(Environment.CurrentDirectory, "KVLite/");
-            Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", Path.GetDirectoryName(nativePath));
+            var nativePath = (GEnvironment.AppIsRunningOnAspNet ? "bin/KVLite/" : "KVLite/").MapPath();
+            Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
         }
 
         /// <summary>
@@ -88,16 +90,13 @@ namespace PommaLabs.KVLite
         {
             Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(cachePath), ErrorMessages.NullOrEmptyCachePath);
 
-            var mappedCachePath = HttpContext.Current == null ? cachePath : HttpContext.Current.Server.MapPath(cachePath);
-            var maxPageCount = Configuration.Instance.MaxCacheSizeInMB*32; // Each page is 32KB large - Multiply by 1024*1024/32768
-
             var builder = new SQLiteConnectionStringBuilder {
                 BaseSchemaName = "kvlite",
                 BinaryGUID = true,
                 BrowsableConnectionString = false,
                 /* Number of pages of 32KB */
                 CacheSize = 128,
-                DataSource = mappedCachePath,
+                DataSource = cachePath.MapPath(),
                 DateTimeFormat = SQLiteDateFormats.Ticks,
                 DateTimeKind = DateTimeKind.Utc,
                 DefaultIsolationLevel = IsolationLevel.ReadCommitted,
@@ -108,7 +107,7 @@ namespace PommaLabs.KVLite
                 ForeignKeys = false,
                 JournalMode = SQLiteJournalModeEnum.Wal,
                 LegacyFormat = false,
-                MaxPageCount = maxPageCount,
+                MaxPageCount = Configuration.Instance.MaxCacheSizeInMB*32, // Each page is 32KB large - Multiply by 1024*1024/32768
                 PageSize = PageSizeInBytes,
                 /* We use a custom object pool */
                 Pooling = false,
