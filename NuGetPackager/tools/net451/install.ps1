@@ -9,12 +9,19 @@
 
 param($installPath, $toolsPath, $package, $project)
 
+$mainDirectory = "KVLite"
 $platformNames = "x86", "x64"
 $fileName = "SQLite.Interop.dll"
 $propertyName = "CopyToOutputDirectory"
 
 foreach($platformName in $platformNames) {
-  $folder = $project.ProjectItems.Item($platformName)
+  $folder = $project.ProjectItems.Item($mainDirectory)
+  
+  if ($folder -eq $null) {
+    continue
+  }
+
+  $folder = $folder.ProjectItems.Item($platformName)
 
   if ($folder -eq $null) {
     continue
