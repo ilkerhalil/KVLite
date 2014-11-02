@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using NUnit.Framework;
 using PommaLabs.KVLite;
 
@@ -18,6 +19,12 @@ namespace UnitTests
         public void AddStatic_NotSerializableValue()
         {
             DefaultInstance.AddStatic(StringItems[0], new NotSerializableClass());
+        }
+
+        [Test]
+        public void AddStatic_DataContractValue()
+        {
+            DefaultInstance.AddStatic(StringItems[0], new DataContractClass());
         }
 
         [Test]
@@ -108,6 +115,13 @@ namespace UnitTests
 
     internal sealed class NotSerializableClass
     {
+        public string Pino = "Gino";
+    }
+
+    [DataContract]
+    internal sealed class DataContractClass
+    {
+        [DataMember]
         public string Pino = "Gino";
     }
 }
