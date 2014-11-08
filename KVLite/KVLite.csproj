@@ -113,8 +113,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeProject.DeepXmlSerializer">
-      <HintPath>..\packages\CodeProject.DeepXmlSerializer.0.1.0\lib\net40\CodeProject.DeepXmlSerializer.dll</HintPath>
+    <Reference Include="CodeProject.DeepXmlSerializer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\CodeProject.DeepXmlSerializer.0.1.1\lib\net40\CodeProject.DeepXmlSerializer.dll</HintPath>
     </Reference>
     <Reference Include="CodeProject.ObjectPool, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -122,7 +123,7 @@
     </Reference>
     <Reference Include="Dapper, Version=1.37.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Dapper.1.37\lib\net40\Dapper.dll</HintPath>
+      <HintPath>..\packages\Dapper.1.38\lib\net40\Dapper.dll</HintPath>
     </Reference>
     <Reference Include="Nancy">
       <HintPath>..\packages\Nancy.0.23.2\lib\net40\Nancy.dll</HintPath>
