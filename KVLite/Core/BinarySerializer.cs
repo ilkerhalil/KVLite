@@ -29,17 +29,20 @@
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Xml.Linq;
 using CodeProject.DeepXmlSerializer;
 
 namespace PommaLabs.KVLite.Core
 {
     internal static class BinarySerializer
     {
+        private const SaveOptions XmlSaveOptions = SaveOptions.DisableFormatting | SaveOptions.OmitDuplicateNamespaces; 
+
         public static byte[] SerializeObject(object obj)
         {
             using (var compressedStream = new MemoryStream()) {
                 using (var decompressedStream = new DeflateStream(compressedStream, CompressionMode.Compress)) {
-                    DeepXmlSerializer.Serialize(obj, 0, "kvlite").Save(decompressedStream);
+                    DeepXmlSerializer.Serialize(obj, 0).Save(decompressedStream, XmlSaveOptions);
                 }
                 return compressedStream.GetBuffer();
             }

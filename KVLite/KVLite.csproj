@@ -113,9 +113,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeProject.DeepXmlSerializer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="CodeProject.DeepXmlSerializer, Version=0.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CodeProject.DeepXmlSerializer.0.1.1\lib\net40\CodeProject.DeepXmlSerializer.dll</HintPath>
+      <HintPath>..\packages\CodeProject.DeepXmlSerializer.0.1.2\lib\net40-client\CodeProject.DeepXmlSerializer.dll</HintPath>
     </Reference>
     <Reference Include="CodeProject.ObjectPool, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -24,14 +24,13 @@ Very, very simple key value store based on SQLite.
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
+      <dependency id="CodeProject.DeepXmlSerializer" version="0.1.2" />
       <dependency id="CodeProject.ObjectPool" version="1.0.6" />
-      <dependency id="Dapper" version="1.37" />
+      <dependency id="Dapper" version="1.38" />
       <dependency id="PommaLabs.GRAMPA" version="1.2.0" />
       <dependency id="System.Data.SQLite.Core.MSIL" version="[1.0.94.0]" />
     </dependencies>
-    <references>
-       <reference file="PommaLabs.KVLite.dll" />
-    </references>
+    <references></references>
     <frameworkAssemblies></frameworkAssemblies>
     <tags>sqlite key value store concurrent persistent volatile cache provider</tags>
   </metadata>
