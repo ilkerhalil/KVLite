@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>0.6.0-alpha</version>
+    <version>0.6.2-alpha</version>
     <title>PommaLabs.KVLite</title>
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -24,7 +24,7 @@ Very, very simple key value store based on SQLite.
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
-      <dependency id="CodeProject.DeepXmlSerializer" version="0.1.2" />
+      <dependency id="CodeProject.DeepXmlSerializer" version="0.1.4" />
       <dependency id="CodeProject.ObjectPool" version="1.0.6" />
       <dependency id="Dapper" version="1.38" />
       <dependency id="PommaLabs.GRAMPA" version="1.2.0" />
