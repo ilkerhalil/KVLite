@@ -261,10 +261,19 @@ namespace PommaLabs.KVLite
         private void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
-            var dbItem = new DbCacheItem {
+           byte[] serializedValue;
+           try
+           {
+              serializedValue = BinarySerializer.SerializeObject(value);
+           }
+           catch (Exception ex)
+           {
+              throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
+           }
+           var dbItem = new DbCacheItem {
                 Partition = partition,
                 Key = key,
-                SerializedValue = BinarySerializer.SerializeObject(value),
+                SerializedValue = serializedValue,
                 UtcExpiry = utcExpiry.HasValue ? (long) (utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(),
                 Interval = interval.HasValue ? (long) interval.Value.TotalSeconds : new long?()
             };
@@ -287,16 +296,10 @@ namespace PommaLabs.KVLite
 
         private static CacheItem ToCacheItem(DbCacheItem original)
         {
+           object deserializedValue;
            try
            {
-              return new CacheItem {
-                Partition = original.Partition,
-                Key = original.Key,
-                Value = BinarySerializer.DeserializeObject(original.SerializedValue),
-                UtcCreation = UnixEpoch.AddSeconds(original.UtcCreation),
-                UtcExpiry = original.UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(original.UtcExpiry.Value),
-                Interval = original.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(original.Interval.Value)
-            };
+              deserializedValue = BinarySerializer.DeserializeObject(original.SerializedValue);
            }
            catch
            {
@@ -304,6 +307,15 @@ namespace PommaLabs.KVLite
               // Therefore, we act as if there was no element.
               return null;
            }
+           return new CacheItem
+           {
+              Partition = original.Partition,
+              Key = original.Key,
+              Value = deserializedValue,
+              UtcCreation = UnixEpoch.AddSeconds(original.UtcCreation),
+              UtcExpiry = original.UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(original.UtcExpiry.Value),
+              Interval = original.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(original.Interval.Value)
+           };
         }
 
         #endregion

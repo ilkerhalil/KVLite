@@ -15,6 +15,7 @@ namespace UnitTests
         }
 
         [Test]
+       [ExpectedException(typeof(ArgumentException))]
         public void AddStatic_NotSerializableValue()
         {
             DefaultInstance.AddStatic(StringItems[0], new NotSerializableClass());

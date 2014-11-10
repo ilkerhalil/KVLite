@@ -26,23 +26,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
-using System.Xml.Linq;
-using CodeProject.DeepXmlSerializer;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters;
+using CodeProject.ObjectPool;
 
 namespace PommaLabs.KVLite.Core
 {
     internal static class BinarySerializer
     {
-        private const SaveOptions XmlSaveOptions = SaveOptions.DisableFormatting | SaveOptions.OmitDuplicateNamespaces; 
+        private static readonly ObjectPool<PooledObjectWrapper<NetDataContractSerializer>> SerializerPool = new ObjectPool<PooledObjectWrapper<NetDataContractSerializer>>(
+            1, Configuration.Instance.MaxCachedSerializerCount, CreatePooledBinaryFormatter);
 
         public static byte[] SerializeObject(object obj)
         {
             using (var compressedStream = new MemoryStream()) {
                 using (var decompressedStream = new DeflateStream(compressedStream, CompressionMode.Compress)) {
-                    DeepXmlSerializer.Serialize(obj, 0).Save(decompressedStream, XmlSaveOptions);
+                    using (var serializer = SerializerPool.GetObject()) {
+                        serializer.InternalResource.Serialize(decompressedStream, obj);
+                    }
                 }
                 return compressedStream.GetBuffer();
             }
@@ -52,11 +56,21 @@ namespace PommaLabs.KVLite.Core
         {
             using (var compressedStream = new MemoryStream(serialized)) {
                 using (var decompressedStream = new DeflateStream(compressedStream, CompressionMode.Decompress)) {
-                    using (var streamReader = new StreamReader(decompressedStream, Encoding.UTF8)) {
-                        return DeepXmlDeserializer.Deserialize(streamReader.ReadToEnd(), 0);
+                    using (var serializer = SerializerPool.GetObject()) {
+                        return serializer.InternalResource.Deserialize(decompressedStream);
                     }
                 }
             }
+        }
+
+        private static PooledObjectWrapper<NetDataContractSerializer> CreatePooledBinaryFormatter()
+        {
+            var formatter = new NetDataContractSerializer {
+                // In simple mode, the assembly used during deserialization need not match exactly the assembly used during serialization. 
+                // Specifically, the version numbers need not match as the LoadWithPartialName method is used to load the assembly.
+                AssemblyFormat = FormatterAssemblyStyle.Simple                
+            };
+            return new PooledObjectWrapper<NetDataContractSerializer>(formatter);
         }
     }
 }
