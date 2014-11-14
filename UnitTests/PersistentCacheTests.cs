@@ -15,13 +15,14 @@ namespace UnitTests
         }
 
         [Test]
-       [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void AddStatic_NotSerializableValue()
         {
             DefaultInstance.AddStatic(StringItems[0], new NotSerializableClass());
         }
 
         [Test]
+        [ExpectedException(typeof(ArgumentException))]
         public void AddStatic_DataContractValue()
         {
             DefaultInstance.AddStatic(StringItems[0], new DataContractClass());
