@@ -156,14 +156,23 @@
     <Compile Include="Contracts\CacheContract.cs" />
     <Compile Include="Core\BinarySerializer.cs" />
     <Compile Include="Core\CacheBase.cs" />
+    <Compile Include="Core\CacheSettingsBase.cs" />
     <Compile Include="ErrorMessages.cs" />
     <Compile Include="ICache.cs" />
     <Compile Include="Nancy\CachingBootstrapper.cs" />
     <Compile Include="Nancy\ContextExtensions.cs" />
     <Compile Include="PersistentCache.cs" />
+    <Compile Include="PersistentCacheSettings.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Queries.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="VolatileCache.cs" />
+    <Compile Include="VolatileCacheSettings.cs" />
     <Compile Include="Web\BaseStatePersister.cs" />
     <Compile Include="Web\PersistentViewStatePersister.cs" />
     <Compile Include="Web\VolatileOutputCacheProvider.cs" />
@@ -171,7 +180,12 @@
     <Compile Include="Web\ViewStateStorageSettings.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="KVLite\x64\SQLite.Interop.dll">

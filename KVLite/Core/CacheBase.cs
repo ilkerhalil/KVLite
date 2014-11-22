@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -37,12 +38,27 @@ namespace PommaLabs.KVLite.Core
     ///   TODO
     /// </summary>
     /// <typeparam name="TCache"></typeparam>
+    /// <typeparam name="TCacheSettings"></typeparam>
     [Serializable]
-    public abstract class CacheBase<TCache> : ICache<TCache> where TCache : CacheBase<TCache>, ICache<TCache>, new()
+    public abstract class CacheBase<TCache, TCacheSettings> : ICache<TCache, TCacheSettings> 
+        where TCache : CacheBase<TCache, TCacheSettings>, ICache<TCache, TCacheSettings>, new()
+        where TCacheSettings : CacheSettingsBase, new()
     {
         private const string DefaultPartition = "_DEFAULT_PARTITION_";
 
         private static readonly TCache CachedDefaultInstance = new TCache();
+
+        private readonly TCacheSettings _settings;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="settings"></param>
+        protected CacheBase(TCacheSettings settings)
+        {
+            Contract.Requires<ArgumentNullException>(settings != null);
+            _settings = settings;
+        }
 
         #region Public Properties
 
@@ -59,6 +75,11 @@ namespace PommaLabs.KVLite.Core
         #region ICache<TCache> Members
 
         public abstract CacheKind Kind { get; }
+
+        public TCacheSettings Settings
+        {
+            get { return _settings; }
+        }
 
         public object this[string partition, string key]
         {

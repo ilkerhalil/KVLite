@@ -84,7 +84,7 @@ namespace UnitTests
         public void NewCache_BlankPath()
         {
             try {
-                new PersistentCache(BlankPath);
+                new PersistentCache(new PersistentCacheSettings {CacheFile = BlankPath});
             } catch (Exception ex) {
                 Assert.IsInstanceOf<ArgumentException>(ex);
                 Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));
@@ -95,7 +95,7 @@ namespace UnitTests
         public void NewCache_EmptyPath()
         {
             try {
-                new PersistentCache(String.Empty);
+                new PersistentCache(new PersistentCacheSettings {CacheFile = String.Empty});
             } catch (Exception ex) {
                 Assert.IsInstanceOf<ArgumentException>(ex);
                 Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));
@@ -106,7 +106,7 @@ namespace UnitTests
         public void NewCache_NullPath()
         {
             try {
-                new PersistentCache(null);
+                new PersistentCache(new PersistentCacheSettings {CacheFile = null});
             } catch (Exception ex) {
                 Assert.IsInstanceOf<ArgumentException>(ex);
                 Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));

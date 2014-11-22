@@ -38,7 +38,6 @@ namespace PommaLabs.KVLite
     public sealed class Configuration : ConfigurationSection
     {
         private const string SectionName = "pommaLabs.kvlite";
-        private const string DefaultCachePathKey = "DefaultCachePath";
         private const string DefaultStaticIntervalInDaysKey = "DefaultStaticIntervalInDays";
         private const string MaxCacheSizeInMBKey = "MaxCacheSizeInMB";
         private const string MaxLogSizeInMBKey = "MaxLogSizeInMB";
@@ -52,12 +51,6 @@ namespace PommaLabs.KVLite
         public static Configuration Instance
         {
             get { return CachedInstance; }
-        }
-
-        [ConfigurationProperty(DefaultCachePathKey, IsRequired = true)]
-        public string DefaultCachePath
-        {
-            get { return Convert.ToString(this[DefaultCachePathKey]); }
         }
 
         [ConfigurationProperty(DefaultStaticIntervalInDaysKey, IsRequired = false, DefaultValue = 30)]

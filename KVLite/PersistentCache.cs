@@ -30,12 +30,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
-using System.Diagnostics.Contracts;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
 using CodeProject.ObjectPool;
 using Dapper;
 using PommaLabs.GRAMPA;
@@ -48,7 +44,7 @@ namespace PommaLabs.KVLite
     ///   TODO
     /// </summary>
     [Serializable]
-    public sealed class PersistentCache : CacheBase<PersistentCache>
+    public sealed class PersistentCache : CacheBase<PersistentCache, PersistentCacheSettings>
     {
         #region Constants
 
@@ -80,23 +76,23 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   TODO
         /// </summary>
-        public PersistentCache() : this(Configuration.Instance.DefaultCachePath) {}
+        public PersistentCache() : this(new PersistentCacheSettings())
+        {
+        }
 
         /// <summary>
         ///   TODO
         /// </summary>
-        /// <param name="cachePath"></param>
-        public PersistentCache(string cachePath)
+        /// <param name="settings"></param>
+        public PersistentCache(PersistentCacheSettings settings) : base(settings)
         {
-            Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(cachePath), ErrorMessages.NullOrEmptyCachePath);
-
             var builder = new SQLiteConnectionStringBuilder {
                 BaseSchemaName = "kvlite",
                 BinaryGUID = true,
                 BrowsableConnectionString = false,
                 /* Number of pages of 32KB */
                 CacheSize = 128,
-                DataSource = cachePath.MapPath(),
+                DataSource = settings.CacheFile.MapPath(),
                 DateTimeFormat = SQLiteDateFormats.Ticks,
                 DateTimeKind = DateTimeKind.Utc,
                 DefaultIsolationLevel = IsolationLevel.ReadCommitted,
@@ -204,7 +200,7 @@ namespace PommaLabs.KVLite
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
-            
+
             using (var ctx = ConnectionPool.GetObject(_connectionString)) {
                 var dbItem = ctx.InternalResource.Query<DbCacheItem>(Queries.Get, p).FirstOrDefault();
                 return (dbItem == null) ? null : ToCacheItem(dbItem);
@@ -261,16 +257,13 @@ namespace PommaLabs.KVLite
         private void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
-           byte[] serializedValue;
-           try
-           {
-              serializedValue = BinarySerializer.SerializeObject(value);
-           }
-           catch (Exception ex)
-           {
-              throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
-           }
-           var dbItem = new DbCacheItem {
+            byte[] serializedValue;
+            try {
+                serializedValue = BinarySerializer.SerializeObject(value);
+            } catch (Exception ex) {
+                throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
+            }
+            var dbItem = new DbCacheItem {
                 Partition = partition,
                 Key = key,
                 SerializedValue = serializedValue,
@@ -296,26 +289,22 @@ namespace PommaLabs.KVLite
 
         private static CacheItem ToCacheItem(DbCacheItem original)
         {
-           object deserializedValue;
-           try
-           {
-              deserializedValue = BinarySerializer.DeserializeObject(original.SerializedValue);
-           }
-           catch
-           {
-              // Something wrong happened during deserialization.
-              // Therefore, we act as if there was no element.
-              return null;
-           }
-           return new CacheItem
-           {
-              Partition = original.Partition,
-              Key = original.Key,
-              Value = deserializedValue,
-              UtcCreation = UnixEpoch.AddSeconds(original.UtcCreation),
-              UtcExpiry = original.UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(original.UtcExpiry.Value),
-              Interval = original.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(original.Interval.Value)
-           };
+            object deserializedValue;
+            try {
+                deserializedValue = BinarySerializer.DeserializeObject(original.SerializedValue);
+            } catch {
+                // Something wrong happened during deserialization.
+                // Therefore, we act as if there was no element.
+                return null;
+            }
+            return new CacheItem {
+                Partition = original.Partition,
+                Key = original.Key,
+                Value = deserializedValue,
+                UtcCreation = UnixEpoch.AddSeconds(original.UtcCreation),
+                UtcExpiry = original.UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(original.UtcExpiry.Value),
+                Interval = original.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(original.Interval.Value)
+            };
         }
 
         #endregion
