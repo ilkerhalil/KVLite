@@ -110,7 +110,7 @@ namespace PommaLabs.KVLite.Core
 
         public void AddStatic(string partition, string key, object value)
         {
-            AddSliding(partition, key, value, TimeSpan.FromDays(Configuration.Instance.DefaultStaticIntervalInDays));
+            AddSliding(partition, key, value, TimeSpan.FromDays(Settings.StaticIntervalInDays));
         }
 
         public void AddStatic(string key, object value)

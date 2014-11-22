@@ -31,5 +31,23 @@ namespace PommaLabs.KVLite.Properties {
                 return ((string)(this["DefaultPersistentCacheFile"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int DefaultStaticIntervalInDays {
+            get {
+                return ((int)(this["DefaultStaticIntervalInDays"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("256")]
+        public int DefaultMaxPersistentCacheSizeInMB {
+            get {
+                return ((int)(this["DefaultMaxPersistentCacheSizeInMB"]));
+            }
+        }
     }
 }

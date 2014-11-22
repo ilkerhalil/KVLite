@@ -38,11 +38,7 @@ namespace PommaLabs.KVLite
     public sealed class Configuration : ConfigurationSection
     {
         private const string SectionName = "pommaLabs.kvlite";
-        private const string DefaultStaticIntervalInDaysKey = "DefaultStaticIntervalInDays";
-        private const string MaxCacheSizeInMBKey = "MaxCacheSizeInMB";
         private const string MaxLogSizeInMBKey = "MaxLogSizeInMB";
-        private const string MaxCachedConnectionCountKey = "MaxCachedConnectionCount";
-        private const string MaxCachedSerializerCountKey = "MaxCachedSerializerCount";
         private const string NancyCacheKindKey = "NancyCacheKind";
         private const string OperationCountBeforeSoftCleanupKey = "OperationCountBeforeSoftCleanup";
 
@@ -51,30 +47,6 @@ namespace PommaLabs.KVLite
         public static Configuration Instance
         {
             get { return CachedInstance; }
-        }
-
-        [ConfigurationProperty(DefaultStaticIntervalInDaysKey, IsRequired = false, DefaultValue = 30)]
-        public int DefaultStaticIntervalInDays
-        {
-            get { return Convert.ToInt32(this[DefaultStaticIntervalInDaysKey]); }
-        }
-
-        [ConfigurationProperty(MaxCachedConnectionCountKey, IsRequired = false, DefaultValue = 10)]
-        public int MaxCachedConnectionCount
-        {
-            get { return Convert.ToInt16(this[MaxCachedConnectionCountKey]); }
-        }
-
-        [ConfigurationProperty(MaxCachedSerializerCountKey, IsRequired = false, DefaultValue = 10)]
-        public int MaxCachedSerializerCount
-        {
-            get { return Convert.ToInt16(this[MaxCachedSerializerCountKey]); }
-        }
-
-        [ConfigurationProperty(MaxCacheSizeInMBKey, IsRequired = true)]
-        public int MaxCacheSizeInMB
-        {
-            get { return Convert.ToInt32(this[MaxCacheSizeInMBKey]); }
         }
 
         [ConfigurationProperty(MaxLogSizeInMBKey, IsRequired = true)]

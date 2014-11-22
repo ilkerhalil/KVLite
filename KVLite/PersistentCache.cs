@@ -55,8 +55,7 @@ namespace PommaLabs.KVLite
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         private static readonly ParameterizedObjectPool<string, PooledObjectWrapper<SQLiteConnection>> ConnectionPool = new ParameterizedObjectPool
-            <string, PooledObjectWrapper<SQLiteConnection>>(
-            3, Configuration.Instance.MaxCachedConnectionCount, CreatePooledConnection);
+            <string, PooledObjectWrapper<SQLiteConnection>>(3, 10, CreatePooledConnection);
 
         private readonly string _connectionString;
 
@@ -103,7 +102,7 @@ namespace PommaLabs.KVLite
                 ForeignKeys = false,
                 JournalMode = SQLiteJournalModeEnum.Wal,
                 LegacyFormat = false,
-                MaxPageCount = Configuration.Instance.MaxCacheSizeInMB*32, // Each page is 32KB large - Multiply by 1024*1024/32768
+                MaxPageCount = Settings.MaxCacheSizeInMB*32, // Each page is 32KB large - Multiply by 1024*1024/32768
                 PageSize = PageSizeInBytes,
                 /* We use a custom object pool */
                 Pooling = false,

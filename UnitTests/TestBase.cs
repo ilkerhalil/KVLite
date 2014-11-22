@@ -434,7 +434,7 @@ namespace UnitTests
          Assert.AreEqual(v1, infoValue.Item1);
          Assert.AreEqual(v2, infoValue.Item2);
          Assert.IsNotNull(info.UtcExpiry);
-         Assert.AreEqual(TimeSpan.FromDays(Configuration.Instance.DefaultStaticIntervalInDays), info.Interval);
+         Assert.AreEqual(TimeSpan.FromDays(((dynamic) DefaultInstance).Settings.StaticIntervalInDays), info.Interval);
       }
 
       [Test]
