@@ -1,0 +1,24 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="PommaLabs.KVLite.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="PCache_DefaultFile" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">PersistentCache.sqlite</Value>
+    </Setting>
+    <Setting Name="DefaultStaticIntervalInDays" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">30</Value>
+    </Setting>
+    <Setting Name="PCache_DefaultMaxCacheSizeInMB" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">256</Value>
+    </Setting>
+    <Setting Name="PCache_DefaultInsertionCountBeforeCleanup" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="NancyCacheKind" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Volatile</Value>
+    </Setting>
+    <Setting Name="PCache_DefaultMaxLogSizeInMB" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">32</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

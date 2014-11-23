@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using PommaLabs.GRAMPA.Testing;
 using PommaLabs.KVLite;
+using PommaLabs.KVLite.Properties;
 
 namespace Benchmarks
 {
@@ -17,7 +18,7 @@ namespace Benchmarks
         private const int RowCount = 1000;
         private const int IterationCount = 5;
         
-        private static readonly int RandomDataTablesCount = Configuration.Instance.OperationCountBeforeSoftCleanup * 10;
+        private static readonly int RandomDataTablesCount = Settings.Default.PCache_DefaultInsertionCountBeforeCleanup * 10;
 
         private static readonly string[] ColumnNames = {"A", "B", "C", "D", "E"};
 

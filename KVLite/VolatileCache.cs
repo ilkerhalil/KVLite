@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.Caching;
 using Newtonsoft.Json;
@@ -37,100 +36,113 @@ using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
-   [Serializable]
-   public sealed class VolatileCache : CacheBase<VolatileCache>
-   {
-      private readonly MemoryCache _memoryCache;
+    [Serializable]
+    public sealed class VolatileCache : CacheBase<VolatileCache, VolatileCacheSettings>
+    {
+        public VolatileCache() : this(new VolatileCacheSettings())
+        {
+        }
 
-      public VolatileCache() : this(MemoryCache.Default)
-      {
-      }
+        public VolatileCache(VolatileCacheSettings settings) : base(settings)
+        {
+        }
 
-      public VolatileCache(MemoryCache memoryCache)
-      {
-         Contract.Requires<ArgumentNullException>(memoryCache != null);
-         _memoryCache = memoryCache;
-      }
+        public override CacheKind Kind
+        {
+            get { return CacheKind.Volatile; }
+        }
 
-      public override CacheKind Kind
-      {
-         get { return CacheKind.Volatile; }
-      }
+        public override void AddSliding(string partition, string key, object value, TimeSpan interval)
+        {
+            var item = new CacheItem {
+                Partition = partition,
+                Key = key,
+                UtcCreation = DateTime.UtcNow,
+                UtcExpiry = DateTime.UtcNow + interval,
+                Interval = interval,
+                Value = value
+            };
+            Settings.MemoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy {SlidingExpiration = interval});
+        }
 
-      public override void AddSliding(string partition, string key, object value, TimeSpan interval)
-      {
-         var item = new CacheItem
-         {
-            Partition = partition,
-            Key = key,
-            UtcCreation = DateTime.UtcNow,
-            UtcExpiry = DateTime.UtcNow + interval,
-            Interval = interval,
-            Value = value
-         };
-         _memoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy {SlidingExpiration = interval});
-      }
+        public override void AddTimed(string partition, string key, object value, DateTime utcExpiry)
+        {
+            var item = new CacheItem {
+                Partition = partition,
+                Key = key,
+                UtcCreation = DateTime.UtcNow,
+                UtcExpiry = utcExpiry,
+                Interval = null,
+                Value = value
+            };
+            Settings.MemoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy {AbsoluteExpiration = utcExpiry.ToLocalTime()});
+        }
 
-      public override void AddTimed(string partition, string key, object value, DateTime utcExpiry)
-      {
-         var item = new CacheItem
-         {
-            Partition = partition,
-            Key = key,
-            UtcCreation = DateTime.UtcNow,
-            UtcExpiry = utcExpiry,
-            Interval = null,
-            Value = value
-         };
-         _memoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy {AbsoluteExpiration = utcExpiry.ToLocalTime()});
-      }
+        public override void Clear(CacheReadMode cacheReadMode)
+        {
+            var items = Settings.MemoryCache.Where(x => x.Value is CacheItem).Select(x => x.Key).ToList();
+            foreach (var item in items) {
+                Settings.MemoryCache.Remove(item);
+            }
+        }
 
-      public override void Clear(CacheReadMode cacheReadMode)
-      {
-         var items = _memoryCache.Where(x => x.Value is CacheItem).Select(x => x.Key).ToList();
-         foreach (var item in items)
-         {
-            _memoryCache.Remove(item);
-         }
-      }
+        public override bool Contains(string partition, string key)
+        {
+            return GetItem(partition, key) != null;
+        }
 
-      public override bool Contains(string partition, string key)
-      {
-         return _memoryCache.Contains(CreateKey(partition, key));
-      }
+        public override long LongCount(CacheReadMode cacheReadMode)
+        {
+            return Settings.MemoryCache.GetCount();
+        }
 
-      public override long LongCount(CacheReadMode cacheReadMode)
-      {
-         return _memoryCache.GetCount();
-      }
+        public override CacheItem GetItem(string partition, string key)
+        {
+            var item = Settings.MemoryCache.Get(CreateKey(partition, key)) as CacheItem;
+            
+            // Expiry date is updated, if sliding.
+            if (item != null && item.Interval.HasValue) {
+                item.UtcExpiry = item.UtcExpiry + item.Interval;
+            }
 
-      public override CacheItem GetItem(string partition, string key)
-      {
-         return _memoryCache.Get(CreateKey(partition, key)) as CacheItem;
-      }
+            return item;
+        }
 
-      public override void Remove(string partition, string key)
-      {
-         _memoryCache.Remove(CreateKey(partition, key));
-      }
+        public override void Remove(string partition, string key)
+        {
+            Settings.MemoryCache.Remove(CreateKey(partition, key));
+        }
 
-      protected override IList<CacheItem> DoGetAllItems()
-      {
-         return _memoryCache.Where(x => x.Value is CacheItem).Select(x => x.Value as CacheItem).ToList();
-      }
+        protected override IList<CacheItem> DoGetAllItems()
+        {
+            var items = Settings.MemoryCache.Where(x => x.Value is CacheItem).Select(x => x.Value as CacheItem).ToList();
 
-      protected override IList<CacheItem> DoGetPartitionItems(string partition)
-      {
-         return _memoryCache.Where(x =>
-         {
-            var val = x.Value as CacheItem;
-            return val != null && val.Partition == partition;
-         }).Select(x => x.Value as CacheItem).ToList();
-      }
+            // Expiry dates are updated, if sliding.
+            foreach (var item in items.Where(i => i.Interval.HasValue)) {
+                item.UtcExpiry = item.UtcExpiry + item.Interval;
+            }
 
-      private static string CreateKey(string partition, string key)
-      {
-         return JsonConvert.SerializeObject(GPair.Create(partition, key));
-      }
-   }
+            return items;
+        }
+
+        protected override IList<CacheItem> DoGetPartitionItems(string partition)
+        {
+            var items = Settings.MemoryCache.Where(x => {
+                var val = x.Value as CacheItem;
+                return val != null && val.Partition == partition;
+            }).Select(x => x.Value as CacheItem).ToList();
+
+            // Expiry dates are updated, if sliding.
+            foreach (var item in items.Where(i => i.Interval.HasValue)) {
+                item.UtcExpiry = item.UtcExpiry + item.Interval;
+            }
+
+            return items;
+        }
+
+        private static string CreateKey(string partition, string key)
+        {
+            return JsonConvert.SerializeObject(GPair.Create(partition, key));
+        }
+    }
 }

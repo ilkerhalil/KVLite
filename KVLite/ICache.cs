@@ -32,6 +32,7 @@ using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PommaLabs.KVLite.Contracts;
+using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
@@ -390,7 +391,13 @@ namespace PommaLabs.KVLite
     ///   TODO
     /// </summary>
     /// <typeparam name="TCache"></typeparam>
-    public interface ICache<TCache> : ICache where TCache : class, ICache<TCache>, new() {}
+    /// <typeparam name="TCacheSettings"></typeparam>
+    public interface ICache<TCache, out TCacheSettings> : ICache 
+        where TCache : class, ICache<TCache, TCacheSettings>, new()
+        where TCacheSettings : CacheSettingsBase, new()
+    {
+        TCacheSettings Settings { get; }
+    }
 
     /// <summary>
     ///   TODO
