@@ -88,7 +88,7 @@ namespace PommaLabs.KVLite
 
         public override bool Contains(string partition, string key)
         {
-            return Settings.MemoryCache.Contains(CreateKey(partition, key));
+            return GetItem(partition, key) != null;
         }
 
         public override long LongCount(CacheReadMode cacheReadMode)
@@ -98,7 +98,14 @@ namespace PommaLabs.KVLite
 
         public override CacheItem GetItem(string partition, string key)
         {
-            return Settings.MemoryCache.Get(CreateKey(partition, key)) as CacheItem;
+            var item = Settings.MemoryCache.Get(CreateKey(partition, key)) as CacheItem;
+            
+            // Expiry date is updated, if sliding.
+            if (item != null && item.Interval.HasValue) {
+                item.UtcExpiry = item.UtcExpiry + item.Interval;
+            }
+
+            return item;
         }
 
         public override void Remove(string partition, string key)
@@ -108,15 +115,29 @@ namespace PommaLabs.KVLite
 
         protected override IList<CacheItem> DoGetAllItems()
         {
-            return Settings.MemoryCache.Where(x => x.Value is CacheItem).Select(x => x.Value as CacheItem).ToList();
+            var items = Settings.MemoryCache.Where(x => x.Value is CacheItem).Select(x => x.Value as CacheItem).ToList();
+
+            // Expiry dates are updated, if sliding.
+            foreach (var item in items.Where(i => i.Interval.HasValue)) {
+                item.UtcExpiry = item.UtcExpiry + item.Interval;
+            }
+
+            return items;
         }
 
         protected override IList<CacheItem> DoGetPartitionItems(string partition)
         {
-            return Settings.MemoryCache.Where(x => {
+            var items = Settings.MemoryCache.Where(x => {
                 var val = x.Value as CacheItem;
                 return val != null && val.Partition == partition;
             }).Select(x => x.Value as CacheItem).ToList();
+
+            // Expiry dates are updated, if sliding.
+            foreach (var item in items.Where(i => i.Interval.HasValue)) {
+                item.UtcExpiry = item.UtcExpiry + item.Interval;
+            }
+
+            return items;
         }
 
         private static string CreateKey(string partition, string key)
