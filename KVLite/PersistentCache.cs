@@ -266,7 +266,7 @@ namespace PommaLabs.KVLite
         private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "CacheFile") {
-                
+                InitConnectionString();
             }
         }
 
