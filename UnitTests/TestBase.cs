@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PommaLabs.GRAMPA.Testing;
 using PommaLabs.KVLite;
+using PommaLabs.KVLite.Properties;
 
 namespace UnitTests
 {
@@ -434,7 +435,7 @@ namespace UnitTests
          Assert.AreEqual(v1, infoValue.Item1);
          Assert.AreEqual(v2, infoValue.Item2);
          Assert.IsNotNull(info.UtcExpiry);
-         Assert.AreEqual(TimeSpan.FromDays(((dynamic) DefaultInstance).Settings.StaticIntervalInDays), info.Interval);
+         Assert.AreEqual(TimeSpan.FromDays(Settings.Default.DefaultStaticIntervalInDays), info.Interval);
       }
 
       [Test]

@@ -13,7 +13,7 @@ namespace PommaLabs.KVLite.Properties {
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "11.0.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+    public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
@@ -26,9 +26,9 @@ namespace PommaLabs.KVLite.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("PersistentCache.sqlite")]
-        public string DefaultPersistentCacheFile {
+        public string PCache_DefaultFile {
             get {
-                return ((string)(this["DefaultPersistentCacheFile"]));
+                return ((string)(this["PCache_DefaultFile"]));
             }
         }
         
@@ -44,9 +44,36 @@ namespace PommaLabs.KVLite.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("256")]
-        public int DefaultMaxPersistentCacheSizeInMB {
+        public int PCache_DefaultMaxCacheSizeInMB {
             get {
-                return ((int)(this["DefaultMaxPersistentCacheSizeInMB"]));
+                return ((int)(this["PCache_DefaultMaxCacheSizeInMB"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int PCache_DefaultInsertionCountBeforeCleanup {
+            get {
+                return ((int)(this["PCache_DefaultInsertionCountBeforeCleanup"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Volatile")]
+        public string NancyCacheKind {
+            get {
+                return ((string)(this["NancyCacheKind"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("32")]
+        public int PCache_DefaultMaxLogSizeInMB {
+            get {
+                return ((int)(this["PCache_DefaultMaxLogSizeInMB"]));
             }
         }
     }

@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using NUnit.Framework;
 using PommaLabs.KVLite;
+using PommaLabs.KVLite.Properties;
 
 namespace UnitTests
 {
@@ -31,7 +32,7 @@ namespace UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_InvalidValues()
         {
-            for (var i = 0; i < Configuration.Instance.OperationCountBeforeSoftCleanup; ++i) {
+            for (var i = 0; i < Settings.Default.PCache_DefaultInsertionCountBeforeCleanup; ++i) {
                 DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             Assert.AreEqual(0, DefaultInstance.Count());
@@ -40,10 +41,10 @@ namespace UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_ValidValues()
         {
-            for (var i = 0; i < Configuration.Instance.OperationCountBeforeSoftCleanup; ++i) {
+            for (var i = 0; i < Settings.Default.PCache_DefaultInsertionCountBeforeCleanup; ++i) {
                 DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.AddMinutes(10));
             }
-            Assert.AreEqual(Configuration.Instance.OperationCountBeforeSoftCleanup, DefaultInstance.Count());
+            Assert.AreEqual(Settings.Default.PCache_DefaultInsertionCountBeforeCleanup, DefaultInstance.Count());
         }
 
         [Test]

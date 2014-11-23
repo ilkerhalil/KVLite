@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
@@ -54,14 +55,14 @@ namespace PommaLabs.KVLite
 
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        private static readonly ParameterizedObjectPool<string, PooledObjectWrapper<SQLiteConnection>> ConnectionPool = new ParameterizedObjectPool
-            <string, PooledObjectWrapper<SQLiteConnection>>(3, 10, CreatePooledConnection);
+        private ObjectPool<PooledObjectWrapper<SQLiteConnection>> _connectionPool;
+        private string _connectionString;
 
-        private readonly string _connectionString;
-
-        // This value is increased for each ADD operation; after this value reaches the "OperationCountBeforeSoftClear"
-        // configuration parameter, then we must reset it and do a SOFT cleanup.
-        private short _operationCount;
+        /// <summary>
+        ///   This value is increased for each ADD operation; after this value reaches the "InsertionCountBeforeCleanup"
+        ///   configuration parameter, then we must reset it and do a SOFT cleanup.
+        /// </summary>
+        private short _insertionCount;
 
         #region Construction
 
@@ -85,35 +86,11 @@ namespace PommaLabs.KVLite
         /// <param name="settings"></param>
         public PersistentCache(PersistentCacheSettings settings) : base(settings)
         {
-            var builder = new SQLiteConnectionStringBuilder {
-                BaseSchemaName = "kvlite",
-                BinaryGUID = true,
-                BrowsableConnectionString = false,
-                /* Number of pages of 32KB */
-                CacheSize = 128,
-                DataSource = settings.CacheFile.MapPath(),
-                DateTimeFormat = SQLiteDateFormats.Ticks,
-                DateTimeKind = DateTimeKind.Utc,
-                DefaultIsolationLevel = IsolationLevel.ReadCommitted,
-                /* Settings ten minutes as timeout should be more than enough... */
-                DefaultTimeout = 600,
-                Enlist = false,
-                FailIfMissing = false,
-                ForeignKeys = false,
-                JournalMode = SQLiteJournalModeEnum.Wal,
-                LegacyFormat = false,
-                MaxPageCount = Settings.MaxCacheSizeInMB*32, // Each page is 32KB large - Multiply by 1024*1024/32768
-                PageSize = PageSizeInBytes,
-                /* We use a custom object pool */
-                Pooling = false,
-                ReadOnly = false,
-                SyncMode = SynchronizationModes.Off,
-                Version = 3,
-            };
+            settings.PropertyChanged += Settings_PropertyChanged;
+            
+            InitConnectionString();
 
-            _connectionString = builder.ToString();
-
-            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+            using (var ctx = _connectionPool.GetObject()) {
                 using (var trx = ctx.InternalResource.BeginTransaction()) {
                     if (ctx.InternalResource.ExecuteScalar<long>(Queries.SchemaIsReady, trx) == 0) {
                         // Creates the CacheItem table and the required indexes.
@@ -137,7 +114,7 @@ namespace PommaLabs.KVLite
         public void Vacuum()
         {
             // Vacuum cannot be run within a transaction.
-            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+            using (var ctx = _connectionPool.GetObject()) {
                 ctx.InternalResource.Execute(Queries.Vacuum);
             }
         }
@@ -173,7 +150,7 @@ namespace PommaLabs.KVLite
             var p = new DynamicParameters();
             p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.IgnoreExpirationDate), DbType.Boolean);
 
-            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+            using (var ctx = _connectionPool.GetObject()) {
                 ctx.InternalResource.Execute(Queries.Clear, p);
             }
         }
@@ -189,7 +166,7 @@ namespace PommaLabs.KVLite
             p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.IgnoreExpirationDate), DbType.Boolean);
 
             // No need for a transaction, since it is just a select.
-            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+            using (var ctx = _connectionPool.GetObject()) {
                 return ctx.InternalResource.ExecuteScalar<long>(Queries.Count, p);
             }
         }
@@ -200,7 +177,7 @@ namespace PommaLabs.KVLite
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
 
-            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+            using (var ctx = _connectionPool.GetObject()) {
                 var dbItem = ctx.InternalResource.Query<DbCacheItem>(Queries.Get, p).FirstOrDefault();
                 return (dbItem == null) ? null : ToCacheItem(dbItem);
             }
@@ -212,7 +189,7 @@ namespace PommaLabs.KVLite
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
 
-            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+            using (var ctx = _connectionPool.GetObject()) {
                 ctx.InternalResource.Execute(Queries.Remove, p);
             }
         }
@@ -223,7 +200,7 @@ namespace PommaLabs.KVLite
             p.Add("partition", null, DbType.String);
             p.Add("key", null, DbType.String);
 
-            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+            using (var ctx = _connectionPool.GetObject()) {
                 return ctx.InternalResource.Query<DbCacheItem>(Queries.Get, p).Select(ToCacheItem).Where(i => i != null).ToList();
             }
         }
@@ -234,19 +211,19 @@ namespace PommaLabs.KVLite
             p.Add("partition", partition, DbType.String);
             p.Add("key", null, DbType.String);
 
-            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+            using (var ctx = _connectionPool.GetObject()) {
                 return ctx.InternalResource.Query<DbCacheItem>(Queries.Get, p).Select(ToCacheItem).Where(i => i != null).ToList();
             }
         }
 
         #region Private Methods
 
-        private static PooledObjectWrapper<SQLiteConnection> CreatePooledConnection(string connectionString)
+        private PooledObjectWrapper<SQLiteConnection> CreatePooledConnection()
         {
-            var connection = new SQLiteConnection(connectionString);
+            var connection = new SQLiteConnection(_connectionString);
             connection.Open();
             // Sets PRAGMAs for this new connection.
-            var journalSizeLimitInBytes = Configuration.Instance.MaxLogSizeInMB*1024*1024;
+            var journalSizeLimitInBytes = Settings.MaxLogSizeInMB*1024*1024;
             var walAutoCheckpointInPages = journalSizeLimitInBytes/PageSizeInBytes/3;
             var pragmas = String.Format(Queries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
             connection.Execute(pragmas);
@@ -270,7 +247,7 @@ namespace PommaLabs.KVLite
                 Interval = interval.HasValue ? (long) interval.Value.TotalSeconds : new long?()
             };
 
-            using (var ctx = ConnectionPool.GetObject(_connectionString)) {
+            using (var ctx = _connectionPool.GetObject()) {
                 ctx.InternalResource.Execute(Queries.Add, dbItem);
             }
 
@@ -279,11 +256,50 @@ namespace PommaLabs.KVLite
             // then we must reset it and do a SOFT cleanup.
             // Following code is not fully thread safe, but it does not matter, because the
             // "OperationCountBeforeSoftClear" parameter should be just an hint on when to do the cleanup.
-            _operationCount++;
-            if (_operationCount == Configuration.Instance.OperationCountBeforeSoftCleanup) {
-                _operationCount = 0;
+            _insertionCount++;
+            if (_insertionCount == Settings.InsertionCountBeforeCleanup) {
+                _insertionCount = 0;
                 Clear(CacheReadMode.ConsiderExpirationDate);
             }
+        }
+
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "CacheFile") {
+                
+            }
+        }
+
+        private void InitConnectionString()
+        {
+            var builder = new SQLiteConnectionStringBuilder {
+                BaseSchemaName = "kvlite",
+                BinaryGUID = true,
+                BrowsableConnectionString = false,
+                /* Number of pages of 32KB */
+                CacheSize = 128,
+                DataSource = Settings.CacheFile.MapPath(),
+                DateTimeFormat = SQLiteDateFormats.Ticks,
+                DateTimeKind = DateTimeKind.Utc,
+                DefaultIsolationLevel = IsolationLevel.ReadCommitted,
+                /* Settings ten minutes as timeout should be more than enough... */
+                DefaultTimeout = 600,
+                Enlist = false,
+                FailIfMissing = false,
+                ForeignKeys = false,
+                JournalMode = SQLiteJournalModeEnum.Wal,
+                LegacyFormat = false,
+                MaxPageCount = Settings.MaxCacheSizeInMB*32, // Each page is 32KB large - Multiply by 1024*1024/32768
+                PageSize = PageSizeInBytes,
+                /* We use a custom object pool */
+                Pooling = false,
+                ReadOnly = false,
+                SyncMode = SynchronizationModes.Off,
+                Version = 3,
+            };
+
+            _connectionString = builder.ToString();
+            _connectionPool = new ObjectPool<PooledObjectWrapper<SQLiteConnection>>(3, 10, CreatePooledConnection);
         }
 
         private static CacheItem ToCacheItem(DbCacheItem original)

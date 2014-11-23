@@ -10,8 +10,10 @@ namespace PommaLabs.KVLite
     /// </summary>
     public sealed class PersistentCacheSettings : CacheSettingsBase
     {
-        private string _cacheFile = Settings.Default.DefaultPersistentCacheFile;
-        private int _maxCacheSizeInMB = Settings.Default.DefaultMaxPersistentCacheSizeInMB;
+        private string _cacheFile = Settings.Default.PCache_DefaultFile;
+        private int _maxCacheSizeInMB = Settings.Default.PCache_DefaultMaxCacheSizeInMB;
+        private int _maxLogSizeInMB = Settings.Default.PCache_DefaultMaxLogSizeInMB;
+        private int _insertionCountBeforeCleanup = Settings.Default.PCache_DefaultInsertionCountBeforeCleanup;
 
         public string CacheFile
         {
@@ -28,6 +30,21 @@ namespace PommaLabs.KVLite
             }
         }
 
+        public int InsertionCountBeforeCleanup
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 0);
+                return _insertionCountBeforeCleanup;
+            }
+            set
+            {
+                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+                _insertionCountBeforeCleanup = value;
+                OnPropertyChanged("InsertionCountBeforeCleanup");
+            }
+        }
+
         public int MaxCacheSizeInMB
         {
             get
@@ -40,6 +57,21 @@ namespace PommaLabs.KVLite
                 Contract.Requires<ArgumentOutOfRangeException>(value > 0);
                 _maxCacheSizeInMB = value;
                 OnPropertyChanged("MaxCacheSizeInMB");
+            }
+        }
+
+        public int MaxLogSizeInMB
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 0);
+                return _maxLogSizeInMB;
+            }
+            set
+            {
+                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+                _maxLogSizeInMB = value;
+                OnPropertyChanged("MaxLogSizeInMB");
             }
         }
     }

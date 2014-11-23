@@ -33,6 +33,7 @@ using System.IO;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
+using PommaLabs.KVLite.Properties;
 
 namespace PommaLabs.KVLite.Nancy
 {
@@ -45,7 +46,11 @@ namespace PommaLabs.KVLite.Nancy
         {
             get
             {
-                switch (Configuration.Instance.NancyCacheKind)
+                CacheKind cacheKind;
+                if (!Enum.TryParse(Settings.Default.NancyCacheKind, true, out cacheKind)) {
+                    throw new ConfigurationErrorsException();
+                }
+                switch (cacheKind)
                 {
                     case CacheKind.Persistent:
                         return PersistentCache.DefaultInstance;
