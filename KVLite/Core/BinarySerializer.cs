@@ -36,7 +36,7 @@ namespace PommaLabs.KVLite.Core
 {
     internal static class BinarySerializer
     {
-        private static readonly ObjectPool<PooledObjectWrapper<BinaryFormatter>> FormatterPool = new ObjectPool<PooledObjectWrapper<BinaryFormatter>>(3, 10, CreatePooledBinaryFormatter);
+        private static readonly ObjectPool<PooledObjectWrapper<BinaryFormatter>> FormatterPool = new ObjectPool<PooledObjectWrapper<BinaryFormatter>>(1, 10, CreatePooledBinaryFormatter);
 
         public static byte[] SerializeObject(object obj)
         {

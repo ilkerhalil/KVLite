@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetPackager", "NuGetPackager\NuGetPackager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F056179D-90B8-4ABA-9AB4-1026E5941FB7} = {F056179D-90B8-4ABA-9AB4-1026E5941FB7}
@@ -46,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestService.Nancy", "RestSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestService.Mvc", "RestService.Mvc\RestService.Mvc.csproj", "{00CCC8C6-1415-4F6B-B830-1CBBB7F87CCF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{B5A6DAE9-7620-47A8-8D00-4CEB00117717}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +92,12 @@ Global
 		{00CCC8C6-1415-4F6B-B830-1CBBB7F87CCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00CCC8C6-1415-4F6B-B830-1CBBB7F87CCF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{00CCC8C6-1415-4F6B-B830-1CBBB7F87CCF}.Release|x86.ActiveCfg = Release|Any CPU
+		{B5A6DAE9-7620-47A8-8D00-4CEB00117717}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5A6DAE9-7620-47A8-8D00-4CEB00117717}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5A6DAE9-7620-47A8-8D00-4CEB00117717}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B5A6DAE9-7620-47A8-8D00-4CEB00117717}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5A6DAE9-7620-47A8-8D00-4CEB00117717}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5A6DAE9-7620-47A8-8D00-4CEB00117717}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

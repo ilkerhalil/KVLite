@@ -299,7 +299,7 @@ namespace PommaLabs.KVLite
             };
 
             _connectionString = builder.ToString();
-            _connectionPool = new ObjectPool<PooledObjectWrapper<SQLiteConnection>>(3, 10, CreatePooledConnection);
+            _connectionPool = new ObjectPool<PooledObjectWrapper<SQLiteConnection>>(1, 10, CreatePooledConnection);
         }
 
         private static CacheItem ToCacheItem(DbCacheItem original)

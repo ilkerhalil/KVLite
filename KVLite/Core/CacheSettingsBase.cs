@@ -10,6 +10,9 @@ namespace PommaLabs.KVLite.Core
     {
         private int _staticIntervalInDays = Settings.Default.DefaultStaticIntervalInDays;
 
+        /// <summary>
+        ///   How many days static values will last.
+        /// </summary>
         public int StaticIntervalInDays
         {
             get
