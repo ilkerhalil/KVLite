@@ -12,9 +12,12 @@ namespace PommaLabs.KVLite
     {
         private string _cacheFile = Settings.Default.PCache_DefaultFile;
         private int _maxCacheSizeInMB = Settings.Default.PCache_DefaultMaxCacheSizeInMB;
-        private int _maxLogSizeInMB = Settings.Default.PCache_DefaultMaxLogSizeInMB;
+        private int _maxJournalSizeInMB = Settings.Default.PCache_DefaultMaxLogSizeInMB;
         private int _insertionCountBeforeCleanup = Settings.Default.PCache_DefaultInsertionCountBeforeCleanup;
 
+        /// <summary>
+        ///   The SQLite DB used as the backend for the cache.
+        /// </summary>
         public string CacheFile
         {
             get
@@ -30,6 +33,9 @@ namespace PommaLabs.KVLite
             }
         }
 
+        /// <summary>
+        ///   Number of inserts before a cache cleanup is issued.
+        /// </summary>
         public int InsertionCountBeforeCleanup
         {
             get
@@ -45,6 +51,9 @@ namespace PommaLabs.KVLite
             }
         }
 
+        /// <summary>
+        ///   Max size in megabytes for the cache.
+        /// </summary>
         public int MaxCacheSizeInMB
         {
             get
@@ -60,18 +69,21 @@ namespace PommaLabs.KVLite
             }
         }
 
-        public int MaxLogSizeInMB
+        /// <summary>
+        ///   Max size in megabytes for the SQLite journal log.
+        /// </summary>
+        public int MaxJournalSizeInMB
         {
             get
             {
                 Contract.Ensures(Contract.Result<int>() > 0);
-                return _maxLogSizeInMB;
+                return _maxJournalSizeInMB;
             }
             set
             {
                 Contract.Requires<ArgumentOutOfRangeException>(value > 0);
-                _maxLogSizeInMB = value;
-                OnPropertyChanged("MaxLogSizeInMB");
+                _maxJournalSizeInMB = value;
+                OnPropertyChanged("MaxJournalSizeInMB");
             }
         }
     }

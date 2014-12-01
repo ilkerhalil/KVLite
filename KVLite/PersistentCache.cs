@@ -223,7 +223,7 @@ namespace PommaLabs.KVLite
             var connection = new SQLiteConnection(_connectionString);
             connection.Open();
             // Sets PRAGMAs for this new connection.
-            var journalSizeLimitInBytes = Settings.MaxLogSizeInMB*1024*1024;
+            var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB*1024*1024;
             var walAutoCheckpointInPages = journalSizeLimitInBytes/PageSizeInBytes/3;
             var pragmas = String.Format(Queries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
             connection.Execute(pragmas);
@@ -251,15 +251,15 @@ namespace PommaLabs.KVLite
                 ctx.InternalResource.Execute(Queries.Add, dbItem);
             }
 
-            // Operation has concluded successfully, therefore we increment the operation counter.
-            // If it has reached the "OperationCountBeforeSoftClear" configuration parameter,
+            // Insertion has concluded successfully, therefore we increment the operation counter.
+            // If it has reached the "InsertionCountBeforeCleanup" configuration parameter,
             // then we must reset it and do a SOFT cleanup.
             // Following code is not fully thread safe, but it does not matter, because the
-            // "OperationCountBeforeSoftClear" parameter should be just an hint on when to do the cleanup.
+            // "InsertionCountBeforeCleanup" parameter should be just an hint on when to do the cleanup.
             _insertionCount++;
-            if (_insertionCount == Settings.InsertionCountBeforeCleanup) {
+            if (_insertionCount >= Settings.InsertionCountBeforeCleanup) {
                 _insertionCount = 0;
-                Clear(CacheReadMode.ConsiderExpirationDate);
+                Task.Factory.StartNew(() => Clear(CacheReadMode.ConsiderExpirationDate));
             }
         }
 

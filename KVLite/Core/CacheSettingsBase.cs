@@ -6,6 +6,9 @@ using PommaLabs.KVLite.Properties;
 
 namespace PommaLabs.KVLite.Core
 {
+    /// <summary>
+    ///   Base class for cache settings. Contains settings shared among different caches.
+    /// </summary>
     public abstract class CacheSettingsBase : INotifyPropertyChanged
     {
         private int _staticIntervalInDays = Settings.Default.DefaultStaticIntervalInDays;
@@ -34,6 +37,10 @@ namespace PommaLabs.KVLite.Core
 
         #endregion
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="propertyName"></param>
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged(string propertyName)
         {
