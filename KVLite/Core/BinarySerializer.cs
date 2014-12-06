@@ -28,6 +28,7 @@
 
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using CodeProject.ObjectPool;
@@ -38,6 +39,7 @@ namespace PommaLabs.KVLite.Core
     {
         private static readonly ObjectPool<PooledObjectWrapper<BinaryFormatter>> FormatterPool = new ObjectPool<PooledObjectWrapper<BinaryFormatter>>(1, 10, CreatePooledBinaryFormatter);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte[] SerializeObject(object obj)
         {
             using (var compressedStream = new MemoryStream()) {
@@ -49,7 +51,8 @@ namespace PommaLabs.KVLite.Core
                 return compressedStream.GetBuffer();
             }
         }
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static object DeserializeObject(byte[] serialized)
         {
             using (var compressedStream = new MemoryStream(serialized)) {
