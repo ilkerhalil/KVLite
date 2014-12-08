@@ -58,20 +58,12 @@
     <None Include="Package.nuspec">
       <SubType>Designer</SubType>
     </None>
-    <None Include="tools\net40\install.ps1" />
-    <None Include="tools\net451\install.ps1" />
     <None Include="tools\net45\install.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="lib\net40\" />
-    <Folder Include="lib\net451\" />
     <Folder Include="lib\net45\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="content\net40\KVLite\x64\SQLite.Interop.dll" />
-    <Content Include="content\net40\KVLite\x86\SQLite.Interop.dll" />
-    <Content Include="content\net451\KVLite\x64\SQLite.Interop.dll" />
-    <Content Include="content\net451\KVLite\x86\SQLite.Interop.dll" />
     <Content Include="content\net45\KVLite\x64\SQLite.Interop.dll" />
     <Content Include="content\net45\KVLite\x86\SQLite.Interop.dll" />
   </ItemGroup>

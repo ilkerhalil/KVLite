@@ -28,15 +28,44 @@
 
 namespace PommaLabs.KVLite
 {
+    /// <summary>
+    ///   Static class containing all error messages used by KVLite.
+    /// </summary>
     public static class ErrorMessages
     {
-       public const string Web_HttpRuntimeCache_CannotClear = "It is not possible to clear the HttpRuntime cache.";
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string Web_HttpRuntimeCache_CannotClear = "It is not possible to clear the HttpRuntime cache.";
 
+        /// <summary>
+        ///   An error message.
+        /// </summary>
         public const string InvalidEnumValue = "Given enumeration value is not valid.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
         public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
         public const string NullOrEmptyCachePath = @"Cache path cannot be null or empty.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
         public const string NullKey = @"Key cannot be null.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
         public const string NullPartition = @"Partition cannot be null.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
         public const string NullValue = @"Value cannot be null.";
     }
 }
