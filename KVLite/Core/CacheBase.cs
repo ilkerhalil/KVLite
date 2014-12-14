@@ -91,31 +91,31 @@ namespace PommaLabs.KVLite.Core
             get { return Get(key); }
         }
 
-        public abstract void AddSliding(string partition, string key, object value, TimeSpan interval);
+        public void AddSliding(string partition, string key, object value, TimeSpan interval)
+        {
+            AddSlidingAsync(partition, key, value, interval).Wait();
+        }
 
         public void AddSliding(string key, object value, TimeSpan interval)
         {
-            AddSliding(DefaultPartition, key, value, interval);
+            AddSlidingAsync(DefaultPartition, key, value, interval).Wait();
         }
 
-        public Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval)
-        {
-            return Task.Factory.StartNew(() => AddSliding(partition, key, value, interval));
-        }
+        public abstract Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval);
 
         public Task AddSlidingAsync(string key, object value, TimeSpan interval)
         {
-            return Task.Factory.StartNew(() => AddSliding(key, value, interval));
+            return AddSlidingAsync(DefaultPartition, key, value, interval);
         }
 
         public void AddStatic(string partition, string key, object value)
         {
-            AddSliding(partition, key, value, TimeSpan.FromDays(Settings.StaticIntervalInDays));
+            AddSlidingAsync(partition, key, value, TimeSpan.FromDays(Settings.StaticIntervalInDays)).Wait();
         }
 
         public void AddStatic(string key, object value)
         {
-            AddStatic(DefaultPartition, key, value);
+            AddSlidingAsync(DefaultPartition, key, value, TimeSpan.FromDays(Settings.StaticIntervalInDays)).Wait();
         }
 
         public Task AddStaticAsync(string partition, string key, object value)
@@ -128,21 +128,21 @@ namespace PommaLabs.KVLite.Core
             return Task.Factory.StartNew(() => AddStatic(key, value));
         }
 
-        public abstract void AddTimed(string partition, string key, object value, DateTime utcExpiry);
+        public void AddTimed(string partition, string key, object value, DateTime utcExpiry)
+        {
+            AddTimedAsync(partition, key, value, utcExpiry).Wait();
+        }
 
         public void AddTimed(string key, object value, DateTime utcExpiry)
         {
-            AddTimed(DefaultPartition, key, value, utcExpiry);
+            AddTimedAsync(DefaultPartition, key, value, utcExpiry).Wait();
         }
 
-        public Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry)
-        {
-            return Task.Factory.StartNew(() => AddTimed(partition, key, value, utcExpiry));
-        }
+        public abstract Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry);
 
         public Task AddTimedAsync(string key, object value, DateTime utcExpiry)
         {
-            return Task.Factory.StartNew(() => AddTimed(key, value, utcExpiry));
+            return AddTimedAsync(DefaultPartition, key, value, utcExpiry);
         }
 
         public void Clear()
