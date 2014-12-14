@@ -33,7 +33,6 @@ using System.Runtime.Caching;
 using Newtonsoft.Json;
 using PommaLabs.GRAMPA;
 using PommaLabs.KVLite.Core;
-using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
 {
@@ -48,44 +47,35 @@ namespace PommaLabs.KVLite
         {
         }
 
-        /// <inheritdoc/>
         public override CacheKind Kind
         {
             get { return CacheKind.Volatile; }
         }
 
-        public override Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval)
+        public override void AddSliding(string partition, string key, object value, TimeSpan interval)
         {
-            return Task.Run(() =>
-            {
-                var item = new CacheItem
-                {
-                    Partition = partition,
-                    Key = key,
-                    UtcCreation = DateTime.UtcNow,
-                    UtcExpiry = DateTime.UtcNow + interval,
-                    Interval = interval,
-                    Value = value
-                };
-                Settings.MemoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy { SlidingExpiration = interval });
-            });            
+            var item = new CacheItem {
+                Partition = partition,
+                Key = key,
+                UtcCreation = DateTime.UtcNow,
+                UtcExpiry = DateTime.UtcNow + interval,
+                Interval = interval,
+                Value = value
+            };
+            Settings.MemoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy {SlidingExpiration = interval});
         }
 
-        public override Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry)
+        public override void AddTimed(string partition, string key, object value, DateTime utcExpiry)
         {
-            return Task.Run(() =>
-            {
-                var item = new CacheItem
-                {
-                    Partition = partition,
-                    Key = key,
-                    UtcCreation = DateTime.UtcNow,
-                    UtcExpiry = utcExpiry,
-                    Interval = null,
-                    Value = value
-                };
-                Settings.MemoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy { AbsoluteExpiration = utcExpiry.ToLocalTime() });
-            });            
+            var item = new CacheItem {
+                Partition = partition,
+                Key = key,
+                UtcCreation = DateTime.UtcNow,
+                UtcExpiry = utcExpiry,
+                Interval = null,
+                Value = value
+            };
+            Settings.MemoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy {AbsoluteExpiration = utcExpiry.ToLocalTime()});
         }
 
         public override void Clear(CacheReadMode cacheReadMode)

@@ -135,14 +135,14 @@ namespace PommaLabs.KVLite
             get { return CacheKind.Persistent; }
         }
 
-        public override Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval)
+        public override void AddSliding(string partition, string key, object value, TimeSpan interval)
         {
-            return DoAddAsync(partition, key, value, DateTime.UtcNow + interval, interval);
+            DoAdd(partition, key, value, DateTime.UtcNow + interval, interval);
         }
 
-        public override Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry)
+        public override void AddTimed(string partition, string key, object value, DateTime utcExpiry)
         {
-            return DoAddAsync(partition, key, value, utcExpiry, null);
+            DoAdd(partition, key, value, utcExpiry, null);
         }
 
         public override void Clear(CacheReadMode cacheReadMode)
@@ -222,40 +222,31 @@ namespace PommaLabs.KVLite
         {
             var connection = new SQLiteConnection(_connectionString);
             connection.Open();
-            
             // Sets PRAGMAs for this new connection.
             var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB*1024*1024;
             var walAutoCheckpointInPages = journalSizeLimitInBytes/PageSizeInBytes/3;
             var pragmas = String.Format(Queries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
             connection.Execute(pragmas);
-
-            // Wraps the connection inside a PooledObjectWrapper, 
-            // so that it can be stored inside the ObjectPool.
             return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
 
-        private async Task DoAddAsync(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
+        private async Task DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
-            var serializationTask = BinarySerializer.SerializeObject(value);
-            
-            //byte[] serializedValue;
-            //try {
-            //    serializedValue = 
-            //} catch (Exception ex) {
-            //    throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
-            //}
-
-            // The item that will actually be stored in the SQLite database.
+            byte[] serializedValue;
+            try {
+                serializedValue = BinarySerializer.SerializeObject(value);
+            } catch (Exception ex) {
+                throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
+            }
             var dbItem = new DbCacheItem {
                 Partition = partition,
                 Key = key,
+                SerializedValue = serializedValue,
                 UtcExpiry = utcExpiry.HasValue ? (long) (utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(),
-                Interval = interval.HasValue ? (long) interval.Value.TotalSeconds : new long?(),
-                // Last line, to allow the task to run in parallel for as long as possible.
-                SerializedValue = await serializationTask,
+                Interval = interval.HasValue ? (long) interval.Value.TotalSeconds : new long?()
             };
-            
+
             using (var ctx = _connectionPool.GetObject()) {
                 await ctx.InternalResource.ExecuteAsync(Queries.Add, dbItem);
             }
@@ -268,7 +259,7 @@ namespace PommaLabs.KVLite
             _insertionCount++;
             if (_insertionCount >= Settings.InsertionCountBeforeCleanup) {
                 _insertionCount = 0;
-                Task.Run(() => Clear(CacheReadMode.ConsiderExpirationDate));
+                Task.Factory.StartNew(() => Clear(CacheReadMode.ConsiderExpirationDate));
             }
         }
 

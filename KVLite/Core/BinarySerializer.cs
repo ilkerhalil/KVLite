@@ -26,13 +26,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using CodeProject.ObjectPool;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
+using CodeProject.ObjectPool;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -41,18 +40,16 @@ namespace PommaLabs.KVLite.Core
         private static readonly ObjectPool<PooledObjectWrapper<BinaryFormatter>> FormatterPool = new ObjectPool<PooledObjectWrapper<BinaryFormatter>>(1, 10, CreatePooledBinaryFormatter);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Task<byte[]> SerializeObject(object obj)
+        public static byte[] SerializeObject(object obj)
         {
-            return Task.Run(() =>
-            {
-                using (var compressedStream = new MemoryStream())
-                using (var decompressedStream = new DeflateStream(compressedStream, CompressionMode.Compress))
-                using (var binaryFormatter = FormatterPool.GetObject())
-                {
-                    binaryFormatter.InternalResource.Serialize(decompressedStream, obj);
-                    return compressedStream.GetBuffer();
+            using (var compressedStream = new MemoryStream()) {
+                using (var decompressedStream = new DeflateStream(compressedStream, CompressionMode.Compress)) {
+                    using (var binaryFormatter = FormatterPool.GetObject()) {
+                        binaryFormatter.InternalResource.Serialize(decompressedStream, obj);
+                    }
                 }
-            });            
+                return compressedStream.GetBuffer();
+            }
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

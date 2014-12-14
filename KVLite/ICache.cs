@@ -36,36 +36,20 @@ using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
-    /// <summary>
-    ///   Represents all kind of caches currently implemented inside KVLite.
-    /// </summary>
     public enum CacheKind : byte
     {
-        /// <summary>
-        ///   The persistent cache, available through the <see cref="PersistentCache"/> class.
-        ///   A persistent cache stores its data inside an SQLite database.
-        /// </summary>
         Persistent = 1,
-
-        /// <summary>
-        ///   The volatile cache, available through the <see cref="VolatileCache"/> class.
-        ///   A volatile cache stores its data inside an instance of <see cref="System.Runtime.Caching.MemoryCache"/>.
-        /// </summary>
         Volatile = 2
     }
 
     /// <summary>
-    ///   Represents a partition based key-value store. Each (partition, key, value) triple
-    ///   has attached either an expiry time or a refresh interval, because values should not
-    ///   be stored forever inside a cache.<br/>
-    ///   In fact, a cache is, almost by definition, a transient store, used to temporaly
-    ///   store the results of time consuming operations.
+    ///   TODO
     /// </summary>
     [ContractClass(typeof(CacheContract))]
     public interface ICache
     {
         /// <summary>
-        ///   The kind of cache implementation underlying this interface.
+        ///   TODO
         /// </summary>
         CacheKind Kind { get; }
 
