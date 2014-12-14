@@ -27,7 +27,7 @@ namespace Benchmarks
         public static void Main()
         {
             Console.WriteLine(@"Running vacuum on DB...");
-            PersistentCache.DefaultInstance.VacuumAsync();
+            PersistentCache.DefaultInstance.Vacuum();
             Console.WriteLine(@"Vacuum completed.");
             
             Console.WriteLine();

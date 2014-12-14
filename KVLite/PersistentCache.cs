@@ -113,19 +113,19 @@ namespace PommaLabs.KVLite
         /// </summary>
         public void Vacuum()
         {
-            VacuumAsync().Wait();
+            // Vacuum cannot be run within a transaction.
+            using (var ctx = _connectionPool.GetObject()) {
+                ctx.InternalResource.Execute(Queries.Vacuum);
+            }
         }
 
         /// <summary>
         ///   TODO
         /// </summary>
         /// <returns></returns>
-        public async Task VacuumAsync()
+        public Task VacuumAsync()
         {
-            // Vacuum cannot be run within a transaction.
-            using (var ctx = _connectionPool.GetObject()) {
-                await ctx.InternalResource.ExecuteAsync(Queries.Vacuum);
-            }
+            return Task.Factory.StartNew(Vacuum);
         }
 
         #endregion

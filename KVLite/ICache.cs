@@ -396,9 +396,6 @@ namespace PommaLabs.KVLite
         where TCache : class, ICache<TCache, TCacheSettings>, new()
         where TCacheSettings : CacheSettingsBase, new()
     {
-        /// <summary>
-        ///   Settings for this cache.
-        /// </summary>
         TCacheSettings Settings { get; }
     }
 
