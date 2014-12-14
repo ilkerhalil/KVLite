@@ -230,7 +230,7 @@ namespace PommaLabs.KVLite
             return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
 
-        private async Task DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
+        private void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
             byte[] serializedValue;
@@ -248,7 +248,7 @@ namespace PommaLabs.KVLite
             };
 
             using (var ctx = _connectionPool.GetObject()) {
-                await ctx.InternalResource.ExecuteAsync(Queries.Add, dbItem);
+                ctx.InternalResource.Execute(Queries.Add, dbItem);
             }
 
             // Insertion has concluded successfully, therefore we increment the operation counter.

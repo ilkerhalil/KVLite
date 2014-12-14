@@ -116,9 +116,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeProject.ObjectPool, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="CodeProject.ObjectPool, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CodeProject.ObjectPool.1.0.8\lib\net40\CodeProject.ObjectPool.dll</HintPath>
+      <HintPath>..\packages\CodeProject.ObjectPool.1.0.7\lib\portable-net45+win8+wp81\CodeProject.ObjectPool.dll</HintPath>
     </Reference>
     <Reference Include="Dapper, Version=1.38.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
