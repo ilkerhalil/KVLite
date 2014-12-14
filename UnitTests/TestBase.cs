@@ -20,13 +20,13 @@ namespace UnitTests
         [SetUp]
         public void SetUp()
         {
-            DefaultInstance.Clear(CacheReadMode.IgnoreExpirationDate);
+            DefaultInstance.Clear(CacheReadMode.ExcludeExpiredItems);
         }
 
         [TearDown]
         public void TearDown()
         {
-            DefaultInstance.Clear(CacheReadMode.IgnoreExpirationDate);
+            DefaultInstance.Clear(CacheReadMode.ExcludeExpiredItems);
         }
 
         #endregion

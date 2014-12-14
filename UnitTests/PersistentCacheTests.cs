@@ -58,12 +58,12 @@ namespace UnitTests
             foreach (var t in StringItems) {
                 DefaultInstance.AddTimed(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
-            DefaultInstance.Clear(CacheReadMode.ConsiderExpirationDate);
+            DefaultInstance.Clear(CacheReadMode.IncludeExpiredItems);
             Assert.AreEqual(0, DefaultInstance.Count());
             foreach (var t in StringItems) {
                 DefaultInstance.AddTimed(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
-            DefaultInstance.Clear(CacheReadMode.IgnoreExpirationDate);
+            DefaultInstance.Clear(CacheReadMode.ExcludeExpiredItems);
             Assert.AreEqual(0, DefaultInstance.Count());
         }
 
@@ -75,9 +75,9 @@ namespace UnitTests
             }
             DefaultInstance.Clear();
             Assert.AreEqual(StringItems.Count, DefaultInstance.Count());
-            DefaultInstance.Clear(CacheReadMode.ConsiderExpirationDate);
+            DefaultInstance.Clear(CacheReadMode.IncludeExpiredItems);
             Assert.AreEqual(StringItems.Count, DefaultInstance.Count());
-            DefaultInstance.Clear(CacheReadMode.IgnoreExpirationDate);
+            DefaultInstance.Clear(CacheReadMode.ExcludeExpiredItems);
             Assert.AreEqual(0, DefaultInstance.Count());
         }
 

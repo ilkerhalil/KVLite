@@ -3,12 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetPackager", "NuGetPackager\NuGetPackager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager", "NuGetPackager\NuGet Packager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F056179D-90B8-4ABA-9AB4-1026E5941FB7} = {F056179D-90B8-4ABA-9AB4-1026E5941FB7}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{B41547F3-A41C-439A-98DA-F478B2D360C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit Tests", "UnitTests\Unit Tests.csproj", "{B41547F3-A41C-439A-98DA-F478B2D360C1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4A3E1022-C52E-4C73-AE31-BFF7294F8CED}"
 	ProjectSection(SolutionItems) = preProject

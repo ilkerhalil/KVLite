@@ -90,7 +90,7 @@ namespace Benchmarks
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Fully cleaning cache...");
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpirationDate);
+            PersistentCache.DefaultInstance.Clear(CacheReadMode.ExcludeExpiredItems);
             Console.WriteLine(@"Cache cleaned!");
         }
 

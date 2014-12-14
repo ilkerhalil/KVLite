@@ -101,7 +101,7 @@ namespace PommaLabs.KVLite
             }
 
             // Initial cleanup
-            Clear(CacheReadMode.ConsiderExpirationDate);
+            Clear(CacheReadMode.IncludeExpiredItems);
         }
 
         #endregion
@@ -148,7 +148,7 @@ namespace PommaLabs.KVLite
         public override void Clear(CacheReadMode cacheReadMode)
         {
             var p = new DynamicParameters();
-            p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.IgnoreExpirationDate), DbType.Boolean);
+            p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.ExcludeExpiredItems), DbType.Boolean);
 
             using (var ctx = _connectionPool.GetObject()) {
                 ctx.InternalResource.Execute(Queries.Clear, p);
@@ -163,7 +163,7 @@ namespace PommaLabs.KVLite
         public override long LongCount(CacheReadMode cacheReadMode)
         {
             var p = new DynamicParameters();
-            p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.IgnoreExpirationDate), DbType.Boolean);
+            p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.ExcludeExpiredItems), DbType.Boolean);
 
             // No need for a transaction, since it is just a select.
             using (var ctx = _connectionPool.GetObject()) {
@@ -259,7 +259,7 @@ namespace PommaLabs.KVLite
             _insertionCount++;
             if (_insertionCount >= Settings.InsertionCountBeforeCleanup) {
                 _insertionCount = 0;
-                Task.Factory.StartNew(() => Clear(CacheReadMode.ConsiderExpirationDate));
+                Task.Factory.StartNew(() => Clear(CacheReadMode.IncludeExpiredItems));
             }
         }
 

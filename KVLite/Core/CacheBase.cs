@@ -147,7 +147,7 @@ namespace PommaLabs.KVLite.Core
 
         public void Clear()
         {
-            Clear(CacheReadMode.ConsiderExpirationDate);
+            Clear(CacheReadMode.IncludeExpiredItems);
         }
 
         public abstract void Clear(CacheReadMode cacheReadMode);
@@ -161,7 +161,7 @@ namespace PommaLabs.KVLite.Core
 
         public int Count()
         {
-            return (int) LongCount(CacheReadMode.ConsiderExpirationDate);
+            return (int) LongCount(CacheReadMode.IncludeExpiredItems);
         }
 
         public int Count(CacheReadMode cacheReadMode)
@@ -171,7 +171,7 @@ namespace PommaLabs.KVLite.Core
 
         public long LongCount()
         {
-            return LongCount(CacheReadMode.ConsiderExpirationDate);
+            return LongCount(CacheReadMode.IncludeExpiredItems);
         }
 
         public abstract long LongCount(CacheReadMode cacheReadMode);

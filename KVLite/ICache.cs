@@ -1,49 +1,41 @@
-﻿//
-// ICache.cs
+﻿// File name: ICache.cs
 // 
-// Author(s):
-//     Alessio Parma <alessio.parma@gmail.com>
-//
+// Author(s): Alessio Parma <alessio.parma@gmail.com>
+// 
 // The MIT License (MIT)
 // 
 // Copyright (c) 2014-2015 Alessio Parma <alessio.parma@gmail.com>
 // 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 // 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
 // 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Newtonsoft.Json;
+using PommaLabs.KVLite.Contracts;
+using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using PommaLabs.KVLite.Contracts;
-using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
-    public enum CacheKind : byte
-    {
-        Persistent = 1,
-        Volatile = 2
-    }
-
     /// <summary>
-    ///   TODO
+    ///   Represents a partition based key-value store. Each (partition, key, value) triple has
+    ///   attached either an expiry time or a refresh interval, because values should not be stored
+    ///   forever inside a cache. <br/> In fact, a cache is, almost by definition, a transient
+    ///   store, used to temporaly store the results of time consuming operations.
     /// </summary>
     [ContractClass(typeof(CacheContract))]
     public interface ICache
@@ -143,8 +135,7 @@ namespace PommaLabs.KVLite
         Task AddStaticAsync(string key, object value);
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -152,16 +143,14 @@ namespace PommaLabs.KVLite
         void AddTimed(string partition, string key, object value, DateTime utcExpiry);
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="utcExpiry"></param>
         void AddTimed(string key, object value, DateTime utcExpiry);
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -169,8 +158,7 @@ namespace PommaLabs.KVLite
         Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry);
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="utcExpiry"></param>
@@ -303,85 +291,73 @@ namespace PommaLabs.KVLite
         Task<CacheItem> GetItemAsync(string key);
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <returns></returns>
         [Pure]
         IList<object> GetAll();
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <returns></returns>
         [Pure]
         Task<IList<object>> GetAllAsync();
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <returns></returns>
         [Pure]
         IList<object> GetPartition(string partition);
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <returns></returns>
         [Pure]
         Task<IList<object>> GetPartitionAsync(string partition);
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <returns></returns>
         [Pure]
         IList<CacheItem> GetAllItems();
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <returns></returns>
         [Pure]
         Task<IList<CacheItem>> GetAllItemsAsync();
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <returns></returns>
         [Pure]
         IList<CacheItem> GetPartitionItems(string partition);
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <returns></returns>
         [Pure]
         Task<IList<CacheItem>> GetPartitionItemsAsync(string partition);
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         void Remove(string partition, string key);
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <param name="key"></param>
         void Remove(string key);
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <returns></returns>
         Task RemoveAsync(string partition, string key);
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         Task RemoveAsync(string key);
@@ -392,7 +368,7 @@ namespace PommaLabs.KVLite
     /// </summary>
     /// <typeparam name="TCache"></typeparam>
     /// <typeparam name="TCacheSettings"></typeparam>
-    public interface ICache<TCache, out TCacheSettings> : ICache 
+    public interface ICache<TCache, out TCacheSettings> : ICache
         where TCache : class, ICache<TCache, TCacheSettings>, new()
         where TCacheSettings : CacheSettingsBase, new()
     {
@@ -406,49 +382,27 @@ namespace PommaLabs.KVLite
     public sealed class CacheItem
     {
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         public string Partition { get; set; }
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         public string Key { get; set; }
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         public object Value { get; set; }
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         public DateTime UtcCreation { get; set; }
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         public DateTime? UtcExpiry { get; set; }
 
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         public TimeSpan? Interval { get; set; }
-    }
-
-    /// <summary>
-    ///   TODO
-    /// </summary>
-    public enum CacheReadMode : byte
-    {
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        IgnoreExpirationDate = 0,
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        ConsiderExpirationDate = 1
     }
 }
