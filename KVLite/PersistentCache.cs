@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SQLite;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CodeProject.ObjectPool;
@@ -88,6 +89,15 @@ namespace PommaLabs.KVLite
         {
             settings.PropertyChanged += Settings_PropertyChanged;
             
+           // If the directory which should contain the cache does not exist,
+           // then we create it. SQLite will take care of creating the DB itself.
+           var cacheDir = Path.GetDirectoryName(settings.CacheFile.MapPath());
+           if (cacheDir != null && !Directory.Exists(cacheDir))
+           {
+              Directory.CreateDirectory(cacheDir);
+           }
+
+           // ...
             InitConnectionString();
 
             using (var ctx = _connectionPool.GetObject()) {
