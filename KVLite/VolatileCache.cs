@@ -78,7 +78,7 @@ namespace PommaLabs.KVLite
             Settings.MemoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy {AbsoluteExpiration = utcExpiry.ToLocalTime()});
         }
 
-        public override void Clear(CacheReadMode cacheReadMode)
+        public override void Clear()
         {
             var items = Settings.MemoryCache.Where(x => x.Value is CacheItem).Select(x => x.Key).ToList();
             foreach (var item in items) {
@@ -91,7 +91,7 @@ namespace PommaLabs.KVLite
             return GetItem(partition, key) != null;
         }
 
-        public override long LongCount(CacheReadMode cacheReadMode)
+        public override long LongCount()
         {
             return Settings.MemoryCache.GetCount();
         }

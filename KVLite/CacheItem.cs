@@ -1,4 +1,4 @@
-﻿// File name: CacheReadMode.cs
+﻿// File name: CacheItem.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,21 +21,39 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
+using Newtonsoft.Json;
+
 namespace PommaLabs.KVLite
 {
-    /// <summary>
-    ///   Determines whether expired items should be included in lists or in queries.
-    /// </summary>
-    public enum CacheReadMode : byte
-    {
-        /// <summary>
-        ///   Considers expiry policy while retrieving items.
-        /// </summary>
-        ConsiderExpiryDate = 0,
+   /// <summary>
+   ///   TODO
+   /// </summary>
+   [Serializable, JsonObject]
+   public sealed class CacheItem
+   {
+      /// <summary>
+      ///   </summary>
+      public string Partition { get; set; }
 
-        /// <summary>
-        ///   Ignores expiry policy while retrieving items.
-        /// </summary>
-        IgnoreExpiryDate = 1
-    }
+      /// <summary>
+      ///   </summary>
+      public string Key { get; set; }
+
+      /// <summary>
+      ///   </summary>
+      public object Value { get; set; }
+
+      /// <summary>
+      ///   </summary>
+      public DateTime UtcCreation { get; set; }
+
+      /// <summary>
+      ///   </summary>
+      public DateTime? UtcExpiry { get; set; }
+
+      /// <summary>
+      ///   </summary>
+      public TimeSpan? Interval { get; set; }
+   }
 }

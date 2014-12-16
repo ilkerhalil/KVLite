@@ -111,7 +111,7 @@ namespace PommaLabs.KVLite
             }
 
             // Initial cleanup
-            Clear(CacheReadMode.IncludeExpiredItems);
+            Clear(CacheReadMode.ConsiderExpiryDate);
         }
 
         #endregion
@@ -155,10 +155,15 @@ namespace PommaLabs.KVLite
             DoAdd(partition, key, value, utcExpiry, null);
         }
 
-        public override void Clear(CacheReadMode cacheReadMode)
+        public override void Clear()
+        {
+            Clear(CacheReadMode.ConsiderExpiryDate);
+        }
+
+        public void Clear(CacheReadMode cacheReadMode)
         {
             var p = new DynamicParameters();
-            p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.ExcludeExpiredItems), DbType.Boolean);
+            p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
 
             using (var ctx = _connectionPool.GetObject()) {
                 ctx.InternalResource.Execute(Queries.Clear, p);
@@ -169,11 +174,16 @@ namespace PommaLabs.KVLite
         {
             return Get(partition, key) != null;
         }
+        
+        public override long LongCount()
+        {
+           return LongCount(CacheReadMode.ConsiderExpiryDate);
+        }
 
-        public override long LongCount(CacheReadMode cacheReadMode)
+        public long LongCount(CacheReadMode cacheReadMode)
         {
             var p = new DynamicParameters();
-            p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.ExcludeExpiredItems), DbType.Boolean);
+            p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
 
             // No need for a transaction, since it is just a select.
             using (var ctx = _connectionPool.GetObject()) {
@@ -269,7 +279,7 @@ namespace PommaLabs.KVLite
             _insertionCount++;
             if (_insertionCount >= Settings.InsertionCountBeforeCleanup) {
                 _insertionCount = 0;
-                Task.Factory.StartNew(() => Clear(CacheReadMode.IncludeExpiredItems));
+                Task.Factory.StartNew(() => Clear(CacheReadMode.ConsiderExpiryDate));
             }
         }
 

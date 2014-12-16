@@ -149,6 +149,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheItem.cs" />
     <Compile Include="CacheKind.cs" />
     <Compile Include="CacheReadMode.cs" />
     <Compile Include="Contracts\CacheContract.cs" />

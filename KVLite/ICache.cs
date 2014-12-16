@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Newtonsoft.Json;
 using PommaLabs.KVLite.Contracts;
 using PommaLabs.KVLite.Core;
 using System;
@@ -172,12 +171,6 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   TODO
         /// </summary>
-        /// <param name="cacheReadMode"></param>
-        void Clear(CacheReadMode cacheReadMode);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -202,25 +195,9 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   TODO
         /// </summary>
-        /// <param name="cacheReadMode"></param>
-        /// <returns></returns>
-        [Pure]
-        int Count(CacheReadMode cacheReadMode);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
         /// <returns></returns>
         [Pure]
         long LongCount();
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="cacheReadMode"></param>
-        /// <returns></returns>
-        [Pure]
-        long LongCount(CacheReadMode cacheReadMode);
 
         /// <summary>
         ///   TODO
@@ -373,36 +350,5 @@ namespace PommaLabs.KVLite
         where TCacheSettings : CacheSettingsBase, new()
     {
         TCacheSettings Settings { get; }
-    }
-
-    /// <summary>
-    ///   TODO
-    /// </summary>
-    [Serializable, JsonObject]
-    public sealed class CacheItem
-    {
-        /// <summary>
-        ///   </summary>
-        public string Partition { get; set; }
-
-        /// <summary>
-        ///   </summary>
-        public string Key { get; set; }
-
-        /// <summary>
-        ///   </summary>
-        public object Value { get; set; }
-
-        /// <summary>
-        ///   </summary>
-        public DateTime UtcCreation { get; set; }
-
-        /// <summary>
-        ///   </summary>
-        public DateTime? UtcExpiry { get; set; }
-
-        /// <summary>
-        ///   </summary>
-        public TimeSpan? Interval { get; set; }
     }
 }

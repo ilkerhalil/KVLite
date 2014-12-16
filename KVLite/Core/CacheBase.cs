@@ -35,10 +35,10 @@ using System.Threading.Tasks;
 namespace PommaLabs.KVLite.Core
 {
     /// <summary>
-    ///   TODO
+    ///   Base class for caches, implements common functionalities.
     /// </summary>
-    /// <typeparam name="TCache"></typeparam>
-    /// <typeparam name="TCacheSettings"></typeparam>
+    /// <typeparam name="TCache">The type of the cache.</typeparam>
+    /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     [Serializable]
     public abstract class CacheBase<TCache, TCacheSettings> : ICache<TCache, TCacheSettings> 
         where TCache : CacheBase<TCache, TCacheSettings>, ICache<TCache, TCacheSettings>, new()
@@ -145,12 +145,7 @@ namespace PommaLabs.KVLite.Core
             return Task.Factory.StartNew(() => AddTimed(key, value, utcExpiry));
         }
 
-        public void Clear()
-        {
-            Clear(CacheReadMode.IncludeExpiredItems);
-        }
-
-        public abstract void Clear(CacheReadMode cacheReadMode);
+        public abstract void Clear();
 
         public abstract bool Contains(string partition, string key);
 
@@ -161,20 +156,10 @@ namespace PommaLabs.KVLite.Core
 
         public int Count()
         {
-            return (int) LongCount(CacheReadMode.IncludeExpiredItems);
+            return (int) LongCount();
         }
 
-        public int Count(CacheReadMode cacheReadMode)
-        {
-            return (int) LongCount(cacheReadMode);
-        }
-
-        public long LongCount()
-        {
-            return LongCount(CacheReadMode.IncludeExpiredItems);
-        }
-
-        public abstract long LongCount(CacheReadMode cacheReadMode);
+        public abstract long LongCount();
 
         public object Get(string partition, string key)
         {
