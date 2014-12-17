@@ -76,6 +76,14 @@ namespace PommaLabs.KVLite.Core
                and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
         ";
 
+        public const string Peek = @"         
+            select *
+              from CacheItem
+             where (@partition is null or partition = @partition)
+               and (@key is null or key = @key)
+               and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
+        ";
+
         public const string Remove = @"
             delete from CacheItem
              where partition = @partition

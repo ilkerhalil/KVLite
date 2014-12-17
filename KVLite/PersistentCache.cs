@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -202,6 +203,21 @@ namespace PommaLabs.KVLite
                 return (dbItem == null) ? null : ToCacheItem(dbItem);
             }
         }
+
+       /// <summary>
+       ///   </summary>
+       /// <returns></returns>
+       [Pure]
+       IList<object> PeekAll()
+       {
+          var p = new DynamicParameters();
+         p.Add("partition", null, DbType.String);
+         p.Add("key", null, DbType.String);
+
+         using (var ctx = _connectionPool.GetObject()) {
+               return ctx.InternalResource.Query<DbCacheItem>(Queries.Peek, p).Select(i => ToCacheItem(i).Value).Where(i => i != null).ToList();
+         }
+       }
 
         public override void Remove(string partition, string key)
         {
