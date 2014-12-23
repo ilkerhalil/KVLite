@@ -1,5 +1,5 @@
 ﻿// File name: CacheItem.cs
-//
+// 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
 // The MIT License (MIT)
@@ -21,39 +21,59 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
 using Newtonsoft.Json;
+using PommaLabs.GRAMPA;
+using PommaLabs.GRAMPA.Extensions;
+using System;
+using System.Collections.Generic;
 
 namespace PommaLabs.KVLite
 {
-   /// <summary>
-   ///   TODO
-   /// </summary>
-   [Serializable, JsonObject]
-   public sealed class CacheItem
-   {
-      /// <summary>
-      ///   </summary>
-      public string Partition { get; set; }
+    /// <summary>
+    ///   TODO
+    /// </summary>
+    [Serializable, JsonObject]
+    public sealed class CacheItem : EquatableObject<CacheItem>
+    {
+        /// <summary>
+        ///   </summary>
+        public string Partition { get; set; }
 
-      /// <summary>
-      ///   </summary>
-      public string Key { get; set; }
+        /// <summary>
+        ///   </summary>
+        public string Key { get; set; }
 
-      /// <summary>
-      ///   </summary>
-      public object Value { get; set; }
+        /// <summary>
+        ///   </summary>
+        public object Value { get; set; }
 
-      /// <summary>
-      ///   </summary>
-      public DateTime UtcCreation { get; set; }
+        /// <summary>
+        ///   </summary>
+        public DateTime UtcCreation { get; set; }
 
-      /// <summary>
-      ///   </summary>
-      public DateTime? UtcExpiry { get; set; }
+        /// <summary>
+        ///   </summary>
+        public DateTime? UtcExpiry { get; set; }
 
-      /// <summary>
-      ///   </summary>
-      public TimeSpan? Interval { get; set; }
-   }
+        /// <summary>
+        ///   </summary>
+        public TimeSpan? Interval { get; set; }
+
+        #region EquatableObject<CacheItem> Members
+
+        protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
+        {
+            yield return GKeyValuePair.Create("Partition", Partition.SafeToString());
+            yield return GKeyValuePair.Create("Key", Key.SafeToString());
+            yield return GKeyValuePair.Create("UtcExpiry", UtcExpiry.SafeToString());
+        }
+
+        protected override IEnumerable<object> GetIdentifyingMembers()
+        {
+            yield return Partition;
+            yield return Key;
+        }
+
+        #endregion
+    }
 }
