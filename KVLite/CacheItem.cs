@@ -35,6 +35,8 @@ namespace PommaLabs.KVLite
     [Serializable, JsonObject]
     public sealed class CacheItem : EquatableObject<CacheItem>
     {
+        #region Public Properties
+
         /// <summary>
         ///   </summary>
         public string Partition { get; set; }
@@ -59,6 +61,8 @@ namespace PommaLabs.KVLite
         ///   </summary>
         public TimeSpan? Interval { get; set; }
 
+        #endregion Public Properties
+
         #region EquatableObject<CacheItem> Members
 
         protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
@@ -74,6 +78,6 @@ namespace PommaLabs.KVLite
             yield return Key;
         }
 
-        #endregion
+        #endregion EquatableObject<CacheItem> Members
     }
 }

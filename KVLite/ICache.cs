@@ -223,23 +223,6 @@ namespace PommaLabs.KVLite
         /// <param name="key"></param>
         /// <returns></returns>
         [Pure]
-        Task<object> GetAsync(string partition, string key);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        [Pure]
-        Task<object> GetAsync(string key);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        [Pure]
         CacheItem GetItem(string partition, string key);
 
         /// <summary>
@@ -251,45 +234,10 @@ namespace PommaLabs.KVLite
         CacheItem GetItem(string key);
 
         /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        [Pure]
-        Task<CacheItem> GetItemAsync(string partition, string key);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        [Pure]
-        Task<CacheItem> GetItemAsync(string key);
-
-        /// <summary>
         ///   </summary>
         /// <returns></returns>
         [Pure]
         IList<object> GetAll();
-
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
-        [Pure]
-        Task<IList<object>> GetAllAsync();
-
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
-        [Pure]
-        IList<object> GetPartition(string partition);
-
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
-        [Pure]
-        Task<IList<object>> GetPartitionAsync(string partition);
 
         /// <summary>
         ///   </summary>
@@ -301,19 +249,13 @@ namespace PommaLabs.KVLite
         ///   </summary>
         /// <returns></returns>
         [Pure]
-        Task<IList<CacheItem>> GetAllItemsAsync();
+        IList<object> GetPartition(string partition);
 
         /// <summary>
         ///   </summary>
         /// <returns></returns>
         [Pure]
         IList<CacheItem> GetPartitionItems(string partition);
-
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
-        [Pure]
-        Task<IList<CacheItem>> GetPartitionItemsAsync(string partition);
 
         /// <summary>
         ///   </summary>

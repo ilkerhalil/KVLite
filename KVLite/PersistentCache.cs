@@ -52,7 +52,16 @@ namespace PommaLabs.KVLite
 
         #endregion Constants
 
+        #region Fields
+
+        /// <summary>
+        ///   The connection pool used to cache open connections.
+        /// </summary>
         private ObjectPool<PooledObjectWrapper<SQLiteConnection>> _connectionPool;
+
+        /// <summary>
+        ///   The connection string used to connect to the SQLite database.
+        /// </summary>
         private string _connectionString;
 
         /// <summary>
@@ -61,6 +70,8 @@ namespace PommaLabs.KVLite
         ///   SOFT cleanup.
         /// </summary>
         private short _insertionCount;
+
+        #endregion Fields
 
         #region Construction
 
@@ -124,7 +135,32 @@ namespace PommaLabs.KVLite
         ///   </summary>
         /// <returns></returns>
         [Pure]
-        private IList<object> PeekAll()
+        public object Peek(string partition, string key)
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", key, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Peek, p).Select(i => i.DeserializeValue()).Where(v => v != null).ToList();
+            }
+        }
+
+        /// <summary>
+        ///   </summary>
+        /// <returns></returns>
+        [Pure]
+        public object Peek(string key)
+        {
+            return Peek(DefaultPartition, key);
+        }
+
+        /// <summary>
+        ///   </summary>
+        /// <returns></returns>
+        [Pure]
+        public IList<object> PeekAll()
         {
             var p = new DynamicParameters();
             p.Add("partition", null, DbType.String);
@@ -132,7 +168,23 @@ namespace PommaLabs.KVLite
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Peek, p).Select(i => ToCacheItem(i).Value).Where(i => i != null).ToList();
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Peek, p).Select(i => i.DeserializeValue()).Where(v => v != null).ToList();
+            }
+        }
+
+        /// <summary>
+        ///   </summary>
+        /// <returns></returns>
+        [Pure]
+        public IList<CacheItem> PeekAllItems()
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", null, DbType.String);
+            p.Add("key", null, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Peek, p).Select(i => i.ToCacheItem()).Where(i => i != null).ToList();
             }
         }
 
@@ -154,10 +206,12 @@ namespace PommaLabs.KVLite
         /// <returns></returns>
         public Task VacuumAsync()
         {
-            return Task.Factory.StartNew(Vacuum);
+            return TaskEx.Run((Action) Vacuum);
         }
 
         #endregion Public Methods
+
+        #region ICache Members
 
         public override CacheKind Kind
         {
@@ -221,7 +275,7 @@ namespace PommaLabs.KVLite
             using (var ctx = _connectionPool.GetObject())
             {
                 var dbItem = ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).FirstOrDefault();
-                return (dbItem == null) ? null : ToCacheItem(dbItem);
+                return (dbItem == null) ? null : dbItem.ToCacheItem();
             }
         }
 
@@ -245,7 +299,7 @@ namespace PommaLabs.KVLite
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).Select(ToCacheItem).Where(i => i != null);
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).Select(i => i.ToCacheItem()).Where(i => i != null);
             }
         }
 
@@ -257,9 +311,11 @@ namespace PommaLabs.KVLite
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).Select(ToCacheItem).Where(i => i != null);
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).Select(i => i.ToCacheItem()).Where(i => i != null);
             }
         }
+
+        #endregion ICache Members
 
         #region Private Methods
 
@@ -292,8 +348,8 @@ namespace PommaLabs.KVLite
                 Partition = partition,
                 Key = key,
                 SerializedValue = serializedValue,
-                UtcExpiry = utcExpiry.HasValue ? (long)(utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(),
-                Interval = interval.HasValue ? (long)interval.Value.TotalSeconds : new long?()
+                UtcExpiry = utcExpiry.HasValue ? (long) (utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(),
+                Interval = interval.HasValue ? (long) interval.Value.TotalSeconds : new long?()
             };
 
             using (var ctx = _connectionPool.GetObject())
@@ -311,14 +367,6 @@ namespace PommaLabs.KVLite
             {
                 _insertionCount = 0;
                 Task.Factory.StartNew(() => Clear(CacheReadMode.ConsiderExpiryDate));
-            }
-        }
-
-        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "CacheFile")
-            {
-                InitConnectionString();
             }
         }
 
@@ -355,28 +403,12 @@ namespace PommaLabs.KVLite
             _connectionPool = new ObjectPool<PooledObjectWrapper<SQLiteConnection>>(1, 10, CreatePooledConnection);
         }
 
-        private static CacheItem ToCacheItem(DbCacheItem original)
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            object deserializedValue;
-            try
+            if (e.PropertyName == "CacheFile")
             {
-                deserializedValue = BinarySerializer.DeserializeObject(original.SerializedValue);
+                InitConnectionString();
             }
-            catch
-            {
-                // Something wrong happened during deserialization. Therefore, we act as if there
-                // was no element.
-                return null;
-            }
-            return new CacheItem
-            {
-                Partition = original.Partition,
-                Key = original.Key,
-                Value = deserializedValue,
-                UtcCreation = UnixEpoch.AddSeconds(original.UtcCreation),
-                UtcExpiry = original.UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(original.UtcExpiry.Value),
-                Interval = original.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(original.Interval.Value)
-            };
         }
 
         #endregion Private Methods
@@ -384,8 +416,10 @@ namespace PommaLabs.KVLite
         #region Nested type: DbCacheItem
 
         [Serializable]
-        private sealed class DbCacheItem
+        private sealed class DbCacheItem : EquatableObject<DbCacheItem>
         {
+            #region Public Properties
+
             public string Partition { get; set; }
 
             public string Key { get; set; }
@@ -397,6 +431,67 @@ namespace PommaLabs.KVLite
             public long? UtcExpiry { get; set; }
 
             public long? Interval { get; set; }
+
+            #endregion Public Properties
+
+            #region Public Methods
+
+            public object DeserializeValue()
+            {
+                try
+                {
+                    return BinarySerializer.DeserializeObject(SerializedValue);
+                }
+                catch
+                {
+                    // Something wrong happened during deserialization. Therefore, we act as if
+                    // there was no value.
+                    return null;
+                }
+            }
+
+            public CacheItem ToCacheItem()
+            {
+                object deserializedValue;
+                try
+                {
+                    deserializedValue = BinarySerializer.DeserializeObject(SerializedValue);
+                }
+                catch
+                {
+                    // Something wrong happened during deserialization. Therefore, we act as if
+                    // there was no element.
+                    return null;
+                }
+                return new CacheItem
+                {
+                    Partition = Partition,
+                    Key = Key,
+                    Value = deserializedValue,
+                    UtcCreation = UnixEpoch.AddSeconds(UtcCreation),
+                    UtcExpiry = UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(UtcExpiry.Value),
+                    Interval = Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(Interval.Value)
+                };
+            }
+
+            #endregion Public Methods
+
+            #region EquatableObject<CacheItem> Members
+
+            protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
+            {
+                yield return GKeyValuePair.Create("Partition", Partition.SafeToString());
+                yield return GKeyValuePair.Create("Key", Key.SafeToString());
+                yield return GKeyValuePair.Create("UtcExpiry", UtcExpiry.SafeToString());
+            }
+
+            protected override IEnumerable<object> GetIdentifyingMembers()
+            {
+                yield return Partition;
+                yield return Key;
+            }
+
+            #endregion EquatableObject<CacheItem> Members
         }
 
         #endregion Nested type: DbCacheItem

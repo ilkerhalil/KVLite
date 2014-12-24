@@ -215,7 +215,7 @@ namespace Benchmarks
             stopwatch.Start();
             var tasks = new List<Task<object>>();
             foreach (var table in tables) {
-                tasks.Add(PersistentCache.DefaultInstance.GetAsync(table.TableName));
+                tasks.Add(Task.Run(() => PersistentCache.DefaultInstance.Get(table.TableName)));
             }
             foreach (var task in tasks) {
                 var returnedTable = task.Result as DataTable;
@@ -242,7 +242,7 @@ namespace Benchmarks
             }
             var readTasks = new List<Task<object>>();
             foreach (var table in tables) {
-                readTasks.Add(PersistentCache.DefaultInstance.GetAsync(table.TableName));
+                readTasks.Add(Task.Run(() => PersistentCache.DefaultInstance.Get(table.TableName)));
             }
             foreach (var task in writeTasks) {
                 task.Wait();

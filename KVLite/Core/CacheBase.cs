@@ -39,7 +39,7 @@ namespace PommaLabs.KVLite.Core
         where TCache : CacheBase<TCache, TCacheSettings>, ICache<TCache, TCacheSettings>, new()
         where TCacheSettings : CacheSettingsBase, new()
     {
-        private const string DefaultPartition = "_DEFAULT_PARTITION_";
+        internal const string DefaultPartition = "_DEFAULT_PARTITION_";
 
         private static readonly TCache CachedDefaultInstance = new TCache();
 
@@ -95,12 +95,12 @@ namespace PommaLabs.KVLite.Core
 
         public Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval)
         {
-            return Task.Factory.StartNew(() => AddSliding(partition, key, value, interval));
+            return TaskEx.Run(() => AddSliding(partition, key, value, interval));
         }
 
         public Task AddSlidingAsync(string key, object value, TimeSpan interval)
         {
-            return Task.Factory.StartNew(() => AddSliding(key, value, interval));
+            return TaskEx.Run(() => AddSliding(DefaultPartition, key, value, interval));
         }
 
         public void AddStatic(string partition, string key, object value)
@@ -110,17 +110,17 @@ namespace PommaLabs.KVLite.Core
 
         public void AddStatic(string key, object value)
         {
-            AddStatic(DefaultPartition, key, value);
+            AddSliding(DefaultPartition, key, value, TimeSpan.FromDays(Settings.StaticIntervalInDays));
         }
 
         public Task AddStaticAsync(string partition, string key, object value)
         {
-            return Task.Factory.StartNew(() => AddStatic(partition, key, value));
+            return TaskEx.Run(() => AddSliding(partition, key, value, TimeSpan.FromDays(Settings.StaticIntervalInDays)));
         }
 
         public Task AddStaticAsync(string key, object value)
         {
-            return Task.Factory.StartNew(() => AddStatic(key, value));
+            return TaskEx.Run(() => AddSliding(DefaultPartition, key, value, TimeSpan.FromDays(Settings.StaticIntervalInDays)));
         }
 
         public abstract void AddTimed(string partition, string key, object value, DateTime utcExpiry);
@@ -132,12 +132,12 @@ namespace PommaLabs.KVLite.Core
 
         public Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry)
         {
-            return Task.Factory.StartNew(() => AddTimed(partition, key, value, utcExpiry));
+            return TaskEx.Run(() => AddTimed(partition, key, value, utcExpiry));
         }
 
         public Task AddTimedAsync(string key, object value, DateTime utcExpiry)
         {
-            return Task.Factory.StartNew(() => AddTimed(key, value, utcExpiry));
+            return TaskEx.Run(() => AddTimed(DefaultPartition, key, value, utcExpiry));
         }
 
         public abstract void Clear();
@@ -164,17 +164,8 @@ namespace PommaLabs.KVLite.Core
 
         public object Get(string key)
         {
-            return Get(DefaultPartition, key);
-        }
-
-        public Task<object> GetAsync(string partition, string key)
-        {
-            return Task.Factory.StartNew(() => Get(partition, key));
-        }
-
-        public Task<object> GetAsync(string key)
-        {
-            return Task.Factory.StartNew(() => Get(key));
+            var item = GetItem(DefaultPartition, key);
+            return item == null ? null : item.Value;
         }
 
         public abstract CacheItem GetItem(string partition, string key);
@@ -184,34 +175,9 @@ namespace PommaLabs.KVLite.Core
             return GetItem(DefaultPartition, key);
         }
 
-        public Task<CacheItem> GetItemAsync(string partition, string key)
-        {
-            return Task.Factory.StartNew(() => GetItem(partition, key));
-        }
-
-        public Task<CacheItem> GetItemAsync(string key)
-        {
-            return Task.Factory.StartNew(() => GetItem(key));
-        }
-
         public IList<object> GetAll()
         {
             return DoGetAllItems().Select(x => x.Value).ToList();
-        }
-
-        public Task<IList<object>> GetAllAsync()
-        {
-            return Task.Factory.StartNew((Func<IList<object>>) GetAll);
-        }
-
-        public IList<object> GetPartition(string partition)
-        {
-            return DoGetPartitionItems(partition).Select(x => x.Value).ToList();
-        }
-
-        public Task<IList<object>> GetPartitionAsync(string partition)
-        {
-            return Task.Factory.StartNew(() => GetPartition(partition));
         }
 
         public IList<CacheItem> GetAllItems()
@@ -219,19 +185,14 @@ namespace PommaLabs.KVLite.Core
             return DoGetAllItems().ToList();
         }
 
-        public Task<IList<CacheItem>> GetAllItemsAsync()
+        public IList<object> GetPartition(string partition)
         {
-            return Task.Factory.StartNew((Func<IList<CacheItem>>) GetAllItems);
+            return DoGetPartitionItems(partition).Select(x => x.Value).ToList();
         }
 
         public IList<CacheItem> GetPartitionItems(string partition)
         {
             return DoGetPartitionItems(partition).ToList();
-        }
-
-        public Task<IList<CacheItem>> GetPartitionItemsAsync(string partition)
-        {
-            return Task.Factory.StartNew(() => GetPartitionItems(partition));
         }
 
         public abstract void Remove(string partition, string key);
@@ -243,12 +204,12 @@ namespace PommaLabs.KVLite.Core
 
         public Task RemoveAsync(string partition, string key)
         {
-            return Task.Factory.StartNew(() => Remove(partition, key));
+            return TaskEx.Run(() => Remove(partition, key));
         }
 
         public Task RemoveAsync(string key)
         {
-            return Task.Factory.StartNew(() => Remove(key));
+            return TaskEx.Run(() => Remove(DefaultPartition, key));
         }
 
         #endregion

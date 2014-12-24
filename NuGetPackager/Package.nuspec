@@ -8,13 +8,13 @@
     <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
     <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
     <description>
-Very, very simple key value store based on SQLite.
+Very, very simple timed key-value store based on SQLite. It also offers an implementation based on MemoryCache.
     </description>
     <releaseNotes>
 * New serializer.
     </releaseNotes>
     <summary>
-Very, very simple key value store based on SQLite.
+Very, very simple timed key-value store based on SQLite. It also offers an implementation based on MemoryCache.
     </summary>
     <language>en-US</language>
     <projectUrl>https://bitbucket.org/pomma89/kvlite</projectUrl>
@@ -25,12 +25,12 @@ Very, very simple key value store based on SQLite.
     <dependencies>
       <dependency id="CodeProject.ObjectPool" version="1.0.8" />
       <dependency id="Dapper" version="1.38" />
-      <dependency id="PommaLabs.GRAMPA" version="1.3.0" />
+      <dependency id="PommaLabs.GRAMPA" version="1.4.0" />
       <dependency id="System.Data.SQLite.Core.MSIL" version="[1.0.94.0]" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>
-    <tags>sqlite key value store concurrent persistent volatile cache provider</tags>
+    <tags>sqlite key value store concurrent persistent volatile memory cache provider timed</tags>
   </metadata>
   <files>
     <file src="content\" target="content" />

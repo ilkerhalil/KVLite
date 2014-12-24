@@ -124,7 +124,7 @@ namespace UnitTests
             var tasks = new List<Task<object>>();
             for (var i = 0; i < itemCount; ++i) {
                 var l = i;
-                var task = DefaultInstance.GetAsync(StringItems[l]);
+                var task = TaskEx.Run(() => DefaultInstance.Get(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i) {
@@ -207,15 +207,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i) {
                 Assert.True(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(DefaultInstance.GetAllAsync().Result.Cast<string>());
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.True(items.Contains(StringItems[i]));
-            }
             items = new HashSet<string>(DefaultInstance.GetAllItems().Select(x => (string) x.Value));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.True(items.Contains(StringItems[i]));
-            }
-            items = new HashSet<string>(DefaultInstance.GetAllItemsAsync().Result.Select(x => (string) x.Value));
             for (var i = 0; i < itemCount; ++i) {
                 Assert.True(items.Contains(StringItems[i]));
             }
@@ -231,15 +223,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i) {
                 Assert.False(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(DefaultInstance.GetAllAsync().Result.Cast<string>());
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.False(items.Contains(StringItems[i]));
-            }
             items = new HashSet<string>(DefaultInstance.GetAllItems().Select(x => (string) x.Value));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.False(items.Contains(StringItems[i]));
-            }
-            items = new HashSet<string>(DefaultInstance.GetAllItemsAsync().Result.Select(x => (string) x.Value));
             for (var i = 0; i < itemCount; ++i) {
                 Assert.False(items.Contains(StringItems[i]));
             }
@@ -255,15 +239,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i) {
                 Assert.True(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(DefaultInstance.GetAllAsync().Result.Cast<string>());
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.True(items.Contains(StringItems[i]));
-            }
             items = new HashSet<string>(DefaultInstance.GetAllItems().Select(x => (string) x.Value));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.True(items.Contains(StringItems[i]));
-            }
-            items = new HashSet<string>(DefaultInstance.GetAllItemsAsync().Result.Select(x => (string) x.Value));
             for (var i = 0; i < itemCount; ++i) {
                 Assert.True(items.Contains(StringItems[i]));
             }
@@ -280,15 +256,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i) {
                 Assert.False(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(DefaultInstance.GetAllAsync().Result.Cast<string>());
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.False(items.Contains(StringItems[i]));
-            }
             items = new HashSet<string>(DefaultInstance.GetAllItems().Select(x => (string) x.Value));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.False(items.Contains(StringItems[i]));
-            }
-            items = new HashSet<string>(DefaultInstance.GetAllItemsAsync().Result.Select(x => (string) x.Value));
             for (var i = 0; i < itemCount; ++i) {
                 Assert.False(items.Contains(StringItems[i]));
             }
@@ -304,15 +272,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i) {
                 Assert.True(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(DefaultInstance.GetAllAsync().Result.Cast<string>());
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.True(items.Contains(StringItems[i]));
-            }
             items = new HashSet<string>(DefaultInstance.GetAllItems().Select(x => (string) x.Value));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.True(items.Contains(StringItems[i]));
-            }
-            items = new HashSet<string>(DefaultInstance.GetAllItemsAsync().Result.Select(x => (string) x.Value));
             for (var i = 0; i < itemCount; ++i) {
                 Assert.True(items.Contains(StringItems[i]));
             }
