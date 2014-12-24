@@ -54,15 +54,15 @@ namespace PommaLabs.KVLite.Core
 
         public static readonly string Clear = MinifyQuery(@"
             delete from CacheItem
-             where @ignoreExpiryDate = 1
-                or utcExpiry <= strftime('%s', 'now'); -- Clear only invalid rows
+             where (@partition is null or partition = @partition)
+               and (@ignoreExpiryDate = 1 or utcExpiry <= strftime('%s', 'now')); -- Clear only invalid rows
         ");
 
         public static readonly string Count = MinifyQuery(@"
             select count(*)
               from CacheItem
-             where @ignoreExpirationDate = 1
-                or utcExpiry > strftime('%s', 'now'); -- Select only valid rows
+             where (@partition is null or partition = @partition)
+               and (@ignoreExpiryDate = 1 or utcExpiry > strftime('%s', 'now')); -- Select only valid rows
         ");
 
         public static readonly string Get = MinifyQuery(@"

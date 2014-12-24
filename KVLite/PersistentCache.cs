@@ -124,7 +124,7 @@ namespace PommaLabs.KVLite
             }
 
             // Initial cleanup
-            Clear(CacheReadMode.ConsiderExpiryDate);
+            Clear(PersistentCacheReadMode.ConsiderExpiryDate);
         }
 
         #endregion Construction
@@ -203,7 +203,7 @@ namespace PommaLabs.KVLite
         [Pure]
         public IList<object> PeekAll()
         {
-            Contract.Ensures(Contract.Result<IList<CacheItem>> != null);
+            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
 
             var p = new DynamicParameters();
             p.Add("partition", null, DbType.String);
@@ -221,7 +221,7 @@ namespace PommaLabs.KVLite
         public IList<object> PeekAll(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<IList<CacheItem>> != null);
+            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
 
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -238,7 +238,7 @@ namespace PommaLabs.KVLite
         [Pure]
         public IList<CacheItem> PeekAllItems()
         {
-            Contract.Ensures(Contract.Result<IList<CacheItem>> != null);
+            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
 
             var p = new DynamicParameters();
             p.Add("partition", null, DbType.String);
@@ -256,7 +256,7 @@ namespace PommaLabs.KVLite
         public IList<CacheItem> PeekAllItems(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<IList<CacheItem>> != null);
+            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
 
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -309,13 +309,13 @@ namespace PommaLabs.KVLite
 
         public override void Clear()
         {
-            Clear(CacheReadMode.ConsiderExpiryDate);
+            Clear(PersistentCacheReadMode.IgnoreExpiryDate);
         }
 
-        public void Clear(CacheReadMode cacheReadMode)
+        public void Clear(PersistentCacheReadMode cacheReadMode)
         {
             var p = new DynamicParameters();
-            p.Add("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
+            p.Add("ignoreExpiryDate", (cacheReadMode == PersistentCacheReadMode.IgnoreExpiryDate), DbType.Boolean);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -330,13 +330,13 @@ namespace PommaLabs.KVLite
 
         public override long LongCount()
         {
-            return LongCount(CacheReadMode.ConsiderExpiryDate);
+            return LongCount(PersistentCacheReadMode.ConsiderExpiryDate);
         }
 
-        public long LongCount(CacheReadMode cacheReadMode)
+        public long LongCount(PersistentCacheReadMode cacheReadMode)
         {
             var p = new DynamicParameters();
-            p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
+            p.Add("ignoreExpiryDate", (cacheReadMode == PersistentCacheReadMode.IgnoreExpiryDate), DbType.Boolean);
 
             // No need for a transaction, since it is just a select.
             using (var ctx = _connectionPool.GetObject())
@@ -459,7 +459,7 @@ namespace PommaLabs.KVLite
             if (_insertionCount >= Settings.InsertionCountBeforeCleanup)
             {
                 _insertionCount = 0;
-                Task.Factory.StartNew(() => Clear(CacheReadMode.ConsiderExpiryDate));
+                Task.Factory.StartNew(() => Clear(PersistentCacheReadMode.ConsiderExpiryDate));
             }
         }
 

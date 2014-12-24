@@ -15,13 +15,13 @@ namespace UnitTests
         [SetUp]
         public override void SetUp()
         {
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            PersistentCache.DefaultInstance.Clear(PersistentCacheReadMode.IgnoreExpiryDate);
         }
 
         [TearDown]
         public override void TearDown()
         {
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            PersistentCache.DefaultInstance.Clear(PersistentCacheReadMode.IgnoreExpiryDate);
         }
 
         #endregion
@@ -74,12 +74,12 @@ namespace UnitTests
             foreach (var t in StringItems) {
                 DefaultInstance.AddTimed(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.ConsiderExpiryDate);
+            PersistentCache.DefaultInstance.Clear(PersistentCacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(0, DefaultInstance.Count());
             foreach (var t in StringItems) {
                 DefaultInstance.AddTimed(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            PersistentCache.DefaultInstance.Clear(PersistentCacheReadMode.IgnoreExpiryDate);
             Assert.AreEqual(0, DefaultInstance.Count());
         }
 
@@ -91,9 +91,9 @@ namespace UnitTests
             }
             DefaultInstance.Clear();
             Assert.AreEqual(StringItems.Count, DefaultInstance.Count());
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.ConsiderExpiryDate);
+            PersistentCache.DefaultInstance.Clear(PersistentCacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(StringItems.Count, DefaultInstance.Count());
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            PersistentCache.DefaultInstance.Clear(PersistentCacheReadMode.IgnoreExpiryDate);
             Assert.AreEqual(0, DefaultInstance.Count());
         }
 

@@ -142,6 +142,8 @@ namespace PommaLabs.KVLite.Core
 
         public abstract void Clear();
 
+        public abstract void Clear(string partition);
+
         public abstract bool Contains(string partition, string key);
 
         public bool Contains(string key)
@@ -151,10 +153,17 @@ namespace PommaLabs.KVLite.Core
 
         public int Count()
         {
-            return (int) LongCount();
+            return Convert.ToInt32(LongCount());
+        }
+
+        public int Count(string partition)
+        {
+            return Convert.ToInt32(LongCount(partition));
         }
 
         public abstract long LongCount();
+
+        public abstract long LongCount(string partition);
 
         public object Get(string partition, string key)
         {

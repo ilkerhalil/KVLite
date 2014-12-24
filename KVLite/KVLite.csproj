@@ -173,7 +173,7 @@
   <ItemGroup>
     <Compile Include="CacheItem.cs" />
     <Compile Include="CacheKind.cs" />
-    <Compile Include="CacheReadMode.cs" />
+    <Compile Include="PersistentCacheReadMode.cs" />
     <Compile Include="Contracts\CacheContract.cs" />
     <Compile Include="Core\BinarySerializer.cs" />
     <Compile Include="Core\CacheBase.cs" />

@@ -169,7 +169,14 @@ namespace PommaLabs.KVLite.Contracts
 
         public void Clear()
         {
-            // Empty, for now.
+            Contract.Ensures(Count() == 0);
+            Contract.Ensures(LongCount() == 0);
+        }
+
+        public void Clear(string partition)
+        {
+            Contract.Ensures(Count(partition) == 0);
+            Contract.Ensures(LongCount(partition) == 0);
         }
 
         public bool Contains(string partition, string key)
@@ -187,11 +194,27 @@ namespace PommaLabs.KVLite.Contracts
 
         public int Count()
         {
+            Contract.Ensures(Contract.Result<int>() >= 0);
+            return default(int);
+        }
+
+        public int Count(string partition)
+        {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Ensures(Contract.Result<int>() >= 0);
             return default(int);
         }
 
         public long LongCount()
         {
+            Contract.Ensures(Contract.Result<int>() >= 0);
+            return default(long);
+        }
+
+        public long LongCount(string partition)
+        {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Ensures(Contract.Result<int>() >= 0);
             return default(long);
         }
 
@@ -223,27 +246,27 @@ namespace PommaLabs.KVLite.Contracts
 
         public IList<object> GetAll()
         {
-            Contract.Ensures(Contract.Result<IList<object>> != null);
+            Contract.Ensures(Contract.Result<IList<object>>() != null);
             return default(IList<object>);
         }
 
         public IList<object> GetAll(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<IList<object>> != null);
+            Contract.Ensures(Contract.Result<IList<object>>() != null);
             return default(IList<object>);
         }
 
         public IList<CacheItem> GetAllItems()
         {
-            Contract.Ensures(Contract.Result<IList<CacheItem>> != null);
+            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
             return default(IList<CacheItem>);
         }
 
         public IList<CacheItem> GetAllItems(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<IList<CacheItem>> != null);
+            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
             return default(IList<CacheItem>);
         }
 

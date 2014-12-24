@@ -171,6 +171,11 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   TODO
         /// </summary>
+        void Clear(string partition);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <returns></returns>
