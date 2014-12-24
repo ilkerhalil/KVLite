@@ -132,28 +132,69 @@ namespace PommaLabs.KVLite
         #region Public Methods
 
         /// <summary>
-        ///   </summary>
-        /// <returns></returns>
+        ///   Gets the value corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <returns>
+        ///   The value corresponding to given partition and key, without updating expiry date.
+        /// </returns>
         [Pure]
         public object Peek(string partition, string key)
         {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Peek, p).Select(i => i.DeserializeValue()).Where(v => v != null).ToList();
+                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.PeekOne, p).Select(v => DeserializeValue(v)).FirstOrDefault(v => v != null);
             }
         }
 
         /// <summary>
-        ///   </summary>
-        /// <returns></returns>
+        ///   Gets the value corresponding to given key, without updating expiry date.
+        /// </summary>
+        /// <returns>The value corresponding to given key, without updating expiry date.</returns>
         [Pure]
         public object Peek(string key)
         {
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             return Peek(DefaultPartition, key);
+        }
+
+        /// <summary>
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <returns>
+        ///   The item corresponding to given partition and key, without updating expiry date.
+        /// </returns>
+        [Pure]
+        public CacheItem PeekItem(string partition, string key)
+        {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", key, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekOneItem, p).Select(i => i.ToCacheItem()).FirstOrDefault(i => i != null);
+            }
+        }
+
+        /// <summary>
+        ///   Gets the item corresponding to given key, without updating expiry date.
+        /// </summary>
+        /// <returns>The item corresponding to given key, without updating expiry date.</returns>
+        [Pure]
+        public CacheItem PeekItem(string key)
+        {
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            return PeekItem(DefaultPartition, key);
         }
 
         /// <summary>
@@ -162,13 +203,32 @@ namespace PommaLabs.KVLite
         [Pure]
         public IList<object> PeekAll()
         {
+            Contract.Ensures(Contract.Result<IList<CacheItem>> != null);
+
             var p = new DynamicParameters();
             p.Add("partition", null, DbType.String);
-            p.Add("key", null, DbType.String);
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Peek, p).Select(i => i.DeserializeValue()).Where(v => v != null).ToList();
+                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.PeekAll, p).Select(v => DeserializeValue(v)).Where(v => v != null).ToList();
+            }
+        }
+
+        /// <summary>
+        ///   </summary>
+        /// <returns></returns>
+        [Pure]
+        public IList<object> PeekAll(string partition)
+        {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Ensures(Contract.Result<IList<CacheItem>> != null);
+
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.PeekAll, p).Select(v => DeserializeValue(v)).Where(v => v != null).ToList();
             }
         }
 
@@ -178,13 +238,32 @@ namespace PommaLabs.KVLite
         [Pure]
         public IList<CacheItem> PeekAllItems()
         {
+            Contract.Ensures(Contract.Result<IList<CacheItem>> != null);
+
             var p = new DynamicParameters();
             p.Add("partition", null, DbType.String);
-            p.Add("key", null, DbType.String);
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Peek, p).Select(i => i.ToCacheItem()).Where(i => i != null).ToList();
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekAllItems, p).Select(i => i.ToCacheItem()).Where(i => i != null).ToList();
+            }
+        }
+
+        /// <summary>
+        ///   </summary>
+        /// <returns></returns>
+        [Pure]
+        public IList<CacheItem> PeekAllItems(string partition)
+        {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Ensures(Contract.Result<IList<CacheItem>> != null);
+
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekAllItems, p).Select(i => i.ToCacheItem()).Where(i => i != null).ToList();
             }
         }
 
@@ -331,6 +410,20 @@ namespace PommaLabs.KVLite
             return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
 
+        private static object DeserializeValue(byte[] serializedValue)
+        {
+            try
+            {
+                return BinarySerializer.DeserializeObject(serializedValue);
+            }
+            catch
+            {
+                // Something wrong happened during deserialization. Therefore, we act as if there
+                // was no value.
+                return null;
+            }
+        }
+
         private void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
@@ -435,20 +528,6 @@ namespace PommaLabs.KVLite
             #endregion Public Properties
 
             #region Public Methods
-
-            public object DeserializeValue()
-            {
-                try
-                {
-                    return BinarySerializer.DeserializeObject(SerializedValue);
-                }
-                catch
-                {
-                    // Something wrong happened during deserialization. Therefore, we act as if
-                    // there was no value.
-                    return null;
-                }
-            }
 
             public CacheItem ToCacheItem()
             {

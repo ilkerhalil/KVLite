@@ -180,17 +180,17 @@ namespace PommaLabs.KVLite.Core
             return DoGetAllItems().Select(x => x.Value).ToList();
         }
 
+        public IList<object> GetAll(string partition)
+        {
+            return DoGetPartitionItems(partition).Select(x => x.Value).ToList();
+        }
+
         public IList<CacheItem> GetAllItems()
         {
             return DoGetAllItems().ToList();
         }
 
-        public IList<object> GetPartition(string partition)
-        {
-            return DoGetPartitionItems(partition).Select(x => x.Value).ToList();
-        }
-
-        public IList<CacheItem> GetPartitionItems(string partition)
+        public IList<CacheItem> GetAllItems(string partition)
         {
             return DoGetPartitionItems(partition).ToList();
         }

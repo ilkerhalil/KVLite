@@ -88,7 +88,7 @@ namespace PommaLabs.KVLite
 
         public override bool Contains(string partition, string key)
         {
-            return GetItem(partition, key) != null;
+            return Settings.MemoryCache.Contains(CreateKey(partition, key));
         }
 
         public override long LongCount()

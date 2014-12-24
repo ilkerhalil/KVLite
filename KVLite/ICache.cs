@@ -197,7 +197,21 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <returns></returns>
         [Pure]
+        int Count(string partition);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        [Pure]
         long LongCount();
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        [Pure]
+        long LongCount(string partition);
 
         /// <summary>
         ///   TODO
@@ -205,7 +219,6 @@ namespace PommaLabs.KVLite
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        [Pure]
         object Get(string partition, string key);
 
         /// <summary>
@@ -213,7 +226,6 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        [Pure]
         object Get(string key);
 
         /// <summary>
@@ -222,7 +234,6 @@ namespace PommaLabs.KVLite
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        [Pure]
         CacheItem GetItem(string partition, string key);
 
         /// <summary>
@@ -230,32 +241,27 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        [Pure]
         CacheItem GetItem(string key);
 
         /// <summary>
         ///   </summary>
         /// <returns></returns>
-        [Pure]
         IList<object> GetAll();
 
         /// <summary>
         ///   </summary>
         /// <returns></returns>
-        [Pure]
+        IList<object> GetAll(string partition);
+
+        /// <summary>
+        ///   </summary>
+        /// <returns></returns>
         IList<CacheItem> GetAllItems();
 
         /// <summary>
         ///   </summary>
         /// <returns></returns>
-        [Pure]
-        IList<object> GetPartition(string partition);
-
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
-        [Pure]
-        IList<CacheItem> GetPartitionItems(string partition);
+        IList<CacheItem> GetAllItems(string partition);
 
         /// <summary>
         ///   </summary>

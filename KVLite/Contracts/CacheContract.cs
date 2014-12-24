@@ -64,14 +64,14 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            //Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
         }
 
         public void AddSliding(string key, object value, TimeSpan interval)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            //Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
         }
 
         public Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval)
@@ -79,7 +79,7 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            //Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
             return default(Task);
@@ -89,7 +89,7 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            //Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
             return default(Task);
@@ -100,14 +100,14 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            //Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
         }
 
         public void AddStatic(string key, object value)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            //Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
         }
 
         public Task AddStaticAsync(string partition, string key, object value)
@@ -115,7 +115,7 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            //Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
             return default(Task);
@@ -125,7 +125,7 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            //Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
             return default(Task);
@@ -136,14 +136,14 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            //Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
         }
 
         public void AddTimed(string key, object value, DateTime utcExpiry)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            //Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
         }
 
         public Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry)
@@ -151,7 +151,7 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            //Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
             return default(Task);
@@ -161,7 +161,7 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            //Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
             return default(Task);
@@ -170,11 +170,6 @@ namespace PommaLabs.KVLite.Contracts
         public void Clear()
         {
             // Empty, for now.
-        }
-
-        public void Clear(CacheReadMode cacheReadMode)
-        {
-            Contract.Requires<ArgumentException>(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), ErrorMessages.InvalidEnumValue);
         }
 
         public bool Contains(string partition, string key)
@@ -195,20 +190,8 @@ namespace PommaLabs.KVLite.Contracts
             return default(int);
         }
 
-        public int Count(CacheReadMode cacheReadMode)
-        {
-            Contract.Requires<ArgumentException>(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), ErrorMessages.InvalidEnumValue);
-            return default(int);
-        }
-
         public long LongCount()
         {
-            return default(long);
-        }
-
-        public long LongCount(CacheReadMode cacheReadMode)
-        {
-            Contract.Requires<ArgumentException>(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), ErrorMessages.InvalidEnumValue);
             return default(long);
         }
 
@@ -225,23 +208,6 @@ namespace PommaLabs.KVLite.Contracts
             return default(object);
         }
 
-        public Task<object> GetAsync(string partition, string key)
-        {
-            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contract.Result<Task<object>>() != null);
-            Contract.Ensures(Contract.Result<Task<object>>().Status != TaskStatus.Created);
-            return default(Task<object>);
-        }
-
-        public Task<object> GetAsync(string key)
-        {
-            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contract.Result<Task<object>>() != null);
-            Contract.Ensures(Contract.Result<Task<object>>().Status != TaskStatus.Created);
-            return default(Task<object>);
-        }
-
         public CacheItem GetItem(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -255,73 +221,30 @@ namespace PommaLabs.KVLite.Contracts
             return default(CacheItem);
         }
 
-        public Task<CacheItem> GetItemAsync(string partition, string key)
-        {
-            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contract.Result<Task<CacheItem>>() != null);
-            Contract.Ensures(Contract.Result<Task<CacheItem>>().Status != TaskStatus.Created);
-            return default(Task<CacheItem>);
-        }
-
-        public Task<CacheItem> GetItemAsync(string key)
-        {
-            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contract.Result<Task<CacheItem>>() != null);
-            Contract.Ensures(Contract.Result<Task<CacheItem>>().Status != TaskStatus.Created);
-            return default(Task<CacheItem>);
-        }
-
         public IList<object> GetAll()
         {
+            Contract.Ensures(Contract.Result<IList<object>> != null);
             return default(IList<object>);
         }
 
-        public Task<IList<object>> GetAllAsync()
-        {
-            Contract.Ensures(Contract.Result<Task<IList<object>>>() != null);
-            Contract.Ensures(Contract.Result<Task<IList<object>>>().Status != TaskStatus.Created);
-            return default(Task<IList<object>>);
-        }
-
-        public IList<object> GetPartition(string partition)
+        public IList<object> GetAll(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Ensures(Contract.Result<IList<object>> != null);
             return default(IList<object>);
-        }
-
-        public Task<IList<object>> GetPartitionAsync(string partition)
-        {
-            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<Task<IList<object>>>() != null);
-            Contract.Ensures(Contract.Result<Task<IList<object>>>().Status != TaskStatus.Created);
-            return default(Task<IList<object>>);
         }
 
         public IList<CacheItem> GetAllItems()
         {
+            Contract.Ensures(Contract.Result<IList<CacheItem>> != null);
             return default(IList<CacheItem>);
         }
 
-        public Task<IList<CacheItem>> GetAllItemsAsync()
-        {
-            Contract.Ensures(Contract.Result<Task<IList<CacheItem>>>() != null);
-            Contract.Ensures(Contract.Result<Task<IList<CacheItem>>>().Status != TaskStatus.Created);
-            return default(Task<IList<CacheItem>>);
-        }
-
-        public IList<CacheItem> GetPartitionItems(string partition)
+        public IList<CacheItem> GetAllItems(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Ensures(Contract.Result<IList<CacheItem>> != null);
             return default(IList<CacheItem>);
-        }
-
-        public Task<IList<CacheItem>> GetPartitionItemsAsync(string partition)
-        {
-            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<Task<IList<CacheItem>>>() != null);
-            Contract.Ensures(Contract.Result<Task<IList<CacheItem>>>().Status != TaskStatus.Created);
-            return default(Task<IList<CacheItem>>);
         }
 
         public void Remove(string partition, string key)
