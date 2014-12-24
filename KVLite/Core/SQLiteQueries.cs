@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.GRAMPA;
 using System.Text.RegularExpressions;
 
 namespace PommaLabs.KVLite.Core
@@ -53,7 +54,7 @@ namespace PommaLabs.KVLite.Core
 
         public static readonly string Clear = MinifyQuery(@"
             delete from CacheItem
-             where @ignoreExpirationDate = 1
+             where @ignoreExpiryDate = 1
                 or utcExpiry <= strftime('%s', 'now'); -- Clear only invalid rows
         ");
 
@@ -100,8 +101,8 @@ namespace PommaLabs.KVLite.Core
 
         public static readonly string SetPragmas = MinifyQuery(@"
             PRAGMA cache_spill = 1;
-            PRAGMA count_changes = 0; /* Not required by our queries */
-            PRAGMA journal_size_limit = {0}; /* Size in bytes */
+            PRAGMA count_changes = 0; -- Not required by our queries
+            PRAGMA journal_size_limit = {0}; -- Size in bytes
             PRAGMA wal_autocheckpoint = {1};
             PRAGMA temp_store = MEMORY;
         ");
@@ -116,7 +117,12 @@ namespace PommaLabs.KVLite.Core
 
         private static string MinifyQuery(string query)
         {
-            return Regex.Replace(query, @"\s+", " ");
+            // Removes all SQL comments. Multiline excludes '/n' from '.' matches.
+            query = Regex.Replace(query, @"--.*", Constants.EmptyString, RegexOptions.Multiline);
+            // Removes all multiple blanks.
+            query = Regex.Replace(query, @"\s+", " ");
+            // Removes initial and ending blanks.
+            return query.Trim();
         }
 
         #endregion Private Methods

@@ -18,13 +18,13 @@ namespace UnitTests
         #region Setup/Teardown
 
         [SetUp]
-        public void SetUp()
+        public virtual void SetUp()
         {
             DefaultInstance.Clear();
         }
 
         [TearDown]
-        public void TearDown()
+        public virtual void TearDown()
         {
             DefaultInstance.Clear();
         }

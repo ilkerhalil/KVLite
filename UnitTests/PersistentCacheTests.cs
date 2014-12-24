@@ -9,6 +9,22 @@ namespace UnitTests
     internal sealed class PersistentCacheTests : TestBase
     {
         private const string BlankPath = "   ";
+        
+        #region Setup/Teardown
+
+        [SetUp]
+        public override void SetUp()
+        {
+            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+        }
+
+        [TearDown]
+        public override void TearDown()
+        {
+            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+        }
+
+        #endregion
 
         protected override ICache DefaultInstance
         {

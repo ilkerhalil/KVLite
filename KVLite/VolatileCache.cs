@@ -113,7 +113,7 @@ namespace PommaLabs.KVLite
             Settings.MemoryCache.Remove(CreateKey(partition, key));
         }
 
-        protected override IList<CacheItem> DoGetAllItems()
+        protected override IEnumerable<CacheItem> DoGetAllItems()
         {
             var items = Settings.MemoryCache.Where(x => x.Value is CacheItem).Select(x => x.Value as CacheItem).ToList();
 
@@ -125,7 +125,7 @@ namespace PommaLabs.KVLite
             return items;
         }
 
-        protected override IList<CacheItem> DoGetPartitionItems(string partition)
+        protected override IEnumerable<CacheItem> DoGetPartitionItems(string partition)
         {
             var items = Settings.MemoryCache.Where(x => {
                 var val = x.Value as CacheItem;

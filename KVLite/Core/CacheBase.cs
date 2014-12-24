@@ -216,7 +216,7 @@ namespace PommaLabs.KVLite.Core
 
         public IList<CacheItem> GetAllItems()
         {
-            return DoGetAllItems();
+            return DoGetAllItems().ToList();
         }
 
         public Task<IList<CacheItem>> GetAllItemsAsync()
@@ -226,7 +226,7 @@ namespace PommaLabs.KVLite.Core
 
         public IList<CacheItem> GetPartitionItems(string partition)
         {
-            return DoGetPartitionItems(partition);
+            return DoGetPartitionItems(partition).ToList();
         }
 
         public Task<IList<CacheItem>> GetPartitionItemsAsync(string partition)
@@ -257,13 +257,13 @@ namespace PommaLabs.KVLite.Core
         ///   TODO
         /// </summary>
         /// <returns></returns>
-        protected abstract IList<CacheItem> DoGetAllItems();
+        protected abstract IEnumerable<CacheItem> DoGetAllItems();
 
         /// <summary>
         ///   TODO
         /// </summary>
         /// <param name="partition"></param>
         /// <returns></returns>
-        protected abstract IList<CacheItem> DoGetPartitionItems(string partition);
+        protected abstract IEnumerable<CacheItem> DoGetPartitionItems(string partition);
     }
 }
