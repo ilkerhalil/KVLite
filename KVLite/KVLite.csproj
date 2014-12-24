@@ -162,9 +162,8 @@
     <Compile Include="Nancy\ContextExtensions.cs" />
     <Compile Include="PersistentCache.cs" />
     <Compile Include="PersistentCacheSettings.cs" />
-    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\Queries.cs" />
+    <Compile Include="Core\SQLiteQueries.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

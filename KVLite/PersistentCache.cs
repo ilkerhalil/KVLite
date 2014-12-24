@@ -103,9 +103,9 @@ namespace PommaLabs.KVLite
 
             using (var ctx = _connectionPool.GetObject()) {
                 using (var trx = ctx.InternalResource.BeginTransaction()) {
-                    if (ctx.InternalResource.ExecuteScalar<long>(Queries.SchemaIsReady, trx) == 0) {
+                    if (ctx.InternalResource.ExecuteScalar<long>(SQLiteQueries.IsSchemaReady, trx) == 0) {
                         // Creates the CacheItem table and the required indexes.
-                        ctx.InternalResource.Execute(Queries.CacheSchema, null, trx);
+                        ctx.InternalResource.Execute(SQLiteQueries.CacheSchema, null, trx);
                     }
                     trx.Commit();
                 }
@@ -126,7 +126,7 @@ namespace PommaLabs.KVLite
         {
             // Vacuum cannot be run within a transaction.
             using (var ctx = _connectionPool.GetObject()) {
-                ctx.InternalResource.Execute(Queries.Vacuum);
+                ctx.InternalResource.Execute(SQLiteQueries.Vacuum);
             }
         }
 
@@ -167,7 +167,7 @@ namespace PommaLabs.KVLite
             p.Add("ignoreExpirationDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
 
             using (var ctx = _connectionPool.GetObject()) {
-                ctx.InternalResource.Execute(Queries.Clear, p);
+                ctx.InternalResource.Execute(SQLiteQueries.Clear, p);
             }
         }
 
@@ -188,7 +188,7 @@ namespace PommaLabs.KVLite
 
             // No need for a transaction, since it is just a select.
             using (var ctx = _connectionPool.GetObject()) {
-                return ctx.InternalResource.ExecuteScalar<long>(Queries.Count, p);
+                return ctx.InternalResource.ExecuteScalar<long>(SQLiteQueries.Count, p);
             }
         }
 
@@ -199,7 +199,7 @@ namespace PommaLabs.KVLite
             p.Add("key", key, DbType.String);
 
             using (var ctx = _connectionPool.GetObject()) {
-                var dbItem = ctx.InternalResource.Query<DbCacheItem>(Queries.Get, p).FirstOrDefault();
+                var dbItem = ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).FirstOrDefault();
                 return (dbItem == null) ? null : ToCacheItem(dbItem);
             }
         }
@@ -215,7 +215,7 @@ namespace PommaLabs.KVLite
          p.Add("key", null, DbType.String);
 
          using (var ctx = _connectionPool.GetObject()) {
-               return ctx.InternalResource.Query<DbCacheItem>(Queries.Peek, p).Select(i => ToCacheItem(i).Value).Where(i => i != null).ToList();
+               return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Peek, p).Select(i => ToCacheItem(i).Value).Where(i => i != null).ToList();
          }
        }
 
@@ -226,7 +226,7 @@ namespace PommaLabs.KVLite
             p.Add("key", key, DbType.String);
 
             using (var ctx = _connectionPool.GetObject()) {
-                ctx.InternalResource.Execute(Queries.Remove, p);
+                ctx.InternalResource.Execute(SQLiteQueries.Remove, p);
             }
         }
 
@@ -237,7 +237,7 @@ namespace PommaLabs.KVLite
             p.Add("key", null, DbType.String);
 
             using (var ctx = _connectionPool.GetObject()) {
-                return ctx.InternalResource.Query<DbCacheItem>(Queries.Get, p).Select(ToCacheItem).Where(i => i != null).ToList();
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).Select(ToCacheItem).Where(i => i != null).ToList();
             }
         }
 
@@ -248,7 +248,7 @@ namespace PommaLabs.KVLite
             p.Add("key", null, DbType.String);
 
             using (var ctx = _connectionPool.GetObject()) {
-                return ctx.InternalResource.Query<DbCacheItem>(Queries.Get, p).Select(ToCacheItem).Where(i => i != null).ToList();
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).Select(ToCacheItem).Where(i => i != null).ToList();
             }
         }
 
@@ -261,7 +261,7 @@ namespace PommaLabs.KVLite
             // Sets PRAGMAs for this new connection.
             var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB*1024*1024;
             var walAutoCheckpointInPages = journalSizeLimitInBytes/PageSizeInBytes/3;
-            var pragmas = String.Format(Queries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
+            var pragmas = String.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
             connection.Execute(pragmas);
             return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
@@ -284,7 +284,7 @@ namespace PommaLabs.KVLite
             };
 
             using (var ctx = _connectionPool.GetObject()) {
-                ctx.InternalResource.Execute(Queries.Add, dbItem);
+                ctx.InternalResource.Execute(SQLiteQueries.Add, dbItem);
             }
 
             // Insertion has concluded successfully, therefore we increment the operation counter.
