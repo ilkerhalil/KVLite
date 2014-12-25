@@ -196,19 +196,6 @@ namespace PommaLabs.KVLite
             return Get(partition, key) != null;
         }
 
-        public override CacheItem GetItem(string partition, string key)
-        {
-            var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-            p.Add("key", key, DbType.String);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                var dbItem = ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).FirstOrDefault();
-                return (dbItem == null) ? null : dbItem.ToCacheItem();
-            }
-        }
-
         public override void Remove(string partition, string key)
         {
             var p = new DynamicParameters();
@@ -274,27 +261,49 @@ namespace PommaLabs.KVLite
             return DoCount(partition, PersistentCacheReadMode.ConsiderExpiryDate);
         }
 
-        protected override IEnumerable<CacheItem> DoGetManyItems()
-        {
-            var p = new DynamicParameters();
-            p.Add("partition", null, DbType.String);
-            p.Add("key", null, DbType.String);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).Select(i => i.ToCacheItem()).Where(i => i != null);
-            }
-        }
-
-        protected override IEnumerable<CacheItem> DoGetPartitionItems(string partition)
+        protected override object DoGetOne(string partition, string key)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
-            p.Add("key", null, DbType.String);
+            p.Add("key", key, DbType.String);
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).Select(i => i.ToCacheItem()).Where(i => i != null);
+                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.GetOne, p).Select(DeserializeValue).FirstOrDefault(NotNull);
+            }
+        }
+
+        protected override CacheItem DoGetOneItem(string partition, string key)
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", key, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.GetOneItem, p).Select(ToCacheItem).FirstOrDefault(NotNull);
+            }
+        }
+
+        protected override IList<object> DoGetMany(string partition)
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.GetMany, p).Select(DeserializeValue).Where(NotNull).ToList();
+            }
+        }
+
+        protected override IList<CacheItem> DoGetManyItems(string partition)
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.GetManyItems, p).Select(ToCacheItem).Where(NotNull).ToList();
             }
         }
 

@@ -297,19 +297,6 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   TODO
         /// </summary>
-        /// <returns></returns>
-        protected abstract IEnumerable<CacheItem> DoGetAllItems();
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="partition"></param>
-        /// <returns></returns>
-        protected abstract IEnumerable<CacheItem> DoGetPartitionItems(string partition);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -328,7 +315,7 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="partition"></param>
         /// <returns></returns>
-        public abstract long DoCount(string partition);
+        protected abstract long DoCount(string partition);
 
         /// <summary>
         ///   TODO

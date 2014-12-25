@@ -31,7 +31,7 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     internal static class SQLiteQueries
     {
-        #region Queries
+        #region Public Queries
 
         public static readonly string CacheSchema = MinifyQuery(@"
             PRAGMA auto_vacuum = FULL;
@@ -65,20 +65,6 @@ namespace PommaLabs.KVLite.Core
                and (@ignoreExpiryDate = 1 or utcExpiry > strftime('%s', 'now')); -- Select only valid rows
         ");
 
-        public static readonly string Get = MinifyQuery(@"
-            update CacheItem
-               set utcExpiry = strftime('%s', 'now') + interval
-             where (@partition is null or partition = @partition)
-               and (@key is null or key = @key)
-               and interval is not null
-               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
-            select *
-              from CacheItem
-             where (@partition is null or partition = @partition)
-               and (@key is null or key = @key)
-               and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
-        ");
-
         public static readonly string IsSchemaReady = MinifyQuery(@"
             select count(*)
               from sqlite_master
@@ -104,6 +90,14 @@ namespace PommaLabs.KVLite.Core
 
         public static readonly string PeekOne = MinifyQuery(@"select serializedValue from (" + PeekOneItem + ")");
 
+        public static readonly string GetManyItems = MinifyQuery(UpdateManyItems + PeekManyItems);
+
+        public static readonly string GetMany = MinifyQuery(UpdateManyItems + PeekMany);
+
+        public static readonly string GetOneItem = MinifyQuery(UpdateOneItem + PeekOneItem);
+
+        public static readonly string GetOne = MinifyQuery(UpdateOneItem + PeekOne);
+
         public static readonly string Contains = MinifyQuery(@"select count(*) from (" + PeekOneItem + ")");
 
         public static readonly string Remove = MinifyQuery(@"
@@ -124,7 +118,28 @@ namespace PommaLabs.KVLite.Core
             vacuum; -- Clears free list and makes DB file smaller
         ");
 
-        #endregion Queries
+        #endregion Public Queries
+
+        #region Private Queries
+
+        private static readonly string UpdateManyItems = @"
+            update CacheItem
+               set utcExpiry = strftime('%s', 'now') + interval
+             where (@partition is null or partition = @partition)
+               and interval is not null
+               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
+        ";
+
+        private static readonly string UpdateOneItem = @"
+            update CacheItem
+               set utcExpiry = strftime('%s', 'now') + interval
+             where partition = @partition
+               and key = @key
+               and interval is not null
+               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
+        ";
+
+        #endregion Private Queries
 
         #region Private Methods
 
