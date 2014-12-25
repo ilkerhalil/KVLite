@@ -118,22 +118,22 @@ namespace PommaLabs.KVLite.Core
 
         public void AddStatic(string partition, string key, object value)
         {
-            DoAdd(partition, key, value, DateTime.UtcNow + interval, _settings.StaticInterval);
+            DoAdd(partition, key, value, DateTime.UtcNow + _settings.StaticInterval, _settings.StaticInterval);
         }
 
         public void AddStatic(string key, object value)
         {
-            DoAdd(DefaultPartition, key, value, DateTime.UtcNow + interval, _settings.StaticInterval);
+            DoAdd(DefaultPartition, key, value, DateTime.UtcNow + _settings.StaticInterval, _settings.StaticInterval);
         }
 
         public Task AddStaticAsync(string partition, string key, object value)
         {
-            return TaskEx.Run(() => DoAdd(partition, key, value, DateTime.UtcNow + interval, _settings.StaticInterval));
+            return TaskEx.Run(() => DoAdd(partition, key, value, DateTime.UtcNow + _settings.StaticInterval, _settings.StaticInterval));
         }
 
         public Task AddStaticAsync(string key, object value)
         {
-            return TaskEx.Run(() => DoAdd(DefaultPartition, key, value, DateTime.UtcNow + interval, _settings.StaticInterval));
+            return TaskEx.Run(() => DoAdd(DefaultPartition, key, value, DateTime.UtcNow + _settings.StaticInterval, _settings.StaticInterval));
         }
 
         public void AddTimed(string partition, string key, object value, DateTime utcExpiry)
@@ -193,37 +193,27 @@ namespace PommaLabs.KVLite.Core
 
         public object Get(string partition, string key)
         {
-            return DoGet(partition, key);
+            return DoGetOne(partition, key);
         }
 
         public object Get(string key)
         {
-            return DoGet(DefaultPartition, key);
+            return DoGetOne(DefaultPartition, key);
         }
 
         public CacheItem GetItem(string partition, string key)
         {
-            return DoGetItem(partition, key);
+            return DoGetOneItem(partition, key);
         }
 
         public CacheItem GetItem(string key)
         {
-            return DoGetItem(DefaultPartition, key);
-        }
-
-        public IList<object> GetMany()
-        {
-            return DoGetMany(null);
-        }
-
-        public IList<object> GetMany(string partition)
-        {
-            return DoGetMany(partition);
+            return DoGetOneItem(DefaultPartition, key);
         }
 
         public IList<CacheItem> GetManyItems()
         {
-            return DoGetManyItems(partition);
+            return DoGetManyItems(null);
         }
 
         public IList<CacheItem> GetManyItems(string partition)
@@ -233,32 +223,22 @@ namespace PommaLabs.KVLite.Core
 
         public object Peek(string partition, string key)
         {
-            return DoPeekItem(partition, key);
+            return DoPeekOneItem(partition, key);
         }
 
         public object Peek(string key)
         {
-            return DoPeek(DefaultPartition, key);
+            return DoPeekOne(DefaultPartition, key);
         }
 
         public CacheItem PeekItem(string partition, string key)
         {
-            return DoPeekItem(partition, key);
+            return DoPeekOneItem(partition, key);
         }
 
         public CacheItem PeekItem(string key)
         {
-            return DoPeekItem(DefaultPartition, key);
-        }
-
-        public IList<object> PeekMany()
-        {
-            return DoPeekMany(null);
-        }
-
-        public IList<object> PeekMany(string partition)
-        {
-            return DoPeekMany(partition);
+            return DoPeekOneItem(DefaultPartition, key);
         }
 
         public IList<CacheItem> PeekManyItems()
@@ -333,12 +313,6 @@ namespace PommaLabs.KVLite.Core
         ///   TODO
         /// </summary>
         /// <returns></returns>
-        protected abstract IList<object> DoGetMany(string partition);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <returns></returns>
         protected abstract IList<CacheItem> DoGetManyItems(string partition);
 
         /// <summary>
@@ -352,12 +326,6 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <returns></returns>
         protected abstract CacheItem DoPeekOneItem(string partition, string key);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <returns></returns>
-        protected abstract IList<object> DoPeekMany(string partition);
 
         /// <summary>
         ///   TODO

@@ -58,7 +58,7 @@ namespace PommaLabs.KVLite
             {
                 Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCachePath);
                 _cacheFile = value;
-                OnPropertyChanged("CacheFile");
+                OnPropertyChanged();
             }
         }
 
@@ -76,7 +76,7 @@ namespace PommaLabs.KVLite
             {
                 Contract.Requires<ArgumentOutOfRangeException>(value > 0);
                 _insertionCountBeforeCleanup = value;
-                OnPropertyChanged("InsertionCountBeforeCleanup");
+                OnPropertyChanged();
             }
         }
 
@@ -94,7 +94,7 @@ namespace PommaLabs.KVLite
             {
                 Contract.Requires<ArgumentOutOfRangeException>(value > 0);
                 _maxCacheSizeInMB = value;
-                OnPropertyChanged("MaxCacheSizeInMB");
+                OnPropertyChanged();
             }
         }
 
@@ -112,7 +112,7 @@ namespace PommaLabs.KVLite
             {
                 Contract.Requires<ArgumentOutOfRangeException>(value > 0);
                 _maxJournalSizeInMB = value;
-                OnPropertyChanged("MaxJournalSizeInMB");
+                OnPropertyChanged();
             }
         }
 

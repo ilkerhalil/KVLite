@@ -244,19 +244,6 @@ namespace PommaLabs.KVLite.Contracts
             return default(CacheItem);
         }
 
-        public IList<object> GetMany()
-        {
-            Contract.Ensures(Contract.Result<IList<object>>() != null);
-            return default(IList<object>);
-        }
-
-        public IList<object> GetMany(string partition)
-        {
-            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<IList<object>>() != null);
-            return default(IList<object>);
-        }
-
         public IList<CacheItem> GetManyItems()
         {
             Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
@@ -294,19 +281,6 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             return default(CacheItem);
-        }
-
-        public IList<object> PeekMany()
-        {
-            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
-            return default(IList<object>);
-        }
-
-        public IList<object> PeekMany(string partition)
-        {
-            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
-            return default(IList<object>);
         }
 
         public IList<CacheItem> PeekManyItems()

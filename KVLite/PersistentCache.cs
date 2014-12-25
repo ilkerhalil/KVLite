@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SQLite;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -193,7 +192,14 @@ namespace PommaLabs.KVLite
 
         public override bool Contains(string partition, string key)
         {
-            return Get(partition, key) != null;
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", key, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<int>(SQLiteQueries.Contains, p).First() > 0;
+            }
         }
 
         public override void Remove(string partition, string key)
@@ -285,17 +291,6 @@ namespace PommaLabs.KVLite
             }
         }
 
-        protected override IList<object> DoGetMany(string partition)
-        {
-            var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.GetMany, p).Select(DeserializeValue).Where(NotNull).ToList();
-            }
-        }
-
         protected override IList<CacheItem> DoGetManyItems(string partition)
         {
             var p = new DynamicParameters();
@@ -328,17 +323,6 @@ namespace PommaLabs.KVLite
             using (var ctx = _connectionPool.GetObject())
             {
                 return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekOneItem, p).Select(ToCacheItem).FirstOrDefault(NotNull);
-            }
-        }
-
-        protected override IList<object> DoPeekMany(string partition)
-        {
-            var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.PeekMany, p).Select(DeserializeValue).Where(NotNull).ToList();
             }
         }
 
@@ -395,7 +379,7 @@ namespace PommaLabs.KVLite
             }
         }
 
-        public long DoCount(string partition, PersistentCacheReadMode cacheReadMode)
+        private long DoCount(string partition, PersistentCacheReadMode cacheReadMode)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -454,12 +438,12 @@ namespace PommaLabs.KVLite
             }
         }
 
-        private static CacheItem ToCacheItem(DbCacheItem original)
+        private static CacheItem ToCacheItem(DbCacheItem src)
         {
             object deserializedValue;
             try
             {
-                deserializedValue = BinarySerializer.DeserializeObject(SerializedValue);
+                deserializedValue = BinarySerializer.DeserializeObject(src.SerializedValue);
             }
             catch
             {
@@ -469,12 +453,12 @@ namespace PommaLabs.KVLite
             }
             return new CacheItem
             {
-                Partition = Partition,
-                Key = Key,
+                Partition = src.Partition,
+                Key = src.Key,
                 Value = deserializedValue,
-                UtcCreation = UnixEpoch.AddSeconds(UtcCreation),
-                UtcExpiry = UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(UtcExpiry.Value),
-                Interval = Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(Interval.Value)
+                UtcCreation = UnixEpoch.AddSeconds(src.UtcCreation),
+                UtcExpiry = src.UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(src.UtcExpiry.Value),
+                Interval = src.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(src.Interval.Value)
             };
         }
 

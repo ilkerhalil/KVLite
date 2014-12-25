@@ -49,7 +49,7 @@ namespace PommaLabs.KVLite
             {
                 Contract.Requires<ArgumentNullException>(value != null);
                 _memoryCache = value;
-                OnPropertyChanged("MemoryCache");
+                OnPropertyChanged();
             }
         }
 

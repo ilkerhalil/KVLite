@@ -251,16 +251,6 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   </summary>
         /// <returns></returns>
-        IList<object> GetMany();
-
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
-        IList<object> GetMany(string partition);
-
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
         IList<CacheItem> GetManyItems();
 
         /// <summary>
@@ -299,18 +289,6 @@ namespace PommaLabs.KVLite
         /// <returns>The item corresponding to given key, without updating expiry date.</returns>
         [Pure]
         CacheItem PeekItem(string key);
-
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
-        [Pure]
-        IList<object> PeekMany();
-
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
-        [Pure]
-        IList<object> PeekMany(string partition);
 
         /// <summary>
         ///   </summary>

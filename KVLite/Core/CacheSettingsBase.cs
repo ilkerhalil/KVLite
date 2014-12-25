@@ -21,6 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System.Runtime.CompilerServices;
+using PommaLabs.KVLite.Annotations;
 using PommaLabs.KVLite.Properties;
 using System;
 using System.ComponentModel;
@@ -67,7 +69,7 @@ namespace PommaLabs.KVLite.Core
                 Contract.Requires<ArgumentOutOfRangeException>(value > 0);
                 _staticIntervalInDays = value;
                 StaticInterval = TimeSpan.FromDays(value);
-                OnPropertyChanged("StaticIntervalInDays");
+                OnPropertyChanged();
             }
         }
 
@@ -80,7 +82,8 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   </summary>
         /// <param name="propertyName"></param>
-        protected void OnPropertyChanged(string propertyName)
+        [NotifyPropertyChangedInvocator]
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             var handler = PropertyChanged;
             if (handler != null)

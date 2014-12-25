@@ -31,6 +31,27 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     internal static class SQLiteQueries
     {
+        #region Private Queries
+
+        private const string UpdateManyItems = @"
+            update CacheItem
+               set utcExpiry = strftime('%s', 'now') + interval
+             where (@partition is null or partition = @partition)
+               and interval is not null
+               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
+        ";
+
+        private const string UpdateOneItem = @"
+            update CacheItem
+               set utcExpiry = strftime('%s', 'now') + interval
+             where partition = @partition
+               and key = @key
+               and interval is not null
+               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
+        ";
+
+        #endregion Private Queries
+
         #region Public Queries
 
         public static readonly string CacheSchema = MinifyQuery(@"
@@ -78,8 +99,6 @@ namespace PommaLabs.KVLite.Core
                and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
         ");
 
-        public static readonly string PeekMany = MinifyQuery(@"select serializedValue from (" + PeekManyItems + ")");
-
         public static readonly string PeekOneItem = MinifyQuery(@"
             select *
               from CacheItem
@@ -91,8 +110,6 @@ namespace PommaLabs.KVLite.Core
         public static readonly string PeekOne = MinifyQuery(@"select serializedValue from (" + PeekOneItem + ")");
 
         public static readonly string GetManyItems = MinifyQuery(UpdateManyItems + PeekManyItems);
-
-        public static readonly string GetMany = MinifyQuery(UpdateManyItems + PeekMany);
 
         public static readonly string GetOneItem = MinifyQuery(UpdateOneItem + PeekOneItem);
 
@@ -119,27 +136,6 @@ namespace PommaLabs.KVLite.Core
         ");
 
         #endregion Public Queries
-
-        #region Private Queries
-
-        private static readonly string UpdateManyItems = @"
-            update CacheItem
-               set utcExpiry = strftime('%s', 'now') + interval
-             where (@partition is null or partition = @partition)
-               and interval is not null
-               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
-        ";
-
-        private static readonly string UpdateOneItem = @"
-            update CacheItem
-               set utcExpiry = strftime('%s', 'now') + interval
-             where partition = @partition
-               and key = @key
-               and interval is not null
-               and utcExpiry > strftime('%s', 'now'); -- Update only valid rows
-        ";
-
-        #endregion Private Queries
 
         #region Private Methods
 

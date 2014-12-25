@@ -91,47 +91,9 @@ namespace PommaLabs.KVLite
             });
         }
 
-        public override void Clear()
-        {
-            var items = Settings.MemoryCache.Where(x => x.Value is CacheItem).Select(x => x.Key).ToList();
-            
-            foreach (var item in items)
-            {
-                Settings.MemoryCache.Remove(item);
-            }
-        }
-
-        public override void Clear(string partition)
-        {
-            var items = Settings.MemoryCache.Where(x =>
-            {
-                var val = x.Value as CacheItem;
-                return val != null && val.Partition == partition;
-            }).Select(x => x.Key).ToList();
-            
-            foreach (var item in items)
-            {
-                Settings.MemoryCache.Remove(item);
-            }
-        }
-
         public override bool Contains(string partition, string key)
         {
             return Settings.MemoryCache.Contains(CreateKey(partition, key));
-        }
-
-        public override long LongCount()
-        {
-            return Settings.MemoryCache.GetCount();
-        }
-
-        public override long LongCount(string partition)
-        {
-            return Settings.MemoryCache.Count(x =>
-            {
-                var val = x.Value as CacheItem;
-                return val != null && val.Partition == partition;
-            });
         }
 
         public override CacheItem GetItem(string partition, string key)
@@ -180,6 +142,45 @@ namespace PommaLabs.KVLite
             }
 
             return items;
+        }
+
+        #endregion
+
+        #region CacheBase Members
+
+        protected override void DoClear(string partition)
+        {
+            var items = Settings.MemoryCache.AsEnumerable();
+
+            if (partition != null)
+            {
+                items = items.Where(x =>
+                {
+                    var val = x.Value as CacheItem;
+                    return val != null && val.Partition == partition;
+                });
+            }
+
+            items = items.ToList();
+
+            foreach (var item in items)
+            {
+                Settings.MemoryCache.Remove(item.Key);
+            }
+        }
+
+        protected override long DoCount(string partition)
+        {
+            return (partition == null) ? Settings.MemoryCache.GetCount() : Settings.MemoryCache.Count(x =>
+            {
+                var val = x.Value as CacheItem;
+                return val != null && val.Partition == partition;
+            });
+        }
+
+        protected override IList<CacheItem> DoPeekManyItems()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
