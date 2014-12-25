@@ -98,42 +98,42 @@ namespace PommaLabs.KVLite.Core
 
         public void AddSliding(string partition, string key, object value, TimeSpan interval)
         {
-            DoAdd(partition, key, value, null, interval);
+            DoAdd(partition, key, value, DateTime.UtcNow + interval, interval);
         }
 
         public void AddSliding(string key, object value, TimeSpan interval)
         {
-            DoAdd(DefaultPartition, key, value, null, interval);
+            DoAdd(DefaultPartition, key, value, DateTime.UtcNow + interval, interval);
         }
 
         public Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval)
         {
-            return TaskEx.Run(() => DoAdd(partition, key, value, null, interval));
+            return TaskEx.Run(() => DoAdd(partition, key, value, DateTime.UtcNow + interval, interval));
         }
 
         public Task AddSlidingAsync(string key, object value, TimeSpan interval)
         {
-            return TaskEx.Run(() => DoAdd(DefaultPartition, key, value, null, interval));
+            return TaskEx.Run(() => DoAdd(DefaultPartition, key, value, DateTime.UtcNow + interval, interval));
         }
 
         public void AddStatic(string partition, string key, object value)
         {
-            DoAdd(partition, key, value, null, _settings.StaticInterval);
+            DoAdd(partition, key, value, DateTime.UtcNow + interval, _settings.StaticInterval);
         }
 
         public void AddStatic(string key, object value)
         {
-            DoAdd(DefaultPartition, key, value, null, _settings.StaticInterval);
+            DoAdd(DefaultPartition, key, value, DateTime.UtcNow + interval, _settings.StaticInterval);
         }
 
         public Task AddStaticAsync(string partition, string key, object value)
         {
-            return TaskEx.Run(() => DoAdd(partition, key, value, null, _settings.StaticInterval));
+            return TaskEx.Run(() => DoAdd(partition, key, value, DateTime.UtcNow + interval, _settings.StaticInterval));
         }
 
         public Task AddStaticAsync(string key, object value)
         {
-            return TaskEx.Run(() => DoAdd(DefaultPartition, key, value, null, _settings.StaticInterval));
+            return TaskEx.Run(() => DoAdd(DefaultPartition, key, value, DateTime.UtcNow + interval, _settings.StaticInterval));
         }
 
         public void AddTimed(string partition, string key, object value, DateTime utcExpiry)
@@ -334,19 +334,19 @@ namespace PommaLabs.KVLite.Core
         ///   TODO
         /// </summary>
         /// <returns></returns>
-        protected abstract IList<CacheItem> DoGetOne(string partition, string key);
+        protected abstract object DoGetOne(string partition, string key);
 
         /// <summary>
         ///   TODO
         /// </summary>
         /// <returns></returns>
-        protected abstract IList<CacheItem> DoGetOneItem(string partition, string key);
+        protected abstract CacheItem DoGetOneItem(string partition, string key);
 
         /// <summary>
         ///   TODO
         /// </summary>
         /// <returns></returns>
-        protected abstract IList<CacheItem> DoGetMany(string partition);
+        protected abstract IList<object> DoGetMany(string partition);
 
         /// <summary>
         ///   TODO
@@ -358,19 +358,19 @@ namespace PommaLabs.KVLite.Core
         ///   TODO
         /// </summary>
         /// <returns></returns>
-        protected abstract IList<CacheItem> DoPeekOne(string partition, string key);
+        protected abstract object DoPeekOne(string partition, string key);
 
         /// <summary>
         ///   TODO
         /// </summary>
         /// <returns></returns>
-        protected abstract IList<CacheItem> DoPeekOneItem(string partition, string key);
+        protected abstract CacheItem DoPeekOneItem(string partition, string key);
 
         /// <summary>
         ///   TODO
         /// </summary>
         /// <returns></returns>
-        protected abstract IList<CacheItem> DoPeekMany(string partition);
+        protected abstract IList<object> DoPeekMany(string partition);
 
         /// <summary>
         ///   TODO

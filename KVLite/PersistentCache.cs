@@ -131,140 +131,34 @@ namespace PommaLabs.KVLite
 
         #region Public Methods
 
-        /// <summary>
-        ///   Gets the value corresponding to given partition and key, without updating expiry date.
-        /// </summary>
-        /// <returns>
-        ///   The value corresponding to given partition and key, without updating expiry date.
-        /// </returns>
-        [Pure]
-        public object Peek(string partition, string key)
+        public void Clear(PersistentCacheReadMode cacheReadMode)
         {
-            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-
-            var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-            p.Add("key", key, DbType.String);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.PeekOne, p).Select(v => DeserializeValue(v)).FirstOrDefault(v => v != null);
-            }
+            DoClear(null, cacheReadMode);
         }
 
-        /// <summary>
-        ///   Gets the value corresponding to given key, without updating expiry date.
-        /// </summary>
-        /// <returns>The value corresponding to given key, without updating expiry date.</returns>
-        [Pure]
-        public object Peek(string key)
+        public void Clear(string partition, PersistentCacheReadMode cacheReadMode)
         {
-            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            return Peek(DefaultPartition, key);
+            DoClear(partition, cacheReadMode);
         }
 
-        /// <summary>
-        ///   Gets the item corresponding to given partition and key, without updating expiry date.
-        /// </summary>
-        /// <returns>
-        ///   The item corresponding to given partition and key, without updating expiry date.
-        /// </returns>
-        [Pure]
-        public CacheItem PeekItem(string partition, string key)
+        public int Count(PersistentCacheReadMode cacheReadMode)
         {
-            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-
-            var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-            p.Add("key", key, DbType.String);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekOneItem, p).Select(i => i.ToCacheItem()).FirstOrDefault(i => i != null);
-            }
+            return Convert.ToInt32(DoCount(null, cacheReadMode));
         }
 
-        /// <summary>
-        ///   Gets the item corresponding to given key, without updating expiry date.
-        /// </summary>
-        /// <returns>The item corresponding to given key, without updating expiry date.</returns>
-        [Pure]
-        public CacheItem PeekItem(string key)
+        public int Count(string partition, PersistentCacheReadMode cacheReadMode)
         {
-            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            return PeekItem(DefaultPartition, key);
+            return Convert.ToInt32(DoCount(partition, cacheReadMode));
         }
 
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
-        [Pure]
-        public IList<object> PeekAll()
+        public long LongCount(PersistentCacheReadMode cacheReadMode)
         {
-            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
-
-            var p = new DynamicParameters();
-            p.Add("partition", null, DbType.String);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.PeekAll, p).Select(v => DeserializeValue(v)).Where(v => v != null).ToList();
-            }
+            return DoCount(null, cacheReadMode);
         }
 
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
-        [Pure]
-        public IList<object> PeekAll(string partition)
+        public long LongCount(string partition, PersistentCacheReadMode cacheReadMode)
         {
-            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
-
-            var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.PeekAll, p).Select(v => DeserializeValue(v)).Where(v => v != null).ToList();
-            }
-        }
-
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
-        [Pure]
-        public IList<CacheItem> PeekAllItems()
-        {
-            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
-
-            var p = new DynamicParameters();
-            p.Add("partition", null, DbType.String);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekAllItems, p).Select(i => i.ToCacheItem()).Where(i => i != null).ToList();
-            }
-        }
-
-        /// <summary>
-        ///   </summary>
-        /// <returns></returns>
-        [Pure]
-        public IList<CacheItem> PeekAllItems(string partition)
-        {
-            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
-
-            var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekAllItems, p).Select(i => i.ToCacheItem()).Where(i => i != null).ToList();
-            }
+            return DoCount(partition, cacheReadMode);
         }
 
         /// <summary>
@@ -297,52 +191,9 @@ namespace PommaLabs.KVLite
             get { return CacheKind.Persistent; }
         }
 
-        public override void AddSliding(string partition, string key, object value, TimeSpan interval)
-        {
-            DoAdd(partition, key, value, DateTime.UtcNow + interval, interval);
-        }
-
-        public override void AddTimed(string partition, string key, object value, DateTime utcExpiry)
-        {
-            DoAdd(partition, key, value, utcExpiry, null);
-        }
-
-        public override void Clear()
-        {
-            Clear(PersistentCacheReadMode.IgnoreExpiryDate);
-        }
-
-        public void Clear(PersistentCacheReadMode cacheReadMode)
-        {
-            var p = new DynamicParameters();
-            p.Add("ignoreExpiryDate", (cacheReadMode == PersistentCacheReadMode.IgnoreExpiryDate), DbType.Boolean);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                ctx.InternalResource.Execute(SQLiteQueries.Clear, p);
-            }
-        }
-
         public override bool Contains(string partition, string key)
         {
             return Get(partition, key) != null;
-        }
-
-        public override long LongCount()
-        {
-            return LongCount(PersistentCacheReadMode.ConsiderExpiryDate);
-        }
-
-        public long LongCount(PersistentCacheReadMode cacheReadMode)
-        {
-            var p = new DynamicParameters();
-            p.Add("ignoreExpiryDate", (cacheReadMode == PersistentCacheReadMode.IgnoreExpiryDate), DbType.Boolean);
-
-            // No need for a transaction, since it is just a select.
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.ExecuteScalar<long>(SQLiteQueries.Count, p);
-            }
         }
 
         public override CacheItem GetItem(string partition, string key)
@@ -370,61 +221,11 @@ namespace PommaLabs.KVLite
             }
         }
 
-        protected override IEnumerable<CacheItem> DoGetAllItems()
-        {
-            var p = new DynamicParameters();
-            p.Add("partition", null, DbType.String);
-            p.Add("key", null, DbType.String);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).Select(i => i.ToCacheItem()).Where(i => i != null);
-            }
-        }
-
-        protected override IEnumerable<CacheItem> DoGetPartitionItems(string partition)
-        {
-            var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-            p.Add("key", null, DbType.String);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).Select(i => i.ToCacheItem()).Where(i => i != null);
-            }
-        }
-
         #endregion ICache Members
 
-        #region Private Methods
+        #region CacheBase Members
 
-        private PooledObjectWrapper<SQLiteConnection> CreatePooledConnection()
-        {
-            var connection = new SQLiteConnection(_connectionString);
-            connection.Open();
-            // Sets PRAGMAs for this new connection.
-            var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB * 1024 * 1024;
-            var walAutoCheckpointInPages = journalSizeLimitInBytes / PageSizeInBytes / 3;
-            var pragmas = String.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
-            connection.Execute(pragmas);
-            return new PooledObjectWrapper<SQLiteConnection>(connection);
-        }
-
-        private static object DeserializeValue(byte[] serializedValue)
-        {
-            try
-            {
-                return BinarySerializer.DeserializeObject(serializedValue);
-            }
-            catch
-            {
-                // Something wrong happened during deserialization. Therefore, we act as if there
-                // was no value.
-                return null;
-            }
-        }
-
-        private void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
+        protected override void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
             byte[] serializedValue;
@@ -463,6 +264,141 @@ namespace PommaLabs.KVLite
             }
         }
 
+        protected override void DoClear(string partition)
+        {
+            DoClear(partition, PersistentCacheReadMode.IgnoreExpiryDate);
+        }
+
+        protected override long DoCount(string partition)
+        {
+            return DoCount(partition, PersistentCacheReadMode.ConsiderExpiryDate);
+        }
+
+        protected override IEnumerable<CacheItem> DoGetManyItems()
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", null, DbType.String);
+            p.Add("key", null, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).Select(i => i.ToCacheItem()).Where(i => i != null);
+            }
+        }
+
+        protected override IEnumerable<CacheItem> DoGetPartitionItems(string partition)
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", null, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.Get, p).Select(i => i.ToCacheItem()).Where(i => i != null);
+            }
+        }
+
+        protected override object DoPeekOne(string partition, string key)
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", key, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.PeekOne, p).Select(DeserializeValue).FirstOrDefault(NotNull);
+            }
+        }
+
+        protected override CacheItem DoPeekOneItem(string partition, string key)
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", key, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekOneItem, p).Select(ToCacheItem).FirstOrDefault(NotNull);
+            }
+        }
+
+        protected override IList<object> DoPeekMany(string partition)
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.PeekMany, p).Select(DeserializeValue).Where(NotNull).ToList();
+            }
+        }
+
+        protected override IList<CacheItem> DoPeekManyItems(string partition)
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekManyItems, p).Select(ToCacheItem).Where(NotNull).ToList();
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private PooledObjectWrapper<SQLiteConnection> CreatePooledConnection()
+        {
+            var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+            // Sets PRAGMAs for this new connection.
+            var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB * 1024 * 1024;
+            var walAutoCheckpointInPages = journalSizeLimitInBytes / PageSizeInBytes / 3;
+            var pragmas = String.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
+            connection.Execute(pragmas);
+            return new PooledObjectWrapper<SQLiteConnection>(connection);
+        }
+
+        private static object DeserializeValue(byte[] serializedValue)
+        {
+            try
+            {
+                return BinarySerializer.DeserializeObject(serializedValue);
+            }
+            catch
+            {
+                // Something wrong happened during deserialization. Therefore, we act as if there
+                // was no value.
+                return null;
+            }
+        }
+
+        private void DoClear(string partition, PersistentCacheReadMode cacheReadMode)
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("ignoreExpiryDate", (cacheReadMode == PersistentCacheReadMode.IgnoreExpiryDate), DbType.Boolean);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                ctx.InternalResource.Execute(SQLiteQueries.Clear, p);
+            }
+        }
+
+        public long DoCount(string partition, PersistentCacheReadMode cacheReadMode)
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("ignoreExpiryDate", (cacheReadMode == PersistentCacheReadMode.IgnoreExpiryDate), DbType.Boolean);
+
+            // No need for a transaction, since it is just a select.
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.ExecuteScalar<long>(SQLiteQueries.Count, p);
+            }
+        }
+
         private void InitConnectionString()
         {
             var builder = new SQLiteConnectionStringBuilder
@@ -496,12 +432,41 @@ namespace PommaLabs.KVLite
             _connectionPool = new ObjectPool<PooledObjectWrapper<SQLiteConnection>>(1, 10, CreatePooledConnection);
         }
 
+        private static bool NotNull<T>(T obj)
+        {
+            return !ReferenceEquals(obj, null);
+        }
+
         private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "CacheFile")
             {
                 InitConnectionString();
             }
+        }
+
+        private static CacheItem ToCacheItem(DbCacheItem original)
+        {
+            object deserializedValue;
+            try
+            {
+                deserializedValue = BinarySerializer.DeserializeObject(SerializedValue);
+            }
+            catch
+            {
+                // Something wrong happened during deserialization. Therefore, we act as if
+                // there was no element.
+                return null;
+            }
+            return new CacheItem
+            {
+                Partition = Partition,
+                Key = Key,
+                Value = deserializedValue,
+                UtcCreation = UnixEpoch.AddSeconds(UtcCreation),
+                UtcExpiry = UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(UtcExpiry.Value),
+                Interval = Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(Interval.Value)
+            };
         }
 
         #endregion Private Methods
@@ -526,34 +491,6 @@ namespace PommaLabs.KVLite
             public long? Interval { get; set; }
 
             #endregion Public Properties
-
-            #region Public Methods
-
-            public CacheItem ToCacheItem()
-            {
-                object deserializedValue;
-                try
-                {
-                    deserializedValue = BinarySerializer.DeserializeObject(SerializedValue);
-                }
-                catch
-                {
-                    // Something wrong happened during deserialization. Therefore, we act as if
-                    // there was no element.
-                    return null;
-                }
-                return new CacheItem
-                {
-                    Partition = Partition,
-                    Key = Key,
-                    Value = deserializedValue,
-                    UtcCreation = UnixEpoch.AddSeconds(UtcCreation),
-                    UtcExpiry = UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(UtcExpiry.Value),
-                    Interval = Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(Interval.Value)
-                };
-            }
-
-            #endregion Public Methods
 
             #region EquatableObject<CacheItem> Members
 

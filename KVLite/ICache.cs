@@ -275,14 +275,14 @@ namespace PommaLabs.KVLite
         ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
         [Pure]
-        public object Peek(string partition, string key);
+        object Peek(string partition, string key);
 
         /// <summary>
         ///   Gets the value corresponding to given key, without updating expiry date.
         /// </summary>
         /// <returns>The value corresponding to given key, without updating expiry date.</returns>
         [Pure]
-        public object Peek(string key);
+        object Peek(string key);
 
         /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
@@ -291,38 +291,38 @@ namespace PommaLabs.KVLite
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
         [Pure]
-        public CacheItem PeekItem(string partition, string key);
+        CacheItem PeekItem(string partition, string key);
 
         /// <summary>
         ///   Gets the item corresponding to given key, without updating expiry date.
         /// </summary>
         /// <returns>The item corresponding to given key, without updating expiry date.</returns>
         [Pure]
-        public CacheItem PeekItem(string key);
+        CacheItem PeekItem(string key);
 
         /// <summary>
         ///   </summary>
         /// <returns></returns>
         [Pure]
-        public IList<object> PeekMany();
+        IList<object> PeekMany();
 
         /// <summary>
         ///   </summary>
         /// <returns></returns>
         [Pure]
-        public IList<object> PeekMany(string partition);
+        IList<object> PeekMany(string partition);
 
         /// <summary>
         ///   </summary>
         /// <returns></returns>
         [Pure]
-        public IList<CacheItem> PeekManyItems();
+        IList<CacheItem> PeekManyItems();
 
         /// <summary>
         ///   </summary>
         /// <returns></returns>
         [Pure]
-        public IList<CacheItem> PeekManyItems(string partition);
+        IList<CacheItem> PeekManyItems(string partition);
 
         /// <summary>
         ///   </summary>

@@ -85,14 +85,14 @@ namespace PommaLabs.KVLite.Core
              where name = 'CacheItem';
         ");
 
-        public static readonly string PeekAllItems = MinifyQuery(@"
+        public static readonly string PeekManyItems = MinifyQuery(@"
             select *
               from CacheItem
              where (@partition is null or partition = @partition)
                and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
         ");
 
-        public static readonly string PeekAll = MinifyQuery(@"select serializedValue from (" + PeekAllItems + ")");
+        public static readonly string PeekMany = MinifyQuery(@"select serializedValue from (" + PeekManyItems + ")");
 
         public static readonly string PeekOneItem = MinifyQuery(@"
             select *
