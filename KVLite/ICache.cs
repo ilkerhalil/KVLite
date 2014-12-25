@@ -251,22 +251,78 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   </summary>
         /// <returns></returns>
-        IList<object> GetAll();
+        IList<object> GetMany();
 
         /// <summary>
         ///   </summary>
         /// <returns></returns>
-        IList<object> GetAll(string partition);
+        IList<object> GetMany(string partition);
 
         /// <summary>
         ///   </summary>
         /// <returns></returns>
-        IList<CacheItem> GetAllItems();
+        IList<CacheItem> GetManyItems();
 
         /// <summary>
         ///   </summary>
         /// <returns></returns>
-        IList<CacheItem> GetAllItems(string partition);
+        IList<CacheItem> GetManyItems(string partition);
+
+        /// <summary>
+        ///   Gets the value corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <returns>
+        ///   The value corresponding to given partition and key, without updating expiry date.
+        /// </returns>
+        [Pure]
+        public object Peek(string partition, string key);
+
+        /// <summary>
+        ///   Gets the value corresponding to given key, without updating expiry date.
+        /// </summary>
+        /// <returns>The value corresponding to given key, without updating expiry date.</returns>
+        [Pure]
+        public object Peek(string key);
+
+        /// <summary>
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <returns>
+        ///   The item corresponding to given partition and key, without updating expiry date.
+        /// </returns>
+        [Pure]
+        public CacheItem PeekItem(string partition, string key);
+
+        /// <summary>
+        ///   Gets the item corresponding to given key, without updating expiry date.
+        /// </summary>
+        /// <returns>The item corresponding to given key, without updating expiry date.</returns>
+        [Pure]
+        public CacheItem PeekItem(string key);
+
+        /// <summary>
+        ///   </summary>
+        /// <returns></returns>
+        [Pure]
+        public IList<object> PeekMany();
+
+        /// <summary>
+        ///   </summary>
+        /// <returns></returns>
+        [Pure]
+        public IList<object> PeekMany(string partition);
+
+        /// <summary>
+        ///   </summary>
+        /// <returns></returns>
+        [Pure]
+        public IList<CacheItem> PeekManyItems();
+
+        /// <summary>
+        ///   </summary>
+        /// <returns></returns>
+        [Pure]
+        public IList<CacheItem> PeekManyItems(string partition);
 
         /// <summary>
         ///   </summary>

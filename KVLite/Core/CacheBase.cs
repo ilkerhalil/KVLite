@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.Core
@@ -35,25 +34,36 @@ namespace PommaLabs.KVLite.Core
     /// <typeparam name="TCache">The type of the cache.</typeparam>
     /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     [Serializable]
-    public abstract class CacheBase<TCache, TCacheSettings> : ICache<TCache, TCacheSettings> 
+    public abstract class CacheBase<TCache, TCacheSettings> : ICache<TCache, TCacheSettings>
         where TCache : CacheBase<TCache, TCacheSettings>, ICache<TCache, TCacheSettings>, new()
         where TCacheSettings : CacheSettingsBase, new()
     {
+        #region Constants
+
         internal const string DefaultPartition = "_DEFAULT_PARTITION_";
+
+        #endregion Constants
+
+        #region Fields
 
         private static readonly TCache CachedDefaultInstance = new TCache();
 
         private readonly TCacheSettings _settings;
 
+        #endregion Fields
+
+        #region Construction
+
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <param name="settings"></param>
         internal CacheBase(TCacheSettings settings)
         {
             Contract.Requires<ArgumentNullException>(settings != null);
             _settings = settings;
         }
+
+        #endregion Construction
 
         #region Public Properties
 
@@ -65,9 +75,9 @@ namespace PommaLabs.KVLite.Core
             get { return CachedDefaultInstance; }
         }
 
-        #endregion
+        #endregion Public Properties
 
-        #region ICache<TCache> Members
+        #region ICache Members
 
         public abstract CacheKind Kind { get; }
 
@@ -78,73 +88,83 @@ namespace PommaLabs.KVLite.Core
 
         public object this[string partition, string key]
         {
-            get { return Get(partition, key); }
+            get { return DoGetOne(partition, key); }
         }
 
         public object this[string key]
         {
-            get { return Get(key); }
+            get { return DoGetOne(DefaultPartition, key); }
         }
 
-        public abstract void AddSliding(string partition, string key, object value, TimeSpan interval);
+        public void AddSliding(string partition, string key, object value, TimeSpan interval)
+        {
+            DoAdd(partition, key, value, null, interval);
+        }
 
         public void AddSliding(string key, object value, TimeSpan interval)
         {
-            AddSliding(DefaultPartition, key, value, interval);
+            DoAdd(DefaultPartition, key, value, null, interval);
         }
 
         public Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval)
         {
-            return TaskEx.Run(() => AddSliding(partition, key, value, interval));
+            return TaskEx.Run(() => DoAdd(partition, key, value, null, interval));
         }
 
         public Task AddSlidingAsync(string key, object value, TimeSpan interval)
         {
-            return TaskEx.Run(() => AddSliding(DefaultPartition, key, value, interval));
+            return TaskEx.Run(() => DoAdd(DefaultPartition, key, value, null, interval));
         }
 
         public void AddStatic(string partition, string key, object value)
         {
-            AddSliding(partition, key, value, TimeSpan.FromDays(Settings.StaticIntervalInDays));
+            DoAdd(partition, key, value, null, _settings.StaticInterval);
         }
 
         public void AddStatic(string key, object value)
         {
-            AddSliding(DefaultPartition, key, value, TimeSpan.FromDays(Settings.StaticIntervalInDays));
+            DoAdd(DefaultPartition, key, value, null, _settings.StaticInterval);
         }
 
         public Task AddStaticAsync(string partition, string key, object value)
         {
-            return TaskEx.Run(() => AddSliding(partition, key, value, TimeSpan.FromDays(Settings.StaticIntervalInDays)));
+            return TaskEx.Run(() => DoAdd(partition, key, value, null, _settings.StaticInterval));
         }
 
         public Task AddStaticAsync(string key, object value)
         {
-            return TaskEx.Run(() => AddSliding(DefaultPartition, key, value, TimeSpan.FromDays(Settings.StaticIntervalInDays)));
+            return TaskEx.Run(() => DoAdd(DefaultPartition, key, value, null, _settings.StaticInterval));
         }
 
-        public abstract void AddTimed(string partition, string key, object value, DateTime utcExpiry);
+        public void AddTimed(string partition, string key, object value, DateTime utcExpiry)
+        {
+            DoAdd(partition, key, value, utcExpiry, null);
+        }
 
         public void AddTimed(string key, object value, DateTime utcExpiry)
         {
-            AddTimed(DefaultPartition, key, value, utcExpiry);
+            DoAdd(DefaultPartition, key, value, utcExpiry, null);
         }
 
         public Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry)
         {
-            return TaskEx.Run(() => AddTimed(partition, key, value, utcExpiry));
+            return TaskEx.Run(() => DoAdd(partition, key, value, utcExpiry, null));
         }
 
         public Task AddTimedAsync(string key, object value, DateTime utcExpiry)
         {
-            return TaskEx.Run(() => AddTimed(DefaultPartition, key, value, utcExpiry));
+            return TaskEx.Run(() => DoAdd(DefaultPartition, key, value, utcExpiry, null));
         }
 
-        public abstract void Clear();
+        public void Clear()
+        {
+            DoClear(null);
+        }
 
-        public abstract void Clear(string partition);
-
-        public abstract bool Contains(string partition, string key);
+        public void Clear(string partition)
+        {
+            DoClear(partition);
+        }
 
         public bool Contains(string key)
         {
@@ -153,58 +173,103 @@ namespace PommaLabs.KVLite.Core
 
         public int Count()
         {
-            return Convert.ToInt32(LongCount());
+            return Convert.ToInt32(DoCount(null));
         }
 
         public int Count(string partition)
         {
-            return Convert.ToInt32(LongCount(partition));
+            return Convert.ToInt32(DoCount(partition));
         }
 
-        public abstract long LongCount();
+        public long LongCount()
+        {
+            return DoCount(null);
+        }
 
-        public abstract long LongCount(string partition);
+        public long LongCount(string partition)
+        {
+            return DoCount(partition);
+        }
 
         public object Get(string partition, string key)
         {
-            var item = GetItem(partition, key);
-            return item == null ? null : item.Value;
+            return DoGet(partition, key);
         }
 
         public object Get(string key)
         {
-            var item = GetItem(DefaultPartition, key);
-            return item == null ? null : item.Value;
+            return DoGet(DefaultPartition, key);
         }
 
-        public abstract CacheItem GetItem(string partition, string key);
+        public CacheItem GetItem(string partition, string key)
+        {
+            return DoGetItem(partition, key);
+        }
 
         public CacheItem GetItem(string key)
         {
-            return GetItem(DefaultPartition, key);
+            return DoGetItem(DefaultPartition, key);
         }
 
-        public IList<object> GetAll()
+        public IList<object> GetMany()
         {
-            return DoGetAllItems().Select(x => x.Value).ToList();
+            return DoGetMany(null);
         }
 
-        public IList<object> GetAll(string partition)
+        public IList<object> GetMany(string partition)
         {
-            return DoGetPartitionItems(partition).Select(x => x.Value).ToList();
+            return DoGetMany(partition);
         }
 
-        public IList<CacheItem> GetAllItems()
+        public IList<CacheItem> GetManyItems()
         {
-            return DoGetAllItems().ToList();
+            return DoGetManyItems(partition);
         }
 
-        public IList<CacheItem> GetAllItems(string partition)
+        public IList<CacheItem> GetManyItems(string partition)
         {
-            return DoGetPartitionItems(partition).ToList();
+            return DoGetManyItems(partition);
         }
 
-        public abstract void Remove(string partition, string key);
+        public object Peek(string partition, string key)
+        {
+            return DoPeekItem(partition, key);
+        }
+
+        public object Peek(string key)
+        {
+            return DoPeek(DefaultPartition, key);
+        }
+
+        public CacheItem PeekItem(string partition, string key)
+        {
+            return DoPeekItem(partition, key);
+        }
+
+        public CacheItem PeekItem(string key)
+        {
+            return DoPeekItem(DefaultPartition, key);
+        }
+
+        public IList<object> PeekMany()
+        {
+            return DoPeekMany(null);
+        }
+
+        public IList<object> PeekMany(string partition)
+        {
+            return DoPeekMany(partition);
+        }
+
+        public IList<CacheItem> PeekManyItems()
+        {
+            return DoPeekManyItems(null);
+        }
+
+        public IList<CacheItem> PeekManyItems(string partition)
+        {
+            return DoPeekManyItems(partition);
+        }
 
         public void Remove(string key)
         {
@@ -221,7 +286,13 @@ namespace PommaLabs.KVLite.Core
             return TaskEx.Run(() => Remove(DefaultPartition, key));
         }
 
-        #endregion
+        #endregion ICache Members
+
+        #region Abstract Methods
+
+        public abstract bool Contains(string partition, string key);
+
+        public abstract void Remove(string partition, string key);
 
         /// <summary>
         ///   TODO
@@ -235,5 +306,78 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition"></param>
         /// <returns></returns>
         protected abstract IEnumerable<CacheItem> DoGetPartitionItems(string partition);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="utcExpiry"></param>
+        /// <param name="interval"></param>
+        protected abstract void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        protected abstract void DoClear(string partition);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <returns></returns>
+        public abstract long DoCount(string partition);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        protected abstract IList<CacheItem> DoGetOne(string partition, string key);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        protected abstract IList<CacheItem> DoGetOneItem(string partition, string key);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        protected abstract IList<CacheItem> DoGetMany(string partition);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        protected abstract IList<CacheItem> DoGetManyItems(string partition);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        protected abstract IList<CacheItem> DoPeekOne(string partition, string key);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        protected abstract IList<CacheItem> DoPeekOneItem(string partition, string key);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        protected abstract IList<CacheItem> DoPeekMany(string partition);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        protected abstract IList<CacheItem> DoPeekManyItems(string partition);
+
+        #endregion Abstract Methods
     }
 }

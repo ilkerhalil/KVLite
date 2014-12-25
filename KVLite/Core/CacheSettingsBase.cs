@@ -33,12 +33,24 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     public abstract class CacheSettingsBase : INotifyPropertyChanged
     {
-        private int _staticIntervalInDays = Settings.Default.DefaultStaticIntervalInDays;
+        #region Fields
+
+        private int _staticIntervalInDays;
+
+        internal TimeSpan StaticInterval;
+
+        #endregion Fields
+
+        #region Construction
 
         internal CacheSettingsBase()
         {
-            // Empty, for now...
+            StaticIntervalInDays = Settings.Default.DefaultStaticIntervalInDays;
         }
+
+        #endregion Construction
+
+        #region Settings
 
         /// <summary>
         ///   How many days static values will last.
@@ -54,9 +66,12 @@ namespace PommaLabs.KVLite.Core
             {
                 Contract.Requires<ArgumentOutOfRangeException>(value > 0);
                 _staticIntervalInDays = value;
+                StaticInterval = TimeSpan.FromDays(value);
                 OnPropertyChanged("StaticIntervalInDays");
             }
         }
+
+        #endregion Settings
 
         #region INotifyPropertyChanged Members
 

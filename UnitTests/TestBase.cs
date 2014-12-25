@@ -99,7 +99,7 @@ namespace UnitTests
                 DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(DefaultInstance.Contains(StringItems[i]));
             }
-            var items = DefaultInstance.GetAllItems();
+            var items = DefaultInstance.GetManyItems();
             for (var i = 0; i < itemCount; ++i) {
                 var s = StringItems[i];
                 Assert.True(items.Count(x => x.Key == s && (string) x.Value == s) == 1);
@@ -176,7 +176,7 @@ namespace UnitTests
                 times.Add(DateTime.UtcNow.AddMinutes(10));
             }
             Thread.Sleep(1000);
-            var items = DefaultInstance.GetAllItems();
+            var items = DefaultInstance.GetManyItems();
             for (var i = 0; i < itemCount; ++i) {
                 var item = items[i];
                 Assert.IsNotNull(item);
@@ -203,11 +203,11 @@ namespace UnitTests
         public void GetAll_RightItems_AfterAddTimed_ValidTime(int itemCount)
         {
             AddTimed(DefaultInstance, itemCount, DateTime.UtcNow.AddMinutes(10));
-            var items = new HashSet<string>(DefaultInstance.GetAll().Cast<string>());
+            var items = new HashSet<string>(DefaultInstance.GetMany().Cast<string>());
             for (var i = 0; i < itemCount; ++i) {
                 Assert.True(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(DefaultInstance.GetAllItems().Select(x => (string) x.Value));
+            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
             for (var i = 0; i < itemCount; ++i) {
                 Assert.True(items.Contains(StringItems[i]));
             }
@@ -219,11 +219,11 @@ namespace UnitTests
         public void GetAll_RightItems_AfterAddTimed_InvalidTime(int itemCount)
         {
             AddTimed(DefaultInstance, itemCount, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
-            var items = new HashSet<string>(DefaultInstance.GetAll().Cast<string>());
+            var items = new HashSet<string>(DefaultInstance.GetMany().Cast<string>());
             for (var i = 0; i < itemCount; ++i) {
                 Assert.False(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(DefaultInstance.GetAllItems().Select(x => (string) x.Value));
+            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
             for (var i = 0; i < itemCount; ++i) {
                 Assert.False(items.Contains(StringItems[i]));
             }
@@ -235,11 +235,11 @@ namespace UnitTests
         public void GetAll_RightItems_AfterAddSliding_ValidTime(int itemCount)
         {
             AddSliding(DefaultInstance, itemCount, TimeSpan.FromHours(1));
-            var items = new HashSet<string>(DefaultInstance.GetAll().Cast<string>());
+            var items = new HashSet<string>(DefaultInstance.GetMany().Cast<string>());
             for (var i = 0; i < itemCount; ++i) {
                 Assert.True(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(DefaultInstance.GetAllItems().Select(x => (string) x.Value));
+            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
             for (var i = 0; i < itemCount; ++i) {
                 Assert.True(items.Contains(StringItems[i]));
             }
@@ -252,11 +252,11 @@ namespace UnitTests
         {
             AddSliding(DefaultInstance, itemCount, TimeSpan.FromSeconds(1));
             Thread.Sleep(2000); // Waits to seconds, to let the value expire...
-            var items = new HashSet<string>(DefaultInstance.GetAll().Cast<string>());
+            var items = new HashSet<string>(DefaultInstance.GetMany().Cast<string>());
             for (var i = 0; i < itemCount; ++i) {
                 Assert.False(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(DefaultInstance.GetAllItems().Select(x => (string) x.Value));
+            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
             for (var i = 0; i < itemCount; ++i) {
                 Assert.False(items.Contains(StringItems[i]));
             }
@@ -268,11 +268,11 @@ namespace UnitTests
         public void GetAll_RightItems_AfterAddStatic(int itemCount)
         {
             AddStatic(DefaultInstance, itemCount);
-            var items = new HashSet<string>(DefaultInstance.GetAll().Cast<string>());
+            var items = new HashSet<string>(DefaultInstance.GetMany().Cast<string>());
             for (var i = 0; i < itemCount; ++i) {
                 Assert.True(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(DefaultInstance.GetAllItems().Select(x => (string) x.Value));
+            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
             for (var i = 0; i < itemCount; ++i) {
                 Assert.True(items.Contains(StringItems[i]));
             }

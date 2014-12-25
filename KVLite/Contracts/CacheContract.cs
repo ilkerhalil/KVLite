@@ -244,26 +244,78 @@ namespace PommaLabs.KVLite.Contracts
             return default(CacheItem);
         }
 
-        public IList<object> GetAll()
+        public IList<object> GetMany()
         {
             Contract.Ensures(Contract.Result<IList<object>>() != null);
             return default(IList<object>);
         }
 
-        public IList<object> GetAll(string partition)
+        public IList<object> GetMany(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Ensures(Contract.Result<IList<object>>() != null);
             return default(IList<object>);
         }
 
-        public IList<CacheItem> GetAllItems()
+        public IList<CacheItem> GetManyItems()
         {
             Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
             return default(IList<CacheItem>);
         }
 
-        public IList<CacheItem> GetAllItems(string partition)
+        public IList<CacheItem> GetManyItems(string partition)
+        {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
+            return default(IList<CacheItem>);
+        }
+        
+        public object Peek(string partition, string key)
+        {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            return default(object);
+        }
+
+        public object Peek(string key)
+        {
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            return default(object);
+        }
+
+        public CacheItem PeekItem(string partition, string key)
+        {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            return default(CacheItem);
+        }
+
+        public CacheItem PeekItem(string key)
+        {
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            return default(CacheItem);
+        }
+
+        public IList<object> PeekMany()
+        {
+            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
+            return default(IList<object>);
+        }
+
+        public IList<object> PeekMany(string partition)
+        {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
+            return default(IList<object>);
+        }
+
+        public IList<CacheItem> PeekManyItems()
+        {
+            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
+            return default(IList<CacheItem>);
+        }
+
+        public IList<CacheItem> PeekManyItems(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
