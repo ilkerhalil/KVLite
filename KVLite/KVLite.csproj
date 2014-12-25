@@ -171,6 +171,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheExtensions.cs" />
     <Compile Include="CacheItem.cs" />
     <Compile Include="CacheKind.cs" />
     <Compile Include="PersistentCacheReadMode.cs" />
