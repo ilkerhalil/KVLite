@@ -86,13 +86,20 @@ namespace UnitTests
         [Test]
         public void Clean_ValidValues()
         {
-            foreach (var t in StringItems) {
+            foreach (var t in StringItems) 
+            {
                 DefaultInstance.AddTimed(t, t, DateTime.UtcNow.AddMinutes(10));
             }
             DefaultInstance.Clear();
-            Assert.AreEqual(StringItems.Count, DefaultInstance.Count());
+            Assert.AreEqual(0, DefaultInstance.Count());
+
+            foreach (var t in StringItems)
+            {
+                DefaultInstance.AddTimed(t, t, DateTime.UtcNow.AddMinutes(10));
+            }
             PersistentCache.DefaultInstance.Clear(PersistentCacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(StringItems.Count, DefaultInstance.Count());
+
             PersistentCache.DefaultInstance.Clear(PersistentCacheReadMode.IgnoreExpiryDate);
             Assert.AreEqual(0, DefaultInstance.Count());
         }

@@ -70,33 +70,33 @@ namespace PommaLabs.KVLite.Core
 
         public static readonly string Add = MinifyQuery(@"
             insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
-            values (@partition, @key, @serializedValue, strftime('%s', 'now'), @utcExpiry, @interval);
+            values (@partition, @key, @serializedValue, strftime('%s', 'now'), @utcExpiry, @interval)
         ");
 
         public static readonly string Clear = MinifyQuery(@"
             delete from CacheItem
              where (@partition is null or partition = @partition)
-               and (@ignoreExpiryDate = 1 or utcExpiry <= strftime('%s', 'now')); -- Clear only invalid rows
+               and (@ignoreExpiryDate = 1 or utcExpiry <= strftime('%s', 'now')) -- Clear only invalid rows
         ");
 
         public static readonly string Count = MinifyQuery(@"
             select count(*)
               from CacheItem
              where (@partition is null or partition = @partition)
-               and (@ignoreExpiryDate = 1 or utcExpiry > strftime('%s', 'now')); -- Select only valid rows
+               and (@ignoreExpiryDate = 1 or utcExpiry > strftime('%s', 'now')) -- Select only valid rows
         ");
 
         public static readonly string IsSchemaReady = MinifyQuery(@"
             select count(*)
               from sqlite_master
-             where name = 'CacheItem';
+             where name = 'CacheItem'
         ");
 
         public static readonly string PeekManyItems = MinifyQuery(@"
             select *
               from CacheItem
              where (@partition is null or partition = @partition)
-               and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
+               and utcExpiry > strftime('%s', 'now') -- Select only valid rows
         ");
 
         public static readonly string PeekOneItem = MinifyQuery(@"
@@ -104,7 +104,7 @@ namespace PommaLabs.KVLite.Core
               from CacheItem
              where partition = @partition
                and key = @key
-               and utcExpiry > strftime('%s', 'now'); -- Select only valid rows
+               and utcExpiry > strftime('%s', 'now') -- Select only valid rows
         ");
 
         public static readonly string PeekOne = MinifyQuery(@"select serializedValue from (" + PeekOneItem + ")");
@@ -120,7 +120,7 @@ namespace PommaLabs.KVLite.Core
         public static readonly string Remove = MinifyQuery(@"
             delete from CacheItem
              where partition = @partition
-               and key = @key;
+               and key = @key
         ");
 
         public static readonly string SetPragmas = MinifyQuery(@"

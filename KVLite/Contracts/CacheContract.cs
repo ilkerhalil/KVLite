@@ -207,14 +207,14 @@ namespace PommaLabs.KVLite.Contracts
 
         public long LongCount()
         {
-            Contract.Ensures(Contract.Result<int>() >= 0);
+            Contract.Ensures(Contract.Result<long>() >= 0);
             return default(long);
         }
 
         public long LongCount(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<int>() >= 0);
+            Contract.Ensures(Contract.Result<long>() >= 0);
             return default(long);
         }
 

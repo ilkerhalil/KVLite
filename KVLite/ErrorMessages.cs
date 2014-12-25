@@ -38,5 +38,7 @@ namespace PommaLabs.KVLite
         public const string NullKey = @"Key cannot be null.";
         public const string NullPartition = @"Partition cannot be null.";
         public const string NullValue = @"Value cannot be null.";
+
+        public const string VolatileCache_CannotPeek = @"Peeking is not allowed with MemoryCache.";
     }
 }
