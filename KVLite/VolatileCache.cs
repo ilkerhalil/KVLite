@@ -61,6 +61,35 @@ namespace PommaLabs.KVLite
             return Settings.MemoryCache.Contains(CreateKey(partition, key));
         }
 
+        public override object Get(string partition, string key)
+        {
+            var item = GetItem(partition, key);
+            return (item == null) ? null : item.Value;
+        }
+
+        public override CacheItem GetItem(string partition, string key)
+        {
+            var item = Settings.MemoryCache.Get(CreateKey(partition, key)) as CacheItem;
+
+            // Expiry date is updated, if sliding.
+            if (item != null && item.Interval.HasValue)
+            {
+                item.UtcExpiry = item.UtcExpiry + item.Interval;
+            }
+
+            return item;
+        }
+
+        public override object Peek(string partition, string key)
+        {
+            throw new NotImplementedException(ErrorMessages.VolatileCache_CannotPeek);
+        }
+
+        public override CacheItem PeekItem(string partition, string key)
+        {
+            throw new NotImplementedException(ErrorMessages.VolatileCache_CannotPeek);
+        }
+
         public override void Remove(string partition, string key)
         {
             Settings.MemoryCache.Remove(CreateKey(partition, key));
@@ -129,25 +158,6 @@ namespace PommaLabs.KVLite
             });
         }
 
-        protected override object DoGetOne(string partition, string key)
-        {
-            var item = DoGetOneItem(partition, key);
-            return (item == null) ? null : item.Value;
-        }
-
-        protected override CacheItem DoGetOneItem(string partition, string key)
-        {
-            var item = Settings.MemoryCache.Get(CreateKey(partition, key)) as CacheItem;
-
-            // Expiry date is updated, if sliding.
-            if (item != null && item.Interval.HasValue)
-            {
-                item.UtcExpiry = item.UtcExpiry + item.Interval;
-            }
-
-            return item;
-        }
-
         protected override IList<CacheItem> DoGetManyItems(string partition)
         {
             var items = Settings.MemoryCache.AsEnumerable();
@@ -170,16 +180,6 @@ namespace PommaLabs.KVLite
             }
 
             return ret;
-        }
-
-        protected override object DoPeekOne(string partition, string key)
-        {
-            throw new NotImplementedException(ErrorMessages.VolatileCache_CannotPeek);
-        }
-
-        protected override CacheItem DoPeekOneItem(string partition, string key)
-        {
-            throw new NotImplementedException(ErrorMessages.VolatileCache_CannotPeek);
         }
 
         protected override IList<CacheItem> DoPeekManyItems(string partition)

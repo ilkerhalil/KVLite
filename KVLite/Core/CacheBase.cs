@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -38,12 +37,6 @@ namespace PommaLabs.KVLite.Core
         where TCache : CacheBase<TCache, TCacheSettings>, ICache<TCache, TCacheSettings>, new()
         where TCacheSettings : CacheSettingsBase, new()
     {
-        #region Constants
-
-        internal const string DefaultPartition = "_DEFAULT_PARTITION_";
-
-        #endregion Constants
-
         #region Fields
 
         private static readonly TCache CachedDefaultInstance = new TCache();
@@ -75,11 +68,21 @@ namespace PommaLabs.KVLite.Core
             get { return CachedDefaultInstance; }
         }
 
+        public object this[string key]
+        {
+            get { return Get(Settings.DefaultPartition, key); }
+        }
+
         #endregion Public Properties
 
         #region ICache Members
 
         public abstract CacheKind Kind { get; }
+        
+        CacheSettingsBase ICache.Settings
+        {
+            get { return _settings; }
+        }
 
         public TCacheSettings Settings
         {
@@ -88,12 +91,7 @@ namespace PommaLabs.KVLite.Core
 
         public object this[string partition, string key]
         {
-            get { return DoGetOne(partition, key); }
-        }
-
-        public object this[string key]
-        {
-            get { return DoGetOne(DefaultPartition, key); }
+            get { return Get(partition, key); }
         }
 
         public void AddSliding(string partition, string key, object value, TimeSpan interval)
@@ -101,59 +99,9 @@ namespace PommaLabs.KVLite.Core
             DoAdd(partition, key, value, DateTime.UtcNow + interval, interval);
         }
 
-        public void AddSliding(string key, object value, TimeSpan interval)
-        {
-            DoAdd(DefaultPartition, key, value, DateTime.UtcNow + interval, interval);
-        }
-
-        public Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval)
-        {
-            return TaskEx.Run(() => DoAdd(partition, key, value, DateTime.UtcNow + interval, interval));
-        }
-
-        public Task AddSlidingAsync(string key, object value, TimeSpan interval)
-        {
-            return TaskEx.Run(() => DoAdd(DefaultPartition, key, value, DateTime.UtcNow + interval, interval));
-        }
-
-        public void AddStatic(string partition, string key, object value)
-        {
-            DoAdd(partition, key, value, DateTime.UtcNow + _settings.StaticInterval, _settings.StaticInterval);
-        }
-
-        public void AddStatic(string key, object value)
-        {
-            DoAdd(DefaultPartition, key, value, DateTime.UtcNow + _settings.StaticInterval, _settings.StaticInterval);
-        }
-
-        public Task AddStaticAsync(string partition, string key, object value)
-        {
-            return TaskEx.Run(() => DoAdd(partition, key, value, DateTime.UtcNow + _settings.StaticInterval, _settings.StaticInterval));
-        }
-
-        public Task AddStaticAsync(string key, object value)
-        {
-            return TaskEx.Run(() => DoAdd(DefaultPartition, key, value, DateTime.UtcNow + _settings.StaticInterval, _settings.StaticInterval));
-        }
-
         public void AddTimed(string partition, string key, object value, DateTime utcExpiry)
         {
             DoAdd(partition, key, value, utcExpiry, null);
-        }
-
-        public void AddTimed(string key, object value, DateTime utcExpiry)
-        {
-            DoAdd(DefaultPartition, key, value, utcExpiry, null);
-        }
-
-        public Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry)
-        {
-            return TaskEx.Run(() => DoAdd(partition, key, value, utcExpiry, null));
-        }
-
-        public Task AddTimedAsync(string key, object value, DateTime utcExpiry)
-        {
-            return TaskEx.Run(() => DoAdd(DefaultPartition, key, value, utcExpiry, null));
         }
 
         public void Clear()
@@ -166,21 +114,6 @@ namespace PommaLabs.KVLite.Core
             DoClear(partition);
         }
 
-        public bool Contains(string key)
-        {
-            return Contains(DefaultPartition, key);
-        }
-
-        public int Count()
-        {
-            return Convert.ToInt32(DoCount(null));
-        }
-
-        public int Count(string partition)
-        {
-            return Convert.ToInt32(DoCount(partition));
-        }
-
         public long LongCount()
         {
             return DoCount(null);
@@ -189,26 +122,6 @@ namespace PommaLabs.KVLite.Core
         public long LongCount(string partition)
         {
             return DoCount(partition);
-        }
-
-        public object Get(string partition, string key)
-        {
-            return DoGetOne(partition, key);
-        }
-
-        public object Get(string key)
-        {
-            return DoGetOne(DefaultPartition, key);
-        }
-
-        public CacheItem GetItem(string partition, string key)
-        {
-            return DoGetOneItem(partition, key);
-        }
-
-        public CacheItem GetItem(string key)
-        {
-            return DoGetOneItem(DefaultPartition, key);
         }
 
         public IList<CacheItem> GetManyItems()
@@ -221,26 +134,6 @@ namespace PommaLabs.KVLite.Core
             return DoGetManyItems(partition);
         }
 
-        public object Peek(string partition, string key)
-        {
-            return DoPeekOneItem(partition, key);
-        }
-
-        public object Peek(string key)
-        {
-            return DoPeekOne(DefaultPartition, key);
-        }
-
-        public CacheItem PeekItem(string partition, string key)
-        {
-            return DoPeekOneItem(partition, key);
-        }
-
-        public CacheItem PeekItem(string key)
-        {
-            return DoPeekOneItem(DefaultPartition, key);
-        }
-
         public IList<CacheItem> PeekManyItems()
         {
             return DoPeekManyItems(null);
@@ -251,26 +144,19 @@ namespace PommaLabs.KVLite.Core
             return DoPeekManyItems(partition);
         }
 
-        public void Remove(string key)
-        {
-            Remove(DefaultPartition, key);
-        }
-
-        public Task RemoveAsync(string partition, string key)
-        {
-            return TaskEx.Run(() => Remove(partition, key));
-        }
-
-        public Task RemoveAsync(string key)
-        {
-            return TaskEx.Run(() => Remove(DefaultPartition, key));
-        }
-
         #endregion ICache Members
 
         #region Abstract Methods
 
         public abstract bool Contains(string partition, string key);
+
+        public abstract object Get(string partition, string key);
+
+        public abstract CacheItem GetItem(string partition, string key);
+
+        public abstract object Peek(string partition, string key);
+
+        public abstract CacheItem PeekItem(string partition, string key);
 
         public abstract void Remove(string partition, string key);
 
@@ -301,31 +187,7 @@ namespace PommaLabs.KVLite.Core
         ///   TODO
         /// </summary>
         /// <returns></returns>
-        protected abstract object DoGetOne(string partition, string key);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <returns></returns>
-        protected abstract CacheItem DoGetOneItem(string partition, string key);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <returns></returns>
         protected abstract IList<CacheItem> DoGetManyItems(string partition);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <returns></returns>
-        protected abstract object DoPeekOne(string partition, string key);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <returns></returns>
-        protected abstract CacheItem DoPeekOneItem(string partition, string key);
 
         /// <summary>
         ///   TODO

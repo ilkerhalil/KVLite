@@ -141,7 +141,7 @@ namespace UnitTests
                 DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.AddMinutes(10));
             }
             for (var i = 0; i < itemCount; ++i) {
-                var item = (string) DefaultInstance.Get(StringItems[i]);
+                var item = DefaultInstance.Get<string>(StringItems[i]);
                 Assert.IsNotNull(item);
                 Assert.AreEqual(StringItems[i], item);
             }

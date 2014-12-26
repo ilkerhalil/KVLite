@@ -37,6 +37,7 @@ namespace PommaLabs.KVLite.Core
     {
         #region Fields
 
+        private string _defaultPartition;
         private int _staticIntervalInDays;
 
         internal TimeSpan StaticInterval;
@@ -47,12 +48,31 @@ namespace PommaLabs.KVLite.Core
 
         internal CacheSettingsBase()
         {
+            DefaultPartition = Settings.Default.DefaultPartition;
             StaticIntervalInDays = Settings.Default.DefaultStaticIntervalInDays;
         }
 
         #endregion Construction
 
         #region Settings
+
+        /// <summary>
+        ///   The partition used when none is specified.
+        /// </summary>
+        public string DefaultPartition
+        {
+            get
+            {
+                Contract.Ensures(!String.IsNullOrWhiteSpace(Contract.Result<string>()));
+                return _defaultPartition;
+            }
+            set
+            {
+                Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(value));
+                _defaultPartition = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         ///   How many days static values will last.

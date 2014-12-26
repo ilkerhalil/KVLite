@@ -191,7 +191,7 @@ namespace Benchmarks
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             foreach (var table in tables) {
-                var returnedTable = PersistentCache.DefaultInstance.Get(table.TableName) as DataTable;
+                var returnedTable = PersistentCache.DefaultInstance.Get<DataTable>(table.TableName);
                 if (returnedTable == null || returnedTable.TableName != table.TableName) {
                     throw new Exception("Wrong data table read from cache! :(");
                 }

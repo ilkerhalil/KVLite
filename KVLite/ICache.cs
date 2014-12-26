@@ -26,7 +26,6 @@ using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
 {
@@ -45,6 +44,11 @@ namespace PommaLabs.KVLite
         CacheKind Kind { get; }
 
         /// <summary>
+        ///   The available settings for the cache.
+        /// </summary>
+        CacheSettingsBase Settings { get; }
+
+        /// <summary>
         ///   TODO
         /// </summary>
         /// <param name="partition"></param>
@@ -52,14 +56,6 @@ namespace PommaLabs.KVLite
         /// <returns></returns>
         [Pure]
         object this[string partition, string key] { get; }
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        [Pure]
-        object this[string key] { get; }
 
         /// <summary>
         ///   TODO
@@ -72,96 +68,12 @@ namespace PommaLabs.KVLite
         void AddSliding(string partition, string key, object value, TimeSpan interval);
 
         /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="interval"></param>
-        /// <returns></returns>
-        void AddSliding(string key, object value, TimeSpan interval);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="interval"></param>
-        /// <returns></returns>
-        Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="interval"></param>
-        /// <returns></returns>
-        Task AddSlidingAsync(string key, object value, TimeSpan interval);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        void AddStatic(string partition, string key, object value);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        void AddStatic(string key, object value);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        Task AddStaticAsync(string partition, string key, object value);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        Task AddStaticAsync(string key, object value);
-
-        /// <summary>
         ///   </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="utcExpiry"></param>
         void AddTimed(string partition, string key, object value, DateTime utcExpiry);
-
-        /// <summary>
-        ///   </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="utcExpiry"></param>
-        void AddTimed(string key, object value, DateTime utcExpiry);
-
-        /// <summary>
-        ///   </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="utcExpiry"></param>
-        Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry);
-
-        /// <summary>
-        ///   </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="utcExpiry"></param>
-        Task AddTimedAsync(string key, object value, DateTime utcExpiry);
 
         /// <summary>
         ///   TODO
@@ -181,28 +93,6 @@ namespace PommaLabs.KVLite
         /// <returns></returns>
         [Pure]
         bool Contains(string partition, string key);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        [Pure]
-        bool Contains(string key);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <returns></returns>
-        [Pure]
-        int Count();
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <returns></returns>
-        [Pure]
-        int Count(string partition);
 
         /// <summary>
         ///   TODO
@@ -229,24 +119,10 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   TODO
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        object Get(string key);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <returns></returns>
         CacheItem GetItem(string partition, string key);
-
-        /// <summary>
-        ///   TODO
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        CacheItem GetItem(string key);
 
         /// <summary>
         ///   </summary>
@@ -268,13 +144,6 @@ namespace PommaLabs.KVLite
         object Peek(string partition, string key);
 
         /// <summary>
-        ///   Gets the value corresponding to given key, without updating expiry date.
-        /// </summary>
-        /// <returns>The value corresponding to given key, without updating expiry date.</returns>
-        [Pure]
-        object Peek(string key);
-
-        /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
         /// </summary>
         /// <returns>
@@ -282,13 +151,6 @@ namespace PommaLabs.KVLite
         /// </returns>
         [Pure]
         CacheItem PeekItem(string partition, string key);
-
-        /// <summary>
-        ///   Gets the item corresponding to given key, without updating expiry date.
-        /// </summary>
-        /// <returns>The item corresponding to given key, without updating expiry date.</returns>
-        [Pure]
-        CacheItem PeekItem(string key);
 
         /// <summary>
         ///   </summary>
@@ -307,24 +169,6 @@ namespace PommaLabs.KVLite
         /// <param name="partition"></param>
         /// <param name="key"></param>
         void Remove(string partition, string key);
-
-        /// <summary>
-        ///   </summary>
-        /// <param name="key"></param>
-        void Remove(string key);
-
-        /// <summary>
-        ///   </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        Task RemoveAsync(string partition, string key);
-
-        /// <summary>
-        ///   </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        Task RemoveAsync(string key);
     }
 
     /// <summary>
@@ -339,6 +183,6 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The available settings for the cache.
         /// </summary>
-        TCacheSettings Settings { get; }
+        new TCacheSettings Settings { get; }
     }
 }

@@ -76,5 +76,14 @@ namespace PommaLabs.KVLite.Properties {
                 return ((int)(this["PCache_DefaultMaxLogSizeInMB"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("_DEFAULT_PARTITION_")]
+        public string DefaultPartition {
+            get {
+                return ((string)(this["DefaultPartition"]));
+            }
+        }
     }
 }
