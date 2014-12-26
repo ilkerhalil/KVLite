@@ -1,14 +1,37 @@
-﻿using System;
+﻿// File name: TestBase.cs
+// 
+// Author(s): Alessio Parma <alessio.parma@gmail.com>
+// 
+// The MIT License (MIT)
+// 
+// Copyright (c) 2014-2015 Alessio Parma <alessio.parma@gmail.com>
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+using NUnit.Framework;
+using PommaLabs.GRAMPA.Testing;
+using PommaLabs.KVLite;
+using PommaLabs.KVLite.Properties;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using PommaLabs.GRAMPA.Testing;
-using PommaLabs.KVLite;
-using PommaLabs.KVLite.Properties;
 
 namespace UnitTests
 {
@@ -29,276 +52,22 @@ namespace UnitTests
             DefaultInstance.Clear();
         }
 
-        #endregion
+        #endregion Setup/Teardown
 
-        protected abstract ICache DefaultInstance { get; }
-
-        protected const int SmallItemCount = 10;
-        protected const int MediumItemCount = 100;
         protected const int LargeItemCount = 1000;
 
-        private const int MinItem = 10000;
+        protected const int MediumItemCount = 100;
+
+        protected const int SmallItemCount = 10;
 
         protected static readonly List<string> StringItems = Enumerable
             .Range(MinItem, LargeItemCount)
             .Select(x => x.ToString(CultureInfo.InvariantCulture))
             .ToList();
 
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void AddTimed_TwoTimes(int itemCount)
-        {
-            for (var i = 0; i < itemCount; ++i) {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
-                Assert.True(DefaultInstance.Contains(StringItems[i]));
-            }
-            for (var i = 0; i < itemCount; ++i) {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
-                Assert.True(DefaultInstance.Contains(StringItems[i]));
-            }
-        }
+        private const int MinItem = 10000;
 
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void AddTimed_TwoTimes_Concurrent(int itemCount)
-        {
-            var tasks = new List<Task>();
-            for (var i = 0; i < itemCount; ++i) {
-                var l = i;
-                var task = Task.Factory.StartNew(() => {
-                    DefaultInstance.AddTimed(StringItems[l], StringItems[l], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
-                    DefaultInstance.Contains(StringItems[l]);
-                });
-                tasks.Add(task);
-            }
-            for (var i = 0; i < itemCount; ++i) {
-                var l = i;
-                var task = Task.Factory.StartNew(() => {
-                    DefaultInstance.AddTimed(StringItems[l], StringItems[l], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
-                    DefaultInstance.Contains(StringItems[l]);
-                });
-                tasks.Add(task);
-            }
-            foreach (var task in tasks) {
-                task.Wait();
-            }
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void AddTimed_TwoTimes_CheckItems(int itemCount)
-        {
-            for (var i = 0; i < itemCount; ++i) {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
-                Assert.True(DefaultInstance.Contains(StringItems[i]));
-            }
-            for (var i = 0; i < itemCount; ++i) {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
-                Assert.True(DefaultInstance.Contains(StringItems[i]));
-            }
-            var items = DefaultInstance.GetManyItems();
-            for (var i = 0; i < itemCount; ++i) {
-                var s = StringItems[i];
-                Assert.True(items.Count(x => x.Key == s && (string) x.Value == s) == 1);
-            }
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void Get_EmptyCache(int itemCount)
-        {
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.IsNull(DefaultInstance.Get(StringItems[i]));
-            }
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void Get_EmptyCache_Concurrent(int itemCount)
-        {
-            var tasks = new List<Task<object>>();
-            for (var i = 0; i < itemCount; ++i) {
-                var l = i;
-                var task = TaskEx.Run(() => DefaultInstance.Get(StringItems[l]));
-                tasks.Add(task);
-            }
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.IsNull(tasks[i].Result);
-            }
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void Get_FullCache(int itemCount)
-        {
-            for (var i = 0; i < itemCount; ++i) {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.AddMinutes(10));
-            }
-            for (var i = 0; i < itemCount; ++i) {
-                var item = DefaultInstance.Get<string>(StringItems[i]);
-                Assert.IsNotNull(item);
-                Assert.AreEqual(StringItems[i], item);
-            }
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void GetItem_FullSlidingCache_TimeIncreased(int itemCount)
-        {
-            var times = new List<DateTime>();
-            for (var i = 0; i < itemCount; ++i) {
-                DefaultInstance.AddSliding(StringItems[i], StringItems[i], TimeSpan.FromMinutes(10));
-                times.Add(DateTime.UtcNow.AddMinutes(10));
-            }
-            Thread.Sleep(1000);
-            for (var i = 0; i < itemCount; ++i) {
-                var item = DefaultInstance.GetItem(StringItems[i]);
-                Assert.IsNotNull(item);
-                Assert.GreaterOrEqual(item.UtcExpiry, times[i]);
-            }
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void GetItems_FullSlidingCache_TimeIncreased(int itemCount)
-        {
-            var times = new List<DateTime>();
-            for (var i = 0; i < itemCount; ++i) {
-                DefaultInstance.AddSliding(StringItems[i], StringItems[i], TimeSpan.FromMinutes(10));
-                times.Add(DateTime.UtcNow.AddMinutes(10));
-            }
-            Thread.Sleep(1000);
-            var items = DefaultInstance.GetManyItems();
-            for (var i = 0; i < itemCount; ++i) {
-                var item = items[i];
-                Assert.IsNotNull(item);
-                Assert.GreaterOrEqual(item.UtcExpiry, times[i]);
-            }
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void Get_FullCache_Outdated(int itemCount)
-        {
-            for (var i = 0; i < itemCount; ++i) {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
-            }
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.IsNull(DefaultInstance.Get(StringItems[i]));
-            }
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void GetAll_RightItems_AfterAddTimed_ValidTime(int itemCount)
-        {
-            AddTimed(DefaultInstance, itemCount, DateTime.UtcNow.AddMinutes(10));
-            var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.True(items.Contains(StringItems[i]));
-            }
-            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.True(items.Contains(StringItems[i]));
-            }
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void GetAll_RightItems_AfterAddTimed_InvalidTime(int itemCount)
-        {
-            AddTimed(DefaultInstance, itemCount, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
-            var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.False(items.Contains(StringItems[i]));
-            }
-            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.False(items.Contains(StringItems[i]));
-            }
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void GetAll_RightItems_AfterAddSliding_ValidTime(int itemCount)
-        {
-            AddSliding(DefaultInstance, itemCount, TimeSpan.FromHours(1));
-            var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.True(items.Contains(StringItems[i]));
-            }
-            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.True(items.Contains(StringItems[i]));
-            }
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void GetAll_RightItems_AfterAddSliding_InvalidTime(int itemCount)
-        {
-            AddSliding(DefaultInstance, itemCount, TimeSpan.FromSeconds(1));
-            Thread.Sleep(2000); // Waits to seconds, to let the value expire...
-            var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.False(items.Contains(StringItems[i]));
-            }
-            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.False(items.Contains(StringItems[i]));
-            }
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void GetAll_RightItems_AfterAddStatic(int itemCount)
-        {
-            AddStatic(DefaultInstance, itemCount);
-            var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.True(items.Contains(StringItems[i]));
-            }
-            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
-            for (var i = 0; i < itemCount; ++i) {
-                Assert.True(items.Contains(StringItems[i]));
-            }
-        }
-
-        protected static void AddStatic(ICache instance, int itemCount)
-        {
-            for (var i = 0; i < itemCount; ++i) {
-                instance.AddStatic(StringItems[i], StringItems[i]);
-            }
-        }
-
-        protected static void AddSliding(ICache instance, int itemCount, TimeSpan interval)
-        {
-            for (var i = 0; i < itemCount; ++i) {
-                instance.AddSliding(StringItems[i], StringItems[i], interval);
-            }
-        }
-
-        protected static void AddTimed(ICache instance, int itemCount, DateTime utcTime)
-        {
-            for (var i = 0; i < itemCount; ++i) {
-                instance.AddTimed(StringItems[i], StringItems[i], utcTime);
-            }
-        }
-
+        protected abstract ICache DefaultInstance { get; }
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void AddSliding_NullKey()
@@ -427,6 +196,77 @@ namespace UnitTests
             Assert.IsNull(info.Interval);
         }
 
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void AddTimed_TwoTimes(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                Assert.True(DefaultInstance.Contains(StringItems[i]));
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                Assert.True(DefaultInstance.Contains(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void AddTimed_TwoTimes_CheckItems(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                Assert.True(DefaultInstance.Contains(StringItems[i]));
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                Assert.True(DefaultInstance.Contains(StringItems[i]));
+            }
+            var items = DefaultInstance.GetManyItems();
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var s = StringItems[i];
+                Assert.True(items.Count(x => x.Key == s && (string) x.Value == s) == 1);
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void AddTimed_TwoTimes_Concurrent(int itemCount)
+        {
+            var tasks = new List<Task>();
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var l = i;
+                var task = Task.Factory.StartNew(() =>
+                {
+                    DefaultInstance.AddTimed(StringItems[l], StringItems[l], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                    DefaultInstance.Contains(StringItems[l]);
+                });
+                tasks.Add(task);
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var l = i;
+                var task = Task.Factory.StartNew(() =>
+                {
+                    DefaultInstance.AddTimed(StringItems[l], StringItems[l], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                    DefaultInstance.Contains(StringItems[l]);
+                });
+                tasks.Add(task);
+            }
+            foreach (var task in tasks)
+            {
+                task.Wait();
+            }
+        }
         [Test]
         public void AddTimed_TwoValues_SameKey()
         {
@@ -437,17 +277,286 @@ namespace UnitTests
         }
 
         [Test]
+        public void Count_EmptyCache()
+        {
+            Assert.AreEqual(0, DefaultInstance.Count());
+            Assert.AreEqual(0, DefaultInstance.Count(StringItems[0]));
+            Assert.AreEqual(0, DefaultInstance.LongCount());
+            Assert.AreEqual(0, DefaultInstance.LongCount(StringItems[0]));
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Count_FullCache_OnePartition(int itemCount)
+        {
+            var partition = StringItems[0];
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddStatic(partition, StringItems[i], StringItems[i]);
+            }
+            Assert.AreEqual(itemCount, DefaultInstance.Count());
+            Assert.AreEqual(itemCount, DefaultInstance.Count(partition));
+            Assert.AreEqual(itemCount, DefaultInstance.LongCount());
+            Assert.AreEqual(itemCount, DefaultInstance.LongCount(partition));
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Count_FullCache_TwoPartitions(int itemCount)
+        {
+            var i = 0;
+            var partition1 = StringItems[0];
+            var p1Count = itemCount/3;
+            for (i = 0; i < itemCount / 3; ++i)
+            {
+                DefaultInstance.AddStatic(partition1, StringItems[i], StringItems[i]);
+            }
+            var partition2 = StringItems[1];
+            for (; i < itemCount; ++i)
+            {
+                DefaultInstance.AddStatic(partition2, StringItems[i], StringItems[i]);
+            }
+            Assert.AreEqual(itemCount, DefaultInstance.Count());
+            Assert.AreEqual(p1Count, DefaultInstance.Count(partition1));
+            Assert.AreEqual(itemCount - p1Count, DefaultInstance.Count(partition2));
+            Assert.AreEqual(itemCount, DefaultInstance.LongCount());
+            Assert.AreEqual(p1Count, DefaultInstance.LongCount(partition1));
+            Assert.AreEqual(itemCount - p1Count, DefaultInstance.LongCount(partition2));
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Get_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.Get(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Get_EmptyCache_Concurrent(int itemCount)
+        {
+            var tasks = new List<Task<object>>();
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var l = i;
+                var task = TaskEx.Run(() => DefaultInstance.Get(StringItems[l]));
+                tasks.Add(task);
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(tasks[i].Result);
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Get_FullCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.AddMinutes(10));
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var item = DefaultInstance.Get<string>(StringItems[i]);
+                Assert.IsNotNull(item);
+                Assert.AreEqual(StringItems[i], item);
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Get_FullCache_Outdated(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.Get(StringItems[i]));
+            }
+        }
+
+        [Test]
         public void Get_LargeDataTable()
         {
             var dt = new RandomDataTableGenerator("A123", "Test", "Pi", "<3", "Pu").GenerateDataTable(LargeItemCount);
             DefaultInstance.AddStatic(dt.TableName, dt);
             var storedDt = DefaultInstance.Get(dt.TableName) as DataTable;
             Assert.AreEqual(dt.Rows.Count, storedDt.Rows.Count);
-            for (var i = 0; i < dt.Rows.Count; ++i) {
+            for (var i = 0; i < dt.Rows.Count; ++i)
+            {
                 Assert.AreEqual(dt.Rows[i].ItemArray.Length, storedDt.Rows[i].ItemArray.Length);
-                for (var j = 0; j < dt.Rows[i].ItemArray.Length; ++j) {
+                for (var j = 0; j < dt.Rows[i].ItemArray.Length; ++j)
+                {
                     Assert.AreEqual(dt.Rows[i].ItemArray[j], storedDt.Rows[i].ItemArray[j]);
                 }
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void GetMany_RightItems_AfterAddSliding_InvalidTime(int itemCount)
+        {
+            AddSliding(DefaultInstance, itemCount, TimeSpan.FromSeconds(1));
+            Thread.Sleep(2000); // Waits to seconds, to let the value expire...
+            var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.False(items.Contains(StringItems[i]));
+            }
+            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.False(items.Contains(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void GetMany_RightItems_AfterAddSliding_ValidTime(int itemCount)
+        {
+            AddSliding(DefaultInstance, itemCount, TimeSpan.FromHours(1));
+            var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.True(items.Contains(StringItems[i]));
+            }
+            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.True(items.Contains(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void GetMany_RightItems_AfterAddStatic(int itemCount)
+        {
+            AddStatic(DefaultInstance, itemCount);
+            var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.True(items.Contains(StringItems[i]));
+            }
+            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.True(items.Contains(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void GetMany_RightItems_AfterAddTimed_InvalidTime(int itemCount)
+        {
+            AddTimed(DefaultInstance, itemCount, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.False(items.Contains(StringItems[i]));
+            }
+            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.False(items.Contains(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void GetMany_RightItems_AfterAddTimed_ValidTime(int itemCount)
+        {
+            AddTimed(DefaultInstance, itemCount, DateTime.UtcNow.AddMinutes(10));
+            var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.True(items.Contains(StringItems[i]));
+            }
+            items = new HashSet<string>(DefaultInstance.GetManyItems().Select(x => (string) x.Value));
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.True(items.Contains(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void GetItem_FullSlidingCache_TimeIncreased(int itemCount)
+        {
+            var times = new List<DateTime>();
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddSliding(StringItems[i], StringItems[i], TimeSpan.FromMinutes(10));
+                times.Add(DateTime.UtcNow.AddMinutes(10));
+            }
+            Thread.Sleep(1000);
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var item = DefaultInstance.GetItem(StringItems[i]);
+                Assert.IsNotNull(item);
+                Assert.GreaterOrEqual(item.UtcExpiry, times[i]);
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void GetManyItems_FullSlidingCache_TimeIncreased(int itemCount)
+        {
+            var times = new List<DateTime>();
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddSliding(StringItems[i], StringItems[i], TimeSpan.FromMinutes(10));
+                times.Add(DateTime.UtcNow.AddMinutes(10));
+            }
+            Thread.Sleep(1000);
+            var items = DefaultInstance.GetManyItems();
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var item = items[i];
+                Assert.IsNotNull(item);
+                Assert.GreaterOrEqual(item.UtcExpiry, times[i]);
+            }
+        }
+
+        protected static void AddSliding(ICache instance, int itemCount, TimeSpan interval)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                instance.AddSliding(StringItems[i], StringItems[i], interval);
+            }
+        }
+
+        protected static void AddStatic(ICache instance, int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                instance.AddStatic(StringItems[i], StringItems[i]);
+            }
+        }
+
+        protected static void AddTimed(ICache instance, int itemCount, DateTime utcTime)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                instance.AddTimed(StringItems[i], StringItems[i], utcTime);
             }
         }
     }
