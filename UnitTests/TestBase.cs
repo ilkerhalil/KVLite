@@ -400,6 +400,39 @@ namespace UnitTests
         [TestCase(SmallItemCount)]
         [TestCase(MediumItemCount)]
         [TestCase(LargeItemCount)]
+        public void Get_Typed_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.Get<string>(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void GetItem_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.GetItem(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void GetItem_Typed_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.GetItem<string>(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
         public void Get_EmptyCache_Concurrent(int itemCount)
         {
             var tasks = new List<Task<object>>();

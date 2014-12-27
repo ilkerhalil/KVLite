@@ -22,7 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Properties;
@@ -157,6 +159,106 @@ namespace UnitTests
             } catch (Exception ex) {
                 Assert.IsInstanceOf<ArgumentException>(ex);
                 Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Peek_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.Peek(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Peek_Typed_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.Peek<string>(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void PeekItem_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.PeekItem(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void PeekItem_Typed_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.PeekItem<string>(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Peek_EmptyCache_Concurrent(int itemCount)
+        {
+            var tasks = new List<Task<object>>();
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var l = i;
+                var task = TaskEx.Run(() => DefaultInstance.Peek(StringItems[l]));
+                tasks.Add(task);
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(tasks[i].Result);
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Peek_FullCache_ExpiryNotChanged(int itemCount)
+        {
+            var expiryDate = DateTime.UtcNow.AddMinutes(10);
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], expiryDate);
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var value = DefaultInstance.Peek<string>(StringItems[i]);
+                Assert.IsNotNull(value);
+                Assert.AreEqual(StringItems[i], value);
+                var item = DefaultInstance.PeekItem<string>(StringItems[i]);
+                Assert.AreEqual(expiryDate.Date, item.UtcExpiry.Value.Date);
+                Assert.AreEqual(expiryDate.Hour, item.UtcExpiry.Value.Hour);
+                Assert.AreEqual(expiryDate.Minute, item.UtcExpiry.Value.Minute);
+                Assert.AreEqual(expiryDate.Second, item.UtcExpiry.Value.Second);
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Peek_FullCache_Outdated(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.Peek(StringItems[i]));
             }
         }
     }
