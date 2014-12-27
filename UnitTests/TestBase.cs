@@ -68,6 +68,7 @@ namespace UnitTests
         private const int MinItem = 10000;
 
         protected abstract ICache DefaultInstance { get; }
+
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void AddSliding_NullKey()
@@ -91,13 +92,31 @@ namespace UnitTests
             var v2 = StringItems[3];
             var i = TimeSpan.FromMinutes(10);
             DefaultInstance.AddSliding(p, k, Tuple.Create(v1, v2), i);
-            var info = DefaultInstance.GetItem(p, k);
+            var info = DefaultInstance.GetItem<Tuple<string, string>>(p, k);
             Assert.IsNotNull(info);
             Assert.AreEqual(p, info.Partition);
             Assert.AreEqual(k, info.Key);
-            var infoValue = info.Value as Tuple<string, string>;
-            Assert.AreEqual(v1, infoValue.Item1);
-            Assert.AreEqual(v2, infoValue.Item2);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(i, info.Interval);
+        }
+
+        [Test]
+        public void AddSlidingAsync_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var i = TimeSpan.FromMinutes(10);
+            DefaultInstance.AddSlidingAsync(p, k, Tuple.Create(v1, v2), i).Wait();
+            var info = DefaultInstance.GetItem<Tuple<string, string>>(p, k);
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
             Assert.IsNotNull(info.UtcExpiry);
             Assert.AreEqual(i, info.Interval);
         }
@@ -131,15 +150,32 @@ namespace UnitTests
             var v1 = StringItems[2];
             var v2 = StringItems[3];
             DefaultInstance.AddStatic(p, k, Tuple.Create(v1, v2));
-            var info = DefaultInstance.GetItem(p, k);
+            var info = DefaultInstance.GetItem<Tuple<string, string>>(p, k);
             Assert.IsNotNull(info);
             Assert.AreEqual(p, info.Partition);
             Assert.AreEqual(k, info.Key);
-            var infoValue = info.Value as Tuple<string, string>;
-            Assert.AreEqual(v1, infoValue.Item1);
-            Assert.AreEqual(v2, infoValue.Item2);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(TimeSpan.FromDays(Settings.Default.DefaultStaticIntervalInDays), info.Interval);
+            Assert.AreEqual(TimeSpan.FromDays(Settings.Default.DefaultStaticIntervalInDays_ForAllCaches), info.Interval);
+        }
+
+        [Test]
+        public void AddStaticAsync_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            DefaultInstance.AddStaticAsync(p, k, Tuple.Create(v1, v2)).Wait();
+            var info = DefaultInstance.GetItem<Tuple<string, string>>(p, k);
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(TimeSpan.FromDays(Settings.Default.DefaultStaticIntervalInDays_ForAllCaches), info.Interval);
         }
 
         [Test]
@@ -179,13 +215,37 @@ namespace UnitTests
             var v2 = StringItems[3];
             var e = DateTime.Now.AddMinutes(10);
             DefaultInstance.AddTimed(p, k, Tuple.Create(v1, v2), e);
-            var info = DefaultInstance.GetItem(p, k);
+            var info = DefaultInstance.GetItem<Tuple<string, string>>(p, k);
             Assert.IsNotNull(info);
             Assert.AreEqual(p, info.Partition);
             Assert.AreEqual(k, info.Key);
-            var infoValue = info.Value as Tuple<string, string>;
-            Assert.AreEqual(v1, infoValue.Item1);
-            Assert.AreEqual(v2, infoValue.Item2);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Value.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Value.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Value.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Value.Second);
+
+            Assert.IsNull(info.Interval);
+        }
+
+        [Test]
+        public void AddTimedAsync_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var e = DateTime.Now.AddMinutes(10);
+            DefaultInstance.AddTimedAsync(p, k, Tuple.Create(v1, v2), e).Wait();
+            var info = DefaultInstance.GetItem<Tuple<string, string>>(p, k);
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
 
             Assert.IsNotNull(info.UtcExpiry);
             Assert.AreEqual(e.Date, info.UtcExpiry.Value.Date);

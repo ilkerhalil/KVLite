@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool;
+using Common.Logging;
 using Dapper;
 using PommaLabs.GRAMPA;
 using PommaLabs.GRAMPA.Extensions;
@@ -76,9 +77,12 @@ namespace PommaLabs.KVLite
 
         static PersistentCache()
         {
-            // Make SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
+            // Makes SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
             var nativePath = (GEnvironment.AppIsRunningOnAspNet ? "bin/KVLite/" : "KVLite/").MapPath();
             Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
+
+            // Logs the path where SQLite has been set.
+            LogManager.GetCurrentClassLogger().InfoFormat("SQLite native libraries set at {0}", nativePath);
         }
 
         /// <summary>

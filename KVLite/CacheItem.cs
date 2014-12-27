@@ -30,35 +30,41 @@ using System.Collections.Generic;
 namespace PommaLabs.KVLite
 {
     /// <summary>
-    ///   TODO
+    ///   An item that is stored in the cache.
     /// </summary>
-    [Serializable, JsonObject]
-    public sealed class CacheItem : EquatableObject<CacheItem>
+    [Serializable, JsonObject(MemberSerialization.OptIn)]
+    public class CacheItem : EquatableObject<CacheItem>
     {
         #region Public Properties
 
         /// <summary>
         ///   </summary>
+        [JsonProperty(Order = 0)]
         public string Partition { get; set; }
 
         /// <summary>
         ///   </summary>
+        [JsonProperty(Order = 1)]
         public string Key { get; set; }
 
         /// <summary>
         ///   </summary>
+        [JsonProperty(Order = 2)]
         public object Value { get; set; }
 
         /// <summary>
         ///   </summary>
+        [JsonProperty(Order = 3)]
         public DateTime UtcCreation { get; set; }
 
         /// <summary>
         ///   </summary>
+        [JsonProperty(Order = 4)]
         public DateTime? UtcExpiry { get; set; }
 
         /// <summary>
         ///   </summary>
+        [JsonProperty(Order = 5)]
         public TimeSpan? Interval { get; set; }
 
         #endregion Public Properties
@@ -79,5 +85,22 @@ namespace PommaLabs.KVLite
         }
 
         #endregion EquatableObject<CacheItem> Members
+    }
+
+    /// <summary>
+    ///   A cache item whose value is typed.
+    /// </summary>
+    /// <typeparam name="TVal">The type of the value.</typeparam>
+    [Serializable, JsonObject(MemberSerialization.OptIn)]
+    public sealed class CacheItem<TVal> : CacheItem
+    {
+        #region Public Properties
+
+        /// <summary>
+        ///   </summary>
+        [JsonProperty(Order = 2)]
+        public new TVal Value { get; set; }
+
+        #endregion Public Properties
     }
 }

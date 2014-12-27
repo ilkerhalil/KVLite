@@ -48,8 +48,8 @@ namespace PommaLabs.KVLite.Core
 
         internal CacheSettingsBase()
         {
-            DefaultPartition = Settings.Default.DefaultPartition;
-            StaticIntervalInDays = Settings.Default.DefaultStaticIntervalInDays;
+            DefaultPartition = Settings.Default.DefaultPartition_ForAllCaches;
+            StaticIntervalInDays = Settings.Default.DefaultStaticIntervalInDays_ForAllCaches;
         }
 
         #endregion Construction

@@ -92,7 +92,7 @@ namespace PommaLabs.KVLite
         {
             return cache.Peek(cache.Settings.DefaultPartition, key);
         }
-        
+
         /// <summary>
         ///   Gets the item corresponding to given key, without updating expiry date.
         /// </summary>
@@ -108,7 +108,7 @@ namespace PommaLabs.KVLite
             cache.Remove(cache.Settings.DefaultPartition, key);
         }
 
-        #endregion
+        #endregion Default Partition
 
         #region Async Methods
 
@@ -168,30 +168,94 @@ namespace PommaLabs.KVLite
             return TaskEx.Run(() => cache.Remove(cache.Settings.DefaultPartition, key));
         }
 
-        #endregion
+        #endregion Async Methods
 
         #region Typed Retrieval
 
-        public static TObj Get<TObj>(this ICache cache, string partition, string key)
+        public static TVal Get<TVal>(this ICache cache, string partition, string key)
         {
-            return (TObj) cache.Get(partition, key);
+            return (TVal) cache.Get(partition, key);
         }
 
-        public static TObj Get<TObj>(this ICache cache, string key)
+        public static TVal Get<TVal>(this ICache cache, string key)
         {
-            return (TObj) cache.Get(cache.Settings.DefaultPartition, key);
+            return (TVal) cache.Get(cache.Settings.DefaultPartition, key);
         }
 
-        public static TObj Peek<TObj>(this ICache cache, string partition, string key)
+        public static CacheItem<TVal> GetItem<TVal>(this ICache cache, string partition, string key)
         {
-            return (TObj) cache.Peek(partition, key);
+            var item = cache.GetItem(partition, key);
+            return (item == null)
+                ? null
+                : new CacheItem<TVal>
+                {
+                    Partition = item.Partition,
+                    Key = item.Key,
+                    Value = (TVal) item.Value,
+                    UtcCreation = item.UtcCreation,
+                    UtcExpiry = item.UtcExpiry,
+                    Interval = item.Interval
+                };
         }
 
-        public static TObj Peek<TObj>(this ICache cache, string key)
+        public static CacheItem<TVal> GetItem<TVal>(this ICache cache, string key)
         {
-            return (TObj) cache.Peek(cache.Settings.DefaultPartition, key);
+            var item = cache.GetItem(cache.Settings.DefaultPartition, key);
+            return (item == null)
+                ? null
+                : new CacheItem<TVal>
+                {
+                    Partition = item.Partition,
+                    Key = item.Key,
+                    Value = (TVal) item.Value,
+                    UtcCreation = item.UtcCreation,
+                    UtcExpiry = item.UtcExpiry,
+                    Interval = item.Interval
+                };
         }
 
-        #endregion
+        public static TVal Peek<TVal>(this ICache cache, string partition, string key)
+        {
+            return (TVal) cache.Peek(partition, key);
+        }
+
+        public static TVal Peek<TVal>(this ICache cache, string key)
+        {
+            return (TVal) cache.Peek(cache.Settings.DefaultPartition, key);
+        }
+
+        public static CacheItem<TVal> PeekItem<TVal>(this ICache cache, string partition, string key)
+        {
+            var item = cache.PeekItem(partition, key);
+            return (item == null)
+                ? null
+                : new CacheItem<TVal>
+                {
+                    Partition = item.Partition,
+                    Key = item.Key,
+                    Value = (TVal) item.Value,
+                    UtcCreation = item.UtcCreation,
+                    UtcExpiry = item.UtcExpiry,
+                    Interval = item.Interval
+                };
+        }
+
+        public static CacheItem<TVal> PeekItem<TVal>(this ICache cache, string key)
+        {
+            var item = cache.PeekItem(cache.Settings.DefaultPartition, key);
+            return (item == null)
+                ? null
+                : new CacheItem<TVal>
+                {
+                    Partition = item.Partition,
+                    Key = item.Key,
+                    Value = (TVal) item.Value,
+                    UtcCreation = item.UtcCreation,
+                    UtcExpiry = item.UtcExpiry,
+                    Interval = item.Interval
+                };
+        }
+
+        #endregion Typed Retrieval
     }
 }

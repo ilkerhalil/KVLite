@@ -1,61 +1,58 @@
-﻿//
-// CachingBootstrapper.cs
+﻿// File name: CachingBootstrapper.cs
 // 
-// Author(s):
-//     Alessio Parma <alessio.parma@gmail.com>
-//
+// Author(s): Alessio Parma <alessio.parma@gmail.com>
+// 
 // The MIT License (MIT)
 // 
 // Copyright (c) 2014-2015 Alessio Parma <alessio.parma@gmail.com>
 // 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 // 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
 // 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
+using Common.Logging;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
 using PommaLabs.KVLite.Properties;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 
 namespace PommaLabs.KVLite.Nancy
 {
     [CLSCompliant(false)]
     public abstract class CachingBootstrapper : DefaultNancyBootstrapper
     {
-        private const string NancyCachePartition = "KVLite.NancyResponseCache";
-
         private static ICache Cache
         {
             get
             {
                 CacheKind cacheKind;
-                if (!Enum.TryParse(Settings.Default.NancyCacheKind, true, out cacheKind)) {
+                if (!Enum.TryParse(Settings.Default.NancyCacheKind, true, out cacheKind))
+                {
                     throw new ConfigurationErrorsException();
                 }
                 switch (cacheKind)
                 {
                     case CacheKind.Persistent:
                         return PersistentCache.DefaultInstance;
+
                     case CacheKind.Volatile:
                         return VolatileCache.DefaultInstance;
+
                     default:
                         throw new ConfigurationErrorsException();
                 }
@@ -70,21 +67,21 @@ namespace PommaLabs.KVLite.Nancy
         }
 
         /// <summary>
-        ///   Check to see if we have a cache entry - if we do, see if it has expired or not,
-        ///   if it hasn't then return it, otherwise return null.
+        ///   Check to see if we have a cache entry - if we do, see if it has expired or not, if it
+        ///   hasn't then return it, otherwise return null.
         /// </summary>
         /// <param name="context">Current context.</param>
         /// <returns>Response or null.</returns>
         private static Response CheckCache(NancyContext context)
         {
             var cacheKey = context.GetRequestFingerprint();
-            var cachedSummary = Cache[NancyCachePartition, cacheKey] as ResponseSummary;
+            var cachedSummary = Cache.Get<ResponseSummary>(Settings.Default.NancyCachePartition, cacheKey);
             return (cachedSummary == null) ? null : cachedSummary.ToResponse();
         }
 
         /// <summary>
-        ///   Adds the current response to the cache if required
-        ///   Only stores by Path and stores the response in a KVLite cache.
+        ///   Adds the current response to the cache if required Only stores by Path and stores the
+        ///   response in a KVLite cache.
         /// </summary>
         /// <param name="context">Current context.</param>
         private static void SetCache(NancyContext context)
@@ -108,16 +105,27 @@ namespace PommaLabs.KVLite.Nancy
 
             // Disable further caching, as it must explicitly enabled.
             context.Items.Remove(ContextExtensions.OutputCacheTimeKey);
-            
-            var cacheKey = context.GetRequestFingerprint();
-            var cachedSummary = new ResponseSummary(context.Response);
-            Cache.AddTimedAsync(NancyCachePartition, cacheKey, cachedSummary, DateTime.UtcNow.AddSeconds(cacheSeconds));
 
-            context.Response = cachedSummary.ToResponse();
+            // The response we are going to cache. We put it here, so that it can be used as
+            // recovery in the catch clause below.
+            var responseToBeCached = context.Response;
 
-            context.Items.Remove(ContextExtensions.OutputCacheTimeKey);
+            try
+            {
+                var cacheKey = context.GetRequestFingerprint();
+                var cachedSummary = new ResponseSummary(responseToBeCached);
+                Cache.AddTimedAsync(Settings.Default.NancyCachePartition, cacheKey, cachedSummary, DateTime.UtcNow.AddSeconds(cacheSeconds));
+                context.Response = cachedSummary.ToResponse();
+            }
+            catch (Exception ex)
+            {
+                const string errMsg = "Something bad happened while caching :-(";
+                LogManager.GetCurrentClassLogger().Error(errMsg, ex);
+                // Sets the old response, hoping it will work...
+                context.Response = responseToBeCached;
+            }
         }
-        
+
         [Serializable]
         private sealed class ResponseSummary
         {
@@ -132,7 +140,8 @@ namespace PommaLabs.KVLite.Nancy
                 _headers = response.Headers;
                 _statusCode = response.StatusCode;
 
-                using (var memoryStream = new MemoryStream()) {
+                using (var memoryStream = new MemoryStream())
+                {
                     response.Contents(memoryStream);
                     _contents = memoryStream.GetBuffer();
                 }

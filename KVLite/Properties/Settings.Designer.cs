@@ -26,36 +26,36 @@ namespace PommaLabs.KVLite.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("PersistentCache.sqlite")]
-        public string PCache_DefaultFile {
+        public string DefaultCacheFile_ForPersistentCache {
             get {
-                return ((string)(this["PCache_DefaultFile"]));
+                return ((string)(this["DefaultCacheFile_ForPersistentCache"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("30")]
-        public int DefaultStaticIntervalInDays {
+        public int DefaultStaticIntervalInDays_ForAllCaches {
             get {
-                return ((int)(this["DefaultStaticIntervalInDays"]));
+                return ((int)(this["DefaultStaticIntervalInDays_ForAllCaches"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("256")]
-        public int PCache_DefaultMaxCacheSizeInMB {
+        public int DefaultMaxCacheSizeInMB_ForPersistentCache {
             get {
-                return ((int)(this["PCache_DefaultMaxCacheSizeInMB"]));
+                return ((int)(this["DefaultMaxCacheSizeInMB_ForPersistentCache"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public int PCache_DefaultInsertionCountBeforeCleanup {
+        public int DefaultInsertionCountBeforeCleanup_ForPersistentCache {
             get {
-                return ((int)(this["PCache_DefaultInsertionCountBeforeCleanup"]));
+                return ((int)(this["DefaultInsertionCountBeforeCleanup_ForPersistentCache"]));
             }
         }
         
@@ -71,18 +71,30 @@ namespace PommaLabs.KVLite.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("32")]
-        public int PCache_DefaultMaxLogSizeInMB {
+        public int DefaultMaxLogSizeInMB_ForPersistentCache {
             get {
-                return ((int)(this["PCache_DefaultMaxLogSizeInMB"]));
+                return ((int)(this["DefaultMaxLogSizeInMB_ForPersistentCache"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("_DEFAULT_PARTITION_")]
-        public string DefaultPartition {
+        public string DefaultPartition_ForAllCaches {
             get {
-                return ((string)(this["DefaultPartition"]));
+                return ((string)(this["DefaultPartition_ForAllCaches"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("KVLite.NancyResponseCache")]
+        public string NancyCachePartition {
+            get {
+                return ((string)(this["NancyCachePartition"]));
+            }
+            set {
+                this["NancyCachePartition"] = value;
             }
         }
     }
