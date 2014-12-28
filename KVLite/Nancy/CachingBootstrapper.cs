@@ -28,7 +28,6 @@ using Nancy.TinyIoc;
 using PommaLabs.KVLite.Properties;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 
 namespace PommaLabs.KVLite.Nancy
@@ -36,28 +35,11 @@ namespace PommaLabs.KVLite.Nancy
     [CLSCompliant(false)]
     public abstract class CachingBootstrapper : DefaultNancyBootstrapper
     {
-        private static ICache Cache
-        {
-            get
-            {
-                CacheKind cacheKind;
-                if (!Enum.TryParse(Settings.Default.NancyCacheKind, true, out cacheKind))
-                {
-                    throw new ConfigurationErrorsException();
-                }
-                switch (cacheKind)
-                {
-                    case CacheKind.Persistent:
-                        return PersistentCache.DefaultInstance;
+        #region Fields
 
-                    case CacheKind.Volatile:
-                        return VolatileCache.DefaultInstance;
+        private static readonly ICache Cache = Settings.Default.Nancy_CacheKind.ParseCacheKind();
 
-                    default:
-                        throw new ConfigurationErrorsException();
-                }
-            }
-        }
+        #endregion Fields
 
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
@@ -75,7 +57,7 @@ namespace PommaLabs.KVLite.Nancy
         private static Response CheckCache(NancyContext context)
         {
             var cacheKey = context.GetRequestFingerprint();
-            var cachedSummary = Cache.Get<ResponseSummary>(Settings.Default.NancyCachePartition, cacheKey);
+            var cachedSummary = Cache.Get<ResponseSummary>(Settings.Default.Nancy_CachePartition, cacheKey);
             return (cachedSummary == null) ? null : cachedSummary.ToResponse();
         }
 
@@ -114,7 +96,7 @@ namespace PommaLabs.KVLite.Nancy
             {
                 var cacheKey = context.GetRequestFingerprint();
                 var cachedSummary = new ResponseSummary(responseToBeCached);
-                Cache.AddTimedAsync(Settings.Default.NancyCachePartition, cacheKey, cachedSummary, DateTime.UtcNow.AddSeconds(cacheSeconds));
+                Cache.AddTimedAsync(Settings.Default.Nancy_CachePartition, cacheKey, cachedSummary, DateTime.UtcNow.AddSeconds(cacheSeconds));
                 context.Response = cachedSummary.ToResponse();
             }
             catch (Exception ex)

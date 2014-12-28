@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Configuration;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 
@@ -257,5 +258,29 @@ namespace PommaLabs.KVLite
         }
 
         #endregion Typed Retrieval
+
+        #region Internal Methods
+
+        internal static ICache ParseCacheKind(this string kind)
+        {
+            CacheKind cacheKind;
+            if (!Enum.TryParse(kind, true, out cacheKind))
+            {
+                throw new ConfigurationErrorsException();
+            }
+            switch (cacheKind)
+            {
+                case CacheKind.Persistent:
+                    return PersistentCache.DefaultInstance;
+
+                case CacheKind.Volatile:
+                    return VolatileCache.DefaultInstance;
+
+                default:
+                    throw new ConfigurationErrorsException();
+            }
+        }
+
+        #endregion Internal Methods
     }
 }

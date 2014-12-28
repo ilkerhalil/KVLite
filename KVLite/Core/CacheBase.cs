@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics.Contracts;
 
 namespace PommaLabs.KVLite.Core
@@ -78,7 +79,7 @@ namespace PommaLabs.KVLite.Core
         #region ICache Members
 
         public abstract CacheKind Kind { get; }
-        
+
         CacheSettingsBase ICache.Settings
         {
             get { return _settings; }

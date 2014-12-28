@@ -62,9 +62,9 @@ namespace PommaLabs.KVLite.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Volatile")]
-        public string NancyCacheKind {
+        public string Nancy_CacheKind {
             get {
-                return ((string)(this["NancyCacheKind"]));
+                return ((string)(this["Nancy_CacheKind"]));
             }
         }
         
@@ -86,15 +86,48 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("KVLite.NancyResponseCache")]
-        public string NancyCachePartition {
+        [global::System.Configuration.DefaultSettingValueAttribute("KVLite.Nancy.ResponseCache")]
+        public string Nancy_CachePartition {
             get {
-                return ((string)(this["NancyCachePartition"]));
+                return ((string)(this["Nancy_CachePartition"]));
             }
-            set {
-                this["NancyCachePartition"] = value;
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Persistent")]
+        public string Web_ViewStatePersisterKind {
+            get {
+                return ((string)(this["Web_ViewStatePersisterKind"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("KVLite.Web.ViewStates")]
+        public string Web_ViewStatePersisterPartition {
+            get {
+                return ((string)(this["Web_ViewStatePersisterPartition"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Persistent")]
+        public string Web_OutputCacheProviderKind {
+            get {
+                return ((string)(this["Web_OutputCacheProviderKind"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("KVLite.Web.OutputCache")]
+        public string Web_OutputCacheProviderPartition {
+            get {
+                return ((string)(this["Web_OutputCacheProviderPartition"]));
             }
         }
     }

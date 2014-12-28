@@ -199,9 +199,8 @@
     <Compile Include="VolatileCache.cs" />
     <Compile Include="VolatileCacheSettings.cs" />
     <Compile Include="Web\BaseStatePersister.cs" />
-    <Compile Include="Web\PersistentViewStatePersister.cs" />
-    <Compile Include="Web\VolatileOutputCacheProvider.cs" />
-    <Compile Include="Web\PersistentOutputCacheProvider.cs" />
+    <Compile Include="Web\ViewStatePersister.cs" />
+    <Compile Include="Web\OutputCacheProvider.cs" />
     <Compile Include="Web\ViewStateStorageSettings.cs" />
   </ItemGroup>
   <ItemGroup>
