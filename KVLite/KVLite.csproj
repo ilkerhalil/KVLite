@@ -232,14 +232,14 @@
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetDir)PommaLabs.KVLite.dll "$(SolutionDir)NuGetPackager/lib/net40"
-copy $(TargetDir)PommaLabs.KVLite.xml "$(SolutionDir)NuGetPackager/lib/net40"
+    <PostBuildEvent>copy $(TargetDir)PommaLabs.KVLite.dll "$(SolutionDir)NuGet Packager/lib/net40"
+copy $(TargetDir)PommaLabs.KVLite.xml "$(SolutionDir)NuGet Packager/lib/net40"
 
-copy $(TargetDir)PommaLabs.KVLite.dll "$(SolutionDir)NuGetPackager/lib/net45"
-copy $(TargetDir)PommaLabs.KVLite.xml "$(SolutionDir)NuGetPackager/lib/net45"
+copy $(TargetDir)PommaLabs.KVLite.dll "$(SolutionDir)NuGet Packager/lib/net45"
+copy $(TargetDir)PommaLabs.KVLite.xml "$(SolutionDir)NuGet Packager/lib/net45"
 
-copy $(TargetDir)PommaLabs.KVLite.dll "$(SolutionDir)NuGetPackager/lib/net451"
-copy $(TargetDir)PommaLabs.KVLite.xml "$(SolutionDir)NuGetPackager/lib/net451"</PostBuildEvent>
+copy $(TargetDir)PommaLabs.KVLite.dll "$(SolutionDir)NuGet Packager/lib/net451"
+copy $(TargetDir)PommaLabs.KVLite.xml "$(SolutionDir)NuGet Packager/lib/net451"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.94.0\build\net40\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.94.0\build\net40\System.Data.SQLite.Core.targets')" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
