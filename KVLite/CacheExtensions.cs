@@ -28,6 +28,9 @@ using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
 {
+    /// <summary>
+    ///   Extension methods for the <see cref="ICache"/> interface.
+    /// </summary>
     public static class CacheExtensions
     {
         #region Default Partition
@@ -175,12 +178,12 @@ namespace PommaLabs.KVLite
 
         public static TVal Get<TVal>(this ICache cache, string partition, string key)
         {
-            return (TVal) cache.Get(partition, key);
+            return (TVal)cache.Get(partition, key);
         }
 
         public static TVal Get<TVal>(this ICache cache, string key)
         {
-            return (TVal) cache.Get(cache.Settings.DefaultPartition, key);
+            return (TVal)cache.Get(cache.Settings.DefaultPartition, key);
         }
 
         public static CacheItem<TVal> GetItem<TVal>(this ICache cache, string partition, string key)
@@ -192,7 +195,7 @@ namespace PommaLabs.KVLite
                 {
                     Partition = item.Partition,
                     Key = item.Key,
-                    Value = (TVal) item.Value,
+                    Value = (TVal)item.Value,
                     UtcCreation = item.UtcCreation,
                     UtcExpiry = item.UtcExpiry,
                     Interval = item.Interval
@@ -208,7 +211,7 @@ namespace PommaLabs.KVLite
                 {
                     Partition = item.Partition,
                     Key = item.Key,
-                    Value = (TVal) item.Value,
+                    Value = (TVal)item.Value,
                     UtcCreation = item.UtcCreation,
                     UtcExpiry = item.UtcExpiry,
                     Interval = item.Interval
@@ -217,12 +220,12 @@ namespace PommaLabs.KVLite
 
         public static TVal Peek<TVal>(this ICache cache, string partition, string key)
         {
-            return (TVal) cache.Peek(partition, key);
+            return (TVal)cache.Peek(partition, key);
         }
 
         public static TVal Peek<TVal>(this ICache cache, string key)
         {
-            return (TVal) cache.Peek(cache.Settings.DefaultPartition, key);
+            return (TVal)cache.Peek(cache.Settings.DefaultPartition, key);
         }
 
         public static CacheItem<TVal> PeekItem<TVal>(this ICache cache, string partition, string key)
@@ -234,7 +237,7 @@ namespace PommaLabs.KVLite
                 {
                     Partition = item.Partition,
                     Key = item.Key,
-                    Value = (TVal) item.Value,
+                    Value = (TVal)item.Value,
                     UtcCreation = item.UtcCreation,
                     UtcExpiry = item.UtcExpiry,
                     Interval = item.Interval
@@ -250,7 +253,7 @@ namespace PommaLabs.KVLite
                 {
                     Partition = item.Partition,
                     Key = item.Key,
-                    Value = (TVal) item.Value,
+                    Value = (TVal)item.Value,
                     UtcCreation = item.UtcCreation,
                     UtcExpiry = item.UtcExpiry,
                     Interval = item.Interval

@@ -35,10 +35,10 @@ namespace PommaLabs.KVLite
     {
         #region Fields
 
-        private string _cacheFile = Settings.Default.DefaultCacheFile_ForPersistentCache;
-        private int _maxCacheSizeInMB = Settings.Default.DefaultMaxCacheSizeInMB_ForPersistentCache;
-        private int _maxJournalSizeInMB = Settings.Default.DefaultMaxLogSizeInMB_ForPersistentCache;
-        private int _insertionCountBeforeCleanup = Settings.Default.DefaultInsertionCountBeforeCleanup_ForPersistentCache;
+        private string _cacheFile = Settings.Default.PersistentCache_DefaultCacheFile;
+        private int _maxCacheSizeInMB = Settings.Default.PersistentCache_DefaultMaxCacheSizeInMB;
+        private int _maxJournalSizeInMB = Settings.Default.PersistentCache_DefaultMaxLogSizeInMB;
+        private int _insertionCountBeforeCleanup = Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean;
 
         #endregion Fields
 

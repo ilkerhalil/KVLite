@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics.Contracts;
 
 namespace PommaLabs.KVLite.Core
@@ -62,13 +61,22 @@ namespace PommaLabs.KVLite.Core
         #region Public Properties
 
         /// <summary>
-        ///   TODO
+        ///   Gets the default instance for this cache kind. Default instance is configured using
+        ///   default application settings.
         /// </summary>
+        [Pure]
         public static TCache DefaultInstance
         {
             get { return CachedDefaultInstance; }
         }
 
+        /// <summary>
+        ///   Gets the value with the specified key and belonging to the default partition.
+        /// </summary>
+        /// <value>The value with the specified key and belonging to the default partition.</value>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with the specified key and belonging to the default partition.</returns>
+        [Pure]
         public object this[string key]
         {
             get { return Get(Settings.DefaultPartition, key); }

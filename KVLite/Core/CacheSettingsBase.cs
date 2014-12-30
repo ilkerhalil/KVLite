@@ -21,12 +21,12 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Runtime.CompilerServices;
 using PommaLabs.KVLite.Annotations;
 using PommaLabs.KVLite.Properties;
 using System;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -48,8 +48,8 @@ namespace PommaLabs.KVLite.Core
 
         internal CacheSettingsBase()
         {
-            DefaultPartition = Settings.Default.DefaultPartition_ForAllCaches;
-            StaticIntervalInDays = Settings.Default.DefaultStaticIntervalInDays_ForAllCaches;
+            DefaultPartition = Settings.Default.AllCaches_DefaultPartition;
+            StaticIntervalInDays = Settings.Default.AllCaches_DefaultStaticIntervalInDays;
         }
 
         #endregion Construction
@@ -97,6 +97,9 @@ namespace PommaLabs.KVLite.Core
 
         #region INotifyPropertyChanged Members
 
+        /// <summary>
+        ///   Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>

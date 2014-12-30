@@ -49,11 +49,12 @@ namespace PommaLabs.KVLite
         CacheSettingsBase Settings { get; }
 
         /// <summary>
-        ///   TODO
+        ///   Gets the value with the specified partition and key.
         /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
+        /// <value>The value with the specified partition and key.</value>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with the specified partition and key.</returns>
         [Pure]
         object this[string partition, string key] { get; }
 

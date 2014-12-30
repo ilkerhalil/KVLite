@@ -32,12 +32,16 @@ using System.IO;
 
 namespace PommaLabs.KVLite.Nancy
 {
+    /// <summary>
+    ///   A Nancy bootstrapper which implements KVLite-based caching, both persistent and volatile.
+    ///   You can configure it using application settings.
+    /// </summary>
     [CLSCompliant(false)]
     public abstract class CachingBootstrapper : DefaultNancyBootstrapper
     {
         #region Fields
 
-        private static readonly ICache Cache = Settings.Default.Nancy_CacheKind.ParseCacheKind();
+        private static readonly ICache Cache = Settings.Default.Nancy_ResponseCacheKind.ParseCacheKind();
 
         #endregion Fields
 
@@ -57,7 +61,7 @@ namespace PommaLabs.KVLite.Nancy
         private static Response CheckCache(NancyContext context)
         {
             var cacheKey = context.GetRequestFingerprint();
-            var cachedSummary = Cache.Get<ResponseSummary>(Settings.Default.Nancy_CachePartition, cacheKey);
+            var cachedSummary = Cache.Get<ResponseSummary>(Settings.Default.Nancy_ResponseCachePartition, cacheKey);
             return (cachedSummary == null) ? null : cachedSummary.ToResponse();
         }
 
@@ -96,7 +100,7 @@ namespace PommaLabs.KVLite.Nancy
             {
                 var cacheKey = context.GetRequestFingerprint();
                 var cachedSummary = new ResponseSummary(responseToBeCached);
-                Cache.AddTimedAsync(Settings.Default.Nancy_CachePartition, cacheKey, cachedSummary, DateTime.UtcNow.AddSeconds(cacheSeconds));
+                Cache.AddTimedAsync(Settings.Default.Nancy_ResponseCachePartition, cacheKey, cachedSummary, DateTime.UtcNow.AddSeconds(cacheSeconds));
                 context.Response = cachedSummary.ToResponse();
             }
             catch (Exception ex)

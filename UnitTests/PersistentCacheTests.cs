@@ -73,7 +73,7 @@ namespace UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_InvalidValues()
         {
-            for (var i = 0; i < Settings.Default.DefaultInsertionCountBeforeCleanup_ForPersistentCache; ++i) {
+            for (var i = 0; i < Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean; ++i) {
                 DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             Assert.AreEqual(0, DefaultInstance.Count());
@@ -82,10 +82,10 @@ namespace UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_ValidValues()
         {
-            for (var i = 0; i < Settings.Default.DefaultInsertionCountBeforeCleanup_ForPersistentCache; ++i) {
+            for (var i = 0; i < Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean; ++i) {
                 DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.AddMinutes(10));
             }
-            Assert.AreEqual(Settings.Default.DefaultInsertionCountBeforeCleanup_ForPersistentCache, DefaultInstance.Count());
+            Assert.AreEqual(Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean, DefaultInstance.Count());
         }
 
         [Test]

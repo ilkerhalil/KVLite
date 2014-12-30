@@ -21,12 +21,10 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Properties;
 using System;
-using System.Configuration;
 using System.Web;
 using System.Web.UI;
-using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.Properties;
 
 namespace PommaLabs.KVLite.Web
 {
@@ -41,7 +39,7 @@ namespace PommaLabs.KVLite.Web
 
         private static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(HttpContext.Current.Session.Timeout + 1);
 
-        #endregion
+        #endregion Fields
 
         //required constructor
         public ViewStatePersister(Page page)
@@ -75,7 +73,7 @@ namespace PommaLabs.KVLite.Web
 
         public override void Clear()
         {
-            // seek and remove records that may have expired
+            Cache.Clear();
         }
 
         private static object GetViewState(string guid)

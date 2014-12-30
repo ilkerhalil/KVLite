@@ -26,6 +26,9 @@ using System;
 
 namespace PommaLabs.KVLite.Web
 {
+    /// <summary>
+    ///   A custom output cache provider based on KVLite.
+    /// </summary>
     public sealed class OutputCacheProvider : System.Web.Caching.OutputCacheProvider
     {
         #region Fields

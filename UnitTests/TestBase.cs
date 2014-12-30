@@ -157,7 +157,7 @@ namespace UnitTests
             Assert.AreEqual(v1, info.Value.Item1);
             Assert.AreEqual(v2, info.Value.Item2);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(TimeSpan.FromDays(Settings.Default.DefaultStaticIntervalInDays_ForAllCaches), info.Interval);
+            Assert.AreEqual(TimeSpan.FromDays(Settings.Default.AllCaches_DefaultStaticIntervalInDays), info.Interval);
         }
 
         [Test]
@@ -175,7 +175,7 @@ namespace UnitTests
             Assert.AreEqual(v1, info.Value.Item1);
             Assert.AreEqual(v2, info.Value.Item2);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(TimeSpan.FromDays(Settings.Default.DefaultStaticIntervalInDays_ForAllCaches), info.Interval);
+            Assert.AreEqual(TimeSpan.FromDays(Settings.Default.AllCaches_DefaultStaticIntervalInDays), info.Interval);
         }
 
         [Test]

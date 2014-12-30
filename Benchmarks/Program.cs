@@ -41,7 +41,7 @@ namespace Benchmarks
         private const int RowCount = 1000;
         private const int IterationCount = 5;
         
-        private static readonly int RandomDataTablesCount = Settings.Default.DefaultInsertionCountBeforeCleanup_ForPersistentCache * 10;
+        private static readonly int RandomDataTablesCount = Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean * 10;
 
         private static readonly string[] ColumnNames = {"A", "B", "C", "D", "E"};
 
