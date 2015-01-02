@@ -36,10 +36,12 @@ namespace PommaLabs.KVLite.Core
         public static byte[] SerializeObject(object obj)
         {
             using (var compressedStream = new MemoryStream())
-            using (var decompressedStream = new DeflateStream(compressedStream, CompressionMode.Compress))
-            using (var binaryFormatter = FormatterPool.GetObject())
             {
-                binaryFormatter.InternalResource.Serialize(decompressedStream, obj);
+                using (var decompressedStream = new DeflateStream(compressedStream, CompressionMode.Compress))
+                using (var binaryFormatter = FormatterPool.GetObject())
+                {
+                    binaryFormatter.InternalResource.Serialize(decompressedStream, obj);
+                }
                 return compressedStream.GetBuffer();
             }
         }

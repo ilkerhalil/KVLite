@@ -1,4 +1,4 @@
-﻿// File name: Queries.cs
+﻿// File name: SQLiteQueries.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -63,7 +63,7 @@ namespace PommaLabs.KVLite.Core
                 utcExpiry BIGINT NOT NULL,
                 interval BIGINT,
                 serializedValue BLOB NOT NULL,
-                static readonlyRAINT CacheItem_PK PRIMARY KEY (partition, key)
+                CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key)
             );
             CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);
         ");
