@@ -25,6 +25,7 @@ using System;
 using System.Configuration;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
+using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
@@ -120,56 +121,56 @@ namespace PommaLabs.KVLite
         {
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskEx.Run(() => cache.AddSliding(partition, key, value, interval));
+            return TaskRunner.Run(() => cache.AddSliding(partition, key, value, interval));
         }
 
         public static Task AddSlidingAsync(this ICache cache, string key, object value, TimeSpan interval)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskEx.Run(() => cache.AddSliding(cache.Settings.DefaultPartition, key, value, interval));
+            return TaskRunner.Run(() => cache.AddSliding(cache.Settings.DefaultPartition, key, value, interval));
         }
 
         public static Task AddStaticAsync(this ICache cache, string partition, string key, object value)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskEx.Run(() => cache.AddSliding(partition, key, value, cache.Settings.StaticInterval));
+            return TaskRunner.Run(() => cache.AddSliding(partition, key, value, cache.Settings.StaticInterval));
         }
 
         public static Task AddStaticAsync(this ICache cache, string key, object value)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskEx.Run(() => cache.AddSliding(cache.Settings.DefaultPartition, key, value, cache.Settings.StaticInterval));
+            return TaskRunner.Run(() => cache.AddSliding(cache.Settings.DefaultPartition, key, value, cache.Settings.StaticInterval));
         }
 
         public static Task AddTimedAsync(this ICache cache, string partition, string key, object value, DateTime utcExpiry)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskEx.Run(() => cache.AddTimed(partition, key, value, utcExpiry));
+            return TaskRunner.Run(() => cache.AddTimed(partition, key, value, utcExpiry));
         }
 
         public static Task AddTimedAsync(this ICache cache, string key, object value, DateTime utcExpiry)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskEx.Run(() => cache.AddTimed(cache.Settings.DefaultPartition, key, value, utcExpiry));
+            return TaskRunner.Run(() => cache.AddTimed(cache.Settings.DefaultPartition, key, value, utcExpiry));
         }
 
         public static Task RemoveAsync(this ICache cache, string partition, string key)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskEx.Run(() => cache.Remove(partition, key));
+            return TaskRunner.Run(() => cache.Remove(partition, key));
         }
 
         public static Task RemoveAsync(this ICache cache, string key)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskEx.Run(() => cache.Remove(cache.Settings.DefaultPartition, key));
+            return TaskRunner.Run(() => cache.Remove(cache.Settings.DefaultPartition, key));
         }
 
         #endregion Async Methods

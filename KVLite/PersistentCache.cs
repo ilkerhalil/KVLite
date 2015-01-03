@@ -182,7 +182,7 @@ namespace PommaLabs.KVLite
         /// <returns></returns>
         public Task VacuumAsync()
         {
-            return TaskEx.Run((Action) Vacuum);
+            return TaskRunner.Run((Action) Vacuum);
         }
 
         #endregion Public Methods

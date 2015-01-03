@@ -439,7 +439,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
-                var task = TaskEx.Run(() => DefaultInstance.Get(StringItems[l]));
+                var task = Task.Run(() => DefaultInstance.Get(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i)
