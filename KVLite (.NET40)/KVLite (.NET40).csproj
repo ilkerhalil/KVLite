@@ -7,8 +7,8 @@
     <ProjectGuid>{56BF1CF1-3DA9-482F-8AC4-F200E741ECA1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KVLite__.NET40_</RootNamespace>
-    <AssemblyName>KVLite %28.NET40%29</AssemblyName>
+    <RootNamespace>PommaLabs.KVLite</RootNamespace>
+    <AssemblyName>PommaLabs.KVLite</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -36,6 +36,9 @@
     <Reference Include="CodeProject.ObjectPool">
       <HintPath>..\packages\CodeProject.ObjectPool.1.1.1\lib\net40\CodeProject.ObjectPool.dll</HintPath>
     </Reference>
+    <Reference Include="Common.Logging">
+      <HintPath>..\packages\Common.Logging.2.3.1\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
     <Reference Include="Dapper">
       <HintPath>..\packages\Dapper.1.38\lib\net40\Dapper.dll</HintPath>
     </Reference>
@@ -48,6 +51,9 @@
     <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
     </Reference>
+    <Reference Include="Nancy">
+      <HintPath>..\packages\Nancy.0.23.2\lib\net40\Nancy.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.7\lib\net40\Newtonsoft.Json.dll</HintPath>
@@ -56,7 +62,11 @@
       <HintPath>..\packages\PommaLabs.GRAMPA.1.5.1\lib\net40-client\PommaLabs.GRAMPA.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\packages\System.Data.SQLite.Core.MSIL.1.0.94.0\lib\net40\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.IO">
       <HintPath>..\packages\Microsoft.Bcl.1.1.9\lib\net40\System.IO.dll</HintPath>
       <Private>True</Private>
@@ -66,10 +76,12 @@
       <HintPath>..\packages\Microsoft.Bcl.1.1.9\lib\net40\System.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Threading.Tasks">
       <HintPath>..\packages\Microsoft.Bcl.1.1.9\lib\net40\System.Threading.Tasks.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -77,6 +89,78 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\KVLite\Properties\Annotations.cs">
+      <Link>Properties\Annotations.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Properties\Settings.Designer.cs">
+      <Link>Properties\Settings.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\CacheExtensions.cs">
+      <Link>CacheExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\CacheItem.cs">
+      <Link>CacheItem.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\CacheKind.cs">
+      <Link>CacheKind.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Contracts\CacheContract.cs">
+      <Link>Contracts\CacheContract.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\BinarySerializer.cs">
+      <Link>Core\BinarySerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\CacheBase.cs">
+      <Link>Core\CacheBase.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\CacheSettingsBase.cs">
+      <Link>Core\CacheSettingsBase.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\SQLiteQueries.cs">
+      <Link>Core\SQLiteQueries.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\TaskRunner.cs">
+      <Link>Core\TaskRunner.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\ErrorMessages.cs">
+      <Link>ErrorMessages.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\ICache.cs">
+      <Link>ICache.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Nancy\CachingBootstrapper.cs">
+      <Link>Nancy\CachingBootstrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Nancy\ContextExtensions.cs">
+      <Link>Nancy\ContextExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\PersistentCache.cs">
+      <Link>PersistentCache.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\PersistentCacheReadMode.cs">
+      <Link>PersistentCacheReadMode.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\PersistentCacheSettings.cs">
+      <Link>PersistentCacheSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\VolatileCache.cs">
+      <Link>VolatileCache.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\VolatileCacheSettings.cs">
+      <Link>VolatileCacheSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Web\BaseStatePersister.cs">
+      <Link>Web\BaseStatePersister.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Web\OutputCacheProvider.cs">
+      <Link>Web\OutputCacheProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Web\ViewStatePersister.cs">
+      <Link>Web\ViewStatePersister.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Web\ViewStateStorageSettings.cs">
+      <Link>Web\ViewStateStorageSettings.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
