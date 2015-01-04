@@ -27,6 +27,7 @@ using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PommaLabs.KVLite;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Properties;
 
 namespace UnitTests
@@ -34,7 +35,7 @@ namespace UnitTests
     internal sealed class PersistentCacheTests : TestBase
     {
         private const string BlankPath = "   ";
-        
+
         #region Setup/Teardown
 
         [SetUp]
@@ -49,11 +50,11 @@ namespace UnitTests
             PersistentCache.DefaultInstance.Clear(PersistentCacheReadMode.IgnoreExpiryDate);
         }
 
-        #endregion
+        #endregion Setup/Teardown
 
         protected override ICache DefaultInstance
         {
-           get { return PersistentCache.DefaultInstance; }
+            get { return PersistentCache.DefaultInstance; }
         }
 
         [Test]
@@ -73,7 +74,8 @@ namespace UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_InvalidValues()
         {
-            for (var i = 0; i < Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean; ++i) {
+            for (var i = 0; i < Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean; ++i)
+            {
                 DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             Assert.AreEqual(0, DefaultInstance.Count());
@@ -82,7 +84,8 @@ namespace UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_ValidValues()
         {
-            for (var i = 0; i < Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean; ++i) {
+            for (var i = 0; i < Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean; ++i)
+            {
                 DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.AddMinutes(10));
             }
             Assert.AreEqual(Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean, DefaultInstance.Count());
@@ -91,17 +94,20 @@ namespace UnitTests
         [Test]
         public void Clean_InvalidValues()
         {
-            foreach (var t in StringItems) {
+            foreach (var t in StringItems)
+            {
                 DefaultInstance.AddTimed(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             DefaultInstance.Clear();
             Assert.AreEqual(0, DefaultInstance.Count());
-            foreach (var t in StringItems) {
+            foreach (var t in StringItems)
+            {
                 DefaultInstance.AddTimed(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             PersistentCache.DefaultInstance.Clear(PersistentCacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(0, DefaultInstance.Count());
-            foreach (var t in StringItems) {
+            foreach (var t in StringItems)
+            {
                 DefaultInstance.AddTimed(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             PersistentCache.DefaultInstance.Clear(PersistentCacheReadMode.IgnoreExpiryDate);
@@ -111,7 +117,7 @@ namespace UnitTests
         [Test]
         public void Clean_ValidValues()
         {
-            foreach (var t in StringItems) 
+            foreach (var t in StringItems)
             {
                 DefaultInstance.AddTimed(t, t, DateTime.UtcNow.AddMinutes(10));
             }
@@ -132,9 +138,12 @@ namespace UnitTests
         [Test]
         public void NewCache_BlankPath()
         {
-            try {
-                new PersistentCache(new PersistentCacheSettings {CacheFile = BlankPath});
-            } catch (Exception ex) {
+            try
+            {
+                new PersistentCache(new PersistentCacheSettings { CacheFile = BlankPath });
+            }
+            catch (Exception ex)
+            {
                 Assert.IsInstanceOf<ArgumentException>(ex);
                 Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));
             }
@@ -143,9 +152,12 @@ namespace UnitTests
         [Test]
         public void NewCache_EmptyPath()
         {
-            try {
-                new PersistentCache(new PersistentCacheSettings {CacheFile = String.Empty});
-            } catch (Exception ex) {
+            try
+            {
+                new PersistentCache(new PersistentCacheSettings { CacheFile = String.Empty });
+            }
+            catch (Exception ex)
+            {
                 Assert.IsInstanceOf<ArgumentException>(ex);
                 Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));
             }
@@ -154,9 +166,12 @@ namespace UnitTests
         [Test]
         public void NewCache_NullPath()
         {
-            try {
-                new PersistentCache(new PersistentCacheSettings {CacheFile = null});
-            } catch (Exception ex) {
+            try
+            {
+                new PersistentCache(new PersistentCacheSettings { CacheFile = null });
+            }
+            catch (Exception ex)
+            {
                 Assert.IsInstanceOf<ArgumentException>(ex);
                 Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));
             }

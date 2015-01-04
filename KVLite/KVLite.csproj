@@ -168,7 +168,7 @@
     <Compile Include="Core\BinarySerializer.cs" />
     <Compile Include="Core\CacheBase.cs" />
     <Compile Include="Core\CacheSettingsBase.cs" />
-    <Compile Include="ErrorMessages.cs" />
+    <Compile Include="Core\ErrorMessages.cs" />
     <Compile Include="ICache.cs" />
     <Compile Include="Nancy\CachingBootstrapper.cs" />
     <Compile Include="Nancy\ContextExtensions.cs" />

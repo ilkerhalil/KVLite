@@ -185,6 +185,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\KVLite\Core\ErrorMessages.cs">
+      <Link>Core\ErrorMessages.cs</Link>
+    </Compile>
     <Compile Include="..\KVLite\Properties\Annotations.cs">
       <Link>Properties\Annotations.cs</Link>
     </Compile>
@@ -217,9 +220,6 @@
     </Compile>
     <Compile Include="..\KVLite\Core\TaskRunner.cs">
       <Link>Core\TaskRunner.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\ErrorMessages.cs">
-      <Link>ErrorMessages.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\ICache.cs">
       <Link>ICache.cs</Link>
