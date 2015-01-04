@@ -21,12 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool;
-using Common.Logging;
-using Dapper;
-using PommaLabs.GRAMPA;
-using PommaLabs.GRAMPA.Extensions;
-using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -35,6 +29,11 @@ using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CodeProject.ObjectPool;
+using Common.Logging;
+using Dapper;
+using PommaLabs.Extensions;
+using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
@@ -341,7 +340,7 @@ namespace PommaLabs.KVLite
             }
         }
 
-        #endregion
+        #endregion CacheBase Members
 
         #region Private Methods
 
@@ -451,8 +450,8 @@ namespace PommaLabs.KVLite
             }
             catch
             {
-                // Something wrong happened during deserialization. Therefore, we act as if
-                // there was no element.
+                // Something wrong happened during deserialization. Therefore, we act as if there
+                // was no element.
                 return null;
             }
             return new CacheItem

@@ -21,10 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NUnit.Framework;
-using PommaLabs.GRAMPA.Testing;
-using PommaLabs.KVLite;
-using PommaLabs.KVLite.Properties;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -32,6 +28,10 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using PommaLabs.KVLite;
+using PommaLabs.KVLite.Properties;
+using PommaLabs.Testing;
 
 namespace UnitTests
 {
@@ -327,6 +327,7 @@ namespace UnitTests
                 task.Wait();
             }
         }
+
         [Test]
         public void AddTimed_TwoValues_SameKey()
         {
@@ -368,7 +369,7 @@ namespace UnitTests
         {
             var i = 0;
             var partition1 = StringItems[0];
-            var p1Count = itemCount/3;
+            var p1Count = itemCount / 3;
             for (i = 0; i < itemCount / 3; ++i)
             {
                 DefaultInstance.AddStatic(partition1, StringItems[i], StringItems[i]);

@@ -21,14 +21,13 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Diagnostics;
-using Newtonsoft.Json;
-using PommaLabs.GRAMPA;
-using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Caching;
+using Newtonsoft.Json;
+using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
@@ -47,7 +46,7 @@ namespace PommaLabs.KVLite
         {
         }
 
-        #endregion
+        #endregion Construction
 
         #region ICache Members
 
@@ -95,7 +94,7 @@ namespace PommaLabs.KVLite
             Settings.MemoryCache.Remove(CreateKey(partition, key));
         }
 
-        #endregion
+        #endregion ICache Members
 
         #region CacheBase Members
 
@@ -187,7 +186,7 @@ namespace PommaLabs.KVLite
             throw new NotImplementedException(ErrorMessages.VolatileCache_CannotPeek);
         }
 
-        #endregion
+        #endregion CacheBase Members
 
         #region Private Methods
 
