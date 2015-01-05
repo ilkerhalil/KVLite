@@ -29,7 +29,10 @@ namespace PommaLabs.KVLite.Web
 
         private ViewStateStorageSettings _settings;
 
-        protected BaseStatePersister(Page page) : base(page) {}
+        protected BaseStatePersister(Page page)
+            : base(page)
+        {
+        }
 
         public ViewStateStorageSettings ViewStateSettings
         {
@@ -43,9 +46,12 @@ namespace PommaLabs.KVLite.Web
         {
             string ret;
 
-            if (Page.IsPostBack && _settings.RequestBehavior == ViewStateStorageBehavior.FirstLoad) {
+            if (Page.IsPostBack && _settings.RequestBehavior == ViewStateStorageBehavior.FirstLoad)
+            {
                 ret = SanitizeInput(Page.Request.Form[HiddenFieldName]);
-            } else {
+            }
+            else
+            {
                 ret = Guid.NewGuid().ToString();
             }
 
@@ -54,7 +60,8 @@ namespace PommaLabs.KVLite.Web
 
         private static string SanitizeInput(string input)
         {
-            if (String.IsNullOrEmpty(input)) {
+            if (String.IsNullOrEmpty(input))
+            {
                 return input;
             }
 

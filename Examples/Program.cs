@@ -1,4 +1,4 @@
-﻿// File name: VolatileCacheSettings.cs
+﻿// File name: Program.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,38 +21,34 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Core;
-using System;
-using System.Diagnostics.Contracts;
+using PommaLabs.KVLite;
 using System.Runtime.Caching;
 
-namespace PommaLabs.KVLite
+namespace Examples
 {
-    public sealed class VolatileCacheSettings : CacheSettingsBase
+    internal static class Program
     {
-        #region Fields
-
-        private MemoryCache _memoryCache = MemoryCache.Default;
-
-        #endregion Fields
-
-        #region Settings
-
-        public MemoryCache MemoryCache
+        internal static void Main(string[] args)
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<MemoryCache>() != null);
-                return _memoryCache;
-            }
-            set
-            {
-                Contract.Requires<ArgumentNullException>(value != null);
-                _memoryCache = value;
-                OnPropertyChanged();
-            }
-        }
+            // Volatile cache will use this memory cache as its backend.
+            var myMemoryCache = new MemoryCache("My Memory Cache");
 
-        #endregion Settings
+            // Settings that we will use in new volatile caches.
+            var volatileCacheSettings = new VolatileCacheSettings
+            {
+                MemoryCache = myMemoryCache, // The backend.
+                StaticIntervalInDays = 10 // How many days static values will last.
+            };
+
+            // Settings that we will use in new persistent caches.
+            var persistentCacheSettings = new PersistentCacheSettings
+            {
+                CacheFile = "PersistentCache.sqlite", // The SQLite DB used as the backend for the cache.
+                InsertionCountBeforeCleanup = 10, // Number of inserts before a cache cleanup is issued.
+                MaxCacheSizeInMB = 64, // Max size in megabytes for the cache.
+                MaxJournalSizeInMB = 16, // Max size in megabytes for the SQLite journal log.
+                StaticIntervalInDays = 10 // How many days static values will last.
+            };
+        }
     }
 }

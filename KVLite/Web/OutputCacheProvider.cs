@@ -1,4 +1,4 @@
-﻿// File name: VolatileCacheSettings.cs
+﻿// File name: OutputCacheProvider.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,38 +21,41 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Properties;
 using System;
-using System.Diagnostics.Contracts;
-using System.Runtime.Caching;
 
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.Web
 {
-    public sealed class VolatileCacheSettings : CacheSettingsBase
+    /// <summary>
+    ///   A custom output cache provider based on KVLite.
+    /// </summary>
+    public sealed class OutputCacheProvider : System.Web.Caching.OutputCacheProvider
     {
         #region Fields
 
-        private MemoryCache _memoryCache = MemoryCache.Default;
+        private static readonly ICache Cache = Settings.Default.Web_OutputCacheProviderKind.ParseCacheKind();
 
         #endregion Fields
 
-        #region Settings
-
-        public MemoryCache MemoryCache
+        public override object Get(string key)
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<MemoryCache>() != null);
-                return _memoryCache;
-            }
-            set
-            {
-                Contract.Requires<ArgumentNullException>(value != null);
-                _memoryCache = value;
-                OnPropertyChanged();
-            }
+            return Cache.Get(Settings.Default.Web_ViewStatePersisterPartition, key);
         }
 
-        #endregion Settings
+        public override object Add(string key, object entry, DateTime utcExpiry)
+        {
+            Cache.AddTimed(Settings.Default.Web_ViewStatePersisterPartition, key, entry, utcExpiry);
+            return entry;
+        }
+
+        public override void Set(string key, object entry, DateTime utcExpiry)
+        {
+            Cache.AddTimed(Settings.Default.Web_ViewStatePersisterPartition, key, entry, utcExpiry);
+        }
+
+        public override void Remove(string key)
+        {
+            Cache.Remove(Settings.Default.Web_ViewStatePersisterPartition, key);
+        }
     }
 }

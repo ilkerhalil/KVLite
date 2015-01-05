@@ -12,7 +12,7 @@ namespace PommaLabs.KVLite.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "11.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -26,54 +26,108 @@ namespace PommaLabs.KVLite.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("PersistentCache.sqlite")]
-        public string PCache_DefaultFile {
+        public string PersistentCache_DefaultCacheFile {
             get {
-                return ((string)(this["PCache_DefaultFile"]));
+                return ((string)(this["PersistentCache_DefaultCacheFile"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("30")]
-        public int DefaultStaticIntervalInDays {
+        public int AllCaches_DefaultStaticIntervalInDays {
             get {
-                return ((int)(this["DefaultStaticIntervalInDays"]));
+                return ((int)(this["AllCaches_DefaultStaticIntervalInDays"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("256")]
-        public int PCache_DefaultMaxCacheSizeInMB {
+        [global::System.Configuration.DefaultSettingValueAttribute("1024")]
+        public int PersistentCache_DefaultMaxCacheSizeInMB {
             get {
-                return ((int)(this["PCache_DefaultMaxCacheSizeInMB"]));
+                return ((int)(this["PersistentCache_DefaultMaxCacheSizeInMB"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public int PCache_DefaultInsertionCountBeforeCleanup {
+        [global::System.Configuration.DefaultSettingValueAttribute("64")]
+        public int PersistentCache_DefaultInsertionCountBeforeAutoClean {
             get {
-                return ((int)(this["PCache_DefaultInsertionCountBeforeCleanup"]));
+                return ((int)(this["PersistentCache_DefaultInsertionCountBeforeAutoClean"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Volatile")]
-        public string NancyCacheKind {
+        [global::System.Configuration.DefaultSettingValueAttribute("Persistent")]
+        public string Nancy_ResponseCacheKind {
             get {
-                return ((string)(this["NancyCacheKind"]));
+                return ((string)(this["Nancy_ResponseCacheKind"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("32")]
-        public int PCache_DefaultMaxLogSizeInMB {
+        public int PersistentCache_DefaultMaxLogSizeInMB {
             get {
-                return ((int)(this["PCache_DefaultMaxLogSizeInMB"]));
+                return ((int)(this["PersistentCache_DefaultMaxLogSizeInMB"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("KVLite.DefaultPartition")]
+        public string AllCaches_DefaultPartition {
+            get {
+                return ((string)(this["AllCaches_DefaultPartition"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("KVLite.Nancy.ResponseCache")]
+        public string Nancy_ResponseCachePartition {
+            get {
+                return ((string)(this["Nancy_ResponseCachePartition"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Persistent")]
+        public string Web_ViewStatePersisterKind {
+            get {
+                return ((string)(this["Web_ViewStatePersisterKind"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("KVLite.Web.ViewStates")]
+        public string Web_ViewStatePersisterPartition {
+            get {
+                return ((string)(this["Web_ViewStatePersisterPartition"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Persistent")]
+        public string Web_OutputCacheProviderKind {
+            get {
+                return ((string)(this["Web_OutputCacheProviderKind"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("KVLite.Web.OutputCache")]
+        public string Web_OutputCacheProviderPartition {
+            get {
+                return ((string)(this["Web_OutputCacheProviderPartition"]));
             }
         }
     }

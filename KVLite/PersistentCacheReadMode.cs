@@ -1,5 +1,5 @@
-﻿// File name: VolatileCacheSettings.cs
-// 
+﻿// File name: CacheReadMode.cs
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
 // The MIT License (MIT)
@@ -21,38 +21,21 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Core;
-using System;
-using System.Diagnostics.Contracts;
-using System.Runtime.Caching;
-
 namespace PommaLabs.KVLite
 {
-    public sealed class VolatileCacheSettings : CacheSettingsBase
+    /// <summary>
+    ///   Determines whether expired items should be included in lists or in queries.
+    /// </summary>
+    public enum PersistentCacheReadMode : byte
     {
-        #region Fields
+        /// <summary>
+        ///   Considers expiry policy while retrieving items.
+        /// </summary>
+        ConsiderExpiryDate = 0,
 
-        private MemoryCache _memoryCache = MemoryCache.Default;
-
-        #endregion Fields
-
-        #region Settings
-
-        public MemoryCache MemoryCache
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<MemoryCache>() != null);
-                return _memoryCache;
-            }
-            set
-            {
-                Contract.Requires<ArgumentNullException>(value != null);
-                _memoryCache = value;
-                OnPropertyChanged();
-            }
-        }
-
-        #endregion Settings
+        /// <summary>
+        ///   Ignores expiry policy while retrieving items.
+        /// </summary>
+        IgnoreExpiryDate = 1
     }
 }

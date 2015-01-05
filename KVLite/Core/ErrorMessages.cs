@@ -1,4 +1,4 @@
-﻿// File name: VolatileCacheSettings.cs
+﻿// File name: ErrorMessages.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,38 +21,19 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Core;
-using System;
-using System.Diagnostics.Contracts;
-using System.Runtime.Caching;
-
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.Core
 {
-    public sealed class VolatileCacheSettings : CacheSettingsBase
+    internal static class ErrorMessages
     {
-        #region Fields
+        public const string Web_HttpRuntimeCache_CannotClear = "It is not possible to clear the HttpRuntime cache.";
 
-        private MemoryCache _memoryCache = MemoryCache.Default;
+        public const string InvalidEnumValue = "Given enumeration value is not valid.";
+        public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
+        public const string NullOrEmptyCachePath = @"Cache path cannot be null or empty.";
+        public const string NullKey = @"Key cannot be null.";
+        public const string NullPartition = @"Partition cannot be null.";
+        public const string NullValue = @"Value cannot be null.";
 
-        #endregion Fields
-
-        #region Settings
-
-        public MemoryCache MemoryCache
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<MemoryCache>() != null);
-                return _memoryCache;
-            }
-            set
-            {
-                Contract.Requires<ArgumentNullException>(value != null);
-                _memoryCache = value;
-                OnPropertyChanged();
-            }
-        }
-
-        #endregion Settings
+        public const string VolatileCache_CannotPeek = @"Peeking is not allowed with MemoryCache.";
     }
 }

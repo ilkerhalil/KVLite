@@ -1,80 +1,97 @@
-//
-// CacheBase.cs
+// File name: CacheBase.cs
 // 
-// Author(s):
-//     Alessio Parma <alessio.parma@gmail.com>
-//
+// Author(s): Alessio Parma <alessio.parma@gmail.com>
+// 
 // The MIT License (MIT)
 // 
 // Copyright (c) 2014-2015 Alessio Parma <alessio.parma@gmail.com>
 // 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 // 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
 // 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.Core
 {
     /// <summary>
-    ///   TODO
+    ///   Base class for caches, implements common functionalities.
     /// </summary>
-    /// <typeparam name="TCache"></typeparam>
-    /// <typeparam name="TCacheSettings"></typeparam>
+    /// <typeparam name="TCache">The type of the cache.</typeparam>
+    /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     [Serializable]
-    public abstract class CacheBase<TCache, TCacheSettings> : ICache<TCache, TCacheSettings> 
+    public abstract class CacheBase<TCache, TCacheSettings> : ICache<TCache, TCacheSettings>
         where TCache : CacheBase<TCache, TCacheSettings>, ICache<TCache, TCacheSettings>, new()
         where TCacheSettings : CacheSettingsBase, new()
     {
-        private const string DefaultPartition = "_DEFAULT_PARTITION_";
+        #region Fields
 
         private static readonly TCache CachedDefaultInstance = new TCache();
 
         private readonly TCacheSettings _settings;
 
+        #endregion Fields
+
+        #region Construction
+
         /// <summary>
-        /// 
-        /// </summary>
+        ///   </summary>
         /// <param name="settings"></param>
-        protected CacheBase(TCacheSettings settings)
+        internal CacheBase(TCacheSettings settings)
         {
             Contract.Requires<ArgumentNullException>(settings != null);
             _settings = settings;
         }
 
+        #endregion Construction
+
         #region Public Properties
 
         /// <summary>
-        ///   TODO
+        ///   Gets the default instance for this cache kind. Default instance is configured using
+        ///   default application settings.
         /// </summary>
+        [Pure]
         public static TCache DefaultInstance
         {
             get { return CachedDefaultInstance; }
         }
 
-        #endregion
+        /// <summary>
+        ///   Gets the value with the specified key and belonging to the default partition.
+        /// </summary>
+        /// <value>The value with the specified key and belonging to the default partition.</value>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with the specified key and belonging to the default partition.</returns>
+        [Pure]
+        public object this[string key]
+        {
+            get { return Get(Settings.DefaultPartition, key); }
+        }
 
-        #region ICache<TCache> Members
+        #endregion Public Properties
+
+        #region ICache Members
 
         public abstract CacheKind Kind { get; }
+
+        CacheSettingsBase ICache.Settings
+        {
+            get { return _settings; }
+        }
 
         public TCacheSettings Settings
         {
@@ -86,204 +103,107 @@ namespace PommaLabs.KVLite.Core
             get { return Get(partition, key); }
         }
 
-        public object this[string key]
+        public void AddSliding(string partition, string key, object value, TimeSpan interval)
         {
-            get { return Get(key); }
+            DoAdd(partition, key, value, DateTime.UtcNow + interval, interval);
         }
 
-        public abstract void AddSliding(string partition, string key, object value, TimeSpan interval);
-
-        public void AddSliding(string key, object value, TimeSpan interval)
+        public void AddTimed(string partition, string key, object value, DateTime utcExpiry)
         {
-            AddSliding(DefaultPartition, key, value, interval);
-        }
-
-        public Task AddSlidingAsync(string partition, string key, object value, TimeSpan interval)
-        {
-            return Task.Factory.StartNew(() => AddSliding(partition, key, value, interval));
-        }
-
-        public Task AddSlidingAsync(string key, object value, TimeSpan interval)
-        {
-            return Task.Factory.StartNew(() => AddSliding(key, value, interval));
-        }
-
-        public void AddStatic(string partition, string key, object value)
-        {
-            AddSliding(partition, key, value, TimeSpan.FromDays(Settings.StaticIntervalInDays));
-        }
-
-        public void AddStatic(string key, object value)
-        {
-            AddStatic(DefaultPartition, key, value);
-        }
-
-        public Task AddStaticAsync(string partition, string key, object value)
-        {
-            return Task.Factory.StartNew(() => AddStatic(partition, key, value));
-        }
-
-        public Task AddStaticAsync(string key, object value)
-        {
-            return Task.Factory.StartNew(() => AddStatic(key, value));
-        }
-
-        public abstract void AddTimed(string partition, string key, object value, DateTime utcExpiry);
-
-        public void AddTimed(string key, object value, DateTime utcExpiry)
-        {
-            AddTimed(DefaultPartition, key, value, utcExpiry);
-        }
-
-        public Task AddTimedAsync(string partition, string key, object value, DateTime utcExpiry)
-        {
-            return Task.Factory.StartNew(() => AddTimed(partition, key, value, utcExpiry));
-        }
-
-        public Task AddTimedAsync(string key, object value, DateTime utcExpiry)
-        {
-            return Task.Factory.StartNew(() => AddTimed(key, value, utcExpiry));
+            DoAdd(partition, key, value, utcExpiry, null);
         }
 
         public void Clear()
         {
-            Clear(CacheReadMode.ConsiderExpirationDate);
+            DoClear(null);
         }
 
-        public abstract void Clear(CacheReadMode cacheReadMode);
-
-        public abstract bool Contains(string partition, string key);
-
-        public bool Contains(string key)
+        public void Clear(string partition)
         {
-            return Contains(DefaultPartition, key);
-        }
-
-        public int Count()
-        {
-            return (int) LongCount(CacheReadMode.ConsiderExpirationDate);
-        }
-
-        public int Count(CacheReadMode cacheReadMode)
-        {
-            return (int) LongCount(cacheReadMode);
+            DoClear(partition);
         }
 
         public long LongCount()
         {
-            return LongCount(CacheReadMode.ConsiderExpirationDate);
+            return DoCount(null);
         }
 
-        public abstract long LongCount(CacheReadMode cacheReadMode);
-
-        public object Get(string partition, string key)
+        public long LongCount(string partition)
         {
-            var item = GetItem(partition, key);
-            return item == null ? null : item.Value;
+            return DoCount(partition);
         }
 
-        public object Get(string key)
+        public IList<CacheItem> GetManyItems()
         {
-            return Get(DefaultPartition, key);
+            return DoGetManyItems(null);
         }
 
-        public Task<object> GetAsync(string partition, string key)
+        public IList<CacheItem> GetManyItems(string partition)
         {
-            return Task.Factory.StartNew(() => Get(partition, key));
+            return DoGetManyItems(partition);
         }
 
-        public Task<object> GetAsync(string key)
+        public IList<CacheItem> PeekManyItems()
         {
-            return Task.Factory.StartNew(() => Get(key));
+            return DoPeekManyItems(null);
         }
+
+        public IList<CacheItem> PeekManyItems(string partition)
+        {
+            return DoPeekManyItems(partition);
+        }
+
+        #endregion ICache Members
+
+        #region Abstract Methods
+
+        public abstract bool Contains(string partition, string key);
+
+        public abstract object Get(string partition, string key);
 
         public abstract CacheItem GetItem(string partition, string key);
 
-        public CacheItem GetItem(string key)
-        {
-            return GetItem(DefaultPartition, key);
-        }
+        public abstract object Peek(string partition, string key);
 
-        public Task<CacheItem> GetItemAsync(string partition, string key)
-        {
-            return Task.Factory.StartNew(() => GetItem(partition, key));
-        }
-
-        public Task<CacheItem> GetItemAsync(string key)
-        {
-            return Task.Factory.StartNew(() => GetItem(key));
-        }
-
-        public IList<object> GetAll()
-        {
-            return DoGetAllItems().Select(x => x.Value).ToList();
-        }
-
-        public Task<IList<object>> GetAllAsync()
-        {
-            return Task.Factory.StartNew((Func<IList<object>>) GetAll);
-        }
-
-        public IList<object> GetPartition(string partition)
-        {
-            return DoGetPartitionItems(partition).Select(x => x.Value).ToList();
-        }
-
-        public Task<IList<object>> GetPartitionAsync(string partition)
-        {
-            return Task.Factory.StartNew(() => GetPartition(partition));
-        }
-
-        public IList<CacheItem> GetAllItems()
-        {
-            return DoGetAllItems();
-        }
-
-        public Task<IList<CacheItem>> GetAllItemsAsync()
-        {
-            return Task.Factory.StartNew((Func<IList<CacheItem>>) GetAllItems);
-        }
-
-        public IList<CacheItem> GetPartitionItems(string partition)
-        {
-            return DoGetPartitionItems(partition);
-        }
-
-        public Task<IList<CacheItem>> GetPartitionItemsAsync(string partition)
-        {
-            return Task.Factory.StartNew(() => GetPartitionItems(partition));
-        }
+        public abstract CacheItem PeekItem(string partition, string key);
 
         public abstract void Remove(string partition, string key);
-
-        public void Remove(string key)
-        {
-            Remove(DefaultPartition, key);
-        }
-
-        public Task RemoveAsync(string partition, string key)
-        {
-            return Task.Factory.StartNew(() => Remove(partition, key));
-        }
-
-        public Task RemoveAsync(string key)
-        {
-            return Task.Factory.StartNew(() => Remove(key));
-        }
-
-        #endregion
 
         /// <summary>
         ///   TODO
         /// </summary>
-        /// <returns></returns>
-        protected abstract IList<CacheItem> DoGetAllItems();
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="utcExpiry"></param>
+        /// <param name="interval"></param>
+        protected abstract void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="partition"></param>
+        protected abstract void DoClear(string partition);
 
         /// <summary>
         ///   TODO
         /// </summary>
         /// <param name="partition"></param>
         /// <returns></returns>
-        protected abstract IList<CacheItem> DoGetPartitionItems(string partition);
+        protected abstract long DoCount(string partition);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        protected abstract IList<CacheItem> DoGetManyItems(string partition);
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <returns></returns>
+        protected abstract IList<CacheItem> DoPeekManyItems(string partition);
+
+        #endregion Abstract Methods
     }
 }

@@ -1,4 +1,4 @@
-﻿// File name: VolatileCacheSettings.cs
+﻿// File name: VolatileCacheTests.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,38 +21,15 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Core;
-using System;
-using System.Diagnostics.Contracts;
-using System.Runtime.Caching;
+using PommaLabs.KVLite;
 
-namespace PommaLabs.KVLite
+namespace UnitTests
 {
-    public sealed class VolatileCacheSettings : CacheSettingsBase
+    internal sealed class VolatileCacheTests : TestBase
     {
-        #region Fields
-
-        private MemoryCache _memoryCache = MemoryCache.Default;
-
-        #endregion Fields
-
-        #region Settings
-
-        public MemoryCache MemoryCache
+        protected override ICache DefaultInstance
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<MemoryCache>() != null);
-                return _memoryCache;
-            }
-            set
-            {
-                Contract.Requires<ArgumentNullException>(value != null);
-                _memoryCache = value;
-                OnPropertyChanged();
-            }
+            get { return VolatileCache.DefaultInstance; }
         }
-
-        #endregion Settings
     }
 }
