@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite</id>
-        <version>0.9.2</version>
+        <version>0.9.3</version>
         <title>PommaLabs.KVLite</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -11,7 +11,7 @@
 A simple, timed and persistent key-value store based on SQLite. KVLite also offers an in-memory implementation based on MemoryCache.
         </description>
         <releaseNotes>
-* New (and more stable) interface for ICache.
+* Updated Common.Logging.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite also offers an in-memory implementation based on MemoryCache.
