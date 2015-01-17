@@ -130,5 +130,41 @@ namespace PommaLabs.KVLite.Properties {
                 return ((string)(this["Web_OutputCacheProviderPartition"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("VolatileCache")]
+        public string VolatileCache_DefaultCacheName {
+            get {
+                return ((string)(this["VolatileCache_DefaultCacheName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("64")]
+        public int VolatileCache_DefaultInsertionCountBeforeAutoClean {
+            get {
+                return ((int)(this["VolatileCache_DefaultInsertionCountBeforeAutoClean"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("256")]
+        public int VolatileCache_DefaultMaxCacheSizeInMB {
+            get {
+                return ((int)(this["VolatileCache_DefaultMaxCacheSizeInMB"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("32")]
+        public int VolatileCache_DefaultMaxLogSizeInMB {
+            get {
+                return ((int)(this["VolatileCache_DefaultMaxLogSizeInMB"]));
+            }
+        }
     }
 }

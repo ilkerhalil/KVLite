@@ -36,7 +36,7 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   The volatile cache, available through the <see cref="VolatileCache"/> class. A
-        ///   volatile cache stores its data inside an instance of <see cref="System.Runtime.Caching.MemoryCache"/>.
+        ///   volatile cache stores its data inside an in-memory SQLite database.
         /// </summary>
         Volatile = 2
     }

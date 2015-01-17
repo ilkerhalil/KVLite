@@ -26,7 +26,7 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   Determines whether expired items should be included in lists or in queries.
     /// </summary>
-    public enum PersistentCacheReadMode : byte
+    public enum CacheReadMode : byte
     {
         /// <summary>
         ///   Considers expiry policy while retrieving items.

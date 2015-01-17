@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -54,18 +55,22 @@ namespace UnitTests
 
         #endregion Setup/Teardown
 
-        protected const int LargeItemCount = 1000;
+        #region Constants
 
-        protected const int MediumItemCount = 100;
+        private const int LargeItemCount = 1000;
 
-        protected const int SmallItemCount = 10;
+        private const int MediumItemCount = 100;
 
-        protected static readonly List<string> StringItems = Enumerable
+        private const int SmallItemCount = 10;
+
+        private const int MinItem = 10000;
+
+        private static readonly List<string> StringItems = Enumerable
             .Range(MinItem, LargeItemCount)
             .Select(x => x.ToString(CultureInfo.InvariantCulture))
             .ToList();
 
-        private const int MinItem = 10000;
+        #endregion Constants
 
         protected abstract ICache DefaultInstance { get; }
 
@@ -630,7 +635,250 @@ namespace UnitTests
             }
         }
 
-        protected static void AddSliding(ICache instance, int itemCount, TimeSpan interval)
+        [Test]
+        public void Clean_AfterFixedNumberOfInserts_InvalidValues()
+        {
+            for (var i = 0; i < Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean; ++i)
+            {
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            Assert.AreEqual(0, DefaultInstance.Count());
+        }
+
+        [Test]
+        public void Clean_AfterFixedNumberOfInserts_ValidValues()
+        {
+            for (var i = 0; i < Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean; ++i)
+            {
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.AddMinutes(10));
+            }
+            Assert.AreEqual(Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean, DefaultInstance.Count());
+        }
+
+        [Test]
+        public void Clean_InvalidValues()
+        {
+            foreach (var t in StringItems)
+            {
+                DefaultInstance.AddTimed(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            DefaultInstance.Clear();
+            Assert.AreEqual(0, DefaultInstance.Count());
+            foreach (var t in StringItems)
+            {
+                DefaultInstance.AddTimed(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            PersistentCache.DefaultInstance.Clear(CacheReadMode.ConsiderExpiryDate);
+            Assert.AreEqual(0, DefaultInstance.Count());
+            foreach (var t in StringItems)
+            {
+                DefaultInstance.AddTimed(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            Assert.AreEqual(0, DefaultInstance.Count());
+        }
+
+        [Test]
+        public void Clean_ValidValues()
+        {
+            foreach (var t in StringItems)
+            {
+                DefaultInstance.AddTimed(t, t, DateTime.UtcNow.AddMinutes(10));
+            }
+            DefaultInstance.Clear();
+            Assert.AreEqual(0, DefaultInstance.Count());
+
+            foreach (var t in StringItems)
+            {
+                DefaultInstance.AddTimed(t, t, DateTime.UtcNow.AddMinutes(10));
+            }
+            PersistentCache.DefaultInstance.Clear(CacheReadMode.ConsiderExpiryDate);
+            Assert.AreEqual(StringItems.Count, DefaultInstance.Count());
+
+            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            Assert.AreEqual(0, DefaultInstance.Count());
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Peek_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.Peek(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Peek_Typed_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.Peek<string>(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void PeekItem_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.PeekItem(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void PeekItem_Typed_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.PeekItem<string>(StringItems[i]));
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Peek_EmptyCache_Concurrent(int itemCount)
+        {
+            var tasks = new List<Task<object>>();
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var l = i;
+                var task = Task.Run(() => DefaultInstance.Peek(StringItems[l]));
+                tasks.Add(task);
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(tasks[i].Result);
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Peek_FullCache_ExpiryNotChanged(int itemCount)
+        {
+            var expiryDate = DateTime.UtcNow.AddMinutes(10);
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], expiryDate);
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                var value = DefaultInstance.Peek<string>(StringItems[i]);
+                Assert.IsNotNull(value);
+                Assert.AreEqual(StringItems[i], value);
+                var item = DefaultInstance.PeekItem<string>(StringItems[i]);
+                Assert.AreEqual(expiryDate.Date, item.UtcExpiry.Value.Date);
+                Assert.AreEqual(expiryDate.Hour, item.UtcExpiry.Value.Hour);
+                Assert.AreEqual(expiryDate.Minute, item.UtcExpiry.Value.Minute);
+                Assert.AreEqual(expiryDate.Second, item.UtcExpiry.Value.Second);
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Peek_FullCache_Outdated(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(DefaultInstance.Peek(StringItems[i]));
+            }
+        }
+
+        #region Serialization
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void AddStatic_NotSerializableValue()
+        {
+            DefaultInstance.AddStatic(StringItems[0], new NotSerializableClass());
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void AddStatic_DataContractValue()
+        {
+            DefaultInstance.AddStatic(StringItems[0], new DataContractClass());
+        }
+
+        #endregion Serialization
+
+        #region BCL Collections
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Collections_Dictionary(int itemCount)
+        {
+            var l = Enumerable.Range(1, itemCount).ToDictionary(i => i, i => i.ToString(CultureInfo.InvariantCulture));
+            DefaultInstance.AddStatic("dict", l);
+            var lc = DefaultInstance.Get<Dictionary<int, string>>("dict");
+            Assert.True(l.SequenceEqual(lc));
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Collections_List(int itemCount)
+        {
+            var l = new List<int>(Enumerable.Range(1, itemCount));
+            DefaultInstance.AddStatic("list", l);
+            var lc = DefaultInstance.Get<List<int>>("list");
+            Assert.True(l.SequenceEqual(lc));
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Collections_HashSet(int itemCount)
+        {
+            var l = new HashSet<int>(Enumerable.Range(1, itemCount));
+            DefaultInstance.AddStatic("set", l);
+            var lc = DefaultInstance.Get<HashSet<int>>("set");
+            Assert.True(l.SequenceEqual(lc));
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Collections_SortedSet(int itemCount)
+        {
+            var l = new SortedSet<int>(Enumerable.Range(1, itemCount));
+            DefaultInstance.AddStatic("set", l);
+            var lc = DefaultInstance.Get<SortedSet<int>>("set");
+            Assert.True(l.SequenceEqual(lc));
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Collections_SortedList(int itemCount)
+        {
+            var l = new SortedList<int, string>(Enumerable.Range(1, itemCount).ToDictionary(i => i, i => i.ToString(CultureInfo.InvariantCulture)));
+            DefaultInstance.AddStatic("list", l);
+            var lc = DefaultInstance.Get<SortedList<int, string>>("list");
+            Assert.True(l.SequenceEqual(lc));
+        }
+
+        #endregion BCL Collections
+
+        #region Private Methods
+
+        private static void AddSliding(ICache instance, int itemCount, TimeSpan interval)
         {
             for (var i = 0; i < itemCount; ++i)
             {
@@ -638,7 +886,7 @@ namespace UnitTests
             }
         }
 
-        protected static void AddStatic(ICache instance, int itemCount)
+        private static void AddStatic(ICache instance, int itemCount)
         {
             for (var i = 0; i < itemCount; ++i)
             {
@@ -646,12 +894,26 @@ namespace UnitTests
             }
         }
 
-        protected static void AddTimed(ICache instance, int itemCount, DateTime utcTime)
+        private static void AddTimed(ICache instance, int itemCount, DateTime utcTime)
         {
             for (var i = 0; i < itemCount; ++i)
             {
                 instance.AddTimed(StringItems[i], StringItems[i], utcTime);
             }
         }
+
+        #endregion Private Methods
+    }
+
+    internal sealed class NotSerializableClass
+    {
+        public string Pino = "Gino";
+    }
+
+    [DataContract]
+    internal sealed class DataContractClass
+    {
+        [DataMember]
+        public string Pino = "Gino";
     }
 }

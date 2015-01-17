@@ -31,7 +31,6 @@ using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using PommaLabs.KVLite;
-using PommaLabs.KVLite.Properties;
 using PommaLabs.Testing;
 
 namespace Benchmarks
@@ -40,8 +39,7 @@ namespace Benchmarks
     {
         private const int RowCount = 1000;
         private const int IterationCount = 5;
-
-        private static readonly int RandomDataTablesCount = Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean * 10;
+        private const int RandomDataTablesCount = 1000;
 
         private static readonly string[] ColumnNames = { "A", "B", "C", "D", "E" };
 
@@ -67,6 +65,9 @@ namespace Benchmarks
             {
                 FullyCleanCache();
                 StoreEachDataTable(tables, i);
+
+                FullyCleanCache();
+                StoreEachDataTable_Volatile(tables, i);
 
                 FullyCleanCache();
                 RetrieveEachDataTable(tables, i);
@@ -115,7 +116,8 @@ namespace Benchmarks
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Fully cleaning cache...");
-            PersistentCache.DefaultInstance.Clear(PersistentCacheReadMode.IgnoreExpiryDate);
+            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             Console.WriteLine(@"Cache cleaned!");
         }
 
@@ -154,6 +156,26 @@ namespace Benchmarks
 
             Console.WriteLine(@"Data tables stored in: {0}", stopwatch.Elapsed);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
+        }
+
+        private static void StoreEachDataTable_Volatile(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"[Volatile] Storing each data table, iteration {0}...", iteration);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            foreach (var table in tables)
+            {
+                VolatileCache.DefaultInstance.AddStatic(table.TableName, table);
+            }
+            stopwatch.Stop();
+
+            Debug.Assert(VolatileCache.DefaultInstance.Count() == tables.Count);
+            Debug.Assert(VolatileCache.DefaultInstance.LongCount() == tables.LongCount());
+
+            Console.WriteLine(@"[Volatile] Data tables stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
         private static void StoreEachDataTableAsync(ICollection<DataTable> tables, int iteration)
@@ -251,7 +273,7 @@ namespace Benchmarks
             var tasks = new List<Task<object>>();
             foreach (var table in tables)
             {
-                tasks.Add(Task.Run(() => PersistentCache.DefaultInstance.Get(table.TableName)));
+                tasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get(table.TableName)));
             }
             foreach (var task in tasks)
             {
@@ -282,7 +304,7 @@ namespace Benchmarks
             var readTasks = new List<Task<object>>();
             foreach (var table in tables)
             {
-                readTasks.Add(Task.Run(() => PersistentCache.DefaultInstance.Get(table.TableName)));
+                readTasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get(table.TableName)));
             }
             foreach (var task in writeTasks)
             {

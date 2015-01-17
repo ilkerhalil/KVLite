@@ -34,7 +34,7 @@ namespace PommaLabs.KVLite
     /// </summary>
     public static class CacheExtensions
     {
-        #region Default Partition
+        #region Extensions - Default Partition
 
         public static void AddSliding(this ICache cache, string key, object value, TimeSpan interval)
         {
@@ -113,9 +113,9 @@ namespace PommaLabs.KVLite
             cache.Remove(cache.Settings.DefaultPartition, key);
         }
 
-        #endregion Default Partition
+        #endregion Extensions - Default Partition
 
-        #region Async Methods
+        #region Extensions - Async Methods
 
         public static Task AddSlidingAsync(this ICache cache, string partition, string key, object value, TimeSpan interval)
         {
@@ -173,18 +173,18 @@ namespace PommaLabs.KVLite
             return TaskRunner.Run(() => cache.Remove(cache.Settings.DefaultPartition, key));
         }
 
-        #endregion Async Methods
+        #endregion Extensions - Async Methods
 
-        #region Typed Retrieval
+        #region Extensions - Typed Retrieval
 
         public static TVal Get<TVal>(this ICache cache, string partition, string key)
         {
-            return (TVal)cache.Get(partition, key);
+            return (TVal) cache.Get(partition, key);
         }
 
         public static TVal Get<TVal>(this ICache cache, string key)
         {
-            return (TVal)cache.Get(cache.Settings.DefaultPartition, key);
+            return (TVal) cache.Get(cache.Settings.DefaultPartition, key);
         }
 
         public static CacheItem<TVal> GetItem<TVal>(this ICache cache, string partition, string key)
@@ -196,7 +196,7 @@ namespace PommaLabs.KVLite
                 {
                     Partition = item.Partition,
                     Key = item.Key,
-                    Value = (TVal)item.Value,
+                    Value = (TVal) item.Value,
                     UtcCreation = item.UtcCreation,
                     UtcExpiry = item.UtcExpiry,
                     Interval = item.Interval
@@ -212,7 +212,7 @@ namespace PommaLabs.KVLite
                 {
                     Partition = item.Partition,
                     Key = item.Key,
-                    Value = (TVal)item.Value,
+                    Value = (TVal) item.Value,
                     UtcCreation = item.UtcCreation,
                     UtcExpiry = item.UtcExpiry,
                     Interval = item.Interval
@@ -221,12 +221,12 @@ namespace PommaLabs.KVLite
 
         public static TVal Peek<TVal>(this ICache cache, string partition, string key)
         {
-            return (TVal)cache.Peek(partition, key);
+            return (TVal) cache.Peek(partition, key);
         }
 
         public static TVal Peek<TVal>(this ICache cache, string key)
         {
-            return (TVal)cache.Peek(cache.Settings.DefaultPartition, key);
+            return (TVal) cache.Peek(cache.Settings.DefaultPartition, key);
         }
 
         public static CacheItem<TVal> PeekItem<TVal>(this ICache cache, string partition, string key)
@@ -238,7 +238,7 @@ namespace PommaLabs.KVLite
                 {
                     Partition = item.Partition,
                     Key = item.Key,
-                    Value = (TVal)item.Value,
+                    Value = (TVal) item.Value,
                     UtcCreation = item.UtcCreation,
                     UtcExpiry = item.UtcExpiry,
                     Interval = item.Interval
@@ -254,16 +254,16 @@ namespace PommaLabs.KVLite
                 {
                     Partition = item.Partition,
                     Key = item.Key,
-                    Value = (TVal)item.Value,
+                    Value = (TVal) item.Value,
                     UtcCreation = item.UtcCreation,
                     UtcExpiry = item.UtcExpiry,
                     Interval = item.Interval
                 };
         }
 
-        #endregion Typed Retrieval
+        #endregion Extensions - Typed Retrieval
 
-        #region Internal Methods
+        #region Extensions - Internal Methods
 
         internal static ICache ParseCacheKind(this string kind)
         {
@@ -285,6 +285,6 @@ namespace PommaLabs.KVLite
             }
         }
 
-        #endregion Internal Methods
+        #endregion Extensions - Internal Methods
     }
 }

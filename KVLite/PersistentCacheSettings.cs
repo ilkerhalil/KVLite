@@ -65,7 +65,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Number of inserts before a cache cleanup is issued.
         /// </summary>
-        public int InsertionCountBeforeCleanup
+        public override int InsertionCountBeforeAutoClean
         {
             get
             {
@@ -83,7 +83,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Max size in megabytes for the cache.
         /// </summary>
-        public int MaxCacheSizeInMB
+        public override int MaxCacheSizeInMB
         {
             get
             {
@@ -101,7 +101,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Max size in megabytes for the SQLite journal log.
         /// </summary>
-        public int MaxJournalSizeInMB
+        public override int MaxJournalSizeInMB
         {
             get
             {

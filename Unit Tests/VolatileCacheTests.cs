@@ -21,12 +21,29 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using NUnit.Framework;
 using PommaLabs.KVLite;
 
 namespace UnitTests
 {
     internal sealed class VolatileCacheTests : TestBase
     {
+        #region Setup/Teardown
+
+        [SetUp]
+        public override void SetUp()
+        {
+            VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+        }
+
+        [TearDown]
+        public override void TearDown()
+        {
+            VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+        }
+
+        #endregion Setup/Teardown
+
         protected override ICache DefaultInstance
         {
             get { return VolatileCache.DefaultInstance; }

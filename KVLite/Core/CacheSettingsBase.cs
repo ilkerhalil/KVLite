@@ -95,6 +95,16 @@ namespace PommaLabs.KVLite.Core
 
         #endregion Settings
 
+        #region Abstract Settings
+
+        public abstract int InsertionCountBeforeAutoClean { get; set; }
+
+        public abstract int MaxCacheSizeInMB { get; set; }
+
+        public abstract int MaxJournalSizeInMB { get; set; }
+
+        #endregion Settings
+
         #region INotifyPropertyChanged Members
 
         /// <summary>

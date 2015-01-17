@@ -38,5 +38,17 @@
     <Setting Name="Web_OutputCacheProviderPartition" Type="System.String" Scope="Application">
       <Value Profile="(Default)">KVLite.Web.OutputCache</Value>
     </Setting>
+    <Setting Name="VolatileCache_DefaultCacheName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">VolatileCache</Value>
+    </Setting>
+    <Setting Name="VolatileCache_DefaultInsertionCountBeforeAutoClean" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">64</Value>
+    </Setting>
+    <Setting Name="VolatileCache_DefaultMaxCacheSizeInMB" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">256</Value>
+    </Setting>
+    <Setting Name="VolatileCache_DefaultMaxLogSizeInMB" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">32</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

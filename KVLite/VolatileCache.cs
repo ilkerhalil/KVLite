@@ -1,4 +1,4 @@
-﻿// VolatileCache.cs
+﻿// File name: VolatileCache.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -23,24 +23,41 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.Caching;
-using Newtonsoft.Json;
+using Common.Logging;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
+    /// <summary>
+    ///   TODO
+    /// </summary>
     [Serializable]
     public sealed class VolatileCache : CacheBase<VolatileCache, VolatileCacheSettings>
     {
         #region Construction
 
+        static VolatileCache()
+        {
+            // Makes SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
+            var nativePath = (GEnvironment.AppIsRunningOnAspNet ? "bin/KVLite/" : "KVLite/").MapPath();
+            Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
+
+            // Logs the path where SQLite has been set.
+            LogManager.GetLogger<VolatileCache>().InfoFormat("SQLite native libraries set at {0}", nativePath);
+        }
+
+        /// <summary>
+        ///   TODO
+        /// </summary>
         public VolatileCache()
-            : this(new VolatileCacheSettings())
+            : base(new VolatileCacheSettings())
         {
         }
 
+        /// <summary>
+        ///   TODO
+        /// </summary>
+        /// <param name="settings"></param>
         public VolatileCache(VolatileCacheSettings settings)
             : base(settings)
         {
@@ -48,153 +65,23 @@ namespace PommaLabs.KVLite
 
         #endregion Construction
 
-        #region ICache Members
-
-        public override CacheKind Kind
-        {
-            get { return CacheKind.Volatile; }
-        }
-
-        public override bool Contains(string partition, string key)
-        {
-            return Settings.MemoryCache.Contains(CreateKey(partition, key));
-        }
-
-        public override object Get(string partition, string key)
-        {
-            var item = GetItem(partition, key);
-            return (item == null) ? null : item.Value;
-        }
-
-        public override CacheItem GetItem(string partition, string key)
-        {
-            var item = Settings.MemoryCache.Get(CreateKey(partition, key)) as CacheItem;
-
-            // Expiry date is updated, if sliding.
-            if (item != null && item.Interval.HasValue)
-            {
-                item.UtcExpiry = item.UtcExpiry + item.Interval;
-            }
-
-            return item;
-        }
-
-        public override object Peek(string partition, string key)
-        {
-            throw new NotImplementedException(ErrorMessages.VolatileCache_CannotPeek);
-        }
-
-        public override CacheItem PeekItem(string partition, string key)
-        {
-            throw new NotImplementedException(ErrorMessages.VolatileCache_CannotPeek);
-        }
-
-        public override void Remove(string partition, string key)
-        {
-            Settings.MemoryCache.Remove(CreateKey(partition, key));
-        }
-
-        #endregion ICache Members
-
         #region CacheBase Members
 
-        protected override void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
+        protected override bool DataSourceHasChanged(string changedPropertyName)
         {
-            var item = new CacheItem
-            {
-                Partition = partition,
-                Key = key,
-                UtcCreation = DateTime.UtcNow,
-                UtcExpiry = utcExpiry,
-                Interval = interval,
-                Value = value
-            };
-
-            if (interval.HasValue)
-            {
-                Settings.MemoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy
-                {
-                    SlidingExpiration = interval.Value
-                });
-            }
-            else
-            {
-                Debug.Assert(utcExpiry != null);
-                Settings.MemoryCache.Set(CreateKey(partition, key), item, new CacheItemPolicy
-                {
-                    AbsoluteExpiration = utcExpiry.Value.ToLocalTime()
-                });
-            }
+            return changedPropertyName.ToLower().Equals("cachename");
         }
 
-        protected override void DoClear(string partition)
+        protected override string GetDataSource()
         {
-            var items = Settings.MemoryCache.AsEnumerable();
-
-            if (partition != null)
-            {
-                items = items.Where(x =>
-                {
-                    var val = x.Value as CacheItem;
-                    return val != null && val.Partition == partition;
-                });
-            }
-
-            items = items.ToList();
-
-            foreach (var item in items)
-            {
-                Settings.MemoryCache.Remove(item.Key);
-            }
+            return String.Format("file:{0}?mode=memory&cache=shared", Settings.CacheFile);
         }
 
-        protected override long DoCount(string partition)
+        protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
         {
-            return Settings.MemoryCache.Count(x =>
-            {
-                var val = x.Value as CacheItem;
-                return val != null && (partition == null || val.Partition == partition);
-            });
+            yield return GKeyValuePair.Create("CacheName", Settings.CacheFile);
         }
 
-        protected override IList<CacheItem> DoGetManyItems(string partition)
-        {
-            var items = Settings.MemoryCache.AsEnumerable();
-
-            if (partition != null)
-            {
-                items = items.Where(x =>
-                {
-                    var val = x.Value as CacheItem;
-                    return val != null && val.Partition == partition;
-                });
-            }
-
-            var ret = items.Select(x => x.Value as CacheItem).ToList();
-
-            // Expiry dates are updated, if sliding.
-            foreach (var item in ret.Where(i => i.Interval.HasValue))
-            {
-                item.UtcExpiry = item.UtcExpiry + item.Interval;
-            }
-
-            return ret;
-        }
-
-        protected override IList<CacheItem> DoPeekManyItems(string partition)
-        {
-            throw new NotImplementedException(ErrorMessages.VolatileCache_CannotPeek);
-        }
-
-        #endregion CacheBase Members
-
-        #region Private Methods
-
-        private static string CreateKey(string partition, string key)
-        {
-            return JsonConvert.SerializeObject(GPair.Create(partition, key), Formatting.None);
-        }
-
-        #endregion Private Methods
+        #endregion
     }
 }
