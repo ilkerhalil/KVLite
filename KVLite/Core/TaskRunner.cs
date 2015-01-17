@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.Core
@@ -10,7 +11,7 @@ namespace PommaLabs.KVLite.Core
 #if PORTABLE
             return Task.Run(action);
 #else
-            return TaskEx.Run(action);
+            return Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
 #endif
         }
     }
