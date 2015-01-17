@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System.Text.RegularExpressions;
 using PommaLabs.KVLite.Core;
 using System;
 using System.Diagnostics.Contracts;
@@ -42,9 +43,9 @@ namespace PommaLabs.KVLite
         #region Settings
 
         /// <summary>
-        ///   The SQLite DB used as the backend for the cache.
+        ///   The name of the in-memory SQLite DB used as the backend for the cache.
         /// </summary>
-        public string CacheFile
+        public string CacheName
         {
             get
             {
@@ -53,7 +54,8 @@ namespace PommaLabs.KVLite
             }
             set
             {
-                Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCachePath);
+                Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCacheName);
+                Contract.Requires<ArgumentException>(Regex.IsMatch(value, @"^[a-zA-Z0-9_\.]*$"), ErrorMessages.InvalidCacheName);
                 _cacheFile = value;
                 OnPropertyChanged();
             }

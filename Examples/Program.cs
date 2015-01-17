@@ -32,7 +32,7 @@ namespace Examples
             // Settings that we will use in new volatile caches.
             var volatileCacheSettings = new VolatileCacheSettings
             {
-                CacheFile = "My In-Memory Cache", // The backend.
+                CacheName = "My In-Memory Cache", // The backend.
                 StaticIntervalInDays = 10 // How many days static values will last.
             };
 

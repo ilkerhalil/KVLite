@@ -68,12 +68,12 @@ namespace PommaLabs.KVLite
 
         protected override string GetDataSource()
         {
-            return String.Format("file:{0}?mode=memory&cache=shared", Settings.CacheFile);
+            return String.Format("file:{0}?mode=memory&cache=shared", Settings.CacheName);
         }
 
         protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return GKeyValuePair.Create("CacheName", Settings.CacheFile);
+            yield return GKeyValuePair.Create("CacheName", Settings.CacheName);
         }
 
         #endregion

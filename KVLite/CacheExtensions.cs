@@ -281,7 +281,7 @@ namespace PommaLabs.KVLite
                     return VolatileCache.DefaultInstance;
 
                 default:
-                    throw new ConfigurationErrorsException();
+                    throw new ConfigurationErrorsException(ErrorMessages.InvalidEnumValue);
             }
         }
 

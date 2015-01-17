@@ -99,10 +99,19 @@ namespace PommaLabs.KVLite.Core
 
         #region Abstract Settings
 
+        /// <summary>
+        ///   Number of inserts before a cache cleanup is issued.
+        /// </summary>
         public abstract int InsertionCountBeforeAutoClean { get; set; }
 
+        /// <summary>
+        ///   Max size in megabytes for the cache.
+        /// </summary>
         public abstract int MaxCacheSizeInMB { get; set; }
 
+        /// <summary>
+        ///   Max size in megabytes for the SQLite journal log.
+        /// </summary>
         public abstract int MaxJournalSizeInMB { get; set; }
 
         #endregion Settings
