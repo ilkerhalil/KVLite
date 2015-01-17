@@ -164,6 +164,7 @@
     <Compile Include="CacheExtensions.cs" />
     <Compile Include="CacheItem.cs" />
     <Compile Include="CacheKind.cs" />
+    <Compile Include="Contracts\CacheSettingsContract.cs" />
     <Compile Include="Core\TaskRunner.cs" />
     <Compile Include="CacheReadMode.cs" />
     <Compile Include="Contracts\CacheContract.cs" />

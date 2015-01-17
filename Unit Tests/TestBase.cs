@@ -31,13 +31,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PommaLabs.KVLite;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Properties;
 using PommaLabs.Testing;
 
 namespace UnitTests
 {
     [TestFixture]
-    internal abstract class TestBase
+    internal abstract class TestBase<TCache, TCacheSettings>
+        where TCache : CacheBase<TCache, TCacheSettings>, new()
+        where TCacheSettings : CacheSettingsBase, new()
     {
         #region Setup/Teardown
 
@@ -72,7 +75,7 @@ namespace UnitTests
 
         #endregion Constants
 
-        protected abstract ICache DefaultInstance { get; }
+        protected abstract TCache DefaultInstance { get; }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -668,13 +671,13 @@ namespace UnitTests
             {
                 DefaultInstance.AddTimed(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.ConsiderExpiryDate);
+            DefaultInstance.Clear(CacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(0, DefaultInstance.Count());
             foreach (var t in StringItems)
             {
                 DefaultInstance.AddTimed(t, t, DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             Assert.AreEqual(0, DefaultInstance.Count());
         }
 
@@ -692,10 +695,10 @@ namespace UnitTests
             {
                 DefaultInstance.AddTimed(t, t, DateTime.UtcNow.AddMinutes(10));
             }
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.ConsiderExpiryDate);
+            DefaultInstance.Clear(CacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(StringItems.Count, DefaultInstance.Count());
 
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             Assert.AreEqual(0, DefaultInstance.Count());
         }
 

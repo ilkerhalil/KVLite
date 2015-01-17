@@ -71,9 +71,9 @@ namespace PommaLabs.KVLite.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("32")]
-        public int PersistentCache_DefaultMaxLogSizeInMB {
+        public int PersistentCache_DefaultMaxJournalSizeInMB {
             get {
-                return ((int)(this["PersistentCache_DefaultMaxLogSizeInMB"]));
+                return ((int)(this["PersistentCache_DefaultMaxJournalSizeInMB"]));
             }
         }
         
@@ -161,9 +161,9 @@ namespace PommaLabs.KVLite.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("32")]
-        public int VolatileCache_DefaultMaxLogSizeInMB {
+        public int VolatileCache_DefaultMaxJournalSizeInMB {
             get {
-                return ((int)(this["VolatileCache_DefaultMaxLogSizeInMB"]));
+                return ((int)(this["VolatileCache_DefaultMaxJournalSizeInMB"]));
             }
         }
     }

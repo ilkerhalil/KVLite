@@ -34,7 +34,7 @@ namespace PommaLabs.KVLite
 
         private string _cacheFile = Settings.Default.VolatileCache_DefaultCacheName;
         private int _maxCacheSizeInMB = Settings.Default.VolatileCache_DefaultMaxCacheSizeInMB;
-        private int _maxJournalSizeInMB = Settings.Default.VolatileCache_DefaultMaxLogSizeInMB;
+        private int _maxJournalSizeInMB = Settings.Default.VolatileCache_DefaultMaxJournalSizeInMB;
         private int _insertionCountBeforeCleanup = Settings.Default.VolatileCache_DefaultInsertionCountBeforeAutoClean;
 
         #endregion Fields
@@ -59,55 +59,40 @@ namespace PommaLabs.KVLite
             }
         }
 
-        /// <summary>
-        ///   Number of inserts before a cache cleanup is issued.
-        /// </summary>
         public override int InsertionCountBeforeAutoClean
         {
             get
             {
-                Contract.Ensures(Contract.Result<int>() > 0);
                 return _insertionCountBeforeCleanup;
             }
             set
             {
-                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
                 _insertionCountBeforeCleanup = value;
                 OnPropertyChanged();
             }
         }
 
-        /// <summary>
-        ///   Max size in megabytes for the cache.
-        /// </summary>
         public override int MaxCacheSizeInMB
         {
             get
             {
-                Contract.Ensures(Contract.Result<int>() > 0);
                 return _maxCacheSizeInMB;
             }
             set
             {
-                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
                 _maxCacheSizeInMB = value;
                 OnPropertyChanged();
             }
         }
 
-        /// <summary>
-        ///   Max size in megabytes for the SQLite journal log.
-        /// </summary>
         public override int MaxJournalSizeInMB
         {
             get
             {
-                Contract.Ensures(Contract.Result<int>() > 0);
                 return _maxJournalSizeInMB;
             }
             set
             {
-                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
                 _maxJournalSizeInMB = value;
                 OnPropertyChanged();
             }

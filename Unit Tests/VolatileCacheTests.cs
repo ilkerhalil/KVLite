@@ -26,7 +26,7 @@ using PommaLabs.KVLite;
 
 namespace UnitTests
 {
-    internal sealed class VolatileCacheTests : TestBase
+    internal sealed class VolatileCacheTests : TestBase<VolatileCache, VolatileCacheSettings>
     {
         #region Setup/Teardown
 
@@ -44,7 +44,7 @@ namespace UnitTests
 
         #endregion Setup/Teardown
 
-        protected override ICache DefaultInstance
+        protected override VolatileCache DefaultInstance
         {
             get { return VolatileCache.DefaultInstance; }
         }

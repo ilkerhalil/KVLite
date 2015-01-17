@@ -106,7 +106,7 @@ namespace PommaLabs.KVLite.Nancy
             catch (Exception ex)
             {
                 const string errMsg = "Something bad happened while caching :-(";
-                LogManager.GetCurrentClassLogger().Error(errMsg, ex);
+                LogManager.GetLogger<CachingBootstrapper>().Error(errMsg, ex);
                 // Sets the old response, hoping it will work...
                 context.Response = responseToBeCached;
             }

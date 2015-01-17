@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Common.Logging;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
@@ -39,12 +38,7 @@ namespace PommaLabs.KVLite
 
         static PersistentCache()
         {
-            // Makes SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
-            var nativePath = (GEnvironment.AppIsRunningOnAspNet ? "bin/KVLite/" : "KVLite/").MapPath();
-            Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
-
-            // Logs the path where SQLite has been set.
-            LogManager.GetLogger<PersistentCache>().InfoFormat("SQLite native libraries set at {0}", nativePath);
+            InitSQLite();
         }
 
         /// <summary>

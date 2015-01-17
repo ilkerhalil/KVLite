@@ -28,7 +28,7 @@ using PommaLabs.KVLite.Core;
 
 namespace UnitTests
 {
-    internal sealed class PersistentCacheTests : TestBase
+    internal sealed class PersistentCacheTests : TestBase<PersistentCache, PersistentCacheSettings>
     {
         private const string BlankPath = "   ";
 
@@ -48,7 +48,7 @@ namespace UnitTests
 
         #endregion Setup/Teardown
 
-        protected override ICache DefaultInstance
+        protected override PersistentCache DefaultInstance
         {
             get { return PersistentCache.DefaultInstance; }
         }

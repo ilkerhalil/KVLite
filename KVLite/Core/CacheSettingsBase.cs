@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.KVLite.Annotations;
+using PommaLabs.KVLite.Contracts;
 using PommaLabs.KVLite.Properties;
 using System;
 using System.ComponentModel;
@@ -33,6 +34,7 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Base class for cache settings. Contains settings shared among different caches.
     /// </summary>
+    [ContractClass(typeof(CacheSettingsContract))]
     public abstract class CacheSettingsBase : INotifyPropertyChanged
     {
         #region Fields

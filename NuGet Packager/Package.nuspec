@@ -3,18 +3,18 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite</id>
-        <version>0.9.3</version>
+        <version>1.0.0-alpha</version>
         <title>PommaLabs.KVLite</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
         <description>
-A simple, timed and persistent key-value store based on SQLite. KVLite also offers an in-memory implementation based on MemoryCache.
+A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
         </description>
         <releaseNotes>
-* Updated Common.Logging.
+* Volatile cache now uses an in-memory SQLite backend.
         </releaseNotes>
         <summary>
-A simple, timed and persistent key-value store based on SQLite. KVLite also offers an in-memory implementation based on MemoryCache.
+A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
         </summary>
         <language>en-US</language>
         <projectUrl>https://bitbucket.org/pomma89/kvlite</projectUrl>
@@ -42,7 +42,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite also offe
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
-        <tags>sqlite key value store concurrent persistent volatile memory cache provider timed</tags>
+        <tags>sqlite key value store concurrent persistent volatile in-memory cache provider timed</tags>
     </metadata>
     <files>
         <file src="content\" target="content" />

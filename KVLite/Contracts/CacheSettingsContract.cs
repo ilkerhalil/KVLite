@@ -1,4 +1,4 @@
-﻿// File name: VolatileCache.cs
+﻿// File name: CacheSettingsContract.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -22,60 +22,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using PommaLabs.KVLite.Core;
 
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.Contracts
 {
-    /// <summary>
-    ///   TODO
-    /// </summary>
-    [Serializable]
-    public sealed class VolatileCache : CacheBase<VolatileCache, VolatileCacheSettings>
+    [ContractClassFor(typeof(CacheSettingsBase))]
+    internal abstract class CacheSettingsContract : CacheSettingsBase
     {
-        #region Construction
-
-        static VolatileCache()
+        /// <summary>
+        ///   Number of inserts before a cache cleanup is issued.
+        /// </summary>
+        public override int InsertionCountBeforeAutoClean
         {
-            InitSQLite();
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 0);
+                return default(int);
+            }
+            set
+            {
+                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+            }
         }
 
         /// <summary>
-        ///   TODO
+        ///   Max size in megabytes for the cache.
         /// </summary>
-        public VolatileCache()
-            : base(new VolatileCacheSettings())
+        public override int MaxCacheSizeInMB
         {
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 0);
+                return default(int);
+            }
+            set
+            {
+                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+            }
         }
 
         /// <summary>
-        ///   TODO
+        ///   Max size in megabytes for the SQLite journal log.
         /// </summary>
-        /// <param name="settings"></param>
-        public VolatileCache(VolatileCacheSettings settings)
-            : base(settings)
+        public override int MaxJournalSizeInMB
         {
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 0);
+                return default(int);
+            }
+            set
+            {
+                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+            }
         }
-
-        #endregion Construction
-
-        #region CacheBase Members
-
-        protected override bool DataSourceHasChanged(string changedPropertyName)
-        {
-            return changedPropertyName.ToLower().Equals("cachename");
-        }
-
-        protected override string GetDataSource()
-        {
-            return String.Format("file:{0}?mode=memory&cache=shared", Settings.CacheFile);
-        }
-
-        protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
-        {
-            yield return GKeyValuePair.Create("CacheName", Settings.CacheFile);
-        }
-
-        #endregion
     }
 }

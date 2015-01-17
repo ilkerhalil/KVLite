@@ -30,6 +30,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using CodeProject.ObjectPool;
+using Common.Logging;
 using Dapper;
 using PommaLabs.Extensions;
 
@@ -346,6 +347,20 @@ namespace PommaLabs.KVLite.Core
         protected abstract string GetDataSource();
 
         #endregion Abstract Methods
+
+        #region Protected Methods
+
+        protected static void InitSQLite()
+        {
+            // Makes SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
+            var nativePath = (GEnvironment.AppIsRunningOnAspNet ? "bin/KVLite/" : "KVLite/").MapPath();
+            Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
+
+            // Logs the path where SQLite has been set.
+            LogManager.GetLogger<PersistentCache>().InfoFormat("SQLite native libraries set at {0}", nativePath);
+        }
+
+        #endregion
 
         #region Private Methods
 
