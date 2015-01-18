@@ -61,6 +61,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crc32C.Tests", "Crc32C.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snappy.Tests", "Snappy.Tests\Snappy.Tests.csproj", "{B8A25FB3-8EF8-490B-A7E8-56341623C163}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager (Core)", "NuGet Packager (Core)\NuGet Packager (Core).csproj", "{BC783C22-1518-4F7A-944A-8E095C9B5930}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,6 +141,10 @@ Global
 		{B8A25FB3-8EF8-490B-A7E8-56341623C163}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8A25FB3-8EF8-490B-A7E8-56341623C163}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8A25FB3-8EF8-490B-A7E8-56341623C163}.Release|x86.ActiveCfg = Release|Any CPU
+		{BC783C22-1518-4F7A-944A-8E095C9B5930}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC783C22-1518-4F7A-944A-8E095C9B5930}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BC783C22-1518-4F7A-944A-8E095C9B5930}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC783C22-1518-4F7A-944A-8E095C9B5930}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
