@@ -24,7 +24,7 @@ namespace Snappy
         Stream Stream;
         readonly CompressionMode Mode;
         readonly bool LeaveOpen;
-        SnappyFrame Frame = new SnappyFrame();
+        readonly SnappyFrame Frame = new SnappyFrame();
         byte[] Buffer = new byte[256];
         int BufferUsage;
         int BufferRead;

@@ -16,9 +16,9 @@ namespace Snappy.Tests
     [TestFixture]
     public class SnappyStreamTest
     {
-        Random Random = new Random();
+        readonly Random Random = new Random();
         Random ReadRandom = new Random(1);
-        Random WriteRandom = new Random(2);
+        readonly Random WriteRandom = new Random(2);
 
         [Test]
         public void Twister()

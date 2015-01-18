@@ -15,7 +15,7 @@ namespace Snappy.Tests
 #if SNAPPY_ASYNC
         TaskCompletionSource<object> Available = new TaskCompletionSource<object>();
 #else
-        ManualResetEvent Available = new ManualResetEvent(false);
+        readonly ManualResetEvent Available = new ManualResetEvent(false);
 #endif
 
         public void Add(int count)

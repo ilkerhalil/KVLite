@@ -24,7 +24,7 @@ namespace Snappy
         /// </summary>
         public readonly byte[] StreamIdentifier = Encoding.ASCII.GetBytes("sNaPpY");
         static readonly int MaxBufferUsage = SnappyCodec.GetMaxCompressedLength(MaxFrameSize);
-        byte[] WordBuffer = new byte[4];
+        readonly byte[] WordBuffer = new byte[4];
         byte[] Buffer;
         int BufferUsage;
 

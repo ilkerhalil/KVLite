@@ -12,7 +12,7 @@ namespace Snappy.Tests
 {
     class RandomChunkStream : Stream
     {
-        static Random Random = new Random();
+        static readonly Random Random = new Random();
         readonly int Capacity = Random.Next(5000, 100000);
         readonly byte[] Buffer;
         readonly AsyncMultiSemaphore ReadSemaphore = new AsyncMultiSemaphore();

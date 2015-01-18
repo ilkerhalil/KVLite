@@ -11,9 +11,9 @@ namespace Snappy.Tests
 {
     class RepeaterStream : Stream
     {
-        byte[] Data;
+        readonly byte[] Data;
         int ReadPos;
-        Random Random = new Random();
+        readonly Random Random = new Random();
 
         public override bool CanRead { get { return true; } }
         public override bool CanWrite { get { return false; } }
