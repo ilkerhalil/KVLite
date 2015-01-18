@@ -31,7 +31,6 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
                 <dependency id="Common.Logging" version="3.0.0" />
                 <dependency id="Dapper" version="1.38" />
                 <dependency id="PommaLabs.GRAMPA" version="2.1.4" />
-                <dependency id="Snappy.NET" version="1.1.1.8" />
                 <dependency id="System.Data.SQLite.Core.MSIL" version="[1.0.94.0]" />
             </group>
             <group targetFramework="net40">
@@ -41,7 +40,6 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
                 <dependency id="Common.Logging" version="3.0.0" />
                 <dependency id="Dapper" version="1.38" />
                 <dependency id="PommaLabs.GRAMPA" version="2.1.4" />
-                <dependency id="Snappy.NET" version="1.1.1.8" />
                 <dependency id="System.Data.SQLite.Core.MSIL" version="[1.0.94.0]" />
             </group>
         </dependencies>
