@@ -11,7 +11,7 @@ namespace Crc32C
         protected NativeProxy(string name)
         {
             var nativePath = (GEnvironment.AppIsRunningOnAspNet ? "bin/KVLite/" : "KVLite/").MapPath();
-            var snappyPath = (name == "crc32c32.dll") ? "x86/crc32c32.dll" : "x64/crc32c64.dll";
+            var snappyPath = (name == "crc32c32.dll") ? "x86/Crc32C.Interop.dll" : "x64/Crc32C.Interop.dll";
             var h = LoadLibrary(nativePath + snappyPath);
             if (h == IntPtr.Zero)
                 throw new ApplicationException("Cannot load " + name);

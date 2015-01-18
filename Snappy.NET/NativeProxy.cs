@@ -11,7 +11,7 @@ namespace Snappy
         protected NativeProxy(string name)
         {
             var nativePath = (GEnvironment.AppIsRunningOnAspNet ? "bin/KVLite/" : "KVLite/").MapPath();
-            var snappyPath = (name == "snappy32.dll") ? "x86/snappy32.dll" : "x64/snappy64.dll";
+            var snappyPath = (name == "snappy32.dll") ? "x86/Snappy.Interop.dll" : "x64/Snappy.Interop.dll";
             var h = LoadLibrary(nativePath + snappyPath);
             if (h == IntPtr.Zero)
                 throw new ApplicationException("Cannot load " + name);

@@ -11,7 +11,9 @@ param($installPath, $toolsPath, $package, $project)
 
 $mainDirectory = "KVLite"
 $platformNames = "x86", "x64"
-$fileName = "SQLite.Interop.dll"
+$sqlite = "SQLite.Interop.dll"
+$snappy = "Snappy.Interop.dll"
+$crc = "Crc32C.Interop.dll"
 $propertyName = "CopyToOutputDirectory"
 
 foreach($platformName in $platformNames) {
@@ -27,17 +29,30 @@ foreach($platformName in $platformNames) {
     continue
   }
 
-  $item = $folder.ProjectItems.Item($fileName)
-
+  $item = $folder.ProjectItems.Item($sqlite)
   if ($item -eq $null) {
     continue
   }
-
   $property = $item.Properties.Item($propertyName)
-
-  if ($property -eq $null) {
-    continue
+  if ($property -ne $null) {
+    $property.Value = 2
   }
 
-  $property.Value = 2
+  $item = $folder.ProjectItems.Item($snappy)
+  if ($item -eq $null) {
+    continue
+  }
+  $property = $item.Properties.Item($propertyName)
+  if ($property -ne $null) {
+    $property.Value = 2
+  }
+
+  $item = $folder.ProjectItems.Item($crc)
+  if ($item -eq $null) {
+    continue
+  }
+  $property = $item.Properties.Item($propertyName)
+  if ($property -ne $null) {
+    $property.Value = 2
+  }
 }

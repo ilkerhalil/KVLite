@@ -59,10 +59,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="KVLite\x64\crc32c64.dll">
+    <Content Include="KVLite\x64\Crc32C.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="KVLite\x86\crc32c32.dll">
+    <Content Include="KVLite\x86\Crc32C.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -43,7 +43,9 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
                 <dependency id="System.Data.SQLite.Core.MSIL" version="[1.0.94.0]" />
             </group>
         </dependencies>
-        <references></references>
+        <references>
+            <reference file="PommaLabs.KVLite.dll" />
+        </references>
         <frameworkAssemblies></frameworkAssemblies>
         <tags>sqlite key value store concurrent persistent volatile in-memory cache provider timed</tags>
     </metadata>
