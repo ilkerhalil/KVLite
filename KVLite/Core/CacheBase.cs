@@ -113,7 +113,7 @@ namespace PommaLabs.KVLite.Core
 
         #endregion Construction
 
-        #region Public Properties
+        #region Public Members
 
         /// <summary>
         ///   Gets the default instance for this cache kind. Default instance is configured using
@@ -135,6 +135,21 @@ namespace PommaLabs.KVLite.Core
         public object this[string key]
         {
             get { return Get(Settings.DefaultPartition, key); }
+        }
+
+        /// <summary>
+        ///   Returns current cache size in kilobytes.
+        /// </summary>
+        /// <returns>Current cache size in kilobytes.</returns>
+        [Pure]
+        public long CacheSizeInKB()
+        {
+            const long pageSizeInKb = PageSizeInBytes/1024L;
+            // No need for a transaction, since it is just a select.
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.ExecuteScalar<long>("PRAGMA page_count;") * pageSizeInKb;
+            }
         }
 
         #endregion Public Properties
@@ -344,7 +359,7 @@ namespace PommaLabs.KVLite.Core
 
         protected abstract bool DataSourceHasChanged(string changedPropertyName);
 
-        protected abstract string GetDataSource();
+        protected abstract string GetDataSource(out SQLiteJournalModeEnum journalMode);
 
         #endregion Abstract Methods
 
@@ -457,7 +472,7 @@ namespace PommaLabs.KVLite.Core
             // Sets PRAGMAs for this new connection.
             var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB * 1024 * 1024;
             var walAutoCheckpointInPages = journalSizeLimitInBytes / PageSizeInBytes / 3;
-            var pragmas = String.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
+            var pragmas = String.Format(SQLiteQueries.SetPragmas, PageSizeInBytes, journalSizeLimitInBytes, walAutoCheckpointInPages);
             connection.Execute(pragmas);
             return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
@@ -478,6 +493,9 @@ namespace PommaLabs.KVLite.Core
 
         private void InitConnectionString()
         {
+            SQLiteJournalModeEnum journalMode;
+            var cacheUri = GetDataSource(out journalMode);
+
             var builder = new SQLiteConnectionStringBuilder
             {
                 BaseSchemaName = "kvlite",
@@ -493,10 +511,11 @@ namespace PommaLabs.KVLite.Core
                 Enlist = false,
                 FailIfMissing = false,
                 ForeignKeys = false,
-                FullUri = GetDataSource(),
-                JournalMode = SQLiteJournalModeEnum.Wal,
+                FullUri = cacheUri,
+                JournalMode = journalMode,
                 LegacyFormat = false,
-                MaxPageCount = Settings.MaxCacheSizeInMB * 32, // Each page is 32KB large - Multiply by 1024*1024/32768
+                /* Each page is 32KB large - Multiply by 1024*1024/32768 */
+                MaxPageCount = Settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes, 
                 PageSize = PageSizeInBytes,
                 /* We use a custom object pool */
                 Pooling = false,

@@ -23,9 +23,9 @@
 
 using CodeProject.ObjectPool;
 using System.IO;
-using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
+using Snappy;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -35,24 +35,21 @@ namespace PommaLabs.KVLite.Core
 
         public static byte[] SerializeObject(object obj)
         {
-            using (var compressedStream = new MemoryStream())
+            using (var memoryStream = new MemoryStream())
+            using (var binaryFormatter = FormatterPool.GetObject())
             {
-                using (var decompressedStream = new DeflateStream(compressedStream, CompressionMode.Compress))
-                using (var binaryFormatter = FormatterPool.GetObject())
-                {
-                    binaryFormatter.InternalResource.Serialize(decompressedStream, obj);
-                }
-                return compressedStream.GetBuffer();
+                binaryFormatter.InternalResource.Serialize(memoryStream, obj);
+                memoryStream.Flush();
+                return SnappyCodec.Compress(memoryStream.GetBuffer());
             }
         }
 
         public static object DeserializeObject(byte[] serialized)
         {
-            using (var compressedStream = new MemoryStream(serialized))
-            using (var decompressedStream = new DeflateStream(compressedStream, CompressionMode.Decompress))
+            using (var memoryStream = new MemoryStream(SnappyCodec.Uncompress(serialized)))
             using (var binaryFormatter = FormatterPool.GetObject())
             {
-                return binaryFormatter.InternalResource.Deserialize(decompressedStream);
+                return binaryFormatter.InternalResource.Deserialize(memoryStream);
             }
         }
 

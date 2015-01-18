@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
@@ -66,8 +67,9 @@ namespace PommaLabs.KVLite
             return changedPropertyName.ToLower().Equals("cachename");
         }
 
-        protected override string GetDataSource()
+        protected override string GetDataSource(out SQLiteJournalModeEnum journalMode)
         {
+            journalMode = SQLiteJournalModeEnum.Memory;
             return String.Format("file:{0}?mode=memory&cache=shared", Settings.CacheName);
         }
 

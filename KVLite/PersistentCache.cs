@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.IO;
 using PommaLabs.KVLite.Core;
 
@@ -67,7 +68,7 @@ namespace PommaLabs.KVLite
             return changedPropertyName.ToLower().Equals("cachefile");
         }
 
-        protected override string GetDataSource()
+        protected override string GetDataSource(out SQLiteJournalModeEnum journalMode)
         {
             // Map cache path, since it may be an IIS relative path.
             var mappedPath = Settings.CacheFile.MapPath();
@@ -80,6 +81,7 @@ namespace PommaLabs.KVLite
                 Directory.CreateDirectory(cacheDir);
             }
 
+            journalMode = SQLiteJournalModeEnum.Wal;
             return mappedPath;
         }
 

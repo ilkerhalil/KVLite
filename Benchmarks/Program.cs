@@ -76,6 +76,9 @@ namespace Benchmarks
                 StoreEachDataTableAsync(tables, i);
 
                 FullyCleanCache();
+                StoreEachDataTableAsync_Volatile(tables, i);
+
+                FullyCleanCache();
                 RetrieveEachDataTableAsync(tables, i);
 
                 FullyCleanCache();
@@ -135,6 +138,7 @@ namespace Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == 1);
 
             Console.WriteLine(@"Data table list stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
@@ -155,6 +159,7 @@ namespace Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
 
             Console.WriteLine(@"Data tables stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
@@ -175,6 +180,7 @@ namespace Benchmarks
             Debug.Assert(VolatileCache.DefaultInstance.LongCount() == tables.LongCount());
 
             Console.WriteLine(@"[Volatile] Data tables stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Current cache size: {0} MB", VolatileCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
@@ -200,7 +206,34 @@ namespace Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
 
             Console.WriteLine(@"Data tables stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
+        }
+
+        private static void StoreEachDataTableAsync_Volatile(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"[Volatile] Storing each data table asynchronously, iteration {0}...", iteration);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var tasks = new List<Task>();
+            foreach (var table in tables)
+            {
+                tasks.Add(VolatileCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+            }
+            foreach (var task in tasks)
+            {
+                task.Wait();
+            }
+            stopwatch.Stop();
+
+            Debug.Assert(VolatileCache.DefaultInstance.Count() == tables.Count);
+            Debug.Assert(VolatileCache.DefaultInstance.LongCount() == tables.LongCount());
+
+            Console.WriteLine(@"[Volatile] Data tables stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Current cache size: {0} MB", VolatileCache.DefaultInstance.CacheSizeInKB() / 1024L);
+            Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
         private static void StoreEachDataTableTwoTimesAsync(ICollection<DataTable> tables, int iteration)
@@ -229,6 +262,7 @@ namespace Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
 
             Console.WriteLine(@"Data tables stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
         }
 
@@ -255,6 +289,7 @@ namespace Benchmarks
             stopwatch.Stop();
 
             Console.WriteLine(@"Data tables retrieved in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
@@ -273,7 +308,8 @@ namespace Benchmarks
             var tasks = new List<Task<object>>();
             foreach (var table in tables)
             {
-                tasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get(table.TableName)));
+                var tmp = table; // Suggested by R#
+                tasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get(tmp.TableName)));
             }
             foreach (var task in tasks)
             {
@@ -286,6 +322,7 @@ namespace Benchmarks
             stopwatch.Stop();
 
             Console.WriteLine(@"Data tables retrieved in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
@@ -320,6 +357,7 @@ namespace Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
 
             Console.WriteLine(@"Data tables stored and retrieved in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
         }
 
@@ -345,6 +383,7 @@ namespace Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == 0);
 
             Console.WriteLine(@"Data tables removed in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
@@ -375,6 +414,7 @@ namespace Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == 0);
 
             Console.WriteLine(@"Data tables removed in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"Approximate speed (MB/sec): {0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
