@@ -84,19 +84,19 @@
     <Content Include="content\net40\KVLite\x86\SQLite.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="content\net45\KVLite\x64\crc32c64.dll">
+    <Content Include="content\net45\KVLite\x64\Crc32C.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="content\net45\KVLite\x64\snappy64.dll">
+    <Content Include="content\net45\KVLite\x64\Snappy.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="content\net45\KVLite\x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="content\net45\KVLite\x86\crc32c32.dll">
+    <Content Include="content\net45\KVLite\x86\Crc32C.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="content\net45\KVLite\x86\snappy32.dll">
+    <Content Include="content\net45\KVLite\x86\Snappy.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="content\net45\KVLite\x86\SQLite.Interop.dll">
