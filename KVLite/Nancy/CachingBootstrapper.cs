@@ -129,7 +129,7 @@ namespace PommaLabs.KVLite.Nancy
                 using (var memoryStream = new MemoryStream())
                 {
                     response.Contents(memoryStream);
-                    _contents = memoryStream.GetBuffer();
+                    _contents = memoryStream.ToArray();
                 }
             }
 

@@ -8,7 +8,7 @@ namespace RestService.Nancy
         public IndexModule()
         {
             Get["/"] = parameters => {
-                const int cacheSeconds = 30;
+                const int cacheSeconds = 120;
                 Context.EnableOutputCache(cacheSeconds);
                 return View["index"];
             };
@@ -17,6 +17,13 @@ namespace RestService.Nancy
                 const int cacheSeconds = 30;
                 Context.EnableOutputCache(cacheSeconds);
                 return View["index"];
+            };
+
+            Get["/values"] = parameters =>
+            {
+                const int cacheSeconds = 30;
+                Context.EnableOutputCache(cacheSeconds);
+                return Response.AsJson(new[] {1, 2, 3});
             };
         }
     }
