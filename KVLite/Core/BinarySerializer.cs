@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System.IO.Compression;
 using CodeProject.ObjectPool;
 using System.IO;
 using System.Runtime.Serialization.Formatters;
@@ -36,20 +37,24 @@ namespace PommaLabs.KVLite.Core
         public static byte[] SerializeObject(object obj)
         {
             using (var memoryStream = new MemoryStream())
-            using (var binaryFormatter = FormatterPool.GetObject())
             {
-                binaryFormatter.InternalResource.Serialize(memoryStream, obj);
-                memoryStream.Flush();
-                return SnappyCodec.Compress(memoryStream.GetBuffer());
+                using (var snappyStream = new SnappyStream(memoryStream, CompressionMode.Compress))
+                using (var binaryFormatter = FormatterPool.GetObject())
+                {
+                    binaryFormatter.InternalResource.Serialize(snappyStream, obj);
+                }
+                // Leave this line _after_ previous using, so that we obtain automatic flushing.
+                return memoryStream.GetBuffer();
             }
         }
 
         public static object DeserializeObject(byte[] serialized)
         {
-            using (var memoryStream = new MemoryStream(SnappyCodec.Uncompress(serialized)))
+            using (var memoryStream = new MemoryStream(serialized, true))
+            using (var snappyStream = new SnappyStream(memoryStream, CompressionMode.Decompress))
             using (var binaryFormatter = FormatterPool.GetObject())
             {
-                return binaryFormatter.InternalResource.Deserialize(memoryStream);
+                return binaryFormatter.InternalResource.Deserialize(snappyStream);
             }
         }
 
