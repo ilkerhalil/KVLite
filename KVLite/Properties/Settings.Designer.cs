@@ -185,10 +185,11 @@ namespace PommaLabs.KVLite.Properties {
         }
         
         /// <summary>
-        /// The ICache implementation that will be used by the Web API output cache.
+        /// The ICache implementation that will be used by the Web API output cache provider.
         /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Configuration.SettingsDescriptionAttribute("The ICache implementation that will be used by the Web API output cache.")]
+        [global::System.Configuration.SettingsDescriptionAttribute("The ICache implementation that will be used by the Web API output cache provider." +
+            "")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite")]
         public string Web_Http_ApiOutputCacheProviderType {
