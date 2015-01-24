@@ -51,6 +51,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="content\net40\App.config.install.xdt" />
+    <None Include="content\net40\App.config.transform" />
+    <None Include="content\net40\App.config.uninstall.xdt" />
+    <None Include="content\net40\Web.config.install.xdt" />
+    <None Include="content\net40\Web.config.transform" />
+    <None Include="content\net40\Web.config.uninstall.xdt" />
+    <None Include="content\net45\App.config.install.xdt" />
+    <None Include="content\net45\App.config.transform" />
+    <None Include="content\net45\App.config.uninstall.xdt" />
+    <None Include="content\net45\Web.config.install.xdt" />
+    <None Include="content\net45\Web.config.transform" />
+    <None Include="content\net45\Web.config.uninstall.xdt" />
     <None Include="NuGetPackage.ps1" />
     <None Include="NuGetSetup.ps1" />
     <None Include="NuGet.exe" />
