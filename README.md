@@ -1,8 +1,9 @@
-# README #
+# PommaLabs.KVLite #
 
 This README would normally document whatever steps are necessary to get your application up and running.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/362eo5bmrbtjp203)](https://ci.appveyor.com/project/pomma89/kvlite)
+* Build status: [![Build status](https://ci.appveyor.com/api/projects/status/362eo5bmrbtjp203)](https://ci.appveyor.com/project/pomma89/kvlite)
+* API documentation: (https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/doc/index.html)
 
 ### What is this repository for? ###
 
