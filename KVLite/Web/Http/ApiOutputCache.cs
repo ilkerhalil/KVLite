@@ -103,7 +103,8 @@ namespace PommaLabs.KVLite.Web.Http
 
         public void Add(string key, object o, DateTimeOffset expiration, string dependsOnKey = null)
         {
-            throw new NotImplementedException();
+            // KVLite does not support dependency handling; therefore, we ignore the dependsOnKey parameter.
+            Cache.AddTimed(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key, o, expiration.UtcDateTime);
         }
 
 #pragma warning restore 1591
