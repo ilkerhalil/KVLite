@@ -25,6 +25,7 @@ using PommaLabs.KVLite.Properties;
 using System;
 using System.Web;
 using System.Web.UI;
+using PommaLabs.Reflection;
 
 namespace PommaLabs.KVLite.Web
 {
@@ -35,7 +36,7 @@ namespace PommaLabs.KVLite.Web
     {
         #region Fields
 
-        private static readonly ICache Cache = Settings.Default.Web_ViewStatePersisterKind.ParseCacheKind();
+        private static readonly ICache Cache = ServiceLocator.Load<ICache>(Settings.Default.Web_ViewStatePersisterType);
 
         private static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(HttpContext.Current.Session.Timeout + 1);
 

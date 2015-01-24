@@ -28,17 +28,13 @@ using System.Diagnostics.Contracts;
 
 namespace PommaLabs.KVLite.Contracts
 {
+    /// <summary>
+    ///   Contract class for <see cref="ICache"/>.
+    /// </summary>
     [ContractClassFor(typeof(ICache))]
-    internal abstract class CacheContract : ICache
+    public abstract class CacheContract : ICache
     {
-        public CacheKind Kind
-        {
-            get
-            {
-                Contract.Ensures(Enum.IsDefined(typeof(CacheKind), Contract.Result<CacheKind>()));
-                return default(CacheKind);
-            }
-        }
+        #region ICache Members
 
         public CacheSettingsBase Settings
         {
@@ -60,14 +56,6 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         public void AddSliding(string partition, string key, object value, TimeSpan interval)
-        {
-            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
-        }
-
-        public void AddStatic(string partition, string key, object value)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
@@ -174,5 +162,7 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
         }
+
+        #endregion
     }
 }

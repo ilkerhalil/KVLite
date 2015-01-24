@@ -27,9 +27,14 @@ using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite.Contracts
 {
+    /// <summary>
+    ///   Contract class for <see cref="CacheSettingsBase"/>.
+    /// </summary>
     [ContractClassFor(typeof(CacheSettingsBase))]
-    internal abstract class CacheSettingsContract : CacheSettingsBase
+    public abstract class CacheSettingsContract : CacheSettingsBase
     {
+        #region CacheSettingsBase Members
+
         /// <summary>
         ///   Number of inserts before a cache cleanup is issued.
         /// </summary>
@@ -77,5 +82,7 @@ namespace PommaLabs.KVLite.Contracts
                 Contract.Requires<ArgumentOutOfRangeException>(value > 0);
             }
         }
+
+        #endregion
     }
 }

@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web.Http;
 using PommaLabs.KVLite.Properties;
+using PommaLabs.Reflection;
 using WebApi.OutputCache.Core.Cache;
 #if NET45
 using WebApi.OutputCache.V2;
@@ -43,7 +44,7 @@ namespace PommaLabs.KVLite.Web.Http
     {
         #region Fields
 
-        private static readonly ICache Cache = Settings.Default.Web_OutputCacheProviderKind.ParseCacheKind();
+        private static readonly ICache Cache = ServiceLocator.Load<ICache>(Settings.Default.Web_OutputCacheProviderType);
 
         #endregion Fields
 
@@ -51,7 +52,7 @@ namespace PommaLabs.KVLite.Web.Http
 
         /// <summary>
         ///   Registers this class as the default API output cache provider. Please use
-        ///   <see cref="Settings.Web_Http_ApiOutputCacheProviderKind"/> to customize the cache kind
+        ///   <see cref="Settings.Web_Http_ApiOutputCacheProviderType"/> to customize the cache kind
         ///   and the partition name.
         /// </summary>
         /// <param name="configuration">The Web API configuration instance.</param>

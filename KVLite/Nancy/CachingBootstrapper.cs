@@ -29,6 +29,7 @@ using PommaLabs.KVLite.Properties;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using PommaLabs.Reflection;
 
 namespace PommaLabs.KVLite.Nancy
 {
@@ -41,7 +42,7 @@ namespace PommaLabs.KVLite.Nancy
     {
         #region Fields
 
-        private static readonly ICache Cache = Settings.Default.Nancy_ResponseCacheKind.ParseCacheKind();
+        private static readonly ICache Cache = ServiceLocator.Load<ICache>(Settings.Default.Nancy_ResponseCacheType);
 
         #endregion Fields
 

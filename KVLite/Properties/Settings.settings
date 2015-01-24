@@ -14,8 +14,8 @@
     <Setting Name="PersistentCache_DefaultInsertionCountBeforeAutoClean" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">64</Value>
     </Setting>
-    <Setting Name="Nancy_ResponseCacheKind" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Persistent</Value>
+    <Setting Name="Nancy_ResponseCacheType" Description="The ICache implementation that will be used by the NancyFX caching bootstrapper." Type="System.String" Scope="Application">
+      <Value Profile="(Default)">PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite</Value>
     </Setting>
     <Setting Name="PersistentCache_DefaultMaxJournalSizeInMB" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">32</Value>
@@ -26,14 +26,14 @@
     <Setting Name="Nancy_ResponseCachePartition" Type="System.String" Scope="Application">
       <Value Profile="(Default)">KVLite.Nancy.ResponseCache</Value>
     </Setting>
-    <Setting Name="Web_ViewStatePersisterKind" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Persistent</Value>
+    <Setting Name="Web_ViewStatePersisterType" Description="The ICache implementation that will be used by the Web Forms viewstate persister." Type="System.String" Scope="Application">
+      <Value Profile="(Default)">PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite</Value>
     </Setting>
     <Setting Name="Web_ViewStatePersisterPartition" Type="System.String" Scope="Application">
       <Value Profile="(Default)">KVLite.Web.ViewStates</Value>
     </Setting>
-    <Setting Name="Web_OutputCacheProviderKind" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Persistent</Value>
+    <Setting Name="Web_OutputCacheProviderType" Description="The ICache implementation that will be used by the Web Forms cache provider." Type="System.String" Scope="Application">
+      <Value Profile="(Default)">PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite</Value>
     </Setting>
     <Setting Name="Web_OutputCacheProviderPartition" Type="System.String" Scope="Application">
       <Value Profile="(Default)">KVLite.Web.OutputCache</Value>
@@ -50,8 +50,8 @@
     <Setting Name="VolatileCache_DefaultMaxJournalSizeInMB" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">32</Value>
     </Setting>
-    <Setting Name="Web_Http_ApiOutputCacheProviderKind" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Persistent</Value>
+    <Setting Name="Web_Http_ApiOutputCacheProviderType" Description="The ICache implementation that will be used by the Web API output cache." Type="System.String" Scope="Application">
+      <Value Profile="(Default)">PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite</Value>
     </Setting>
     <Setting Name="Web_Http_ApiOutputCacheProviderPartition" Type="System.String" Scope="Application">
       <Value Profile="(Default)">KVLite.Web.Http.ApiOutputCache</Value>

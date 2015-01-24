@@ -222,9 +222,6 @@
     <Compile Include="..\KVLite\CacheItem.cs">
       <Link>CacheItem.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\CacheKind.cs">
-      <Link>CacheKind.cs</Link>
-    </Compile>
     <Compile Include="..\KVLite\Contracts\CacheContract.cs">
       <Link>Contracts\CacheContract.cs</Link>
     </Compile>

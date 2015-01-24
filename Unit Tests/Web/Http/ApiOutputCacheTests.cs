@@ -1,5 +1,5 @@
-﻿// File name: CacheKind.cs
-//
+﻿// File name: ApiOutputCacheTests.cs
+// 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
 // The MIT License (MIT)
@@ -21,23 +21,35 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-namespace PommaLabs.KVLite
-{
-    /// <summary>
-    ///   Represents all kind of caches currently implemented inside KVLite.
-    /// </summary>
-    public enum CacheKind : byte
-    {
-        /// <summary>
-        ///   The persistent cache, available through the <see cref="PersistentCache"/> class. A
-        ///   persistent cache stores its data inside an SQLite database.
-        /// </summary>
-        Persistent = 1,
+using System;
+using NUnit.Framework;
+using PommaLabs.KVLite.Web.Http;
 
-        /// <summary>
-        ///   The volatile cache, available through the <see cref="VolatileCache"/> class. A
-        ///   volatile cache stores its data inside an in-memory SQLite database.
-        /// </summary>
-        Volatile = 2
+namespace UnitTests.Web.Http
+{
+    [TestFixture]
+    sealed class ApiOutputCacheTests
+    {
+        private ApiOutputCache _outputCache;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _outputCache = new ApiOutputCache();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _outputCache = null;
+        }
+
+        [Test]
+        public void Add_One_Valid()
+        {
+            _outputCache.Add("a", "b", DateTimeOffset.Now.AddMinutes(10));
+            Assert.AreEqual("b", _outputCache.Get("a"));
+            Assert.AreEqual("b", _outputCache.Get<string>("a"));
+        }
     }
 }

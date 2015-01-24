@@ -221,11 +221,6 @@ namespace PommaLabs.KVLite.Core
             return DoPeekManyItems(partition);
         }
 
-        public CacheKind Kind
-        {
-            get { return CacheKind.Persistent; }
-        }
-
         public bool Contains(string partition, string key)
         {
             var p = new DynamicParameters();

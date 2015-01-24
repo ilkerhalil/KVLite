@@ -63,6 +63,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit Tests (Snappy.NET)", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager (Core)", "NuGet Packager (Core)\NuGet Packager (Core).csproj", "{BC783C22-1518-4F7A-944A-8E095C9B5930}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager (Nancy)", "NuGet Packager (Nancy)\NuGet Packager (Nancy).csproj", "{7CDA6E66-C207-4378-B476-77B50B0DC756}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager (WebApi)", "NuGet Packager (WebApi)\NuGet Packager (WebApi).csproj", "{5973B3A7-1F9A-49C8-BBD4-DE4CAEA1DC8B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -145,6 +149,14 @@ Global
 		{BC783C22-1518-4F7A-944A-8E095C9B5930}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{BC783C22-1518-4F7A-944A-8E095C9B5930}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{BC783C22-1518-4F7A-944A-8E095C9B5930}.Release|x86.ActiveCfg = Release|Any CPU
+		{7CDA6E66-C207-4378-B476-77B50B0DC756}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CDA6E66-C207-4378-B476-77B50B0DC756}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7CDA6E66-C207-4378-B476-77B50B0DC756}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CDA6E66-C207-4378-B476-77B50B0DC756}.Release|x86.ActiveCfg = Release|Any CPU
+		{5973B3A7-1F9A-49C8-BBD4-DE4CAEA1DC8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5973B3A7-1F9A-49C8-BBD4-DE4CAEA1DC8B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5973B3A7-1F9A-49C8-BBD4-DE4CAEA1DC8B}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{5973B3A7-1F9A-49C8-BBD4-DE4CAEA1DC8B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
