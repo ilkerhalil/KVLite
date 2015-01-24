@@ -22,12 +22,10 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <group targetFramework="net45">
-                <dependency id="PommaLabs.KVLite" version="1.4.0" />
                 <dependency id="PommaLabs.KVLite.Core" version="1.4.1" />
                 <dependency id="Strathweb.CacheOutput.WebApi2" version="0.6" />
             </group>
             <group targetFramework="net40">
-                <dependency id="PommaLabs.KVLite" version="1.4.0" />
                 <dependency id="PommaLabs.KVLite.Core" version="1.4.1" />
                 <dependency id="Strathweb.CacheOutput" version="0.5" />
             </group>

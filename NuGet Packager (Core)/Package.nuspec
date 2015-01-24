@@ -10,13 +10,10 @@
         <description>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
 
-KVLite also implements a caching bootstrapper for NancyFX, which can be configured to be either persistent or volatile.
-
 This package contains the core references for KVLite.
         </description>
         <releaseNotes>
-            * Using Snappy.NET to compress serialized data.
-            * New method to read cache size in kilobytes.
+* Web API output cache provider.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.

@@ -2,12 +2,12 @@
 
 <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
 
-    <configSections xdt:Transform="InsertBefore(/configuration/*[1])">
+    <configSections xdt:Transform="InsertIfMissing">
     </configSections>
 
     <!-- If applicationSettings tag is absent -->
     <configSections>
-        <sectionGroup name="applicationSettings" type="System.Configuration.ApplicationSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" xdt:Transform="InsertIfMissing">
+        <sectionGroup name="applicationSettings" type="System.Configuration.ApplicationSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)">
             <section name="PommaLabs.KVLite.Properties.Settings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" />
         </sectionGroup>
     </configSections>
@@ -15,7 +15,7 @@
     <!-- If PommaLabs.KVLite.Properties.Settings tag is absent -->
     <configSections>
         <sectionGroup name="applicationSettings" type="System.Configuration.ApplicationSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-            <section name="PommaLabs.KVLite.Properties.Settings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" xdt:Transform="InsertIfMissing" />
+            <section name="PommaLabs.KVLite.Properties.Settings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)" />
         </sectionGroup>
     </configSections>
 

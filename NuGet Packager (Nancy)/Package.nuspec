@@ -23,12 +23,10 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <dependencies>
             <group targetFramework="net45">
                 <dependency id="Nancy" version="1.0.0" />
-                <dependency id="PommaLabs.KVLite" version="1.4.0" />
                 <dependency id="PommaLabs.KVLite.Core" version="1.4.1" />
             </group>
             <group targetFramework="net40">
                 <dependency id="Nancy" version="1.0.0" />
-                <dependency id="PommaLabs.KVLite" version="1.4.0" />
                 <dependency id="PommaLabs.KVLite.Core" version="1.4.1" />
             </group>
         </dependencies>
