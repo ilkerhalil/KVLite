@@ -39,11 +39,6 @@ namespace PommaLabs.KVLite
     public interface ICache
     {
         /// <summary>
-        ///   TODO
-        /// </summary>
-        CacheKind Kind { get; }
-
-        /// <summary>
         ///   The available settings for the cache.
         /// </summary>
         CacheSettingsBase Settings { get; }

@@ -26,6 +26,7 @@ using System.Configuration;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using PommaLabs.KVLite.Core;
+using PommaLabs.Reflection;
 
 namespace PommaLabs.KVLite
 {
@@ -262,29 +263,5 @@ namespace PommaLabs.KVLite
         }
 
         #endregion Extensions - Typed Retrieval
-
-        #region Extensions - Internal Methods
-
-        internal static ICache ParseCacheKind(this string kind)
-        {
-            CacheKind cacheKind;
-            if (!Enum.TryParse(kind, true, out cacheKind))
-            {
-                throw new ConfigurationErrorsException();
-            }
-            switch (cacheKind)
-            {
-                case CacheKind.Persistent:
-                    return PersistentCache.DefaultInstance;
-
-                case CacheKind.Volatile:
-                    return VolatileCache.DefaultInstance;
-
-                default:
-                    throw new ConfigurationErrorsException(ErrorMessages.InvalidEnumValue);
-            }
-        }
-
-        #endregion Extensions - Internal Methods
     }
 }

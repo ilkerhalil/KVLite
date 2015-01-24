@@ -21,23 +21,24 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.IO.Compression;
-using CodeProject.ObjectPool;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
+using CodeProject.ObjectPool;
 using Snappy;
 
 namespace PommaLabs.KVLite.Core
 {
     internal static class BinarySerializer
     {
+        private const int MinBufferSize = 1024; // 1 KB
+
         private static readonly ObjectPool<PooledObjectWrapper<BinaryFormatter>> FormatterPool = new ObjectPool<PooledObjectWrapper<BinaryFormatter>>(1, 10, CreatePooledBinaryFormatter);
 
         public static byte[] SerializeObject(object obj)
         {
-            using (var memoryStream = new MemoryStream())
+            using (var memoryStream = new MemoryStream(MinBufferSize))
             {
                 using (var snappyStream = new SnappyStream(memoryStream, CompressionMode.Compress))
                 using (var binaryFormatter = FormatterPool.GetObject())

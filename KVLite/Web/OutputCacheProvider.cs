@@ -23,6 +23,7 @@
 
 using PommaLabs.KVLite.Properties;
 using System;
+using PommaLabs.Reflection;
 
 namespace PommaLabs.KVLite.Web
 {
@@ -33,7 +34,7 @@ namespace PommaLabs.KVLite.Web
     {
         #region Fields
 
-        private static readonly ICache Cache = Settings.Default.Web_OutputCacheProviderKind.ParseCacheKind();
+        private static readonly ICache Cache = ServiceLocator.Load<ICache>(Settings.Default.Web_OutputCacheProviderType);
 
         #endregion Fields
 

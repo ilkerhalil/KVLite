@@ -221,11 +221,6 @@ namespace PommaLabs.KVLite.Core
             return DoPeekManyItems(partition);
         }
 
-        public CacheKind Kind
-        {
-            get { return CacheKind.Persistent; }
-        }
-
         public bool Contains(string partition, string key)
         {
             var p = new DynamicParameters();
@@ -391,18 +386,17 @@ namespace PommaLabs.KVLite.Core
             {
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
-            var dbItem = new DbCacheItem
-            {
-                Partition = partition,
-                Key = key,
-                SerializedValue = serializedValue,
-                UtcExpiry = utcExpiry.HasValue ? (long) (utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(),
-                Interval = interval.HasValue ? (long) interval.Value.TotalSeconds : new long?()
-            };
+
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", key, DbType.String);
+            p.Add("serializedValue", serializedValue, DbType.Binary, size: serializedValue.Length);
+            p.Add("utcExpiry", utcExpiry.HasValue ? (long) (utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(), DbType.Int64);
+            p.Add("interval", interval.HasValue ? (long) interval.Value.TotalSeconds : new long?(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
-                ctx.InternalResource.Execute(SQLiteQueries.Add, dbItem);
+                ctx.InternalResource.Execute(SQLiteQueries.Add, p);
             }
 
             // Insertion has concluded successfully, therefore we increment the operation counter.
@@ -410,11 +404,10 @@ namespace PommaLabs.KVLite.Core
             // must reset it and do a SOFT cleanup. Following code is not fully thread safe, but it
             // does not matter, because the "InsertionCountBeforeAutoClean" parameter should be just
             // an hint on when to do the cleanup.
-            _insertionCount++;
-            if (_insertionCount >= Settings.InsertionCountBeforeAutoClean)
+            if (++_insertionCount >= Settings.InsertionCountBeforeAutoClean)
             {
                 _insertionCount = 0;
-                Task.Factory.StartNew(() => Clear(CacheReadMode.ConsiderExpiryDate));
+                TaskRunner.Run(() => Clear(CacheReadMode.ConsiderExpiryDate));
             }
         }
 

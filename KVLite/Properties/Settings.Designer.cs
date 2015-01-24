@@ -63,12 +63,16 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// The ICache implementation that will be used by the NancyFX caching bootstrapper.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("The ICache implementation that will be used by the NancyFX caching bootstrapper.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Persistent")]
-        public string Nancy_ResponseCacheKind {
+        [global::System.Configuration.DefaultSettingValueAttribute("PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite")]
+        public string Nancy_ResponseCacheType {
             get {
-                return ((string)(this["Nancy_ResponseCacheKind"]));
+                return ((string)(this["Nancy_ResponseCacheType"]));
             }
         }
         
@@ -99,12 +103,17 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// The ICache implementation that will be used by the Web Forms viewstate persister.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("The ICache implementation that will be used by the Web Forms viewstate persister." +
+            "")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Persistent")]
-        public string Web_ViewStatePersisterKind {
+        [global::System.Configuration.DefaultSettingValueAttribute("PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite")]
+        public string Web_ViewStatePersisterType {
             get {
-                return ((string)(this["Web_ViewStatePersisterKind"]));
+                return ((string)(this["Web_ViewStatePersisterType"]));
             }
         }
         
@@ -117,12 +126,16 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// The ICache implementation that will be used by the Web Forms cache provider.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("The ICache implementation that will be used by the Web Forms cache provider.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Persistent")]
-        public string Web_OutputCacheProviderKind {
+        [global::System.Configuration.DefaultSettingValueAttribute("PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite")]
+        public string Web_OutputCacheProviderType {
             get {
-                return ((string)(this["Web_OutputCacheProviderKind"]));
+                return ((string)(this["Web_OutputCacheProviderType"]));
             }
         }
         
@@ -171,12 +184,17 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// The ICache implementation that will be used by the Web API output cache provider.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("The ICache implementation that will be used by the Web API output cache provider." +
+            "")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Persistent")]
-        public string Web_Http_ApiOutputCacheProviderKind {
+        [global::System.Configuration.DefaultSettingValueAttribute("PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite")]
+        public string Web_Http_ApiOutputCacheProviderType {
             get {
-                return ((string)(this["Web_Http_ApiOutputCacheProviderKind"]));
+                return ((string)(this["Web_Http_ApiOutputCacheProviderType"]));
             }
         }
         
