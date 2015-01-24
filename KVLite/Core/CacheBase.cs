@@ -391,18 +391,17 @@ namespace PommaLabs.KVLite.Core
             {
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
-            var dbItem = new DbCacheItem
-            {
-                Partition = partition,
-                Key = key,
-                SerializedValue = serializedValue,
-                UtcExpiry = utcExpiry.HasValue ? (long) (utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(),
-                Interval = interval.HasValue ? (long) interval.Value.TotalSeconds : new long?()
-            };
+
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", key, DbType.String);
+            p.Add("serializedValue", serializedValue, DbType.Binary, size: serializedValue.Length);
+            p.Add("utcExpiry", utcExpiry.HasValue ? (long) (utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(), DbType.Int64);
+            p.Add("interval", interval.HasValue ? (long) interval.Value.TotalSeconds : new long?(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
-                ctx.InternalResource.Execute(SQLiteQueries.Add, dbItem);
+                ctx.InternalResource.Execute(SQLiteQueries.Add, p);
             }
 
             // Insertion has concluded successfully, therefore we increment the operation counter.
