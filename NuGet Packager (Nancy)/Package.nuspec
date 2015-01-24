@@ -32,7 +32,7 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
-        <tags>kvlite nancy nancyfx response output cache caching bootstrap</tags>
+        <tags>kvlite nancy nancyfx response output cache caching bootstrapper</tags>
     </metadata>
     <files>
     </files>
