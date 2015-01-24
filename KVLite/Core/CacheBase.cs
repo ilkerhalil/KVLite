@@ -409,11 +409,10 @@ namespace PommaLabs.KVLite.Core
             // must reset it and do a SOFT cleanup. Following code is not fully thread safe, but it
             // does not matter, because the "InsertionCountBeforeAutoClean" parameter should be just
             // an hint on when to do the cleanup.
-            _insertionCount++;
-            if (_insertionCount >= Settings.InsertionCountBeforeAutoClean)
+            if (++_insertionCount >= Settings.InsertionCountBeforeAutoClean)
             {
                 _insertionCount = 0;
-                Task.Factory.StartNew(() => Clear(CacheReadMode.ConsiderExpiryDate));
+                TaskRunner.Run(() => Clear(CacheReadMode.ConsiderExpiryDate));
             }
         }
 
