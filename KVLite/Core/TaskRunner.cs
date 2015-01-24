@@ -8,7 +8,7 @@ namespace PommaLabs.KVLite.Core
     {
         public static Task Run(Action action)
         {
-#if PORTABLE
+#if NET45
             return Task.Run(action);
 #else
             return Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
