@@ -180,7 +180,7 @@ namespace Benchmarks
             Debug.Assert(VolatileCache.DefaultInstance.LongCount() == tables.LongCount());
 
             Console.WriteLine(@"[Volatile] Data tables stored in: {0}", stopwatch.Elapsed);
-            Console.WriteLine(@"Current cache size: {0} MB", VolatileCache.DefaultInstance.CacheSizeInKB() / 1024L);
+            Console.WriteLine(@"[Volatile] Current cache size: {0} MB", VolatileCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
@@ -232,7 +232,7 @@ namespace Benchmarks
             Debug.Assert(VolatileCache.DefaultInstance.LongCount() == tables.LongCount());
 
             Console.WriteLine(@"[Volatile] Data tables stored in: {0}", stopwatch.Elapsed);
-            Console.WriteLine(@"Current cache size: {0} MB", VolatileCache.DefaultInstance.CacheSizeInKB() / 1024L);
+            Console.WriteLine(@"[Volatile] Current cache size: {0} MB", VolatileCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
