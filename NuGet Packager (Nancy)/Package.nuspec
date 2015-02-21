@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.Nancy</id>
-        <version>1.4.1</version>
+        <version>1.4.2</version>
         <title>PommaLabs.KVLite (Nancy Caching Bootstrapper)</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -22,12 +22,12 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <group targetFramework="net45">
-                <dependency id="Nancy" version="1.0.0" />
-                <dependency id="PommaLabs.KVLite.Core" version="1.4.1" />
+                <dependency id="Nancy" version="1.1" />
+                <dependency id="PommaLabs.KVLite.Core" version="1.4.2" />
             </group>
             <group targetFramework="net40">
-                <dependency id="Nancy" version="1.0.0" />
-                <dependency id="PommaLabs.KVLite.Core" version="1.4.1" />
+                <dependency id="Nancy" version="1.1" />
+                <dependency id="PommaLabs.KVLite.Core" version="1.4.2" />
             </group>
         </dependencies>
         <references></references>

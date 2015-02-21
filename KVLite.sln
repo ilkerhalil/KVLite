@@ -62,6 +62,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit Tests (Snappy.NET)", "Snappy.Tests\Unit Tests (Snappy.NET).csproj", "{B8A25FB3-8EF8-490B-A7E8-56341623C163}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager (Core)", "NuGet Packager (Core)\NuGet Packager (Core).csproj", "{BC783C22-1518-4F7A-944A-8E095C9B5930}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F056179D-90B8-4ABA-9AB4-1026E5941FB7} = {F056179D-90B8-4ABA-9AB4-1026E5941FB7}
+		{56BF1CF1-3DA9-482F-8AC4-F200E741ECA1} = {56BF1CF1-3DA9-482F-8AC4-F200E741ECA1}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager (Nancy)", "NuGet Packager (Nancy)\NuGet Packager (Nancy).csproj", "{7CDA6E66-C207-4378-B476-77B50B0DC756}"
 EndProject
