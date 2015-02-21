@@ -4,10 +4,11 @@ using WebApi.OutputCache.V2;
 
 namespace RestService.Mvc.Controllers
 {
+    [RoutePrefix("values")]
     public class ValuesController : ApiController
     {
         // GET api/values
-        [CacheOutput(ServerTimeSpan = 60)]
+        [Route(""), CacheOutput(ServerTimeSpan = 60)]
         public IEnumerable<string> Get()
         {
             return new[] { "value1", "value2" };

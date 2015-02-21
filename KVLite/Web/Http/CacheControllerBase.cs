@@ -1,4 +1,4 @@
-﻿// File name: ApiOutputCache.cs
+﻿// File name: CacheControllerBase.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -27,22 +27,49 @@ using LinqToQuerystring.WebApi;
 
 namespace PommaLabs.KVLite.Web.Http
 {
+    /// <summary>
+    ///   Implements some actions to remotely interact with a KVLite cache.
+    /// </summary>
     public abstract class CacheControllerBase : ApiController
     {
-        private readonly ICache _cache;
-
-        protected CacheControllerBase(ICache cache)
-        {
-            _cache = cache;
-        }
-
+        /// <summary>
+        ///   Returns all _valid_ items stored in the cache.
+        /// </summary>
+        /// <returns>All _valid_ items stored in the cache.</returns>
 #if NET45
         [Route("items")]
 #endif
         [LinqToQueryable]
         public virtual IQueryable<CacheItem> GetItems()
         {
-            return _cache.GetManyItems().AsQueryable();
+            return ApiOutputCache.Cache.GetManyItems().AsQueryable();
         }
+
+        /// <summary>
+        ///   Returns all _valid_ items stored in the cache for given partition.
+        /// </summary>
+        /// <returns>All _valid_ items stored in the cache for given partition.</returns>
+#if NET45
+        [Route("items/{partition}")]
+#endif
+        [LinqToQueryable]
+        public virtual IQueryable<CacheItem> GetItems(string partition)
+        {
+            return ApiOutputCache.Cache.GetManyItems(partition).AsQueryable();
+        }
+
+        /// <summary>
+        ///   Returns a _valid_ items stored in the cache for given partition and key.
+        /// </summary>
+        /// <returns>A _valid_ items stored in the cache for given partition and key.</returns>
+#if NET45
+        [Route("items/{partition}/{key}")]
+#endif
+        [LinqToQueryable]
+        public virtual CacheItem GetItem(string partition, string key)
+        {
+            return ApiOutputCache.Cache.GetItem(partition, key);
+        }
+        
     }
 }

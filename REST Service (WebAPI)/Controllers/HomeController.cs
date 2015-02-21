@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+using Finsa.WebApi.HelpPage.AnyHost;
 
 namespace RestService.Mvc.Controllers
 {
-   public class HomeController : Controller
-   {
-      public ActionResult Index()
-      {
-         return View();
-      }
-   }
+    [RoutePrefix("")]
+    public sealed class HomeController : Controller
+    {
+        [Route("")]
+        public ActionResult Index()
+        {
+            return Redirect(Url.HttpRouteUrl(HelpControllerBase.IndexRouteName, new {}));
+        }
+    }
 }

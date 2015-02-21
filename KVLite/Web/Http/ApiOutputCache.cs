@@ -44,7 +44,7 @@ namespace PommaLabs.KVLite.Web.Http
     {
         #region Fields
 
-        private static readonly ICache Cache = ServiceLocator.Load<ICache>(Settings.Default.Web_OutputCacheProviderType);
+        internal static readonly ICache Cache = ServiceLocator.Load<ICache>(Settings.Default.Web_OutputCacheProviderType);
 
         #endregion Fields
 
