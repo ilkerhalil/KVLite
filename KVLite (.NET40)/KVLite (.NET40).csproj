@@ -122,6 +122,10 @@
     <DocumentationFile>bin\Release\PommaLabs.KVLite.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="CodeProject.ObjectPool">
       <HintPath>..\packages\CodeProject.ObjectPool.1.3.1\lib\net40-client\CodeProject.ObjectPool.dll</HintPath>
     </Reference>
@@ -136,6 +140,14 @@
       <HintPath>..\packages\Dapper.1.38\lib\net40\Dapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="LinqToQuerystring">
+      <HintPath>..\packages\LinqToQuerystring.0.6.7.2\lib\net35\LinqToQuerystring.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="LinqToQuerystring.WebApi">
+      <HintPath>..\packages\LinqToQuerystring.WebApi.1.4.1.14\lib\net40\LinqToQuerystring.WebApi.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Nancy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Nancy.1.0.0\lib\net40\Nancy.dll</HintPath>
@@ -144,9 +156,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="PommaLabs.GRAMPA, Version=2.1.4.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="PommaLabs.GRAMPA, Version=2.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\PommaLabs.GRAMPA.2.1.4\lib\net40-client\PommaLabs.GRAMPA.dll</HintPath>
+      <HintPath>..\packages\PommaLabs.GRAMPA.2.1.7\lib\net40-client\PommaLabs.GRAMPA.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -266,6 +278,9 @@
     </Compile>
     <Compile Include="..\KVLite\Web\Http\ApiOutputCache.cs">
       <Link>Web\Http\ApiOutputCache.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Web\Http\CacheControllerBase.cs">
+      <Link>Web\Http\CacheControllerBase.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Web\OutputCacheProvider.cs">
       <Link>Web\OutputCacheProvider.cs</Link>
