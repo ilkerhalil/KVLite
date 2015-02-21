@@ -22,6 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using LinqToQuerystring.WebApi;
 
@@ -37,6 +39,7 @@ namespace PommaLabs.KVLite.Web.Http
         /// </summary>
         /// <returns>All _valid_ items stored in the cache.</returns>
 #if NET45
+
         [Route("items")]
 #endif
         [LinqToQueryable]
@@ -46,10 +49,24 @@ namespace PommaLabs.KVLite.Web.Http
         }
 
         /// <summary>
+        ///   Deletes all items stored in the cache.
+        /// </summary>
+#if NET45
+
+        [Route("items")]
+#endif
+        public virtual HttpResponseMessage DeleteItems()
+        {
+            ApiOutputCache.Cache.Clear();
+            return Request.CreateResponse(HttpStatusCode.OK);
+        }
+
+        /// <summary>
         ///   Returns all _valid_ items stored in the cache for given partition.
         /// </summary>
         /// <returns>All _valid_ items stored in the cache for given partition.</returns>
 #if NET45
+
         [Route("items/{partition}")]
 #endif
         [LinqToQueryable]
@@ -59,10 +76,24 @@ namespace PommaLabs.KVLite.Web.Http
         }
 
         /// <summary>
+        ///   Deletes all items stored in the cache with given partition.
+        /// </summary>
+#if NET45
+
+        [Route("items/{partition}")]
+#endif
+        public virtual HttpResponseMessage DeleteItems(string partition)
+        {
+            ApiOutputCache.Cache.Clear(partition);
+            return Request.CreateResponse(HttpStatusCode.OK);
+        }
+
+        /// <summary>
         ///   Returns a _valid_ items stored in the cache for given partition and key.
         /// </summary>
         /// <returns>A _valid_ items stored in the cache for given partition and key.</returns>
 #if NET45
+
         [Route("items/{partition}/{key}")]
 #endif
         [LinqToQueryable]
@@ -70,6 +101,18 @@ namespace PommaLabs.KVLite.Web.Http
         {
             return ApiOutputCache.Cache.GetItem(partition, key);
         }
-        
+
+        /// <summary>
+        ///   Deletes an items stored in the cache with given partition and key.
+        /// </summary>
+#if NET45
+
+        [Route("items/{partition}/{key}")]
+#endif
+        public virtual HttpResponseMessage DeleteItem(string partition, string key)
+        {
+            ApiOutputCache.Cache.Remove(partition, key);
+            return Request.CreateResponse(HttpStatusCode.OK);
+        }
     }
 }
