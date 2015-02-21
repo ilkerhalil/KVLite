@@ -78,6 +78,6 @@ namespace PommaLabs.KVLite
             yield return GKeyValuePair.Create("CacheName", Settings.CacheName);
         }
 
-        #endregion
+        #endregion CacheBase Members
     }
 }

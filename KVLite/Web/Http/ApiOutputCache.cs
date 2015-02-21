@@ -29,8 +29,11 @@ using System.Web.Http;
 using PommaLabs.KVLite.Properties;
 using PommaLabs.Reflection;
 using WebApi.OutputCache.Core.Cache;
+
 #if NET45
+
 using WebApi.OutputCache.V2;
+
 #else
 using WebAPI.OutputCache;
 #endif

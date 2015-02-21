@@ -21,25 +21,26 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Annotations;
-using PommaLabs.KVLite.Contracts;
-using PommaLabs.KVLite.Properties;
 using System;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using PommaLabs.KVLite.Annotations;
+using PommaLabs.KVLite.Properties;
 
 namespace PommaLabs.KVLite.Core
 {
     /// <summary>
     ///   Base class for cache settings. Contains settings shared among different caches.
     /// </summary>
-    [ContractClass(typeof(CacheSettingsContract))]
     public abstract class CacheSettingsBase : INotifyPropertyChanged
     {
         #region Fields
 
         private string _defaultPartition;
+        private int _insertionCountBeforeCleanup;
+        private int _maxCacheSizeInMB;
+        private int _maxJournalSizeInMB;
         private int _staticIntervalInDays;
 
         internal TimeSpan StaticInterval;
@@ -102,19 +103,58 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   Number of inserts before a cache cleanup is issued.
         /// </summary>
-        public abstract int InsertionCountBeforeAutoClean { get; set; }
+        public int InsertionCountBeforeAutoClean
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 0);
+                return _insertionCountBeforeCleanup;
+            }
+            set
+            {
+                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+                _insertionCountBeforeCleanup = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         ///   Max size in megabytes for the cache.
         /// </summary>
-        public abstract int MaxCacheSizeInMB { get; set; }
+        public int MaxCacheSizeInMB
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 0);
+                return _maxCacheSizeInMB;
+            }
+            set
+            {
+                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+                _maxCacheSizeInMB = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         ///   Max size in megabytes for the SQLite journal log.
         /// </summary>
-        public abstract int MaxJournalSizeInMB { get; set; }
+        public int MaxJournalSizeInMB
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<int>() > 0);
+                return _maxJournalSizeInMB;
+            }
+            set
+            {
+                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+                _maxJournalSizeInMB = value;
+                OnPropertyChanged();
+            }
+        }
 
-        #endregion Settings
+        #endregion Abstract Settings
 
         #region INotifyPropertyChanged Members
 

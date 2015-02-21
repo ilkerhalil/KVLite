@@ -70,8 +70,8 @@ namespace PommaLabs.KVLite.Core
 
         /// <summary>
         ///   This value is increased for each ADD operation; after this value reaches the
-        ///   "InsertionCountBeforeAutoClean" configuration parameter, then we must reset it and do a
-        ///   SOFT cleanup.
+        ///   "InsertionCountBeforeAutoClean" configuration parameter, then we must reset it and do
+        ///   a SOFT cleanup.
         /// </summary>
         private short _insertionCount;
 
@@ -144,7 +144,7 @@ namespace PommaLabs.KVLite.Core
         [Pure]
         public long CacheSizeInKB()
         {
-            const long pageSizeInKb = PageSizeInBytes/1024L;
+            const long pageSizeInKb = PageSizeInBytes / 1024L;
             // No need for a transaction, since it is just a select.
             using (var ctx = _connectionPool.GetObject())
             {
@@ -152,7 +152,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        #endregion Public Properties
+        #endregion Public Members
 
         #region ICache Members
 
@@ -370,7 +370,7 @@ namespace PommaLabs.KVLite.Core
             LogManager.GetLogger<PersistentCache>().InfoFormat("SQLite native libraries set at {0}", nativePath);
         }
 
-        #endregion
+        #endregion Protected Methods
 
         #region Private Methods
 
@@ -400,10 +400,10 @@ namespace PommaLabs.KVLite.Core
             }
 
             // Insertion has concluded successfully, therefore we increment the operation counter.
-            // If it has reached the "InsertionCountBeforeAutoClean" configuration parameter, then we
-            // must reset it and do a SOFT cleanup. Following code is not fully thread safe, but it
-            // does not matter, because the "InsertionCountBeforeAutoClean" parameter should be just
-            // an hint on when to do the cleanup.
+            // If it has reached the "InsertionCountBeforeAutoClean" configuration parameter, then
+            // we must reset it and do a SOFT cleanup. Following code is not fully thread safe, but
+            // it does not matter, because the "InsertionCountBeforeAutoClean" parameter should be
+            // just an hint on when to do the cleanup.
             if (++_insertionCount >= Settings.InsertionCountBeforeAutoClean)
             {
                 _insertionCount = 0;
@@ -508,7 +508,7 @@ namespace PommaLabs.KVLite.Core
                 JournalMode = journalMode,
                 LegacyFormat = false,
                 /* Each page is 32KB large - Multiply by 1024*1024/32768 */
-                MaxPageCount = Settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes, 
+                MaxPageCount = Settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes,
                 PageSize = PageSizeInBytes,
                 /* We use a custom object pool */
                 Pooling = false,

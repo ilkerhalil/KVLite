@@ -22,11 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Configuration;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using PommaLabs.KVLite.Core;
-using PommaLabs.Reflection;
 
 namespace PommaLabs.KVLite
 {

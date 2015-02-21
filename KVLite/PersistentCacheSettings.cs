@@ -21,26 +21,37 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.Properties;
 using System;
 using System.Diagnostics.Contracts;
+using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Properties;
 
 namespace PommaLabs.KVLite
 {
     /// <summary>
-    ///   TODO
+    ///   Settings used by <see cref="PersistentCache"/>.
     /// </summary>
     public sealed class PersistentCacheSettings : CacheSettingsBase
     {
         #region Fields
 
         private string _cacheFile = Settings.Default.PersistentCache_DefaultCacheFile;
-        private int _maxCacheSizeInMB = Settings.Default.PersistentCache_DefaultMaxCacheSizeInMB;
-        private int _maxJournalSizeInMB = Settings.Default.PersistentCache_DefaultMaxJournalSizeInMB;
-        private int _insertionCountBeforeCleanup = Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean;
 
         #endregion Fields
+
+        #region Construction
+
+        /// <summary>
+        ///   Sets default values read from <see cref="Settings"/>.
+        /// </summary>
+        public PersistentCacheSettings()
+        {
+            InsertionCountBeforeAutoClean = Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean;
+            MaxCacheSizeInMB = Settings.Default.PersistentCache_DefaultMaxCacheSizeInMB;
+            MaxJournalSizeInMB = Settings.Default.PersistentCache_DefaultMaxJournalSizeInMB;
+        }
+
+        #endregion Construction
 
         #region Settings
 
@@ -58,45 +69,6 @@ namespace PommaLabs.KVLite
             {
                 Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCachePath);
                 _cacheFile = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public override int InsertionCountBeforeAutoClean
-        {
-            get
-            {
-                return _insertionCountBeforeCleanup;
-            }
-            set
-            {
-                _insertionCountBeforeCleanup = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public override int MaxCacheSizeInMB
-        {
-            get
-            {
-                return _maxCacheSizeInMB;
-            }
-            set
-            {
-                _maxCacheSizeInMB = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public override int MaxJournalSizeInMB
-        {
-            get
-            {
-                return _maxJournalSizeInMB;
-            }
-            set
-            {
-                _maxJournalSizeInMB = value;
                 OnPropertyChanged();
             }
         }

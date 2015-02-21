@@ -216,9 +216,6 @@
     <Compile Include="..\KVLite\CacheReadMode.cs">
       <Link>CacheReadMode.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Contracts\CacheSettingsContract.cs">
-      <Link>Contracts\CacheSettingsContract.cs</Link>
-    </Compile>
     <Compile Include="..\KVLite\Core\ErrorMessages.cs">
       <Link>Core\ErrorMessages.cs</Link>
     </Compile>
