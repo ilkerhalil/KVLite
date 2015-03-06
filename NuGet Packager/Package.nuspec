@@ -11,8 +11,7 @@
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
         </description>
         <releaseNotes>
-* Web API output cache provider.
-* Some KVLite configuration sections are automatically added to App/Web.config.
+* Updated System.Data.SQLite to 1.0.96.0.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
