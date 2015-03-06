@@ -1,24 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Crc32C
 {
     /// <summary>
-    /// Implementation of CRC-32C (Castagnoli) with polynomial 0x1EDC6F41.
-    /// It can detect errors more reliably than the older CRC-32-IEEE.
-    /// This class will use CRC32 instruction on recent Intel processors if it is available.
-    /// Otherwise it will transparently fall back to a very fast software implementation.
-    /// Besides standard HashAlgorithm methods,
-    /// this class supports several convenient static methods returning the CRC as UInt32.
+    ///   Implementation of CRC-32C (Castagnoli) with polynomial 0x1EDC6F41. It can detect errors
+    ///   more reliably than the older CRC-32-IEEE. This class will use CRC32 instruction on recent
+    ///   Intel processors if it is available. Otherwise it will transparently fall back to a very
+    ///   fast software implementation. Besides standard HashAlgorithm methods, this class supports
+    ///   several convenient static methods returning the CRC as UInt32.
     /// </summary>
     public class Crc32CAlgorithm : HashAlgorithm
     {
-        uint CurrentCrc;
+        private uint _currentCrc;
 
         /// <summary>
-        /// Creates new instance of Crc32CAlgorithm.
+        ///   Creates new instance of Crc32CAlgorithm.
         /// </summary>
         public Crc32CAlgorithm()
         {
@@ -26,12 +23,13 @@ namespace Crc32C
         }
 
         /// <summary>
-        /// Computes CRC-32C from multiple buffers.
-        /// Call this method multiple times to chain multiple buffers.
+        ///   Computes CRC-32C from multiple buffers. Call this method multiple times to chain
+        ///   multiple buffers.
         /// </summary>
         /// <param name="initial">
-        /// Initial CRC value for the algorithm. It is zero for the first buffer.
-        /// Subsequent buffers should have their initial value set to CRC value returned by previous call to this method.
+        ///   Initial CRC value for the algorithm. It is zero for the first buffer. Subsequent
+        ///   buffers should have their initial value set to CRC value returned by previous call to
+        ///   this method.
         /// </param>
         /// <param name="input">Input buffer with data to be checksummed.</param>
         /// <param name="offset">Offset of the input data within the buffer.</param>
@@ -47,12 +45,13 @@ namespace Crc32C
         }
 
         /// <summary>
-        /// Computes CRC-32C from multiple buffers.
-        /// Call this method multiple times to chain multiple buffers.
+        ///   Computes CRC-32C from multiple buffers. Call this method multiple times to chain
+        ///   multiple buffers.
         /// </summary>
         /// <param name="initial">
-        /// Initial CRC value for the algorithm. It is zero for the first buffer.
-        /// Subsequent buffers should have their initial value set to CRC value returned by previous call to this method.
+        ///   Initial CRC value for the algorithm. It is zero for the first buffer. Subsequent
+        ///   buffers should have their initial value set to CRC value returned by previous call to
+        ///   this method.
         /// </param>
         /// <param name="input">Input buffer containing data to be checksummed.</param>
         /// <returns>Accumulated CRC-32C of all buffers processed so far.</returns>
@@ -64,7 +63,7 @@ namespace Crc32C
         }
 
         /// <summary>
-        /// Computes CRC-32C from input buffer.
+        ///   Computes CRC-32C from input buffer.
         /// </summary>
         /// <param name="input">Input buffer with data to be checksummed.</param>
         /// <param name="offset">Offset of the input data within the buffer.</param>
@@ -76,7 +75,7 @@ namespace Crc32C
         }
 
         /// <summary>
-        /// Computes CRC-32C from input buffer.
+        ///   Computes CRC-32C from input buffer.
         /// </summary>
         /// <param name="input">Input buffer containing data to be checksummed.</param>
         /// <returns>CRC-32C of the buffer.</returns>
@@ -86,32 +85,42 @@ namespace Crc32C
         }
 
         /// <summary>
-        /// Resets internal state of the algorithm. Used internally.
+        ///   Resets internal state of the algorithm. Used internally.
         /// </summary>
         public override void Initialize()
         {
-            CurrentCrc = 0;
+            _currentCrc = 0;
         }
 
-        protected override unsafe void HashCore(byte[] input, int offset, int length)
+        /// <summary>
+        ///   Core hash function.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="length">The length.</param>
+        protected override void HashCore(byte[] input, int offset, int length)
         {
-            CurrentCrc = AppendInternal(CurrentCrc, input, offset, length);
+            _currentCrc = AppendInternal(_currentCrc, input, offset, length);
         }
 
+        /// <summary>
+        ///   When overridden in a derived class, finalizes the hash computation after the last data
+        ///   is processed by the cryptographic stream object.
+        /// </summary>
+        /// <returns>The computed hash code.</returns>
         protected override byte[] HashFinal()
         {
-            return BitConverter.GetBytes(CurrentCrc);
+            return BitConverter.GetBytes(_currentCrc);
         }
 
-        static unsafe uint AppendInternal(uint initial, byte[] input, int offset, int length)
+        private static unsafe uint AppendInternal(uint initial, byte[] input, int offset, int length)
         {
             if (length > 0)
             {
                 fixed (byte* ptr = &input[offset])
                     return NativeProxy.Instance.Append(initial, ptr, length);
             }
-            else
-                return initial;
+            return initial;
         }
     }
 }

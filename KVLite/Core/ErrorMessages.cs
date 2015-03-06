@@ -26,7 +26,6 @@ namespace PommaLabs.KVLite.Core
     internal static class ErrorMessages
     {
         public const string InvalidCacheName = "In-memory cache name can only contain alphanumeric characters, dots and underscores.";
-        public const string InvalidEnumValue = "Given enumeration value is not valid.";
         public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
         public const string NullOrEmptyCacheName = @"Cache name cannot be null or empty.";
         public const string NullOrEmptyCachePath = @"Cache path cannot be null or empty.";

@@ -54,21 +54,21 @@ namespace PommaLabs.KVLite
         object this[string partition, string key] { get; }
 
         /// <summary>
-        ///   TODO
+        ///   Adds the sliding.
         /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="interval"></param>
-        /// <returns></returns>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="interval">The interval.</param>
         void AddSliding(string partition, string key, object value, TimeSpan interval);
 
         /// <summary>
-        ///   </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="utcExpiry"></param>
+        /// Adds the timed.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
         void AddTimed(string partition, string key, object value, DateTime utcExpiry);
 
         /// <summary>

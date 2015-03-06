@@ -352,6 +352,11 @@ namespace PommaLabs.KVLite.Core
 
         #region Abstract Methods
 
+        /// <summary>
+        ///   Returns whether the changed property is the data source.
+        /// </summary>
+        /// <param name="changedPropertyName">Name of the changed property.</param>
+        /// <returns>Whether the changed property is the data source.</returns>
         protected abstract bool DataSourceHasChanged(string changedPropertyName);
 
         protected abstract string GetDataSource(out SQLiteJournalModeEnum journalMode);
@@ -517,7 +522,7 @@ namespace PommaLabs.KVLite.Core
                 SyncMode = SynchronizationModes.Off,
                 Version = 3,
             };
-            
+
             _connectionString = builder.ToString();
             _connectionPool = new ObjectPool<PooledObjectWrapper<SQLiteConnection>>(1, 10, CreatePooledConnection);
         }
@@ -584,6 +589,14 @@ namespace PommaLabs.KVLite.Core
 
             #region EquatableObject<CacheItem> Members
 
+            /// <summary>
+            ///   Returns all property (or field) values, along with their names, so that they can
+            ///   be used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
+            /// </summary>
+            /// <returns>
+            ///   Returns all property (or field) values, along with their names, so that they can
+            ///   be used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
+            /// </returns>
             protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
             {
                 yield return GKeyValuePair.Create("Partition", Partition.SafeToString());
@@ -591,6 +604,10 @@ namespace PommaLabs.KVLite.Core
                 yield return GKeyValuePair.Create("UtcExpiry", UtcExpiry.SafeToString());
             }
 
+            /// <summary>
+            ///   Gets the identifying members.
+            /// </summary>
+            /// <returns>The identifying members.</returns>
             protected override IEnumerable<object> GetIdentifyingMembers()
             {
                 yield return Partition;

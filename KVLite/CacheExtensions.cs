@@ -35,6 +35,13 @@ namespace PommaLabs.KVLite
     {
         #region Extensions - Default Partition
 
+        /// <summary>
+        ///   Adds a "sliding" value to the cache. It will be refreshed every time it is accessed.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="interval">The interval.</param>
         public static void AddSliding(this ICache cache, string key, object value, TimeSpan interval)
         {
             cache.AddSliding(cache.Settings.DefaultPartition, key, value, interval);
@@ -55,12 +62,23 @@ namespace PommaLabs.KVLite
             cache.AddTimed(cache.Settings.DefaultPartition, key, value, utcExpiry);
         }
 
+        /// <summary>
+        ///   Determines whether cache the specified key.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>True if key is contained, false otherwise.</returns>
         [Pure]
         public static bool Contains(this ICache cache, string key)
         {
             return cache.Contains(cache.Settings.DefaultPartition, key);
         }
 
+        /// <summary>
+        ///   The number of elements inside the cache.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <returns>The number of elements inside the cache.</returns>
         [Pure]
         public static int Count(this ICache cache)
         {
@@ -107,6 +125,11 @@ namespace PommaLabs.KVLite
             return cache.PeekItem(cache.Settings.DefaultPartition, key);
         }
 
+        /// <summary>
+        ///   Removes the specified key.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="key">The key.</param>
         public static void Remove(this ICache cache, string key)
         {
             cache.Remove(cache.Settings.DefaultPartition, key);
