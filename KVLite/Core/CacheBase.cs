@@ -512,11 +512,12 @@ namespace PommaLabs.KVLite.Core
                 PageSize = PageSizeInBytes,
                 /* We use a custom object pool */
                 Pooling = false,
+                PrepareRetries = 3,
                 ReadOnly = false,
                 SyncMode = SynchronizationModes.Off,
                 Version = 3,
             };
-
+            
             _connectionString = builder.ToString();
             _connectionPool = new ObjectPool<PooledObjectWrapper<SQLiteConnection>>(1, 10, CreatePooledConnection);
         }
