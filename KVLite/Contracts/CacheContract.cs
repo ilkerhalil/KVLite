@@ -118,13 +118,11 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        /// Determines whether cache contains the specified partition and key.
+        ///   Determines whether cache contains the specified partition and key.
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
-        /// <returns>
-        /// Whether cache contains the specified partition and key.
-        /// </returns>
+        /// <returns>Whether cache contains the specified partition and key.</returns>
         public bool Contains(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -133,11 +131,9 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        /// The number of items in the cache.
+        ///   The number of items in the cache.
         /// </summary>
-        /// <returns>
-        /// The number of items in the cache.
-        /// </returns>
+        /// <returns>The number of items in the cache.</returns>
         public long LongCount()
         {
             Contract.Ensures(Contract.Result<long>() >= 0);
@@ -145,12 +141,10 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        /// The number of items in given partition.
+        ///   The number of items in given partition.
         /// </summary>
         /// <param name="partition"></param>
-        /// <returns>
-        /// The number of items in given partition.
-        /// </returns>
+        /// <returns>The number of items in given partition.</returns>
         public long LongCount(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -159,14 +153,12 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        /// Gets the value with specified partition and key. If it is a "sliding" or "static"
-        /// value, its lifetime will be increased by corresponding interval.
+        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
-        /// <returns>
-        /// The value with specified partition and key.
-        /// </returns>
+        /// <returns>The value with specified partition and key.</returns>
         public object Get(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -174,6 +166,13 @@ namespace PommaLabs.KVLite.Contracts
             return default(object);
         }
 
+        /// <summary>
+        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The cache item with specified partition and key.</returns>
         public CacheItem GetItem(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -181,12 +180,23 @@ namespace PommaLabs.KVLite.Contracts
             return default(CacheItem);
         }
 
+        /// <summary>
+        ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will
+        ///   be increased by corresponding interval.
+        /// </summary>
+        /// <returns>All cache items.</returns>
         public IList<CacheItem> GetManyItems()
         {
             Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
             return default(IList<CacheItem>);
         }
 
+        /// <summary>
+        ///   Gets all cache items in given partition. If an item is a "sliding" or "static" value,
+        ///   its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <returns>All cache items in given partition.</returns>
         public IList<CacheItem> GetManyItems(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -195,12 +205,12 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        /// Gets the value corresponding to given partition and key, without updating expiry date.
+        ///   Gets the value corresponding to given partition and key, without updating expiry date.
         /// </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <returns>
-        /// The value corresponding to given partition and key, without updating expiry date.
+        ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
         public object Peek(string partition, string key)
         {
@@ -210,12 +220,12 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        /// Gets the item corresponding to given partition and key, without updating expiry date.
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
         /// </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <returns>
-        /// The item corresponding to given partition and key, without updating expiry date.
+        ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
         public CacheItem PeekItem(string partition, string key)
         {
@@ -225,11 +235,9 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        /// Gets the all values, without updating expiry dates.
+        ///   Gets the all values, without updating expiry dates.
         /// </summary>
-        /// <returns>
-        /// All values, without updating expiry dates.
-        /// </returns>
+        /// <returns>All values, without updating expiry dates.</returns>
         public IList<CacheItem> PeekManyItems()
         {
             Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
@@ -237,12 +245,10 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        /// Gets the all items in given partition, without updating expiry dates.
+        ///   Gets the all items in given partition, without updating expiry dates.
         /// </summary>
         /// <param name="partition"></param>
-        /// <returns>
-        /// All items in given partition, without updating expiry dates.
-        /// </returns>
+        /// <returns>All items in given partition, without updating expiry dates.</returns>
         public IList<CacheItem> PeekManyItems(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -251,7 +257,7 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        /// Removes the value with given partition and key.
+        ///   Removes the value with given partition and key.
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>

@@ -117,21 +117,27 @@ namespace PommaLabs.KVLite
         object Get(string partition, string key);
 
         /// <summary>
-        ///   TODO
+        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
         /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The cache item with specified partition and key.</returns>
         CacheItem GetItem(string partition, string key);
 
         /// <summary>
-        ///   </summary>
-        /// <returns></returns>
+        ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will
+        ///   be increased by corresponding interval.
+        /// </summary>
+        /// <returns>All cache items.</returns>
         IList<CacheItem> GetManyItems();
 
         /// <summary>
-        ///   </summary>
-        /// <returns></returns>
+        ///   Gets all cache items in given partition. If an item is a "sliding" or "static" value,
+        ///   its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <returns>All cache items in given partition.</returns>
         IList<CacheItem> GetManyItems(string partition);
 
         /// <summary>
@@ -155,18 +161,14 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Gets the all values, without updating expiry dates.
         /// </summary>
-        /// <returns>
-        ///   All values, without updating expiry dates.
-        /// </returns>
+        /// <returns>All values, without updating expiry dates.</returns>
         [Pure]
         IList<CacheItem> PeekManyItems();
 
         /// <summary>
         ///   Gets the all items in given partition, without updating expiry dates.
         /// </summary>
-        /// <returns>
-        ///   All items in given partition, without updating expiry dates.
-        /// </returns>
+        /// <returns>All items in given partition, without updating expiry dates.</returns>
         [Pure]
         IList<CacheItem> PeekManyItems(string partition);
 

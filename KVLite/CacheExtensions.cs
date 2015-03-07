@@ -36,9 +36,8 @@ namespace PommaLabs.KVLite
         #region Extensions - Default Partition
 
         /// <summary>
-        ///   Adds a "sliding" value with given key. Value will last as much as
-        ///   specified in given interval and, if accessed before expiry, its lifetime will be
-        ///   extended by the interval itself.
+        ///   Adds a "sliding" value with given key. Value will last as much as specified in given
+        ///   interval and, if accessed before expiry, its lifetime will be extended by the interval itself.
         /// </summary>
         /// <param name="cache">The cache.</param>
         /// <param name="key">The key.</param>
@@ -51,8 +50,8 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   Adds a "static" value with given partition and key. Value will last as much as
-        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry, its lifetime will be
-        ///   extended by that interval.
+        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <param name="cache">The cache.</param>
         /// <param name="partition">The partition.</param>
@@ -64,9 +63,9 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   Adds a "static" value with given key. Value will last as much as
-        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry, its lifetime will be
-        ///   extended by that interval.
+        ///   Adds a "static" value with given key. Value will last as much as specified in
+        ///   <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry,
+        ///   its lifetime will be extended by that interval.
         /// </summary>
         /// <param name="cache">The cache.</param>
         /// <param name="key">The key.</param>
@@ -77,8 +76,8 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   Adds a "timed" value with given key. Value will last until the specified
-        ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
+        ///   Adds a "timed" value with given key. Value will last until the specified time and, if
+        ///   accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
         /// <param name="cache">The cache.</param>
         /// <param name="key">The key.</param>
@@ -138,6 +137,13 @@ namespace PommaLabs.KVLite
             return cache.Get(cache.Settings.DefaultPartition, key);
         }
 
+        /// <summary>
+        ///   Gets the cache item with specified key. If it is a "sliding" or "static" value, its
+        ///   lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The cache item with specified key.</returns>
         public static CacheItem GetItem(this ICache cache, string key)
         {
             return cache.GetItem(cache.Settings.DefaultPartition, key);
@@ -196,9 +202,8 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   Adds a "sliding" value with given key. Value will last as much as
-        ///   specified in given interval and, if accessed before expiry, its lifetime will be
-        ///   extended by the interval itself.
+        ///   Adds a "sliding" value with given key. Value will last as much as specified in given
+        ///   interval and, if accessed before expiry, its lifetime will be extended by the interval itself.
         /// </summary>
         /// <param name="cache">The cache.</param>
         /// <param name="key">The key.</param>
@@ -214,8 +219,8 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   Adds a "static" value with given partition and key. Value will last as much as
-        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry, its lifetime will be
-        ///   extended by that interval.
+        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <param name="cache">The cache.</param>
         /// <param name="partition">The partition.</param>
@@ -230,9 +235,9 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   Adds a "static" value with given key. Value will last as much as
-        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry, its lifetime will be
-        ///   extended by that interval.
+        ///   Adds a "static" value with given key. Value will last as much as specified in
+        ///   <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry,
+        ///   its lifetime will be extended by that interval.
         /// </summary>
         /// <param name="cache">The cache.</param>
         /// <param name="key">The key.</param>
@@ -263,8 +268,8 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   Adds a "timed" value with given key. Value will last until the specified
-        ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
+        ///   Adds a "timed" value with given key. Value will last until the specified time and, if
+        ///   accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
         /// <param name="cache">The cache.</param>
         /// <param name="key">The key.</param>

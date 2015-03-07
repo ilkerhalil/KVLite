@@ -171,7 +171,7 @@ namespace PommaLabs.KVLite.Core
         #region ICache Members
 
         /// <summary>
-        /// The available settings for the cache.
+        ///   The available settings for the cache.
         /// </summary>
         CacheSettingsBase ICache.Settings
         {
@@ -179,7 +179,7 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        /// The available settings for the cache.
+        ///   The available settings for the cache.
         /// </summary>
         public TCacheSettings Settings
         {
@@ -199,9 +199,9 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        /// Adds a "sliding" value with given partition and key. Value will last as much as
-        /// specified in given interval and, if accessed before expiry, its lifetime will be
-        /// extended by the interval itself.
+        ///   Adds a "sliding" value with given partition and key. Value will last as much as
+        ///   specified in given interval and, if accessed before expiry, its lifetime will be
+        ///   extended by the interval itself.
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
@@ -213,8 +213,8 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        /// Adds a "timed" value with given partition and key. Value will last until the specified
-        /// time and, if accessed before expiry, its lifetime will _not_ be extended.
+        ///   Adds a "timed" value with given partition and key. Value will last until the specified
+        ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
@@ -226,7 +226,7 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        /// Clears this instance, that is, it removes all values.
+        ///   Clears this instance, that is, it removes all values.
         /// </summary>
         public void Clear()
         {
@@ -234,7 +234,7 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        /// Clears given partition, that is, it removes all its values.
+        ///   Clears given partition, that is, it removes all its values.
         /// </summary>
         /// <param name="partition"></param>
         public void Clear(string partition)
@@ -243,69 +243,70 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        /// The number of items in the cache.
+        ///   The number of items in the cache.
         /// </summary>
-        /// <returns>
-        /// The number of items in the cache.
-        /// </returns>
+        /// <returns>The number of items in the cache.</returns>
         public long LongCount()
         {
             return DoCount(null);
         }
 
         /// <summary>
-        /// The number of items in given partition.
+        ///   The number of items in given partition.
         /// </summary>
         /// <param name="partition"></param>
-        /// <returns>
-        /// The number of items in given partition.
-        /// </returns>
+        /// <returns>The number of items in given partition.</returns>
         public long LongCount(string partition)
         {
             return DoCount(partition);
         }
 
+        /// <summary>
+        ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will
+        ///   be increased by corresponding interval.
+        /// </summary>
+        /// <returns>All cache items.</returns>
         public IList<CacheItem> GetManyItems()
         {
             return DoGetManyItems(null);
         }
 
+        /// <summary>
+        ///   Gets all cache items in given partition. If an item is a "sliding" or "static" value,
+        ///   its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <returns>All cache items in given partition.</returns>
         public IList<CacheItem> GetManyItems(string partition)
         {
             return DoGetManyItems(partition);
         }
 
         /// <summary>
-        /// Gets the all values, without updating expiry dates.
+        ///   Gets the all values, without updating expiry dates.
         /// </summary>
-        /// <returns>
-        /// All values, without updating expiry dates.
-        /// </returns>
+        /// <returns>All values, without updating expiry dates.</returns>
         public IList<CacheItem> PeekManyItems()
         {
             return DoPeekManyItems(null);
         }
 
         /// <summary>
-        /// Gets the all items in given partition, without updating expiry dates.
+        ///   Gets the all items in given partition, without updating expiry dates.
         /// </summary>
         /// <param name="partition"></param>
-        /// <returns>
-        /// All items in given partition, without updating expiry dates.
-        /// </returns>
+        /// <returns>All items in given partition, without updating expiry dates.</returns>
         public IList<CacheItem> PeekManyItems(string partition)
         {
             return DoPeekManyItems(partition);
         }
 
         /// <summary>
-        /// Determines whether cache contains the specified partition and key.
+        ///   Determines whether cache contains the specified partition and key.
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
-        /// <returns>
-        /// Whether cache contains the specified partition and key.
-        /// </returns>
+        /// <returns>Whether cache contains the specified partition and key.</returns>
         public bool Contains(string partition, string key)
         {
             var p = new DynamicParameters();
@@ -319,14 +320,12 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        /// Gets the value with specified partition and key. If it is a "sliding" or "static"
-        /// value, its lifetime will be increased by corresponding interval.
+        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
-        /// <returns>
-        /// The value with specified partition and key.
-        /// </returns>
+        /// <returns>The value with specified partition and key.</returns>
         public object Get(string partition, string key)
         {
             var p = new DynamicParameters();
@@ -339,6 +338,13 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+        /// <summary>
+        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The cache item with specified partition and key.</returns>
         public CacheItem GetItem(string partition, string key)
         {
             var p = new DynamicParameters();
@@ -352,12 +358,12 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        /// Gets the value corresponding to given partition and key, without updating expiry date.
+        ///   Gets the value corresponding to given partition and key, without updating expiry date.
         /// </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <returns>
-        /// The value corresponding to given partition and key, without updating expiry date.
+        ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
         public object Peek(string partition, string key)
         {
@@ -372,12 +378,12 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        /// Gets the item corresponding to given partition and key, without updating expiry date.
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
         /// </summary>
         /// <param name="partition"></param>
         /// <param name="key"></param>
         /// <returns>
-        /// The item corresponding to given partition and key, without updating expiry date.
+        ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
         public CacheItem PeekItem(string partition, string key)
         {
@@ -392,7 +398,7 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        /// Removes the value with given partition and key.
+        ///   Removes the value with given partition and key.
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
