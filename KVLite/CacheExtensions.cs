@@ -36,7 +36,9 @@ namespace PommaLabs.KVLite
         #region Extensions - Default Partition
 
         /// <summary>
-        ///   Adds a "sliding" value to the cache. It will be refreshed every time it is accessed.
+        ///   Adds a "sliding" value with given key. Value will last as much as
+        ///   specified in given interval and, if accessed before expiry, its lifetime will be
+        ///   extended by the interval itself.
         /// </summary>
         /// <param name="cache">The cache.</param>
         /// <param name="key">The key.</param>
@@ -47,16 +49,41 @@ namespace PommaLabs.KVLite
             cache.AddSliding(cache.Settings.DefaultPartition, key, value, interval);
         }
 
+        /// <summary>
+        ///   Adds a "static" value with given partition and key. Value will last as much as
+        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry, its lifetime will be
+        ///   extended by that interval.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         public static void AddStatic(this ICache cache, string partition, string key, object value)
         {
             cache.AddSliding(partition, key, value, cache.Settings.StaticInterval);
         }
 
+        /// <summary>
+        ///   Adds a "static" value with given key. Value will last as much as
+        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry, its lifetime will be
+        ///   extended by that interval.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         public static void AddStatic(this ICache cache, string key, object value)
         {
             cache.AddSliding(cache.Settings.DefaultPartition, key, value, cache.Settings.StaticInterval);
         }
 
+        /// <summary>
+        ///   Adds a "timed" value with given key. Value will last until the specified
+        ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
         public static void AddTimed(this ICache cache, string key, object value, DateTime utcExpiry)
         {
             cache.AddTimed(cache.Settings.DefaultPartition, key, value, utcExpiry);
@@ -86,6 +113,12 @@ namespace PommaLabs.KVLite
             return Convert.ToInt32(cache.LongCount());
         }
 
+        /// <summary>
+        ///   The number of elements inside given partition.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="partition">The partition.</param>
+        /// <returns>The number of elements inside given partition.</returns>
         [Pure]
         public static int Count(this ICache cache, string partition)
         {
@@ -93,13 +126,18 @@ namespace PommaLabs.KVLite
             return Convert.ToInt32(cache.LongCount(partition));
         }
 
-        [Pure]
+        /// <summary>
+        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with specified partition and key.</returns>
         public static object Get(this ICache cache, string key)
         {
             return cache.Get(cache.Settings.DefaultPartition, key);
         }
 
-        [Pure]
         public static CacheItem GetItem(this ICache cache, string key)
         {
             return cache.GetItem(cache.Settings.DefaultPartition, key);
@@ -139,6 +177,17 @@ namespace PommaLabs.KVLite
 
         #region Extensions - Async Methods
 
+        /// <summary>
+        ///   Adds a "sliding" value with given partition and key. Value will last as much as
+        ///   specified in given interval and, if accessed before expiry, its lifetime will be
+        ///   extended by the interval itself.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="interval">The interval.</param>
+        /// <returns>The insertion task.</returns>
         public static Task AddSlidingAsync(this ICache cache, string partition, string key, object value, TimeSpan interval)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
@@ -146,6 +195,16 @@ namespace PommaLabs.KVLite
             return TaskRunner.Run(() => cache.AddSliding(partition, key, value, interval));
         }
 
+        /// <summary>
+        ///   Adds a "sliding" value with given key. Value will last as much as
+        ///   specified in given interval and, if accessed before expiry, its lifetime will be
+        ///   extended by the interval itself.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="interval">The interval.</param>
+        /// <returns>The insertion task.</returns>
         public static Task AddSlidingAsync(this ICache cache, string key, object value, TimeSpan interval)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
@@ -153,6 +212,16 @@ namespace PommaLabs.KVLite
             return TaskRunner.Run(() => cache.AddSliding(cache.Settings.DefaultPartition, key, value, interval));
         }
 
+        /// <summary>
+        ///   Adds a "static" value with given partition and key. Value will last as much as
+        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry, its lifetime will be
+        ///   extended by that interval.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>The insertion task.</returns>
         public static Task AddStaticAsync(this ICache cache, string partition, string key, object value)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
@@ -160,6 +229,15 @@ namespace PommaLabs.KVLite
             return TaskRunner.Run(() => cache.AddSliding(partition, key, value, cache.Settings.StaticInterval));
         }
 
+        /// <summary>
+        ///   Adds a "static" value with given key. Value will last as much as
+        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry, its lifetime will be
+        ///   extended by that interval.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>The insertion task.</returns>
         public static Task AddStaticAsync(this ICache cache, string key, object value)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
@@ -167,6 +245,16 @@ namespace PommaLabs.KVLite
             return TaskRunner.Run(() => cache.AddSliding(cache.Settings.DefaultPartition, key, value, cache.Settings.StaticInterval));
         }
 
+        /// <summary>
+        ///   Adds a "timed" value with given partition and key. Value will last until the specified
+        ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <returns>The insertion task.</returns>
         public static Task AddTimedAsync(this ICache cache, string partition, string key, object value, DateTime utcExpiry)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
@@ -174,6 +262,15 @@ namespace PommaLabs.KVLite
             return TaskRunner.Run(() => cache.AddTimed(partition, key, value, utcExpiry));
         }
 
+        /// <summary>
+        ///   Adds a "timed" value with given key. Value will last until the specified
+        ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <returns>The insertion task.</returns>
         public static Task AddTimedAsync(this ICache cache, string key, object value, DateTime utcExpiry)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
@@ -181,6 +278,13 @@ namespace PommaLabs.KVLite
             return TaskRunner.Run(() => cache.AddTimed(cache.Settings.DefaultPartition, key, value, utcExpiry));
         }
 
+        /// <summary>
+        ///   Removes the value with given partition and key.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The removal task.</returns>
         public static Task RemoveAsync(this ICache cache, string partition, string key)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
@@ -188,6 +292,12 @@ namespace PommaLabs.KVLite
             return TaskRunner.Run(() => cache.Remove(partition, key));
         }
 
+        /// <summary>
+        ///   Removes the specified key.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The removal task.</returns>
         public static Task RemoveAsync(this ICache cache, string key)
         {
             Contract.Ensures(Contract.Result<Task>() != null);

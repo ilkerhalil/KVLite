@@ -71,6 +71,12 @@ namespace PommaLabs.KVLite
             return changedPropertyName.ToLower().Equals("cachename");
         }
 
+        /// <summary>
+        ///   Gets the data source, that is, the location of the SQLite store (it may be a file path
+        ///   or a memory URI).
+        /// </summary>
+        /// <param name="journalMode">The journal mode.</param>
+        /// <returns>The SQLite data source that will be used by the cache.</returns>
         protected override string GetDataSource(out SQLiteJournalModeEnum journalMode)
         {
             journalMode = SQLiteJournalModeEnum.Memory;
