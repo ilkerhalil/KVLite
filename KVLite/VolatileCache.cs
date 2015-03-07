@@ -29,9 +29,8 @@ using PommaLabs.KVLite.Core;
 namespace PommaLabs.KVLite
 {
     /// <summary>
-    ///   TODO
+    ///   An SQLite-based in-memory cache.
     /// </summary>
-    [Serializable]
     public sealed class VolatileCache : CacheBase<VolatileCache, VolatileCacheSettings>
     {
         #region Construction
@@ -42,7 +41,7 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   TODO
+        ///   Initializes a new instance of the <see cref="VolatileCache"/> class with default settings.
         /// </summary>
         public VolatileCache()
             : base(new VolatileCacheSettings())
@@ -50,9 +49,9 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   TODO
+        ///   Initializes a new instance of the <see cref="VolatileCache"/> class with given settings.
         /// </summary>
-        /// <param name="settings"></param>
+        /// <param name="settings">Cache settings.</param>
         public VolatileCache(VolatileCacheSettings settings)
             : base(settings)
         {
@@ -62,6 +61,11 @@ namespace PommaLabs.KVLite
 
         #region CacheBase Members
 
+        /// <summary>
+        ///   Returns whether the changed property is the data source.
+        /// </summary>
+        /// <param name="changedPropertyName">Name of the changed property.</param>
+        /// <returns>Whether the changed property is the data source.</returns>
         protected override bool DataSourceHasChanged(string changedPropertyName)
         {
             return changedPropertyName.ToLower().Equals("cachename");
@@ -73,6 +77,14 @@ namespace PommaLabs.KVLite
             return String.Format("file:{0}?mode=memory&cache=shared", Settings.CacheName);
         }
 
+        /// <summary>
+        ///   Returns all property (or field) values, along with their names, so that they can be
+        ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
+        /// </summary>
+        /// <returns>
+        ///   Returns all property (or field) values, along with their names, so that they can be
+        ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
+        /// </returns>
         protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
         {
             yield return GKeyValuePair.Create("CacheName", Settings.CacheName);

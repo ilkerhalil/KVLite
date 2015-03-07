@@ -257,6 +257,9 @@
     <Compile Include="..\KVLite\PersistentCacheSettings.cs">
       <Link>PersistentCacheSettings.cs</Link>
     </Compile>
+    <Compile Include="..\KVLite\Settings.cs">
+      <Link>Settings.cs</Link>
+    </Compile>
     <Compile Include="..\KVLite\VolatileCache.cs">
       <Link>VolatileCache.cs</Link>
     </Compile>

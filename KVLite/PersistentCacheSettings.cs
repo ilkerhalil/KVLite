@@ -31,6 +31,7 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   Settings used by <see cref="PersistentCache"/>.
     /// </summary>
+    [Serializable]
     public sealed class PersistentCacheSettings : CacheSettingsBase
     {
         #region Fields

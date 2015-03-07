@@ -46,6 +46,11 @@ namespace PommaLabs.KVLite.Nancy
 
         #endregion Fields
 
+        /// <summary>
+        ///   Handles application startup.
+        /// </summary>
+        /// <param name="container">The container.</param>
+        /// <param name="pipelines">The pipelines.</param>
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
             base.ApplicationStartup(container, pipelines);

@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
@@ -30,9 +29,8 @@ using PommaLabs.KVLite.Core;
 namespace PommaLabs.KVLite
 {
     /// <summary>
-    ///   TODO
+    ///   An SQLite-based persistent cache.
     /// </summary>
-    [Serializable]
     public sealed class PersistentCache : CacheBase<PersistentCache, PersistentCacheSettings>
     {
         #region Construction
@@ -43,7 +41,7 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   TODO
+        ///   Initializes a new instance of the <see cref="PersistentCache"/> class with default settings.
         /// </summary>
         public PersistentCache()
             : base(new PersistentCacheSettings())
@@ -51,9 +49,9 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   TODO
+        ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.
         /// </summary>
-        /// <param name="settings"></param>
+        /// <param name="settings">Cache settings.</param>
         public PersistentCache(PersistentCacheSettings settings)
             : base(settings)
         {
@@ -63,11 +61,22 @@ namespace PommaLabs.KVLite
 
         #region CacheBase Members
 
+        /// <summary>
+        ///   Returns whether the changed property is the data source.
+        /// </summary>
+        /// <param name="changedPropertyName">Name of the changed property.</param>
+        /// <returns>Whether the changed property is the data source.</returns>
         protected override bool DataSourceHasChanged(string changedPropertyName)
         {
             return changedPropertyName.ToLower().Equals("cachefile");
         }
 
+        /// <summary>
+        ///   Gets the data source, that is, the location of the SQLite store (it may be a file path
+        ///   or a memory URI).
+        /// </summary>
+        /// <param name="journalMode">The journal mode.</param>
+        /// <returns>The SQLite data source that will be used by the cache.</returns>
         protected override string GetDataSource(out SQLiteJournalModeEnum journalMode)
         {
             // Map cache path, since it may be an IIS relative path.
@@ -85,6 +94,14 @@ namespace PommaLabs.KVLite
             return mappedPath;
         }
 
+        /// <summary>
+        ///   Returns all property (or field) values, along with their names, so that they can be
+        ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
+        /// </summary>
+        /// <returns>
+        ///   Returns all property (or field) values, along with their names, so that they can be
+        ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
+        /// </returns>
         protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
         {
             yield return GKeyValuePair.Create("CacheFile", Settings.CacheFile);

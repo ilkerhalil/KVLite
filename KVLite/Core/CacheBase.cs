@@ -48,10 +48,21 @@ namespace PommaLabs.KVLite.Core
     {
         #region Constants
 
+        /// <summary>
+        ///   The page size in bytes.
+        /// </summary>
         private const int PageSizeInBytes = 32768;
-
+        
+// ReSharper disable StaticFieldInGenericType        
+        /// <summary>
+        ///   The UNIX epoch.
+        /// </summary>
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+// ReSharper restore StaticFieldInGenericType
 
+        /// <summary>
+        ///   The default cache instance.
+        /// </summary>
         private static readonly TCache CachedDefaultInstance = new TCache();
 
         #endregion Constants
@@ -75,6 +86,9 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         private short _insertionCount;
 
+        /// <summary>
+        ///   The cache settings.
+        /// </summary>
         private readonly TCacheSettings _settings;
 
         #endregion Fields
@@ -82,8 +96,9 @@ namespace PommaLabs.KVLite.Core
         #region Construction
 
         /// <summary>
-        ///   </summary>
-        /// <param name="settings"></param>
+        ///   Initializes a new instance of the <see cref="CacheBase{TCache, TCacheSettings}"/> class with given settings.
+        /// </summary>
+        /// <param name="settings">The settings.</param>
         internal CacheBase(TCacheSettings settings)
         {
             Contract.Requires<ArgumentNullException>(settings != null);
@@ -107,7 +122,7 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
-            // Initial cleanup
+            // Initial cleanup.
             Clear(CacheReadMode.ConsiderExpiryDate);
         }
 
@@ -359,12 +374,20 @@ namespace PommaLabs.KVLite.Core
         /// <returns>Whether the changed property is the data source.</returns>
         protected abstract bool DataSourceHasChanged(string changedPropertyName);
 
+        /// <summary>
+        ///   Gets the data source, that is, the location of the SQLite store (it may be a file path or a memory URI).
+        /// </summary>
+        /// <param name="journalMode">The journal mode.</param>
+        /// <returns>The SQLite data source that will be used by the cache.</returns>
         protected abstract string GetDataSource(out SQLiteJournalModeEnum journalMode);
 
         #endregion Abstract Methods
 
         #region Protected Methods
 
+        /// <summary>
+        ///   Initializes the SQLite native libraries.
+        /// </summary>
         protected static void InitSQLite()
         {
             // Makes SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
