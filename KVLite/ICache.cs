@@ -54,80 +54,90 @@ namespace PommaLabs.KVLite
         object this[string partition, string key] { get; }
 
         /// <summary>
-        ///   TODO
+        ///   Adds a "sliding" value with given partition and key. Value will last as much as
+        ///   specified in given interval and, if accessed before expiry, its lifetime will be
+        ///   extended by the interval itself.
         /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="interval"></param>
-        /// <returns></returns>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="interval">The interval.</param>
         void AddSliding(string partition, string key, object value, TimeSpan interval);
 
         /// <summary>
-        ///   </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="utcExpiry"></param>
+        ///   Adds a "timed" value with given partition and key. Value will last until the specified
+        ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
         void AddTimed(string partition, string key, object value, DateTime utcExpiry);
 
         /// <summary>
-        ///   TODO
+        ///   Clears this instance, that is, it removes all values.
         /// </summary>
         void Clear();
 
         /// <summary>
-        ///   TODO
+        ///   Clears given partition, that is, it removes all its values.
         /// </summary>
         void Clear(string partition);
 
         /// <summary>
-        ///   TODO
+        ///   Determines whether cache contains the specified partition and key.
         /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>Whether cache contains the specified partition and key.</returns>
         [Pure]
         bool Contains(string partition, string key);
 
         /// <summary>
-        ///   TODO
+        ///   The number of items in the cache.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The number of items in the cache.</returns>
         [Pure]
         long LongCount();
 
         /// <summary>
-        ///   TODO
+        ///   The number of items in given partition.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The number of items in given partition.</returns>
         [Pure]
         long LongCount(string partition);
 
         /// <summary>
-        ///   TODO
+        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
         /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with specified partition and key.</returns>
         object Get(string partition, string key);
 
         /// <summary>
-        ///   TODO
+        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
         /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The cache item with specified partition and key.</returns>
         CacheItem GetItem(string partition, string key);
 
         /// <summary>
-        ///   </summary>
-        /// <returns></returns>
+        ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will
+        ///   be increased by corresponding interval.
+        /// </summary>
+        /// <returns>All cache items.</returns>
         IList<CacheItem> GetManyItems();
 
         /// <summary>
-        ///   </summary>
-        /// <returns></returns>
+        ///   Gets all cache items in given partition. If an item is a "sliding" or "static" value,
+        ///   its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <returns>All cache items in given partition.</returns>
         IList<CacheItem> GetManyItems(string partition);
 
         /// <summary>
@@ -149,31 +159,32 @@ namespace PommaLabs.KVLite
         CacheItem PeekItem(string partition, string key);
 
         /// <summary>
-        ///   </summary>
-        /// <returns></returns>
+        ///   Gets the all values, without updating expiry dates.
+        /// </summary>
+        /// <returns>All values, without updating expiry dates.</returns>
         [Pure]
         IList<CacheItem> PeekManyItems();
 
         /// <summary>
-        ///   </summary>
-        /// <returns></returns>
+        ///   Gets the all items in given partition, without updating expiry dates.
+        /// </summary>
+        /// <returns>All items in given partition, without updating expiry dates.</returns>
         [Pure]
         IList<CacheItem> PeekManyItems(string partition);
 
         /// <summary>
-        ///   </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
+        ///   Removes the value with given partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
         void Remove(string partition, string key);
     }
 
     /// <summary>
-    ///   TODO
+    ///   A cache with specifically typed settings.
     /// </summary>
-    /// <typeparam name="TCache"></typeparam>
-    /// <typeparam name="TCacheSettings"></typeparam>
-    public interface ICache<TCache, out TCacheSettings> : ICache
-        where TCache : class, ICache<TCache, TCacheSettings>, new()
+    /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
+    public interface ICache<out TCacheSettings> : ICache
         where TCacheSettings : CacheSettingsBase, new()
     {
         /// <summary>

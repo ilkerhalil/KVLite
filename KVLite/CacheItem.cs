@@ -70,6 +70,14 @@ namespace PommaLabs.KVLite
 
         #region EquatableObject<CacheItem> Members
 
+        /// <summary>
+        ///   Returns all property (or field) values, along with their names, so that they can be
+        ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
+        /// </summary>
+        /// <returns>
+        ///   Returns all property (or field) values, along with their names, so that they can be
+        ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
+        /// </returns>
         protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
         {
             yield return GKeyValuePair.Create("Partition", Partition.SafeToString());
@@ -77,10 +85,14 @@ namespace PommaLabs.KVLite
             yield return GKeyValuePair.Create("UtcExpiry", UtcExpiry.SafeToString());
         }
 
+        /// <summary>
+        ///   Gets the identifying members.
+        /// </summary>
+        /// <returns>The identifying members.</returns>
         protected override IEnumerable<object> GetIdentifyingMembers()
         {
-            yield return Partition;
             yield return Key;
+            yield return Partition;
         }
 
         #endregion EquatableObject<CacheItem> Members
@@ -96,7 +108,8 @@ namespace PommaLabs.KVLite
         #region Public Properties
 
         /// <summary>
-        ///   </summary>
+        ///   The typed value.
+        /// </summary>
         [JsonProperty(Order = 2)]
         public new TVal Value { get; set; }
 

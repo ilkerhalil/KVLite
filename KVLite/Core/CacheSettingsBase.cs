@@ -33,6 +33,7 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Base class for cache settings. Contains settings shared among different caches.
     /// </summary>
+    [Serializable]
     public abstract class CacheSettingsBase : INotifyPropertyChanged
     {
         #region Fields
@@ -49,6 +50,9 @@ namespace PommaLabs.KVLite.Core
 
         #region Construction
 
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="CacheSettingsBase"/> class.
+        /// </summary>
         internal CacheSettingsBase()
         {
             DefaultPartition = Settings.Default.AllCaches_DefaultPartition;
@@ -164,8 +168,9 @@ namespace PommaLabs.KVLite.Core
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-        ///   </summary>
-        /// <param name="propertyName"></param>
+        ///   Called when a property changed.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
         [NotifyPropertyChangedInvocator]
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

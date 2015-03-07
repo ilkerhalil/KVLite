@@ -36,7 +36,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// Default interval for &quot;static&quot; items.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("Default interval for \"static\" items.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("30")]
         public int AllCaches_DefaultStaticIntervalInDays {
@@ -45,7 +49,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// Default max cache size for persistent cache.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("Default max cache size for persistent cache.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1024")]
         public int PersistentCache_DefaultMaxCacheSizeInMB {
@@ -54,7 +62,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// Default number of inserts before a cleanup is issued.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("Default number of inserts before a cleanup is issued.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("64")]
         public int PersistentCache_DefaultInsertionCountBeforeAutoClean {
@@ -76,7 +88,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// Default max journal size for persistent cache.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("Default max journal size for persistent cache.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("32")]
         public int PersistentCache_DefaultMaxJournalSizeInMB {
@@ -85,7 +101,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// Default partition, used when none is specified.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("Default partition, used when none is specified.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("KVLite.DefaultPartition")]
         public string AllCaches_DefaultPartition {
@@ -94,7 +114,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// The partition used by Nancy response cache items.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("The partition used by Nancy response cache items.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("KVLite.Nancy.ResponseCache")]
         public string Nancy_ResponseCachePartition {
@@ -117,7 +141,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// The partition used by ViewState items.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("The partition used by ViewState items.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("KVLite.Web.ViewStates")]
         public string Web_ViewStatePersisterPartition {
@@ -139,7 +167,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// The partition used by output cache provider items.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("The partition used by output cache provider items.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("KVLite.Web.OutputCache")]
         public string Web_OutputCacheProviderPartition {
@@ -148,7 +180,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// The default cache name used by the in-memory cache.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("The default cache name used by the in-memory cache.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("VolatileCache")]
         public string VolatileCache_DefaultCacheName {
@@ -157,7 +193,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// Default number of inserts before a cleanup is issued.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("Default number of inserts before a cleanup is issued.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("64")]
         public int VolatileCache_DefaultInsertionCountBeforeAutoClean {
@@ -166,7 +206,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// Default max cache size for volatile cache.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("Default max cache size for volatile cache.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("256")]
         public int VolatileCache_DefaultMaxCacheSizeInMB {
@@ -175,7 +219,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// Default max journal size for volatile cache.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("Default max journal size for volatile cache.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("32")]
         public int VolatileCache_DefaultMaxJournalSizeInMB {
@@ -198,7 +246,11 @@ namespace PommaLabs.KVLite.Properties {
             }
         }
         
+        /// <summary>
+        /// The partition used by Web API output cache provider items.
+        /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("The partition used by Web API output cache provider items.")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("KVLite.Web.Http.ApiOutputCache")]
         public string Web_Http_ApiOutputCacheProviderPartition {
