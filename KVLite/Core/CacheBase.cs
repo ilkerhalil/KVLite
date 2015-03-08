@@ -54,11 +54,6 @@ namespace PommaLabs.KVLite.Core
         private const int PageSizeInBytes = 32768;
 
         /// <summary>
-        ///   The UNIX epoch.
-        /// </summary>
-        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        /// <summary>
         ///   The default cache instance.
         /// </summary>
         private static readonly TCache CachedDefaultInstance = new TCache();
@@ -312,6 +307,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
+            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -331,6 +327,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
+            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -350,6 +347,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
+            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -370,6 +368,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
+            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -390,6 +389,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
+            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -526,8 +526,9 @@ namespace PommaLabs.KVLite.Core
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
             p.Add("serializedValue", serializedValue, DbType.Binary, size: serializedValue.Length);
-            p.Add("utcExpiry", utcExpiry.HasValue ? (long) (utcExpiry.Value - UnixEpoch).TotalSeconds : new long?(), DbType.Int64);
+            p.Add("utcExpiry", utcExpiry.HasValue ? utcExpiry.Value.ToUnixTime() : new long?(), DbType.Int64);
             p.Add("interval", interval.HasValue ? (long) interval.Value.TotalSeconds : new long?(), DbType.Int64);
+            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -551,6 +552,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
+            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -563,6 +565,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
+            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             // No need for a transaction, since it is just a select.
             using (var ctx = _connectionPool.GetObject())
@@ -575,6 +578,7 @@ namespace PommaLabs.KVLite.Core
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
+            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -586,6 +590,7 @@ namespace PommaLabs.KVLite.Core
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
+            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -688,8 +693,8 @@ namespace PommaLabs.KVLite.Core
                 Partition = src.Partition,
                 Key = src.Key,
                 Value = deserializedValue,
-                UtcCreation = UnixEpoch.AddSeconds(src.UtcCreation),
-                UtcExpiry = src.UtcExpiry == null ? new DateTime?() : UnixEpoch.AddSeconds(src.UtcExpiry.Value),
+                UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcCreation),
+                UtcExpiry = src.UtcExpiry == null ? new DateTime?() : DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry.Value),
                 Interval = src.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(src.Interval.Value)
             };
         }
