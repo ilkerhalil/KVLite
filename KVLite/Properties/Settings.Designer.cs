@@ -258,5 +258,19 @@ namespace PommaLabs.KVLite.Properties {
                 return ((string)(this["Web_Http_ApiOutputCacheProviderPartition"]));
             }
         }
+        
+        /// <summary>
+        /// Default clock provider used in all caches. You can change it during unit testing.
+        /// </summary>
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.SettingsDescriptionAttribute("Default clock provider used in all caches. You can change it during unit testing." +
+            "")]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("PommaLabs.Testing.SystemClockProvider, PommaLabs.GRAMPA")]
+        public string AllCaches_DefaultClockProviderType {
+            get {
+                return ((string)(this["AllCaches_DefaultClockProviderType"]));
+            }
+        }
     }
 }

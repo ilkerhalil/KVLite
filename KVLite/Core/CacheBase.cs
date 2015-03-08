@@ -209,7 +209,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="interval">The interval.</param>
         public void AddSliding(string partition, string key, object value, TimeSpan interval)
         {
-            DoAdd(partition, key, value, DateTime.UtcNow + interval, interval);
+            DoAdd(partition, key, value, ServiceProvider.Clock.UtcNow + interval, interval);
         }
 
         /// <summary>
