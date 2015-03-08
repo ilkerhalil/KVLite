@@ -1,0 +1,18 @@
+﻿<?xml version="1.0"?>
+
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+
+    <!-- remove existing entry -->
+    <configSections>
+        <sectionGroup name="applicationSettings" type="System.Configuration.ApplicationSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <section name="PommaLabs.KVLite.Properties.Settings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" xdt:Transform="Remove" xdt:Locator="Match(name)" />
+        </sectionGroup>
+    </configSections>
+
+    <!-- remove if section is empty -->
+    <applicationSettings>
+        <PommaLabs.KVLite.Properties.Settings  xdt:Transform="RemoveAll" xdt:Locator="Condition(count(*)=0)">
+        </PommaLabs.KVLite.Properties.Settings>
+    </applicationSettings>
+
+</configuration>
