@@ -608,12 +608,11 @@ namespace UnitTests
             {
                 DefaultInstance.AddSliding(StringItems[i], StringItems[i], interval);
             }
-            ServiceProvider.Clock.As<MockClockProvider>().Add(TimeSpan.FromMinutes(1));
             for (var i = 0; i < itemCount; ++i)
             {
                 var item = DefaultInstance.GetItem(StringItems[i]);
                 Assert.IsNotNull(item);
-                Assert.AreEqual(item.UtcExpiry, ServiceProvider.Clock.UtcNow + interval);
+                Assert.AreEqual(item.UtcExpiry.Value.ToUnixTime(), (ServiceProvider.Clock.UtcNow + interval).ToUnixTime());
             }
         }
 
@@ -622,19 +621,18 @@ namespace UnitTests
         [TestCase(LargeItemCount)]
         public void GetManyItems_FullSlidingCache_TimeIncreased(int itemCount)
         {
-            var times = new List<DateTime>();
+            var interval = TimeSpan.FromMinutes(10);
             for (var i = 0; i < itemCount; ++i)
             {
-                DefaultInstance.AddSliding(StringItems[i], StringItems[i], TimeSpan.FromMinutes(10));
-                times.Add(ServiceProvider.Clock.UtcNow.AddMinutes(10));
+                DefaultInstance.AddSliding(StringItems[i], StringItems[i], interval);
             }
-            Thread.Sleep(1000);
+            ServiceProvider.Clock.As<MockClockProvider>().Add(TimeSpan.FromMinutes(1));
             var items = DefaultInstance.GetManyItems();
             for (var i = 0; i < itemCount; ++i)
             {
                 var item = items[i];
                 Assert.IsNotNull(item);
-                Assert.GreaterOrEqual(item.UtcExpiry, times[i]);
+                Assert.AreEqual(item.UtcExpiry.Value.ToUnixTime(), (ServiceProvider.Clock.UtcNow + interval).ToUnixTime());
             }
         }
 
