@@ -30,6 +30,7 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PommaLabs.Extensions;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Properties;
@@ -512,7 +513,7 @@ namespace UnitTests
         public void GetMany_RightItems_AfterAddSliding_InvalidTime(int itemCount)
         {
             AddSliding(DefaultInstance, itemCount, TimeSpan.FromSeconds(1));
-            Thread.Sleep(2000); // Waits to seconds, to let the value expire...
+            ServiceProvider.Clock.As<MockClockProvider>().Add(TimeSpan.FromSeconds(2));
             var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
             for (var i = 0; i < itemCount; ++i)
             {
@@ -602,18 +603,17 @@ namespace UnitTests
         [TestCase(LargeItemCount)]
         public void GetItem_FullSlidingCache_TimeIncreased(int itemCount)
         {
-            var times = new List<DateTime>();
+            var interval = TimeSpan.FromMinutes(10);
             for (var i = 0; i < itemCount; ++i)
             {
-                DefaultInstance.AddSliding(StringItems[i], StringItems[i], TimeSpan.FromMinutes(10));
-                times.Add(DateTime.UtcNow.AddMinutes(10));
+                DefaultInstance.AddSliding(StringItems[i], StringItems[i], interval);
             }
-            Thread.Sleep(1000);
+            ServiceProvider.Clock.As<MockClockProvider>().Add(TimeSpan.FromMinutes(1));
             for (var i = 0; i < itemCount; ++i)
             {
                 var item = DefaultInstance.GetItem(StringItems[i]);
                 Assert.IsNotNull(item);
-                Assert.GreaterOrEqual(item.UtcExpiry, times[i]);
+                Assert.AreEqual(item.UtcExpiry, ServiceProvider.Clock.UtcNow + interval);
             }
         }
 
