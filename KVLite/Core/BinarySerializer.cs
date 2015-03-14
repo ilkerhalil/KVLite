@@ -26,6 +26,8 @@ using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using CodeProject.ObjectPool;
+//using Microsoft.IO;
+using PommaLabs.KVLite.Annotations;
 using Snappy;
 
 namespace PommaLabs.KVLite.Core
@@ -35,8 +37,10 @@ namespace PommaLabs.KVLite.Core
         private const int MinBufferSize = 1024; // 1 KB
 
         private static readonly ObjectPool<PooledObjectWrapper<BinaryFormatter>> FormatterPool = new ObjectPool<PooledObjectWrapper<BinaryFormatter>>(1, 10, CreatePooledBinaryFormatter);
+        //private static readonly RecyclableMemoryStreamManager BufferManager = new RecyclableMemoryStreamManager();
 
-        public static byte[] SerializeObject(object obj)
+        [NotNull]
+        public static byte[] SerializeObject([NotNull] object obj)
         {
             using (var memoryStream = new MemoryStream(MinBufferSize))
             {
@@ -50,7 +54,8 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        public static object DeserializeObject(byte[] serialized)
+        [NotNull]
+        public static object DeserializeObject([NotNull] byte[] serialized)
         {
             using (var memoryStream = new MemoryStream(serialized, true))
             using (var snappyStream = new SnappyStream(memoryStream, CompressionMode.Decompress))
@@ -60,6 +65,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+        [NotNull]
         private static PooledObjectWrapper<BinaryFormatter> CreatePooledBinaryFormatter()
         {
             return new PooledObjectWrapper<BinaryFormatter>(new BinaryFormatter

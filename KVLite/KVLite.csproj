@@ -144,6 +144,9 @@
     <Reference Include="LinqToQuerystring.WebApi2">
       <HintPath>..\packages\LinqToQuerystring.WebApi2.1.4.1.14\lib\net45\LinqToQuerystring.WebApi2.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.IO.RecyclableMemoryStream">
+      <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.1.0.0.0\lib\net45\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
+    </Reference>
     <Reference Include="Nancy, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Nancy.1.1\lib\net40\Nancy.dll</HintPath>
@@ -205,6 +208,15 @@
     <Compile Include="Core\Crc32C.NET\Native64.cs" />
     <Compile Include="Core\Crc32C.NET\NativeProxy.cs" />
     <Compile Include="Core\Crc32C.NET\Utils.cs" />
+    <Compile Include="Core\Snappy.NET\Native32.cs" />
+    <Compile Include="Core\Snappy.NET\Native64.cs" />
+    <Compile Include="Core\Snappy.NET\NativeProxy.cs" />
+    <Compile Include="Core\Snappy.NET\SnappyCodec.cs" />
+    <Compile Include="Core\Snappy.NET\SnappyFrame.cs" />
+    <Compile Include="Core\Snappy.NET\SnappyFrameType.cs" />
+    <Compile Include="Core\Snappy.NET\SnappyStatus.cs" />
+    <Compile Include="Core\Snappy.NET\SnappyStream.cs" />
+    <Compile Include="Core\Snappy.NET\Utils.cs" />
     <Compile Include="Core\TaskRunner.cs" />
     <Compile Include="CacheReadMode.cs" />
     <Compile Include="Contracts\CacheContract.cs" />
@@ -269,12 +281,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Snappy.NET\Snappy.NET.csproj">
-      <Project>{f8faf539-e365-4995-a695-499ba4ad31db}</Project>
-      <Name>Snappy.NET</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
@@ -289,11 +295,7 @@
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)NuGet Packager (Core)/lib/net45" mkdir "$(SolutionDir)NuGet Packager (Core)/lib/net45"
 copy "$(TargetDir)PommaLabs.KVLite.dll" "$(SolutionDir)NuGet Packager (Core)/lib/net45"
-copy "$(TargetDir)PommaLabs.KVLite.xml" "$(SolutionDir)NuGet Packager (Core)/lib/net45"
-copy "$(TargetDir)Snappy.NET.dll" "$(SolutionDir)NuGet Packager (Core)/lib/net45"
-copy "$(TargetDir)Snappy.NET.xml" "$(SolutionDir)NuGet Packager (Core)/lib/net45"
-copy "$(TargetDir)Crc32C.NET.dll" "$(SolutionDir)NuGet Packager (Core)/lib/net45"
-copy "$(TargetDir)Crc32C.NET.xml" "$(SolutionDir)NuGet Packager (Core)/lib/net45"</PostBuildEvent>
+copy "$(TargetDir)PommaLabs.KVLite.xml" "$(SolutionDir)NuGet Packager (Core)/lib/net45"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.96.0\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.96.0\build\net45\System.Data.SQLite.Core.targets')" />

@@ -78,14 +78,18 @@
     <Compile Include="RandomChunkStream.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Snappy.NET\Snappy.NET.csproj">
-      <Project>{f8faf539-e365-4995-a695-499ba4ad31db}</Project>
-      <Name>Snappy.NET</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="TestData\bin-head.dat" />
+    <None Include="TestData\bin.dat" />
+    <None Include="TestData\elf.dat" />
+    <None Include="TestData\gaviota.gtb" />
+    <None Include="TestData\jpg-head.dat" />
+    <None Include="TestData\lisp.lsp" />
+    <None Include="TestData\pdf.pdf" />
+    <None Include="TestData\protobuf.dat" />
+    <None Include="TestData\xls-head.dat" />
+    <None Include="TestData\xls.xls" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="KVLite\x64\Crc32C.Interop.dll">
@@ -100,9 +104,24 @@
     <Content Include="KVLite\x86\Snappy.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestData\c.c" />
+    <Content Include="TestData\cp.html" />
+    <Content Include="TestData\html.txt" />
+    <Content Include="TestData\html4.txt" />
+    <Content Include="TestData\jpeg.jpg" />
+    <Content Include="TestData\man.txt" />
+    <Content Include="TestData\txt1.txt" />
+    <Content Include="TestData\txt2.txt" />
+    <Content Include="TestData\txt3.txt" />
+    <Content Include="TestData\txt4.txt" />
+    <Content Include="TestData\urls.txt" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="TestData\" />
+    <ProjectReference Include="..\KVLite %28.NET40%29\KVLite %28.NET40%29.csproj">
+      <Project>{56bf1cf1-3da9-482f-8ac4-f200e741eca1}</Project>
+      <Name>KVLite %28.NET40%29</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

@@ -68,6 +68,7 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <DocumentationFile>bin\Debug\PommaLabs.KVLite.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -120,6 +121,7 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <DocumentationFile>bin\Release\PommaLabs.KVLite.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime">
@@ -209,11 +211,53 @@
     <Compile Include="..\KVLite\CacheReadMode.cs">
       <Link>CacheReadMode.cs</Link>
     </Compile>
+    <Compile Include="..\KVLite\Core\Crc32C.NET\Crc32CAlgorithm.cs">
+      <Link>Core\Crc32C.NET\Crc32CAlgorithm.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Crc32C.NET\Native32.cs">
+      <Link>Core\Crc32C.NET\Native32.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Crc32C.NET\Native64.cs">
+      <Link>Core\Crc32C.NET\Native64.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Crc32C.NET\NativeProxy.cs">
+      <Link>Core\Crc32C.NET\NativeProxy.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Crc32C.NET\Utils.cs">
+      <Link>Core\Crc32C.NET\Utils.cs</Link>
+    </Compile>
     <Compile Include="..\KVLite\Core\ErrorMessages.cs">
       <Link>Core\ErrorMessages.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Core\ServiceProvider.cs">
       <Link>Core\ServiceProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Snappy.NET\Native32.cs">
+      <Link>Core\Snappy.NET\Native32.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Snappy.NET\Native64.cs">
+      <Link>Core\Snappy.NET\Native64.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Snappy.NET\NativeProxy.cs">
+      <Link>Core\Snappy.NET\NativeProxy.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Snappy.NET\SnappyCodec.cs">
+      <Link>Core\Snappy.NET\SnappyCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Snappy.NET\SnappyFrame.cs">
+      <Link>Core\Snappy.NET\SnappyFrame.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Snappy.NET\SnappyFrameType.cs">
+      <Link>Core\Snappy.NET\SnappyFrameType.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Snappy.NET\SnappyStatus.cs">
+      <Link>Core\Snappy.NET\SnappyStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Snappy.NET\SnappyStream.cs">
+      <Link>Core\Snappy.NET\SnappyStream.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\Snappy.NET\Utils.cs">
+      <Link>Core\Snappy.NET\Utils.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Properties\Annotations.cs">
       <Link>Properties\Annotations.cs</Link>
@@ -294,12 +338,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Snappy.NET\Snappy.NET.csproj">
-      <Project>{f8faf539-e365-4995-a695-499ba4ad31db}</Project>
-      <Name>Snappy.NET</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="KVLite\x64\Crc32C.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -331,11 +369,7 @@
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)NuGet Packager (Core)/lib/net40" mkdir "$(SolutionDir)NuGet Packager (Core)/lib/net40"
 copy "$(TargetDir)PommaLabs.KVLite.dll" "$(SolutionDir)NuGet Packager (Core)/lib/net40"
-copy "$(TargetDir)PommaLabs.KVLite.xml" "$(SolutionDir)NuGet Packager (Core)/lib/net40"
-copy "$(TargetDir)Snappy.NET.dll" "$(SolutionDir)NuGet Packager (Core)/lib/net40"
-copy "$(TargetDir)Snappy.NET.xml" "$(SolutionDir)NuGet Packager (Core)/lib/net40"
-copy "$(TargetDir)Crc32C.NET.dll" "$(SolutionDir)NuGet Packager (Core)/lib/net40"
-copy "$(TargetDir)Crc32C.NET.xml" "$(SolutionDir)NuGet Packager (Core)/lib/net40"</PostBuildEvent>
+copy "$(TargetDir)PommaLabs.KVLite.xml" "$(SolutionDir)NuGet Packager (Core)/lib/net40"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
