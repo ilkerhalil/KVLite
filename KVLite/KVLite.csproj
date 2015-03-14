@@ -26,7 +26,7 @@
     <DefineConstants>TRACE;DEBUG;NET45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
@@ -116,6 +116,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime">
@@ -199,6 +200,11 @@
   <ItemGroup>
     <Compile Include="CacheExtensions.cs" />
     <Compile Include="CacheItem.cs" />
+    <Compile Include="Core\Crc32C.NET\Crc32CAlgorithm.cs" />
+    <Compile Include="Core\Crc32C.NET\Native32.cs" />
+    <Compile Include="Core\Crc32C.NET\Native64.cs" />
+    <Compile Include="Core\Crc32C.NET\NativeProxy.cs" />
+    <Compile Include="Core\Crc32C.NET\Utils.cs" />
     <Compile Include="Core\TaskRunner.cs" />
     <Compile Include="CacheReadMode.cs" />
     <Compile Include="Contracts\CacheContract.cs" />
