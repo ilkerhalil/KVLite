@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using PommaLabs;
 
-namespace Snappy
+namespace PommaLabs.KVLite.Core.Snappy
 {
-    abstract class NativeProxy
+    internal abstract class NativeProxy
     {
         public static readonly NativeProxy Instance = IntPtr.Size == 4 ? (NativeProxy)new Native32() : new Native64();
 

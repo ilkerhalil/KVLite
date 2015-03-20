@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace Crc32C
+namespace PommaLabs.KVLite.Core.Crc32C
 {
     /// <summary>
     ///   Implementation of CRC-32C (Castagnoli) with polynomial 0x1EDC6F41. It can detect errors
@@ -10,7 +10,7 @@ namespace Crc32C
     ///   fast software implementation. Besides standard HashAlgorithm methods, this class supports
     ///   several convenient static methods returning the CRC as UInt32.
     /// </summary>
-    public class Crc32CAlgorithm : HashAlgorithm
+    internal sealed class Crc32CAlgorithm : HashAlgorithm
     {
         private uint _currentCrc;
 

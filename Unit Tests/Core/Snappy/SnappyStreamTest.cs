@@ -1,17 +1,16 @@
-﻿using NUnit.Framework;
+﻿#if SNAPPY_ASYNC
+using System.Threading.Tasks;
+#endif
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using System.Threading;
-#if SNAPPY_ASYNC
-using System.Threading.Tasks;
-#endif
+using NUnit.Framework;
+using PommaLabs.KVLite.Core.Snappy;
 
-namespace Snappy.Tests
+namespace UnitTests.Core.Snappy.NET
 {
     [TestFixture]
     public class SnappyStreamTest

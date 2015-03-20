@@ -1,12 +1,12 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using NUnit.Framework;
+using PommaLabs.KVLite.Core.Crc32C;
 
-namespace Crc32C.Tests
+namespace UnitTests.Core.Crc32C
 {
     [TestFixture]
     public class Crc32CAlgorithmTest

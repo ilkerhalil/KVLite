@@ -102,6 +102,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Crc32C\Crc32CAlgorithmTest.cs" />
+    <Compile Include="Core\Crc32C\PerformanceTest.cs" />
+    <Compile Include="Core\Snappy\AsyncMultiSemaphore.cs" />
+    <Compile Include="Core\Snappy\Benchmark.cs" />
+    <Compile Include="Core\Snappy\CodecThroughputTest.cs" />
+    <Compile Include="Core\Snappy\NullStream.cs" />
+    <Compile Include="Core\Snappy\RandomChunkStream.cs" />
+    <Compile Include="Core\Snappy\RepeaterStream.cs" />
+    <Compile Include="Core\Snappy\SnappyCodecTest.cs" />
+    <Compile Include="Core\Snappy\SnappyStreamTest.cs" />
+    <Compile Include="Core\Snappy\StreamThroughputTest.cs" />
     <Compile Include="PersistentCacheTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestBase.cs" />
@@ -111,6 +122,16 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Core\Snappy\TestData\bin-head.dat" />
+    <None Include="Core\Snappy\TestData\bin.dat" />
+    <None Include="Core\Snappy\TestData\elf.dat" />
+    <None Include="Core\Snappy\TestData\gaviota.gtb" />
+    <None Include="Core\Snappy\TestData\jpg-head.dat" />
+    <None Include="Core\Snappy\TestData\lisp.lsp" />
+    <None Include="Core\Snappy\TestData\pdf.pdf" />
+    <None Include="Core\Snappy\TestData\protobuf.dat" />
+    <None Include="Core\Snappy\TestData\xls-head.dat" />
+    <None Include="Core\Snappy\TestData\xls.xls" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -142,6 +163,19 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Core\Snappy\TestData\c.c" />
+    <Content Include="Core\Snappy\TestData\cp.html" />
+    <Content Include="Core\Snappy\TestData\html.txt" />
+    <Content Include="Core\Snappy\TestData\html4.txt" />
+    <Content Include="Core\Snappy\TestData\jpeg.jpg" />
+    <Content Include="Core\Snappy\TestData\man.txt" />
+    <Content Include="Core\Snappy\TestData\txt1.txt" />
+    <Content Include="Core\Snappy\TestData\txt2.txt" />
+    <Content Include="Core\Snappy\TestData\txt3.txt" />
+    <Content Include="Core\Snappy\TestData\txt4.txt" />
+    <Content Include="Core\Snappy\TestData\urls.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

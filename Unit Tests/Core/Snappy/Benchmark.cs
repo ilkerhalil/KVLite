@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
-namespace Snappy.Tests
+namespace UnitTests.Core.Snappy
 {
     public class Benchmark
     {
-        public static readonly string DataPath = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath), @"..\..\TestData");
+        public static readonly string DataPath = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath), @"..\..\Core\Snappy.NET\TestData");
         public int Iterations { get; private set; }
         public byte[] Input { get; private set; }
         public string Note { get; set; }

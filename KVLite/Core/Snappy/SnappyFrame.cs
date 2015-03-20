@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading;
-#if SNAPPY_ASYNC
+﻿#if SNAPPY_ASYNC
 using System.Threading.Tasks;
 #endif
-using Crc32C;
+using System;
+using System.IO;
+using System.Text;
+using PommaLabs.KVLite.Core.Crc32C;
 
-namespace Snappy
+namespace PommaLabs.KVLite.Core.Snappy
 {
     /// <summary>
     /// Represents single Snappy frame that conforms to Snappy framing format.
     /// </summary>
-    public class SnappyFrame
+    internal sealed class SnappyFrame
     {
         /// <summary>
         /// Maximum size of uncompressed data in Snappy frame. It's 64KB in current version of the format.

@@ -66,30 +66,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncMultiSemaphore.cs" />
-    <Compile Include="Benchmark.cs" />
-    <Compile Include="CodecThroughputTest.cs" />
-    <Compile Include="NullStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RepeaterStream.cs" />
-    <Compile Include="SnappyCodecTest.cs" />
-    <Compile Include="SnappyStreamTest.cs" />
-    <Compile Include="StreamThroughputTest.cs" />
-    <Compile Include="RandomChunkStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="TestData\bin-head.dat" />
-    <None Include="TestData\bin.dat" />
-    <None Include="TestData\elf.dat" />
-    <None Include="TestData\gaviota.gtb" />
-    <None Include="TestData\jpg-head.dat" />
-    <None Include="TestData\lisp.lsp" />
-    <None Include="TestData\pdf.pdf" />
-    <None Include="TestData\protobuf.dat" />
-    <None Include="TestData\xls-head.dat" />
-    <None Include="TestData\xls.xls" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="KVLite\x64\Crc32C.Interop.dll">
@@ -104,19 +85,10 @@
     <Content Include="KVLite\x86\Snappy.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\c.c" />
-    <Content Include="TestData\cp.html" />
-    <Content Include="TestData\html.txt" />
-    <Content Include="TestData\html4.txt" />
-    <Content Include="TestData\jpeg.jpg" />
-    <Content Include="TestData\man.txt" />
-    <Content Include="TestData\txt1.txt" />
-    <Content Include="TestData\txt2.txt" />
-    <Content Include="TestData\txt3.txt" />
-    <Content Include="TestData\txt4.txt" />
-    <Content Include="TestData\urls.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KVLite %28.NET40%29\KVLite %28.NET40%29.csproj">
       <Project>{56bf1cf1-3da9-482f-8ac4-f200e741eca1}</Project>

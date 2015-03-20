@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
-namespace Snappy
+namespace PommaLabs.KVLite.Core.Snappy
 {
     /// <summary>
     /// Straightforward wrapper around the underlying native Snappy library.
     /// You can compress, uncompress, and validate fixed-size buffers without framing overhead.
     /// Methods of this class forward their parameters directly to the native code without unnecessary buffer copying.
     /// </summary>
-    public static class SnappyCodec
+    internal static class SnappyCodec
     {
         /// <summary>
         /// Compresses byte buffer using Snappy compression.

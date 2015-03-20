@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
-using System.Threading;
 #if SNAPPY_ASYNC
 using System.Threading.Tasks;
 #endif
 
-namespace Snappy
+namespace PommaLabs.KVLite.Core.Snappy
 {
     /// <summary>
     /// Compression stream similar to GZipStream except this one uses Snappy compression.
@@ -19,7 +16,7 @@ namespace Snappy
     /// If SnappyStream is opened for compression and immediately closed, the resulting stream
     /// will be a valid Snappy stream containing zero bytes of uncompressed data.
     /// </summary>
-    public class SnappyStream : Stream
+    internal sealed class SnappyStream : Stream
     {
         Stream Stream;
         readonly CompressionMode Mode;

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Snappy
+﻿namespace PommaLabs.KVLite.Core.Snappy
 {
-    class Utils
+    internal static class Utils
     {
         public static bool BuffersEqual(byte[] left, byte[] right)
         {
@@ -13,7 +9,7 @@ namespace Snappy
 
         public static bool BuffersEqual(byte[] left, byte[] right, int count)
         {
-            for (int i = 0; i < count; ++i)
+            for (var i = 0; i < count; ++i)
                 if (left[i] != right[i])
                     return false;
             return true;

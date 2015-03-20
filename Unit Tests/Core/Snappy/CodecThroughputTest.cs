@@ -1,11 +1,9 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Reflection;
-using System.Text;
+using NUnit.Framework;
+using PommaLabs.KVLite.Core.Snappy;
 
-namespace Snappy.Tests
+namespace UnitTests.Core.Snappy
 {
     [TestFixture]
     public class CodecThroughputTest

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 
-namespace Snappy
+namespace PommaLabs.KVLite.Core.Snappy
 {
-    class Native32 : NativeProxy
+    internal sealed class Native32 : NativeProxy
     {
         public Native32() : base("snappy32.dll") { }
 

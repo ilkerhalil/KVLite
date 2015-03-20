@@ -27,7 +27,7 @@ using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using CodeProject.ObjectPool;
 using PommaLabs.KVLite.Annotations;
-using Snappy;
+using PommaLabs.KVLite.Core.Snappy;
 
 namespace PommaLabs.KVLite.Core
 {

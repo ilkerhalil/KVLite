@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
+
 #if SNAPPY_ASYNC
 using System.Threading.Tasks;
 #endif
 
-namespace Snappy.Tests
+namespace UnitTests.Core.Snappy
 {
     class NullStream : Stream
     {

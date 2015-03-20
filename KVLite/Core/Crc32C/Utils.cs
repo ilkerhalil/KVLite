@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Crc32C
+﻿namespace PommaLabs.KVLite.Core.Crc32C
 {
-    class Utils
+    internal static class Utils
     {
         public static bool BuffersEqual(byte[] left, byte[] right)
         {

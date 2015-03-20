@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Snappy
+﻿namespace PommaLabs.KVLite.Core.Snappy
 {
     /// <summary>
     /// Type of Snappy frame.
     /// </summary>
-    public enum SnappyFrameType : byte
+    internal enum SnappyFrameType : byte
     {
         /// <summary>
         /// Supported compressed frame containing Snappy compressed data.

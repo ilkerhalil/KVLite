@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 
-namespace Crc32C
+namespace PommaLabs.KVLite.Core.Crc32C
 {
-    class Native32 : NativeProxy
+    internal sealed class Native32 : NativeProxy
     {
         public Native32() : base("crc32c32.dll") { }
 

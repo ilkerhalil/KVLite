@@ -139,8 +139,7 @@
       <HintPath>..\packages\Common.Logging.Core.3.0.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
     <Reference Include="Dapper">
-      <HintPath>..\packages\Dapper.1.38\lib\net40\Dapper.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Dapper.1.39\lib\net40\Dapper.dll</HintPath>
     </Reference>
     <Reference Include="LinqToQuerystring, Version=0.7.0.8, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -211,20 +210,20 @@
     <Compile Include="..\KVLite\CacheReadMode.cs">
       <Link>CacheReadMode.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Crc32C.NET\Crc32CAlgorithm.cs">
-      <Link>Core\Crc32C.NET\Crc32CAlgorithm.cs</Link>
+    <Compile Include="..\KVLite\Core\Crc32C\Crc32CAlgorithm.cs">
+      <Link>Core\Crc32C\Crc32CAlgorithm.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Crc32C.NET\Native32.cs">
-      <Link>Core\Crc32C.NET\Native32.cs</Link>
+    <Compile Include="..\KVLite\Core\Crc32C\Native32.cs">
+      <Link>Core\Crc32C\Native32.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Crc32C.NET\Native64.cs">
-      <Link>Core\Crc32C.NET\Native64.cs</Link>
+    <Compile Include="..\KVLite\Core\Crc32C\Native64.cs">
+      <Link>Core\Crc32C\Native64.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Crc32C.NET\NativeProxy.cs">
-      <Link>Core\Crc32C.NET\NativeProxy.cs</Link>
+    <Compile Include="..\KVLite\Core\Crc32C\NativeProxy.cs">
+      <Link>Core\Crc32C\NativeProxy.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Crc32C.NET\Utils.cs">
-      <Link>Core\Crc32C.NET\Utils.cs</Link>
+    <Compile Include="..\KVLite\Core\Crc32C\Utils.cs">
+      <Link>Core\Crc32C\Utils.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Core\ErrorMessages.cs">
       <Link>Core\ErrorMessages.cs</Link>
@@ -232,32 +231,32 @@
     <Compile Include="..\KVLite\Core\ServiceProvider.cs">
       <Link>Core\ServiceProvider.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Snappy.NET\Native32.cs">
-      <Link>Core\Snappy.NET\Native32.cs</Link>
+    <Compile Include="..\KVLite\Core\Snappy\Native32.cs">
+      <Link>Core\Snappy\Native32.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Snappy.NET\Native64.cs">
-      <Link>Core\Snappy.NET\Native64.cs</Link>
+    <Compile Include="..\KVLite\Core\Snappy\Native64.cs">
+      <Link>Core\Snappy\Native64.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Snappy.NET\NativeProxy.cs">
-      <Link>Core\Snappy.NET\NativeProxy.cs</Link>
+    <Compile Include="..\KVLite\Core\Snappy\NativeProxy.cs">
+      <Link>Core\Snappy\NativeProxy.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Snappy.NET\SnappyCodec.cs">
-      <Link>Core\Snappy.NET\SnappyCodec.cs</Link>
+    <Compile Include="..\KVLite\Core\Snappy\SnappyCodec.cs">
+      <Link>Core\Snappy\SnappyCodec.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Snappy.NET\SnappyFrame.cs">
-      <Link>Core\Snappy.NET\SnappyFrame.cs</Link>
+    <Compile Include="..\KVLite\Core\Snappy\SnappyFrame.cs">
+      <Link>Core\Snappy\SnappyFrame.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Snappy.NET\SnappyFrameType.cs">
-      <Link>Core\Snappy.NET\SnappyFrameType.cs</Link>
+    <Compile Include="..\KVLite\Core\Snappy\SnappyFrameType.cs">
+      <Link>Core\Snappy\SnappyFrameType.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Snappy.NET\SnappyStatus.cs">
-      <Link>Core\Snappy.NET\SnappyStatus.cs</Link>
+    <Compile Include="..\KVLite\Core\Snappy\SnappyStatus.cs">
+      <Link>Core\Snappy\SnappyStatus.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Snappy.NET\SnappyStream.cs">
-      <Link>Core\Snappy.NET\SnappyStream.cs</Link>
+    <Compile Include="..\KVLite\Core\Snappy\SnappyStream.cs">
+      <Link>Core\Snappy\SnappyStream.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Core\Snappy.NET\Utils.cs">
-      <Link>Core\Snappy.NET\Utils.cs</Link>
+    <Compile Include="..\KVLite\Core\Snappy\Utils.cs">
+      <Link>Core\Snappy\Utils.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Properties\Annotations.cs">
       <Link>Properties\Annotations.cs</Link>
