@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System;
 using System.IO;
 
-namespace UnitTests.Core.Snappy.NET
+namespace UnitTests.Core.Snappy
 {
     class RandomChunkStream : Stream
     {

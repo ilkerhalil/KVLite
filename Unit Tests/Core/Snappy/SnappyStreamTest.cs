@@ -10,7 +10,7 @@ using System.Threading;
 using NUnit.Framework;
 using PommaLabs.KVLite.Core.Snappy;
 
-namespace UnitTests.Core.Snappy.NET
+namespace UnitTests.Core.Snappy
 {
     [TestFixture]
     public class SnappyStreamTest

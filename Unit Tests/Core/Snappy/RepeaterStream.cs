@@ -5,7 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 #endif
 
-namespace UnitTests.Core.Snappy.NET
+namespace UnitTests.Core.Snappy
 {
     class RepeaterStream : Stream
     {
