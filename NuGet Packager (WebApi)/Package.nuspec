@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.WebApi</id>
-        <version>1.5.1</version>
+        <version>1.5.2</version>
         <title>PommaLabs.KVLite (Web API Output Cache Provider)</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -24,13 +24,13 @@ A simple, timed and persistent key-value store based on SQLite. This package add
             <group targetFramework="net45">
                 <dependency id="LinqToQuerystring.WebApi2" version="1.4.1.14" />
                 <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-                <dependency id="PommaLabs.KVLite.Core" version="1.5.1" />
+                <dependency id="PommaLabs.KVLite.Core" version="1.5.2" />
                 <dependency id="Strathweb.CacheOutput.WebApi2" version="0.6" />
             </group>
             <group targetFramework="net40">
                 <dependency id="LinqToQuerystring.WebApi" version="1.4.1.14" />
                 <dependency id="Microsoft.AspNet.WebApi.Client" version="4.0.30506.0" />
-                <dependency id="PommaLabs.KVLite.Core" version="1.5.1" />
+                <dependency id="PommaLabs.KVLite.Core" version="1.5.2" />
                 <dependency id="Strathweb.CacheOutput" version="0.5" />
             </group>
         </dependencies>
