@@ -6,9 +6,9 @@ namespace PommaLabs.KVLite.Core
 {
     internal static class ServiceProvider
     {
-        private static readonly IClockProvider CachedClock = ServiceLocator.Load<IClockProvider>(Settings.Default.AllCaches_DefaultClockProviderType);
+        private static readonly IClockService CachedClock = ServiceLocator.Load<IClockService>(Settings.Default.AllCaches_DefaultClockServiceType);
 
-        public static IClockProvider Clock
+        public static IClockService Clock
         {
             get { return CachedClock; }
         }

@@ -513,7 +513,7 @@ namespace UnitTests
         public void GetMany_RightItems_AfterAddSliding_InvalidTime(int itemCount)
         {
             AddSliding(DefaultInstance, itemCount, TimeSpan.FromSeconds(1));
-            ServiceProvider.Clock.As<MockClockProvider>().Add(TimeSpan.FromSeconds(2));
+            ServiceProvider.Clock.As<MockClockService>().Add(TimeSpan.FromSeconds(2));
             var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
             for (var i = 0; i < itemCount; ++i)
             {
@@ -626,7 +626,7 @@ namespace UnitTests
             {
                 DefaultInstance.AddSliding(StringItems[i], StringItems[i], interval);
             }
-            ServiceProvider.Clock.As<MockClockProvider>().Add(TimeSpan.FromMinutes(1));
+            ServiceProvider.Clock.As<MockClockService>().Add(TimeSpan.FromMinutes(1));
             var items = DefaultInstance.GetManyItems();
             for (var i = 0; i < itemCount; ++i)
             {

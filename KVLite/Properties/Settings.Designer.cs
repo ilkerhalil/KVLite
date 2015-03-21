@@ -266,10 +266,10 @@ namespace PommaLabs.KVLite.Properties {
         [global::System.Configuration.SettingsDescriptionAttribute("Default clock provider used in all caches. You can change it during unit testing." +
             "")]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("PommaLabs.Testing.SystemClockProvider, PommaLabs.GRAMPA")]
-        public string AllCaches_DefaultClockProviderType {
+        [global::System.Configuration.DefaultSettingValueAttribute("PommaLabs.Testing.SystemClockService, PommaLabs.GRAMPA")]
+        public string AllCaches_DefaultClockServiceType {
             get {
-                return ((string)(this["AllCaches_DefaultClockProviderType"]));
+                return ((string)(this["AllCaches_DefaultClockServiceType"]));
             }
         }
     }
