@@ -46,9 +46,9 @@
     <DocumentationFile>App_Data\HelpPage\RestService.Mvc.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Finsa.WebApi.HelpPage.AnyHost, Version=0.1.6.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Finsa.WebApi.HelpPage.AnyHost, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Finsa.WebApi.HelpPage.AnyHost.0.1.6-alpha\lib\net45\Finsa.WebApi.HelpPage.AnyHost.dll</HintPath>
+      <HintPath>..\packages\Finsa.WebApi.HelpPage.AnyHost.0.9.0\lib\net45\Finsa.WebApi.HelpPage.AnyHost.dll</HintPath>
     </Reference>
     <Reference Include="MarkdownSharp">
       <HintPath>..\packages\MarkdownSharp.1.13.0.0\lib\35\MarkdownSharp.dll</HintPath>
@@ -76,10 +76,6 @@
     </Reference>
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="PommaLabs.GRAMPA">
-      <HintPath>..\packages\PommaLabs.GRAMPA.2.2.5\lib\net40-client\PommaLabs.GRAMPA.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
