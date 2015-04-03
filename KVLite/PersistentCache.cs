@@ -24,7 +24,9 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
+using Ninject;
 using PommaLabs.KVLite.Core;
+using PommaLabs.Testing;
 
 namespace PommaLabs.KVLite
 {
@@ -33,6 +35,12 @@ namespace PommaLabs.KVLite
     /// </summary>
     public sealed class PersistentCache : CacheBase<PersistentCache, PersistentCacheSettings>
     {
+        #region Fields
+
+        private readonly IClockService _clock;
+
+        #endregion
+
         #region Construction
 
         static PersistentCache()
@@ -52,9 +60,11 @@ namespace PommaLabs.KVLite
         ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
-        public PersistentCache(PersistentCacheSettings settings)
+        [Inject]
+        public PersistentCache(PersistentCacheSettings settings, IClockService clock = null)
             : base(settings)
         {
+            _clock = clock;
         }
 
         #endregion Construction

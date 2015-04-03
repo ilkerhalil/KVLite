@@ -38,6 +38,7 @@ namespace UnitTests
         public override void SetUp()
         {
             PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            base.SetUp();
         }
 
         [TearDown]

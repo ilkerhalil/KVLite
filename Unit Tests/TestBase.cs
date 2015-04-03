@@ -29,6 +29,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Ninject;
 using NUnit.Framework;
 using PommaLabs.Extensions;
 using PommaLabs.KVLite;
@@ -43,12 +44,17 @@ namespace UnitTests
         where TCache : CacheBase<TCache, TCacheSettings>, new()
         where TCacheSettings : CacheSettingsBase, new()
     {
+
+
         #region Setup/Teardown
 
         [SetUp]
         public virtual void SetUp()
         {
             DefaultInstance.Clear();
+
+            var kernel = new StandardKernel(new KVLiteModule());
+            var cache = kernel.Get<PersistentCache>();
         }
 
         [TearDown]
