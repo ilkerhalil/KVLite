@@ -45,19 +45,12 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="PersistentCache"/> class with default settings.
-        /// </summary>
-        public PersistentCache()
-            : base(new PersistentCacheSettings())
-        {
-        }
-
-        /// <summary>
         ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
+        /// <param name="clock">The clock.</param>
         [Inject]
-        public PersistentCache(PersistentCacheSettings settings, IClock clock = null)
+        public PersistentCache(PersistentCacheSettings settings, IClock clock)
             : base(settings, clock)
         {
         }
@@ -119,7 +112,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The default cache instance.
         /// </summary>
-        private static PersistentCache CachedDefaultInstance;
+        private static PersistentCache _cachedDefaultInstance;
 
         /// <summary>
         ///   Gets the default instance for this cache kind. Default instance is configured using
@@ -128,13 +121,9 @@ namespace PommaLabs.KVLite
         [Pure, Obsolete(ErrorMessages.ObsoleteDefaultInstance)]
         public static PersistentCache DefaultInstance
         {
-            get
+            get 
             {
-                if (CachedDefaultInstance != null)
-                {
-                    CachedDefaultInstance = new PersistentCache(new PersistentCacheSettings(), new SystemClock());
-                }
-                return CachedDefaultInstance;
+                return _cachedDefaultInstance ?? (_cachedDefaultInstance = new PersistentCache(new PersistentCacheSettings(), new SystemClock()));
             }
         }
 

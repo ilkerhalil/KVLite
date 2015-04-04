@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using Finsa.CodeServices.Clock;
 using Ninject;
 using NUnit.Framework;
 using PommaLabs.KVLite;
@@ -63,7 +64,7 @@ namespace UnitTests
         {
             try
             {
-                new VolatileCache(new VolatileCacheSettings { CacheName = name });
+                new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
             }
             catch (Exception ex)
             {
@@ -81,7 +82,7 @@ namespace UnitTests
         {
             try
             {
-                new VolatileCache(new VolatileCacheSettings { CacheName = name });
+                new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
             }
             catch (Exception ex)
             {
@@ -102,7 +103,7 @@ namespace UnitTests
         [TestCase("a...b")]
         public void NewCache_GoodName(string name)
         {
-            new VolatileCache(new VolatileCacheSettings { CacheName = name });
+            new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
         }
 
         #endregion
@@ -113,7 +114,7 @@ namespace UnitTests
         public void AddStatic_TwoCaches_NoMix()
         {
             const string key = "key";
-            var another = new VolatileCache(new VolatileCacheSettings {CacheName = "another"});
+            var another = new VolatileCache(new VolatileCacheSettings { CacheName = "another" }, Kernel.Get<IClock>());
             
             DefaultInstance.AddStatic(key, 1);
             another.AddStatic(key, 2);

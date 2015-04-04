@@ -91,10 +91,13 @@ namespace PommaLabs.KVLite.Core
         ///   class with given settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
-        internal CacheBase(TCacheSettings settings, IClock clock = null)
+        /// <param name="clock">The clock.</param>
+        internal CacheBase(TCacheSettings settings, IClock clock)
         {
             Contract.Requires<ArgumentNullException>(settings != null);
+            Contract.Requires<ArgumentNullException>(clock != null);
             _settings = settings;
+            _clock = clock;
 
             settings.PropertyChanged += Settings_PropertyChanged;
 

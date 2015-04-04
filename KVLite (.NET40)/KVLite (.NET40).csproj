@@ -264,6 +264,9 @@
     <Compile Include="..\KVLite\Core\Snappy\Utils.cs">
       <Link>Core\Snappy\Utils.cs</Link>
     </Compile>
+    <Compile Include="..\KVLite\NinjectModule.cs">
+      <Link>NinjectModule.cs</Link>
+    </Compile>
     <Compile Include="..\KVLite\Properties\Annotations.cs">
       <Link>Properties\Annotations.cs</Link>
     </Compile>

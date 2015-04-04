@@ -1,4 +1,4 @@
-﻿using PommaLabs.Testing;
+﻿using Finsa.CodeServices.Clock;
 
 namespace UnitTests
 {
@@ -9,7 +9,7 @@ namespace UnitTests
     {
         public override void Load()
         {
-            Bind<IClockService>().To<MockClockService>();
+            Bind<IClock>().To<MockClock>();
         }
     }
 }

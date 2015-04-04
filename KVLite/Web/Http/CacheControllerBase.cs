@@ -21,11 +21,22 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using LinqToQuerystring.WebApi;
+
+#if NET45
+
+using WebApi.OutputCache.V2;
+
+#else
+
+using WebAPI.OutputCache;
+
+#endif
 
 namespace PommaLabs.KVLite.Web.Http
 {
@@ -34,6 +45,8 @@ namespace PommaLabs.KVLite.Web.Http
     /// </summary>
     public abstract class CacheControllerBase : ApiController
     {
+        private static readonly IQueryable<CacheItem> NoItems = new List<CacheItem>().AsQueryable();
+            
         /// <summary>
         ///   Returns all _valid_ items stored in the cache.
         /// </summary>
@@ -45,7 +58,8 @@ namespace PommaLabs.KVLite.Web.Http
         [LinqToQueryable]
         public virtual IQueryable<CacheItem> GetItems()
         {
-            return ApiOutputCache.Cache.GetManyItems().AsQueryable();
+            var apiOutputCache = GetApiOutputCache();
+            return (apiOutputCache == null) ? NoItems : apiOutputCache.GetManyItems().AsQueryable();
         }
 
         /// <summary>
@@ -57,7 +71,11 @@ namespace PommaLabs.KVLite.Web.Http
 #endif
         public virtual HttpResponseMessage DeleteItems()
         {
-            ApiOutputCache.Cache.Clear();
+            var apiOutputCache = GetApiOutputCache();
+            if (apiOutputCache != null)
+            {
+                apiOutputCache.Clear();
+            }
             return Request.CreateResponse(HttpStatusCode.OK);
         }
 
@@ -72,7 +90,8 @@ namespace PommaLabs.KVLite.Web.Http
         [LinqToQueryable]
         public virtual IQueryable<CacheItem> GetItems(string partition)
         {
-            return ApiOutputCache.Cache.GetManyItems(partition).AsQueryable();
+            var apiOutputCache = GetApiOutputCache();
+            return (apiOutputCache == null) ? NoItems : apiOutputCache.GetManyItems(partition).AsQueryable();
         }
 
         /// <summary>
@@ -84,7 +103,11 @@ namespace PommaLabs.KVLite.Web.Http
 #endif
         public virtual HttpResponseMessage DeleteItems(string partition)
         {
-            ApiOutputCache.Cache.Clear(partition);
+            var apiOutputCache = GetApiOutputCache();
+            if (apiOutputCache != null)
+            {
+                apiOutputCache.Clear(partition);
+            }
             return Request.CreateResponse(HttpStatusCode.OK);
         }
 
@@ -96,10 +119,10 @@ namespace PommaLabs.KVLite.Web.Http
 
         [Route("items/{partition}/{key}")]
 #endif
-        [LinqToQueryable]
         public virtual CacheItem GetItem(string partition, string key)
         {
-            return ApiOutputCache.Cache.GetItem(partition, key);
+            var apiOutputCache = GetApiOutputCache();
+            return (apiOutputCache == null) ? null : apiOutputCache.GetItem(partition, key);
         }
 
         /// <summary>
@@ -111,8 +134,19 @@ namespace PommaLabs.KVLite.Web.Http
 #endif
         public virtual HttpResponseMessage DeleteItem(string partition, string key)
         {
-            ApiOutputCache.Cache.Remove(partition, key);
+            var apiOutputCache = GetApiOutputCache();
+            if (apiOutputCache != null)
+            {
+                apiOutputCache.Remove(partition, key);
+            }
             return Request.CreateResponse(HttpStatusCode.OK);
+        }
+
+        private ICache GetApiOutputCache()
+        {
+            var cacheOutputConfiguration = Configuration.CacheOutputConfiguration();
+            var apiOutputCache = cacheOutputConfiguration.GetCacheOutputProvider(Request) as ApiOutputCache;
+            return (apiOutputCache == null) ? null : apiOutputCache.Cache;
         }
     }
 }

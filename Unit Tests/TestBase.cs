@@ -27,21 +27,21 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
+using Finsa.CodeServices.Clock;
 using Ninject;
 using NUnit.Framework;
-using PommaLabs.Extensions;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Properties;
-using PommaLabs.Testing;
+using PommaLabs.KVLite.Testing;
+using PommaLabs.KVLite.Extensions;
 
 namespace UnitTests
 {
     [TestFixture]
     internal abstract class TestBase<TCache, TCacheSettings>
-        where TCache : CacheBase<TCache, TCacheSettings>, new()
+        where TCache : CacheBase<TCache, TCacheSettings>
         where TCacheSettings : CacheSettingsBase, new()
     {
         protected readonly IKernel Kernel = new StandardKernel(new KVLiteModule());
@@ -519,7 +519,7 @@ namespace UnitTests
         public void GetMany_RightItems_AfterAddSliding_InvalidTime(int itemCount)
         {
             AddSliding(DefaultInstance, itemCount, TimeSpan.FromSeconds(1));
-            Cache.Clock.As<MockClockService>().Add(TimeSpan.FromSeconds(2));
+            Cache.Clock.As<MockClock>().Add(TimeSpan.FromSeconds(2));
             var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
             for (var i = 0; i < itemCount; ++i)
             {
@@ -632,7 +632,7 @@ namespace UnitTests
             {
                 DefaultInstance.AddSliding(StringItems[i], StringItems[i], interval);
             }
-            Cache.Clock.As<MockClockService>().Add(TimeSpan.FromMinutes(1));
+            Cache.Clock.As<MockClock>().Add(TimeSpan.FromMinutes(1));
             var items = DefaultInstance.GetManyItems();
             for (var i = 0; i < itemCount; ++i)
             {

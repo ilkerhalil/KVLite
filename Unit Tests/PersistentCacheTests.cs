@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using Finsa.CodeServices.Clock;
 using Ninject;
 using NUnit.Framework;
 using PommaLabs.KVLite;
@@ -63,7 +64,7 @@ namespace UnitTests
         {
             try
             {
-                new PersistentCache(new PersistentCacheSettings { CacheFile = BlankPath });
+                new PersistentCache(new PersistentCacheSettings { CacheFile = BlankPath }, Kernel.Get<IClock>());
             }
             catch (Exception ex)
             {
@@ -77,7 +78,7 @@ namespace UnitTests
         {
             try
             {
-                new PersistentCache(new PersistentCacheSettings { CacheFile = String.Empty });
+                new PersistentCache(new PersistentCacheSettings { CacheFile = String.Empty }, Kernel.Get<IClock>());
             }
             catch (Exception ex)
             {
@@ -91,7 +92,7 @@ namespace UnitTests
         {
             try
             {
-                new PersistentCache(new PersistentCacheSettings { CacheFile = null });
+                new PersistentCache(new PersistentCacheSettings { CacheFile = null }, Kernel.Get<IClock>());
             }
             catch (Exception ex)
             {

@@ -276,6 +276,7 @@
     <Compile Include="ICache.cs" />
     <Compile Include="Nancy\CachingBootstrapper.cs" />
     <Compile Include="Nancy\ContextExtensions.cs" />
+    <Compile Include="NinjectModule.cs" />
     <Compile Include="PersistentCache.cs" />
     <Compile Include="PersistentCacheSettings.cs" />
     <Compile Include="Properties\Annotations.cs" />

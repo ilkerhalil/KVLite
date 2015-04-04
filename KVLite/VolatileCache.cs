@@ -44,19 +44,12 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="VolatileCache"/> class with default settings.
-        /// </summary>
-        public VolatileCache()
-            : base(new VolatileCacheSettings())
-        {
-        }
-
-        /// <summary>
         ///   Initializes a new instance of the <see cref="VolatileCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
+        /// <param name="clock">The clock.</param>
         [Inject]
-        public VolatileCache(VolatileCacheSettings settings, IClock clock = null)
+        public VolatileCache(VolatileCacheSettings settings, IClock clock)
             : base(settings, clock)
         {
         }
@@ -107,7 +100,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The default cache instance.
         /// </summary>
-        private static VolatileCache CachedDefaultInstance;
+        private static VolatileCache _cachedDefaultInstance;
 
         /// <summary>
         ///   Gets the default instance for this cache kind. Default instance is configured using
@@ -116,13 +109,9 @@ namespace PommaLabs.KVLite
         [Pure, Obsolete(ErrorMessages.ObsoleteDefaultInstance)]
         public static VolatileCache DefaultInstance
         {
-            get
+            get 
             {
-                if (CachedDefaultInstance != null)
-                {
-                    CachedDefaultInstance = new VolatileCache(new VolatileCacheSettings(), new SystemClock());
-                }
-                return CachedDefaultInstance;
+                return _cachedDefaultInstance ?? (_cachedDefaultInstance = new VolatileCache(new VolatileCacheSettings(), new SystemClock()));
             }
         }
 

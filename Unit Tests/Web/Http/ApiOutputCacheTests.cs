@@ -22,7 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using Finsa.CodeServices.Clock;
 using NUnit.Framework;
+using PommaLabs.KVLite;
 using PommaLabs.KVLite.Web.Http;
 
 namespace UnitTests.Web.Http
@@ -35,7 +37,7 @@ namespace UnitTests.Web.Http
         [SetUp]
         public void SetUp()
         {
-            _outputCache = new ApiOutputCache();
+            _outputCache = new ApiOutputCache(new PersistentCache(new PersistentCacheSettings(), new MockClock()));
         }
 
         [TearDown]

@@ -1,6 +1,8 @@
 ﻿using System.Web;
 using System.Web.Http;
 using Finsa.WebApi.HelpPage.AnyHost;
+using Ninject;
+using PommaLabs.KVLite;
 using PommaLabs.KVLite.Web.Http;
 
 namespace RestService.Mvc
@@ -15,7 +17,7 @@ namespace RestService.Mvc
             config.SetDocumentationProvider(new XmlDocumentationProvider(xmlDocPath));
 
             // Enables KVLite based output caching.
-            ApiOutputCache.RegisterAsCacheOutputProvider(config);
+            ApiOutputCache.RegisterAsCacheOutputProvider(config, Startup.CreateKernel().Get<ICache>());
         }
     }
 }

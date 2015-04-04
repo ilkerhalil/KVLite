@@ -24,10 +24,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Web.Http;
 using PommaLabs.KVLite.Properties;
-using PommaLabs.KVLite.Reflection;
 using WebApi.OutputCache.Core.Cache;
 
 #if NET45
@@ -35,7 +35,9 @@ using WebApi.OutputCache.Core.Cache;
 using WebApi.OutputCache.V2;
 
 #else
+
 using WebAPI.OutputCache;
+
 #endif
 
 namespace PommaLabs.KVLite.Web.Http
@@ -47,11 +49,36 @@ namespace PommaLabs.KVLite.Web.Http
     {
         #region Fields
 
-        internal static readonly ICache Cache = ServiceLocator.Load<ICache>(Settings.Default.Web_OutputCacheProviderType);
+        private readonly ICache _cache;
 
         #endregion Fields
 
-        #region Public Methods
+        #region Construction
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="ApiOutputCache"/> class.
+        /// </summary>
+        /// <param name="cache">The cache.</param>
+        public ApiOutputCache(ICache cache)
+        {
+            Contract.Requires<ArgumentNullException>(cache != null);
+            _cache = cache;
+        }
+
+        #endregion
+
+        #region Public Members
+
+        /// <summary>
+        ///   Gets the underlying cache.
+        /// </summary>
+        /// <value>
+        ///   The underlying cache.
+        /// </value>
+        public ICache Cache
+        {
+            get { return _cache; }
+        }
 
         /// <summary>
         ///   Registers this class as the default API output cache provider. Please use
@@ -59,12 +86,13 @@ namespace PommaLabs.KVLite.Web.Http
         ///   and the partition name.
         /// </summary>
         /// <param name="configuration">The Web API configuration instance.</param>
-        public static void RegisterAsCacheOutputProvider(HttpConfiguration configuration)
+        /// <param name="cache">The underlying cache.</param>
+        public static void RegisterAsCacheOutputProvider(HttpConfiguration configuration, ICache cache)
         {
-            configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new ApiOutputCache());
+            configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new ApiOutputCache(cache));
         }
 
-        #endregion Public Methods
+        #endregion Public Members
 
         #region IApiOutputCache Members
 
@@ -72,43 +100,43 @@ namespace PommaLabs.KVLite.Web.Http
 
         public IEnumerable<string> AllKeys
         {
-            get { return Cache.GetManyItems(Settings.Default.Web_Http_ApiOutputCacheProviderPartition).Select(i => i.Key); }
+            get { return _cache.GetManyItems(Settings.Default.Web_Http_ApiOutputCacheProviderPartition).Select(i => i.Key); }
         }
 
         public void RemoveStartsWith(string key)
         {
-            var items = Cache.GetManyItems(Settings.Default.Web_Http_ApiOutputCacheProviderPartition);
+            var items = _cache.GetManyItems(Settings.Default.Web_Http_ApiOutputCacheProviderPartition);
             foreach (var i in items.Where(item => item.Key.StartsWith(key)))
             {
                 Debug.Assert(i.Partition == Settings.Default.Web_Http_ApiOutputCacheProviderPartition);
-                Cache.Remove(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, i.Key);
+                _cache.Remove(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, i.Key);
             }
         }
 
         public T Get<T>(string key) where T : class
         {
-            return Cache.Get<T>(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key);
+            return _cache.Get<T>(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key);
         }
 
         public object Get(string key)
         {
-            return Cache.Get(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key);
+            return _cache.Get(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key);
         }
 
         public void Remove(string key)
         {
-            Cache.Remove(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key);
+            _cache.Remove(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key);
         }
 
         public bool Contains(string key)
         {
-            return Cache.Contains(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key);
+            return _cache.Contains(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key);
         }
 
         public void Add(string key, object o, DateTimeOffset expiration, string dependsOnKey = null)
         {
             // KVLite does not support dependency handling; therefore, we ignore the dependsOnKey parameter.
-            Cache.AddTimed(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key, o, expiration.UtcDateTime);
+            _cache.AddTimed(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key, o, expiration.UtcDateTime);
         }
 
 #pragma warning restore 1591
