@@ -44,7 +44,9 @@ namespace UnitTests
         where TCache : CacheBase<TCache, TCacheSettings>, new()
         where TCacheSettings : CacheSettingsBase, new()
     {
-
+        protected readonly IKernel Kernel = new StandardKernel(new KVLiteModule());
+        
+        protected ICache Cache;
 
         #region Setup/Teardown
 
@@ -52,15 +54,13 @@ namespace UnitTests
         public virtual void SetUp()
         {
             DefaultInstance.Clear();
-
-            var kernel = new StandardKernel(new KVLiteModule());
-            var cache = kernel.Get<PersistentCache>();
         }
 
         [TearDown]
         public virtual void TearDown()
         {
             DefaultInstance.Clear();
+            Cache = null;
         }
 
         #endregion Setup/Teardown
@@ -198,7 +198,7 @@ namespace UnitTests
         {
             var k = StringItems[1];
             var v = new byte[20000];
-            DefaultInstance.AddTimed(k, v, ServiceProvider.Clock.UtcNow.AddMinutes(10));
+            DefaultInstance.AddTimed(k, v, Cache.Clock.UtcNow.AddMinutes(10));
             var info = DefaultInstance.GetItem(k);
             Assert.IsNotNull(info);
             Assert.AreEqual(k, info.Key);
@@ -211,14 +211,14 @@ namespace UnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void AddTimed_NullKey()
         {
-            DefaultInstance.AddTimed(null, StringItems[1], ServiceProvider.Clock.UtcNow);
+            DefaultInstance.AddTimed(null, StringItems[1], Cache.Clock.UtcNow);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void AddTimed_NullPartition()
         {
-            DefaultInstance.AddTimed(null, StringItems[0], StringItems[1], ServiceProvider.Clock.UtcNow);
+            DefaultInstance.AddTimed(null, StringItems[0], StringItems[1], Cache.Clock.UtcNow);
         }
 
         [Test]
@@ -228,7 +228,7 @@ namespace UnitTests
             var k = StringItems[1];
             var v1 = StringItems[2];
             var v2 = StringItems[3];
-            var e = ServiceProvider.Clock.UtcNow.AddMinutes(10);
+            var e = Cache.Clock.UtcNow.AddMinutes(10);
             DefaultInstance.AddTimed(p, k, Tuple.Create(v1, v2), e);
             var info = DefaultInstance.GetItem<Tuple<string, string>>(p, k);
             Assert.IsNotNull(info);
@@ -253,7 +253,7 @@ namespace UnitTests
             var k = StringItems[1];
             var v1 = StringItems[2];
             var v2 = StringItems[3];
-            var e = ServiceProvider.Clock.UtcNow.AddMinutes(10);
+            var e = Cache.Clock.UtcNow.AddMinutes(10);
             DefaultInstance.AddTimedAsync(p, k, Tuple.Create(v1, v2), e).Wait();
             var info = DefaultInstance.GetItem<Tuple<string, string>>(p, k);
             Assert.IsNotNull(info);
@@ -278,12 +278,12 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], ServiceProvider.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(DefaultInstance.Contains(StringItems[i]));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], ServiceProvider.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(DefaultInstance.Contains(StringItems[i]));
             }
         }
@@ -295,12 +295,12 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], ServiceProvider.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(DefaultInstance.Contains(StringItems[i]));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], ServiceProvider.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(DefaultInstance.Contains(StringItems[i]));
             }
             var items = DefaultInstance.GetManyItems();
@@ -322,7 +322,7 @@ namespace UnitTests
                 var l = i;
                 var task = Task.Factory.StartNew(() =>
                 {
-                    DefaultInstance.AddTimed(StringItems[l], StringItems[l], ServiceProvider.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                    DefaultInstance.AddTimed(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
                     DefaultInstance.Contains(StringItems[l]);
                 });
                 tasks.Add(task);
@@ -332,7 +332,7 @@ namespace UnitTests
                 var l = i;
                 var task = Task.Factory.StartNew(() =>
                 {
-                    DefaultInstance.AddTimed(StringItems[l], StringItems[l], ServiceProvider.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                    DefaultInstance.AddTimed(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
                     DefaultInstance.Contains(StringItems[l]);
                 });
                 tasks.Add(task);
@@ -346,9 +346,9 @@ namespace UnitTests
         [Test]
         public void AddTimed_TwoValues_SameKey()
         {
-            DefaultInstance.AddTimed(StringItems[0], StringItems[1], ServiceProvider.Clock.UtcNow.AddMinutes(10));
+            DefaultInstance.AddTimed(StringItems[0], StringItems[1], Cache.Clock.UtcNow.AddMinutes(10));
             Assert.AreEqual(StringItems[1], DefaultInstance.Get(StringItems[0]));
-            DefaultInstance.AddTimed(StringItems[0], StringItems[2], ServiceProvider.Clock.UtcNow.AddMinutes(10));
+            DefaultInstance.AddTimed(StringItems[0], StringItems[2], Cache.Clock.UtcNow.AddMinutes(10));
             Assert.AreEqual(StringItems[2], DefaultInstance.Get(StringItems[0]));
         }
 
@@ -471,7 +471,7 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], ServiceProvider.Clock.UtcNow.AddMinutes(10));
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
             }
             for (var i = 0; i < itemCount; ++i)
             {
@@ -488,7 +488,7 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], ServiceProvider.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             for (var i = 0; i < itemCount; ++i)
             {
@@ -519,7 +519,7 @@ namespace UnitTests
         public void GetMany_RightItems_AfterAddSliding_InvalidTime(int itemCount)
         {
             AddSliding(DefaultInstance, itemCount, TimeSpan.FromSeconds(1));
-            ServiceProvider.Clock.As<MockClockService>().Add(TimeSpan.FromSeconds(2));
+            Cache.Clock.As<MockClockService>().Add(TimeSpan.FromSeconds(2));
             var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
             for (var i = 0; i < itemCount; ++i)
             {
@@ -573,7 +573,7 @@ namespace UnitTests
         [TestCase(LargeItemCount)]
         public void GetMany_RightItems_AfterAddTimed_InvalidTime(int itemCount)
         {
-            AddTimed(DefaultInstance, itemCount, ServiceProvider.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            AddTimed(DefaultInstance, itemCount, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
             for (var i = 0; i < itemCount; ++i)
             {
@@ -591,7 +591,7 @@ namespace UnitTests
         [TestCase(LargeItemCount)]
         public void GetMany_RightItems_AfterAddTimed_ValidTime(int itemCount)
         {
-            AddTimed(DefaultInstance, itemCount, ServiceProvider.Clock.UtcNow.AddMinutes(10));
+            AddTimed(DefaultInstance, itemCount, Cache.Clock.UtcNow.AddMinutes(10));
             var items = new HashSet<string>(DefaultInstance.GetManyItems().Select(i => i.Value as string));
             for (var i = 0; i < itemCount; ++i)
             {
@@ -618,7 +618,7 @@ namespace UnitTests
             {
                 var item = DefaultInstance.GetItem(StringItems[i]);
                 Assert.IsNotNull(item);
-                Assert.AreEqual(item.UtcExpiry.Value.ToUnixTime(), (ServiceProvider.Clock.UtcNow + interval).ToUnixTime());
+                Assert.AreEqual(item.UtcExpiry.Value.ToUnixTime(), (Cache.Clock.UtcNow + interval).ToUnixTime());
             }
         }
 
@@ -632,13 +632,13 @@ namespace UnitTests
             {
                 DefaultInstance.AddSliding(StringItems[i], StringItems[i], interval);
             }
-            ServiceProvider.Clock.As<MockClockService>().Add(TimeSpan.FromMinutes(1));
+            Cache.Clock.As<MockClockService>().Add(TimeSpan.FromMinutes(1));
             var items = DefaultInstance.GetManyItems();
             for (var i = 0; i < itemCount; ++i)
             {
                 var item = items[i];
                 Assert.IsNotNull(item);
-                Assert.AreEqual(item.UtcExpiry.Value.ToUnixTime(), (ServiceProvider.Clock.UtcNow + interval).ToUnixTime());
+                Assert.AreEqual(item.UtcExpiry.Value.ToUnixTime(), (Cache.Clock.UtcNow + interval).ToUnixTime());
             }
         }
 
@@ -647,7 +647,7 @@ namespace UnitTests
         {
             for (var i = 0; i < Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean; ++i)
             {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], ServiceProvider.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             Assert.AreEqual(0, DefaultInstance.Count());
         }
@@ -657,7 +657,7 @@ namespace UnitTests
         {
             for (var i = 0; i < Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean; ++i)
             {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], ServiceProvider.Clock.UtcNow.AddMinutes(10));
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
             }
             Assert.AreEqual(Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean, DefaultInstance.Count());
         }
@@ -667,19 +667,19 @@ namespace UnitTests
         {
             foreach (var t in StringItems)
             {
-                DefaultInstance.AddTimed(t, t, ServiceProvider.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                DefaultInstance.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             DefaultInstance.Clear();
             Assert.AreEqual(0, DefaultInstance.Count());
             foreach (var t in StringItems)
             {
-                DefaultInstance.AddTimed(t, t, ServiceProvider.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                DefaultInstance.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             DefaultInstance.Clear(CacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(0, DefaultInstance.Count());
             foreach (var t in StringItems)
             {
-                DefaultInstance.AddTimed(t, t, ServiceProvider.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                DefaultInstance.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             Assert.AreEqual(0, DefaultInstance.Count());
@@ -690,14 +690,14 @@ namespace UnitTests
         {
             foreach (var t in StringItems)
             {
-                DefaultInstance.AddTimed(t, t, ServiceProvider.Clock.UtcNow.AddMinutes(10));
+                DefaultInstance.AddTimed(t, t, Cache.Clock.UtcNow.AddMinutes(10));
             }
             DefaultInstance.Clear();
             Assert.AreEqual(0, DefaultInstance.Count());
 
             foreach (var t in StringItems)
             {
-                DefaultInstance.AddTimed(t, t, ServiceProvider.Clock.UtcNow.AddMinutes(10));
+                DefaultInstance.AddTimed(t, t, Cache.Clock.UtcNow.AddMinutes(10));
             }
             DefaultInstance.Clear(CacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(StringItems.Count, DefaultInstance.Count());
@@ -773,7 +773,7 @@ namespace UnitTests
         [TestCase(LargeItemCount)]
         public void Peek_FullCache_ExpiryNotChanged(int itemCount)
         {
-            var expiryDate = ServiceProvider.Clock.UtcNow.AddMinutes(10);
+            var expiryDate = Cache.Clock.UtcNow.AddMinutes(10);
             for (var i = 0; i < itemCount; ++i)
             {
                 DefaultInstance.AddTimed(StringItems[i], StringItems[i], expiryDate);
@@ -798,7 +798,7 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                DefaultInstance.AddTimed(StringItems[i], StringItems[i], ServiceProvider.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                DefaultInstance.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             for (var i = 0; i < itemCount; ++i)
             {

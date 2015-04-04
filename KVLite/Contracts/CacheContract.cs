@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Finsa.CodeServices.Clock;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite.Contracts
@@ -35,6 +36,21 @@ namespace PommaLabs.KVLite.Contracts
     public abstract class CacheContract : ICache
     {
         #region ICache Members
+
+        /// <summary>
+        ///   Gets the clock used by the cache.
+        /// </summary>
+        /// <value>
+        ///   The clock used by the cache.
+        /// </value>
+        public IClock Clock
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<IClock>() != null);
+                return default(IClock);
+            }
+        }
 
         /// <summary>
         ///   The available settings for the cache.

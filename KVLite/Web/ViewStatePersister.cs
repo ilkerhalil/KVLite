@@ -25,7 +25,7 @@ using System;
 using System.Web;
 using System.Web.UI;
 using PommaLabs.KVLite.Properties;
-using PommaLabs.Reflection;
+using PommaLabs.KVLite.Reflection;
 
 namespace PommaLabs.KVLite.Web
 {

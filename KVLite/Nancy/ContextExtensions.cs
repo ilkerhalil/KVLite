@@ -24,7 +24,7 @@
 using System;
 using System.IO;
 using Nancy;
-using PommaLabs.Extensions;
+using PommaLabs.KVLite.Extensions;
 
 namespace PommaLabs.KVLite.Nancy
 {

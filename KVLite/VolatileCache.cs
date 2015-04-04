@@ -24,6 +24,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Diagnostics.Contracts;
+using Finsa.CodeServices.Clock;
+using Ninject;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
@@ -52,8 +55,9 @@ namespace PommaLabs.KVLite
         ///   Initializes a new instance of the <see cref="VolatileCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
-        public VolatileCache(VolatileCacheSettings settings)
-            : base(settings)
+        [Inject]
+        public VolatileCache(VolatileCacheSettings settings, IClock clock = null)
+            : base(settings, clock)
         {
         }
 
@@ -97,5 +101,31 @@ namespace PommaLabs.KVLite
         }
 
         #endregion CacheBase Members
+
+        #region Default Instance - Obsolete
+
+        /// <summary>
+        ///   The default cache instance.
+        /// </summary>
+        private static VolatileCache CachedDefaultInstance;
+
+        /// <summary>
+        ///   Gets the default instance for this cache kind. Default instance is configured using
+        ///   default application settings.
+        /// </summary>
+        [Pure, Obsolete(ErrorMessages.ObsoleteDefaultInstance)]
+        public static VolatileCache DefaultInstance
+        {
+            get
+            {
+                if (CachedDefaultInstance != null)
+                {
+                    CachedDefaultInstance = new VolatileCache(new VolatileCacheSettings(), new SystemClock());
+                }
+                return CachedDefaultInstance;
+            }
+        }
+
+        #endregion
     }
 }

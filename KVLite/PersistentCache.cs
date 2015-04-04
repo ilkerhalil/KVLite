@@ -21,12 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Diagnostics.Contracts;
 using System.IO;
+using Finsa.CodeServices.Clock;
 using Ninject;
 using PommaLabs.KVLite.Core;
-using PommaLabs.Testing;
 
 namespace PommaLabs.KVLite
 {
@@ -35,12 +37,6 @@ namespace PommaLabs.KVLite
     /// </summary>
     public sealed class PersistentCache : CacheBase<PersistentCache, PersistentCacheSettings>
     {
-        #region Fields
-
-        private readonly IClockService _clock;
-
-        #endregion
-
         #region Construction
 
         static PersistentCache()
@@ -61,10 +57,9 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         [Inject]
-        public PersistentCache(PersistentCacheSettings settings, IClockService clock = null)
-            : base(settings)
+        public PersistentCache(PersistentCacheSettings settings, IClock clock = null)
+            : base(settings, clock)
         {
-            _clock = clock;
         }
 
         #endregion Construction
@@ -118,5 +113,31 @@ namespace PommaLabs.KVLite
         }
 
         #endregion CacheBase Members
+
+        #region Default Instance - Obsolete
+
+        /// <summary>
+        ///   The default cache instance.
+        /// </summary>
+        private static PersistentCache CachedDefaultInstance;
+
+        /// <summary>
+        ///   Gets the default instance for this cache kind. Default instance is configured using
+        ///   default application settings.
+        /// </summary>
+        [Pure, Obsolete(ErrorMessages.ObsoleteDefaultInstance)]
+        public static PersistentCache DefaultInstance
+        {
+            get
+            {
+                if (CachedDefaultInstance != null)
+                {
+                    CachedDefaultInstance = new PersistentCache(new PersistentCacheSettings(), new SystemClock());
+                }
+                return CachedDefaultInstance;
+            }
+        }
+
+        #endregion
     }
 }

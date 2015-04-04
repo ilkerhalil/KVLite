@@ -1,20 +1,20 @@
 ﻿// File name: ErrorMessages.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2015 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
@@ -23,7 +23,7 @@
 
 namespace PommaLabs.KVLite.Core
 {
-    internal static class ErrorMessages
+    internal static partial class ErrorMessages
     {
         public const string InvalidCacheName = "In-memory cache name can only contain alphanumeric characters, dots and underscores.";
         public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
@@ -32,5 +32,6 @@ namespace PommaLabs.KVLite.Core
         public const string NullKey = @"Key cannot be null.";
         public const string NullPartition = @"Partition cannot be null.";
         public const string NullValue = @"Value cannot be null.";
+        public const string ObsoleteDefaultInstance = @"DefaultInstance property is left here for compatibility, but you should not use it and instead rely on IoC container.";
     }
 }

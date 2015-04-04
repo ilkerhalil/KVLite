@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using Ninject;
 using NUnit.Framework;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Core;
@@ -36,6 +37,8 @@ namespace UnitTests
         public override void SetUp()
         {
             VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            base.SetUp();
+            Cache = Kernel.Get<VolatileCache>();
         }
 
         [TearDown]

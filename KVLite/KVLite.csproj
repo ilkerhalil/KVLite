@@ -122,9 +122,9 @@
     <Reference Include="Antlr3.Runtime">
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="CodeProject.ObjectPool, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="CodeProject.ObjectPool, Version=1.3.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CodeProject.ObjectPool.1.3.1\lib\net40-client\CodeProject.ObjectPool.dll</HintPath>
+      <HintPath>..\packages\CodeProject.ObjectPool.1.3.2\lib\net40-client\CodeProject.ObjectPool.dll</HintPath>
     </Reference>
     <Reference Include="Common.Logging, Version=3.1.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -137,6 +137,12 @@
     <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Dapper.1.40\lib\net45\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Finsa.CodeServices.Clock">
+      <HintPath>..\packages\Finsa.CodeServices.Clock.1.0.0\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
+    </Reference>
+    <Reference Include="Finsa.CodeServices.Testing">
+      <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.0\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
     </Reference>
     <Reference Include="LinqToQuerystring">
       <HintPath>..\packages\LinqToQuerystring.0.7.0.8\lib\net35\LinqToQuerystring.dll</HintPath>
@@ -157,10 +163,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="PommaLabs.GRAMPA, Version=2.2.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\PommaLabs.GRAMPA.2.2.5\lib\net40-client\PommaLabs.GRAMPA.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -227,6 +229,50 @@
     <Compile Include="Core\CacheBase.cs" />
     <Compile Include="Core\CacheSettingsBase.cs" />
     <Compile Include="Core\ErrorMessages.cs" />
+    <Compile Include="GRAMPA\Collections\Concurrent\ConcurrentDictionary.cs" />
+    <Compile Include="GRAMPA\Collections\Concurrent\ConcurrentDoublyLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\Concurrent\ConcurrentHashLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\Concurrent\ConcurrentQueue.cs" />
+    <Compile Include="GRAMPA\Collections\Concurrent\ConcurrentSinglyLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\Concurrent\ConcurrentThinLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\Contracts\LinkedListsContracts.cs" />
+    <Compile Include="GRAMPA\Collections\Core\LinkedListsBases.cs" />
+    <Compile Include="GRAMPA\Collections\Core\LinkedListsNodes.cs" />
+    <Compile Include="GRAMPA\Collections\DoublyLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\HashLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\LinkedListsInterfaces.cs" />
+    <Compile Include="GRAMPA\Collections\LinkedQueue.cs" />
+    <Compile Include="GRAMPA\Collections\LinkedStack.cs" />
+    <Compile Include="GRAMPA\Collections\ReadOnly\ReadOnlyDictionary.cs" />
+    <Compile Include="GRAMPA\Collections\ReadOnly\ReadOnlyList.cs" />
+    <Compile Include="GRAMPA\Collections\SinglyLinkedList.cs" />
+    <Compile Include="GRAMPA\Collections\ThinLinkedList.cs" />
+    <Compile Include="GRAMPA\Constants.cs" />
+    <Compile Include="GRAMPA\Core\ErrorMessages.cs" />
+    <Compile Include="GRAMPA\Diagnostics\Raise.cs" />
+    <Compile Include="GRAMPA\Environment.cs" />
+    <Compile Include="GRAMPA\EquatableObject.cs" />
+    <Compile Include="GRAMPA\Extensions\BooleanExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\DataTableExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\DecimalExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\DelegateExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\DoubleExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\EnumerableExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\EventExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\IntegerExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\ObjectExtensions.cs" />
+    <Compile Include="GRAMPA\Extensions\StringExtensions.cs" />
+    <Compile Include="GRAMPA\FormattableObject.cs" />
+    <Compile Include="GRAMPA\PairAndTriple.cs" />
+    <Compile Include="GRAMPA\Portability\SerializableAttribute.cs" />
+    <Compile Include="GRAMPA\Portability\TypeInfo.cs" />
+    <Compile Include="GRAMPA\Reflection\ServiceLocator.cs" />
+    <Compile Include="GRAMPA\Testing\RandomDataTableGenerator.cs" />
+    <Compile Include="GRAMPA\Text\DiffMatchPatch.cs" />
+    <Compile Include="GRAMPA\Text\FastReplacer.cs" />
+    <Compile Include="GRAMPA\Threading\ConcurrentWorkQueue.cs" />
+    <Compile Include="GRAMPA\Tuples.cs" />
+    <Compile Include="GRAMPA\XML\DynamicXml.cs" />
     <Compile Include="ICache.cs" />
     <Compile Include="Nancy\CachingBootstrapper.cs" />
     <Compile Include="Nancy\ContextExtensions.cs" />
@@ -240,7 +286,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Core\ServiceProvider.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="VolatileCache.cs" />
     <Compile Include="VolatileCacheSettings.cs" />

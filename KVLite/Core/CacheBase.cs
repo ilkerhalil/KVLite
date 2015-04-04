@@ -32,7 +32,8 @@ using System.Threading.Tasks;
 using CodeProject.ObjectPool;
 using Common.Logging;
 using Dapper;
-using PommaLabs.Extensions;
+using Finsa.CodeServices.Clock;
+using PommaLabs.KVLite.Extensions;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -43,7 +44,7 @@ namespace PommaLabs.KVLite.Core
     /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     [Serializable]
     public abstract class CacheBase<TCache, TCacheSettings> : FormattableObject, ICache<TCacheSettings>
-        where TCache : CacheBase<TCache, TCacheSettings>, ICache<TCacheSettings>, new()
+        where TCache : CacheBase<TCache, TCacheSettings>, ICache<TCacheSettings>
         where TCacheSettings : CacheSettingsBase, new()
     {
         #region Constants
@@ -52,11 +53,6 @@ namespace PommaLabs.KVLite.Core
         ///   The page size in bytes.
         /// </summary>
         private const int PageSizeInBytes = 32768;
-
-        /// <summary>
-        ///   The default cache instance.
-        /// </summary>
-        private static readonly TCache CachedDefaultInstance = new TCache();
 
         #endregion Constants
 
@@ -84,6 +80,8 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         private readonly TCacheSettings _settings;
 
+        private readonly IClock _clock;
+
         #endregion Fields
 
         #region Construction
@@ -93,7 +91,7 @@ namespace PommaLabs.KVLite.Core
         ///   class with given settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
-        internal CacheBase(TCacheSettings settings)
+        internal CacheBase(TCacheSettings settings, IClock clock = null)
         {
             Contract.Requires<ArgumentNullException>(settings != null);
             _settings = settings;
@@ -125,16 +123,6 @@ namespace PommaLabs.KVLite.Core
         #region Public Members
 
         /// <summary>
-        ///   Gets the default instance for this cache kind. Default instance is configured using
-        ///   default application settings.
-        /// </summary>
-        [Pure]
-        public static TCache DefaultInstance
-        {
-            get { return CachedDefaultInstance; }
-        }
-
-        /// <summary>
         ///   Gets the value with the specified key and belonging to the default partition.
         /// </summary>
         /// <value>The value with the specified key and belonging to the default partition.</value>
@@ -164,6 +152,17 @@ namespace PommaLabs.KVLite.Core
         #endregion Public Members
 
         #region ICache Members
+
+        /// <summary>
+        ///   Gets the clock used by the cache.
+        /// </summary>
+        /// <value>
+        ///   The clock used by the cache.
+        /// </value>
+        public IClock Clock
+        {
+            get { return _clock; }
+        }
 
         /// <summary>
         ///   The available settings for the cache.
@@ -204,7 +203,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="interval">The interval.</param>
         public void AddSliding(string partition, string key, object value, TimeSpan interval)
         {
-            DoAdd(partition, key, value, ServiceProvider.Clock.UtcNow + interval, interval);
+            DoAdd(partition, key, value, _clock.UtcNow + interval, interval);
         }
 
         /// <summary>
@@ -307,7 +306,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
-            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
+            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -327,7 +326,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
-            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
+            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -347,7 +346,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
-            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
+            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -368,7 +367,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
-            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
+            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -389,7 +388,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
-            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
+            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -526,9 +525,9 @@ namespace PommaLabs.KVLite.Core
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
             p.Add("serializedValue", serializedValue, DbType.Binary, size: serializedValue.Length);
-            p.Add("utcExpiry", utcExpiry.HasValue ? utcExpiry.Value.ToUnixTime() : new long?(), DbType.Int64);
+            p.Add("utcExpiry", utcExpiry.HasValue ? DateTimeExtensions.ToUnixTime(utcExpiry.Value) : new long?(), DbType.Int64);
             p.Add("interval", interval.HasValue ? (long) interval.Value.TotalSeconds : new long?(), DbType.Int64);
-            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
+            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -552,7 +551,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
-            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
+            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -565,7 +564,7 @@ namespace PommaLabs.KVLite.Core
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
             p.Add("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
-            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
+            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             // No need for a transaction, since it is just a select.
             using (var ctx = _connectionPool.GetObject())
@@ -578,7 +577,7 @@ namespace PommaLabs.KVLite.Core
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
-            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
+            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -590,7 +589,7 @@ namespace PommaLabs.KVLite.Core
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
-            p.Add("utcNow", ServiceProvider.Clock.UtcNow.ToUnixTime(), DbType.Int64);
+            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
             {

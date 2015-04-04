@@ -28,9 +28,8 @@ using Common.Logging;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
-using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Properties;
-using PommaLabs.Reflection;
+using PommaLabs.KVLite.Reflection;
 
 namespace PommaLabs.KVLite.Nancy
 {
@@ -107,7 +106,7 @@ namespace PommaLabs.KVLite.Nancy
             {
                 var cacheKey = context.GetRequestFingerprint();
                 var cachedSummary = new ResponseSummary(responseToBeCached);
-                Cache.AddTimedAsync(Settings.Default.Nancy_ResponseCachePartition, cacheKey, cachedSummary, ServiceProvider.Clock.UtcNow.AddSeconds(cacheSeconds));
+                Cache.AddTimedAsync(Settings.Default.Nancy_ResponseCachePartition, cacheKey, cachedSummary, Cache.Clock.UtcNow.AddSeconds(cacheSeconds));
                 context.Response = cachedSummary.ToResponse();
             }
             catch (Exception ex)
