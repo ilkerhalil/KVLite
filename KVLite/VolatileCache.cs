@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using Finsa.CodeServices.Clock;
-using Ninject;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Utilities;
 
@@ -49,7 +48,6 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="clock">The clock.</param>
-        [Inject]
         public VolatileCache(VolatileCacheSettings settings, IClock clock)
             : base(settings, clock)
         {

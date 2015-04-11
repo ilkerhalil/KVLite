@@ -26,10 +26,7 @@ namespace RestService.Mvc
 
         public static StandardKernel CreateKernel()
         {
-            var kernel = new StandardKernel();
-            kernel.Load(new PommaLabs.KVLite.NinjectModule());
-            kernel.Load(new NinjectModule());
-            return kernel;
+            return new StandardKernel(new NinjectConfig());
         }
     }
 }

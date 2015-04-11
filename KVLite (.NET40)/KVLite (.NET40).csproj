@@ -165,9 +165,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Ninject">
-      <HintPath>..\packages\Ninject.3.2.2.0\lib\net40\Ninject.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -262,9 +259,6 @@
     </Compile>
     <Compile Include="..\KVLite\Core\Snappy\Utils.cs">
       <Link>Core\Snappy\Utils.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\NinjectModule.cs">
-      <Link>NinjectModule.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Properties\Annotations.cs">
       <Link>Properties\Annotations.cs</Link>
