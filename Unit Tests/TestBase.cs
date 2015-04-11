@@ -34,8 +34,8 @@ using NUnit.Framework;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Properties;
-using PommaLabs.KVLite.Testing;
-using PommaLabs.KVLite.Extensions;
+using PommaLabs.KVLite.Utilities.Extensions;
+using PommaLabs.KVLite.Utilities.Testing;
 
 namespace UnitTests
 {

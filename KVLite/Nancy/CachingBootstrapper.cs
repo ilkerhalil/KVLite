@@ -29,7 +29,7 @@ using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
 using PommaLabs.KVLite.Properties;
-using PommaLabs.KVLite.Reflection;
+using PommaLabs.KVLite.Utilities.Reflection;
 
 namespace PommaLabs.KVLite.Nancy
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using PommaLabs.KVLite.Utilities;
 
 namespace PommaLabs.KVLite.Core.Snappy
 {

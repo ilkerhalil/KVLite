@@ -29,6 +29,7 @@ using System.IO;
 using Finsa.CodeServices.Clock;
 using Ninject;
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Utilities;
 
 namespace PommaLabs.KVLite
 {

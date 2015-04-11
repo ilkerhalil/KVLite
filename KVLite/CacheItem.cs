@@ -24,7 +24,8 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using PommaLabs.KVLite.Extensions;
+using PommaLabs.KVLite.Utilities;
+using PommaLabs.KVLite.Utilities.Extensions;
 
 namespace PommaLabs.KVLite
 {

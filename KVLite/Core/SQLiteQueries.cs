@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Text.RegularExpressions;
+using PommaLabs.KVLite.Utilities;
 
 namespace PommaLabs.KVLite.Core
 {

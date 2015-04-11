@@ -33,7 +33,8 @@ using CodeProject.ObjectPool;
 using Common.Logging;
 using Dapper;
 using Finsa.CodeServices.Clock;
-using PommaLabs.KVLite.Extensions;
+using PommaLabs.KVLite.Utilities;
+using PommaLabs.KVLite.Utilities.Extensions;
 
 namespace PommaLabs.KVLite.Core
 {
