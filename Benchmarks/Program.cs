@@ -31,7 +31,7 @@ using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using PommaLabs.KVLite;
-using PommaLabs.Testing;
+using PommaLabs.KVLite.Testing;
 
 namespace Benchmarks
 {

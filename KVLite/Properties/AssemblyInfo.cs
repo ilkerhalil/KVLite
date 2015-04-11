@@ -58,4 +58,5 @@ using System.Runtime.InteropServices;
 [assembly: CLSCompliant(true)]
 
 // To allow simpler unit testing.
+[assembly: InternalsVisibleTo("Benchmarks")]
 [assembly: InternalsVisibleTo("UnitTests")]
