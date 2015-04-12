@@ -3,15 +3,15 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite</id>
-        <version>1.5.0</version>
-        <title>PommaLabs.KVLite</title>
+        <version>2.0.0</version>
+        <title>PommaLabs.KVLite - Key-value store built on SQLite</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
         <description>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
         </description>
         <releaseNotes>
-* Updated System.Data.SQLite to 1.0.96.0.
+* KVLite is now IoC friendly.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
@@ -23,7 +23,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="PommaLabs.KVLite.Core" version="1.5.2" />
+            <dependency id="PommaLabs.KVLite.Core" version="2.0.1" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
