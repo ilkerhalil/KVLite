@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Common.Logging;
 using Finsa.CodeServices.Clock;
 using PommaLabs.KVLite.Core;
 
@@ -49,6 +50,15 @@ namespace PommaLabs.KVLite.Contracts
             {
                 Contract.Ensures(Contract.Result<IClock>() != null);
                 return default(IClock);
+            }
+        }
+
+        public ILog Log
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<ILog>() != null);
+                return default(ILog);
             }
         }
 

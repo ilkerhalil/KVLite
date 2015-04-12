@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
+using Common.Logging;
 using Finsa.CodeServices.Clock;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Utilities;
@@ -48,8 +49,9 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="clock">The clock.</param>
-        public VolatileCache(VolatileCacheSettings settings, IClock clock = null)
-            : base(settings, clock)
+        /// <param name="log">The log.</param>
+        public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ILog log = null)
+            : base(settings, clock, log)
         {
         }
 
@@ -110,7 +112,7 @@ namespace PommaLabs.KVLite
         {
             get 
             {
-                return _cachedDefaultInstance ?? (_cachedDefaultInstance = new VolatileCache(new VolatileCacheSettings(), new SystemClock()));
+                return _cachedDefaultInstance ?? (_cachedDefaultInstance = new VolatileCache(new VolatileCacheSettings()));
             }
         }
 

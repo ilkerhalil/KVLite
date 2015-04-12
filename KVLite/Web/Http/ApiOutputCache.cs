@@ -86,7 +86,7 @@ namespace PommaLabs.KVLite.Web.Http
         /// </summary>
         /// <param name="configuration">The Web API configuration instance.</param>
         /// <param name="cache">The underlying cache.</param>
-        public static void RegisterAsCacheOutputProvider(HttpConfiguration configuration, ICache cache)
+        public static void RegisterAsCacheOutputProvider(HttpConfiguration configuration, ICache cache = null)
         {
             configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new ApiOutputCache(cache));
         }
