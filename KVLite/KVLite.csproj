@@ -339,6 +339,7 @@
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)NuGet Packager (Core)/lib/net45" mkdir "$(SolutionDir)NuGet Packager (Core)/lib/net45"
 copy "$(TargetDir)PommaLabs.KVLite.dll" "$(SolutionDir)NuGet Packager (Core)/lib/net45"
+copy "$(TargetDir)PommaLabs.KVLite.pdb" "$(SolutionDir)NuGet Packager (Core)/lib/net45"
 copy "$(TargetDir)PommaLabs.KVLite.xml" "$(SolutionDir)NuGet Packager (Core)/lib/net45"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
