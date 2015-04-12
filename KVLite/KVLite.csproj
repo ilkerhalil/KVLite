@@ -122,9 +122,8 @@
     <Reference Include="Antlr3.Runtime">
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="CodeProject.ObjectPool, Version=1.3.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CodeProject.ObjectPool.1.3.4\lib\net40-client\CodeProject.ObjectPool.dll</HintPath>
+    <Reference Include="CodeProject.ObjectPool">
+      <HintPath>..\packages\CodeProject.ObjectPool.1.3.5\lib\net40-client\CodeProject.ObjectPool.dll</HintPath>
     </Reference>
     <Reference Include="Common.Logging, Version=3.1.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -138,11 +137,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Dapper.1.40\lib\net45\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Clock">
-      <HintPath>..\packages\Finsa.CodeServices.Clock.1.0.0\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Clock, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Finsa.CodeServices.Clock.1.0.1\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
     </Reference>
     <Reference Include="Finsa.CodeServices.Testing">
-      <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.0\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.1\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
     </Reference>
     <Reference Include="LinqToQuerystring">
       <HintPath>..\packages\LinqToQuerystring.0.7.0.8\lib\net35\LinqToQuerystring.dll</HintPath>
