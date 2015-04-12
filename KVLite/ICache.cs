@@ -194,7 +194,7 @@ namespace PommaLabs.KVLite
     /// </summary>
     /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     public interface ICache<out TCacheSettings> : ICache
-        where TCacheSettings : CacheSettingsBase, new()
+        where TCacheSettings : CacheSettingsBase
     {
         /// <summary>
         ///   The available settings for the cache.

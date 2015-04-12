@@ -37,6 +37,8 @@ namespace PommaLabs.KVLite
     {
         #region Fields
 
+        private static readonly VolatileCacheSettings CachedDefault = new VolatileCacheSettings();
+
         private string _cacheFile = Settings.Default.VolatileCache_DefaultCacheName;
 
         #endregion Fields
@@ -54,6 +56,23 @@ namespace PommaLabs.KVLite
         }
 
         #endregion Construction
+
+        #region Properties
+
+        /// <summary>
+        ///   Gets the default settings for <see cref="VolatileCache"/>.
+        /// </summary>
+        /// <value>The default settings for <see cref="VolatileCache"/>.</value>
+        public static VolatileCacheSettings Default
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<VolatileCacheSettings>() != null);
+                return CachedDefault;
+            }
+        }
+
+        #endregion Properties
 
         #region Settings
 

@@ -49,7 +49,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="clock">The clock.</param>
-        public PersistentCache(PersistentCacheSettings settings, IClock clock)
+        public PersistentCache(PersistentCacheSettings settings, IClock clock = null)
             : base(settings, clock)
         {
         }

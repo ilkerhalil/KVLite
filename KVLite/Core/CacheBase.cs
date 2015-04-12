@@ -46,7 +46,7 @@ namespace PommaLabs.KVLite.Core
     [Serializable]
     public abstract class CacheBase<TCache, TCacheSettings> : FormattableObject, ICache<TCacheSettings>
         where TCache : CacheBase<TCache, TCacheSettings>, ICache<TCacheSettings>
-        where TCacheSettings : CacheSettingsBase, new()
+        where TCacheSettings : CacheSettingsBase
     {
         #region Constants
 
@@ -81,6 +81,9 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         private readonly TCacheSettings _settings;
 
+        /// <summary>
+        ///   The clock instance, used to compute expiry times, etc etc.
+        /// </summary>
         private readonly IClock _clock;
 
         #endregion Fields
@@ -96,11 +99,10 @@ namespace PommaLabs.KVLite.Core
         internal CacheBase(TCacheSettings settings, IClock clock)
         {
             Contract.Requires<ArgumentNullException>(settings != null);
-            Contract.Requires<ArgumentNullException>(clock != null);
             _settings = settings;
-            _clock = clock;
+            _clock = clock ?? new SystemClock();
 
-            settings.PropertyChanged += Settings_PropertyChanged;
+            _settings.PropertyChanged += Settings_PropertyChanged;
 
             // ...
             InitConnectionString();

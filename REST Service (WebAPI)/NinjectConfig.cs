@@ -8,8 +8,8 @@ namespace RestService.Mvc
     {
         public override void Load()
         {
-            Bind<IClock>().To<SystemClock>();
-            Bind<ICache>().To<PersistentCache>();
+            Bind<IClock>().To<SystemClock>().InSingletonScope();
+            Bind<ICache>().To<PersistentCache>().InSingletonScope();
         }
     }
 }

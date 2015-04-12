@@ -38,14 +38,15 @@ namespace UnitTests
         public override void SetUp()
         {
             VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
-            base.SetUp();
             Cache = Kernel.Get<VolatileCache>();
+            base.SetUp();
         }
 
         [TearDown]
         public override void TearDown()
         {
             VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            base.TearDown();
         }
 
         #endregion Setup/Teardown
@@ -64,6 +65,7 @@ namespace UnitTests
         {
             try
             {
+                // ReSharper disable once ObjectCreationAsStatement
                 new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
             }
             catch (Exception ex)
@@ -82,6 +84,7 @@ namespace UnitTests
         {
             try
             {
+                // ReSharper disable once ObjectCreationAsStatement
                 new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
             }
             catch (Exception ex)
@@ -103,10 +106,11 @@ namespace UnitTests
         [TestCase("a...b")]
         public void NewCache_GoodName(string name)
         {
+            // ReSharper disable once ObjectCreationAsStatement
             new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
         }
 
-        #endregion
+        #endregion Cache Creation
 
         #region Multiple Caches
 
@@ -115,7 +119,7 @@ namespace UnitTests
         {
             const string key = "key";
             var another = new VolatileCache(new VolatileCacheSettings { CacheName = "another" }, Kernel.Get<IClock>());
-            
+
             DefaultInstance.AddStatic(key, 1);
             another.AddStatic(key, 2);
             Assert.True(DefaultInstance.Contains(key));
@@ -129,6 +133,6 @@ namespace UnitTests
             Assert.AreEqual(3, another[key + key]);
         }
 
-        #endregion
+        #endregion Multiple Caches
     }
 }

@@ -48,7 +48,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="clock">The clock.</param>
-        public VolatileCache(VolatileCacheSettings settings, IClock clock)
+        public VolatileCache(VolatileCacheSettings settings, IClock clock = null)
             : base(settings, clock)
         {
         }

@@ -119,7 +119,7 @@
     <Compile Include="Core\Snappy\SnappyCodecTest.cs" />
     <Compile Include="Core\Snappy\SnappyStreamTest.cs" />
     <Compile Include="Core\Snappy\StreamThroughputTest.cs" />
-    <Compile Include="NinjectModules.cs" />
+    <Compile Include="NinjectConfig.cs" />
     <Compile Include="PersistentCacheTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestBase.cs" />

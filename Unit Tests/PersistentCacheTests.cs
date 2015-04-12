@@ -24,6 +24,7 @@
 using System;
 using Finsa.CodeServices.Clock;
 using Ninject;
+using Ninject.Parameters;
 using NUnit.Framework;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Core;
@@ -40,14 +41,15 @@ namespace UnitTests
         public override void SetUp()
         {
             PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
-            base.SetUp();
             Cache = Kernel.Get<PersistentCache>();
+            base.SetUp();
         }
 
         [TearDown]
         public override void TearDown()
         {
             PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            base.TearDown();
         }
 
         #endregion Setup/Teardown

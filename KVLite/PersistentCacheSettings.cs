@@ -36,6 +36,8 @@ namespace PommaLabs.KVLite
     {
         #region Fields
 
+        private static readonly PersistentCacheSettings CachedDefault = new PersistentCacheSettings();
+
         private string _cacheFile = Settings.Default.PersistentCache_DefaultCacheFile;
 
         #endregion Fields
@@ -53,6 +55,23 @@ namespace PommaLabs.KVLite
         }
 
         #endregion Construction
+
+        #region Properties
+
+        /// <summary>
+        ///   Gets the default settings for <see cref="PersistentCache"/>.
+        /// </summary>
+        /// <value>The default settings for <see cref="PersistentCache"/>.</value>
+        public static PersistentCacheSettings Default
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<PersistentCacheSettings>() != null);
+                return CachedDefault;
+            }
+        }
+
+        #endregion Properties
 
         #region Settings
 
