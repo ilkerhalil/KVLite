@@ -29,7 +29,6 @@ using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
 using PommaLabs.KVLite.Properties;
-using PommaLabs.KVLite.Utilities.Reflection;
 
 namespace PommaLabs.KVLite.Nancy
 {
@@ -42,9 +41,27 @@ namespace PommaLabs.KVLite.Nancy
     {
         #region Fields
 
-        private static readonly ICache Cache = ServiceLocator.Load<ICache>(Settings.Default.Nancy_ResponseCacheType);
+        private readonly ICache _cache;
 
         #endregion Fields
+
+        #region Construction
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="CachingBootstrapper"/> class. You can
+        ///   optionally instruct the bootstrapper on which cache instance it should use; by
+        ///   default, it uses <see cref="PersistentCache.DefaultInstance"/>.
+        /// </summary>
+        /// <param name="cache">
+        ///   The cache that will be used as entry container. If <paramref name="cache"/> is null,
+        ///   then <see cref="PersistentCache.DefaultInstance"/> will be used instead.
+        /// </param>
+        protected CachingBootstrapper(ICache cache = null)
+        {
+            _cache = cache ?? PersistentCache.DefaultInstance;
+        }
+
+        #endregion Construction
 
         /// <summary>
         ///   Handles application startup.
@@ -64,10 +81,10 @@ namespace PommaLabs.KVLite.Nancy
         /// </summary>
         /// <param name="context">Current context.</param>
         /// <returns>Response or null.</returns>
-        private static Response CheckCache(NancyContext context)
+        private Response CheckCache(NancyContext context)
         {
             var cacheKey = context.GetRequestFingerprint();
-            var cachedSummary = Cache.Get<ResponseSummary>(Settings.Default.Nancy_ResponseCachePartition, cacheKey);
+            var cachedSummary = _cache.Get<ResponseSummary>(Settings.Default.Nancy_ResponseCachePartition, cacheKey);
             return (cachedSummary == null) ? null : cachedSummary.ToResponse();
         }
 
@@ -76,7 +93,7 @@ namespace PommaLabs.KVLite.Nancy
         ///   response in a KVLite cache.
         /// </summary>
         /// <param name="context">Current context.</param>
-        private static void SetCache(NancyContext context)
+        private void SetCache(NancyContext context)
         {
             if (context.Response.StatusCode != HttpStatusCode.OK)
             {
@@ -106,7 +123,7 @@ namespace PommaLabs.KVLite.Nancy
             {
                 var cacheKey = context.GetRequestFingerprint();
                 var cachedSummary = new ResponseSummary(responseToBeCached);
-                Cache.AddTimedAsync(Settings.Default.Nancy_ResponseCachePartition, cacheKey, cachedSummary, Cache.Clock.UtcNow.AddSeconds(cacheSeconds));
+                _cache.AddTimedAsync(Settings.Default.Nancy_ResponseCachePartition, cacheKey, cachedSummary, _cache.Clock.UtcNow.AddSeconds(cacheSeconds));
                 context.Response = cachedSummary.ToResponse();
             }
             catch (Exception ex)

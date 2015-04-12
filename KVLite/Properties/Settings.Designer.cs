@@ -76,19 +76,6 @@ namespace PommaLabs.KVLite.Properties {
         }
         
         /// <summary>
-        /// The ICache implementation that will be used by the NancyFX caching bootstrapper.
-        /// </summary>
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Configuration.SettingsDescriptionAttribute("The ICache implementation that will be used by the NancyFX caching bootstrapper.")]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite")]
-        public string Nancy_ResponseCacheType {
-            get {
-                return ((string)(this["Nancy_ResponseCacheType"]));
-            }
-        }
-        
-        /// <summary>
         /// Default max journal size for persistent cache.
         /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]

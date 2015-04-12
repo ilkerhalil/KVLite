@@ -14,9 +14,6 @@
     <Setting Name="PersistentCache_DefaultInsertionCountBeforeAutoClean" Description="Default number of inserts before a cleanup is issued." Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">64</Value>
     </Setting>
-    <Setting Name="Nancy_ResponseCacheType" Description="The ICache implementation that will be used by the NancyFX caching bootstrapper." Type="System.String" Scope="Application">
-      <Value Profile="(Default)">PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite</Value>
-    </Setting>
     <Setting Name="PersistentCache_DefaultMaxJournalSizeInMB" Description="Default max journal size for persistent cache." Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">32</Value>
     </Setting>
