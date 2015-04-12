@@ -49,7 +49,7 @@ namespace UnitTests.Web.Http
         [Test]
         public void Add_One_Valid()
         {
-            _outputCache.Add("a", "b", DateTimeOffset.Now.AddMinutes(10));
+            _outputCache.Add("a", "b", _outputCache.Cache.Clock.Now.AddMinutes(10));
             Assert.AreEqual("b", _outputCache.Get("a"));
             Assert.AreEqual("b", _outputCache.Get<string>("a"));
         }

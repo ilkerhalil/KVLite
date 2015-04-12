@@ -24,7 +24,6 @@
 using System;
 using Finsa.CodeServices.Clock;
 using Ninject;
-using Ninject.Parameters;
 using NUnit.Framework;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Core;
@@ -40,7 +39,6 @@ namespace UnitTests
         [SetUp]
         public override void SetUp()
         {
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             Cache = Kernel.Get<PersistentCache>();
             base.SetUp();
         }
@@ -48,16 +46,10 @@ namespace UnitTests
         [TearDown]
         public override void TearDown()
         {
-            PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             base.TearDown();
         }
 
         #endregion Setup/Teardown
-
-        protected override PersistentCache DefaultInstance
-        {
-            get { return PersistentCache.DefaultInstance; }
-        }
 
         #region Cache Creation
 
@@ -104,5 +96,55 @@ namespace UnitTests
         }
 
         #endregion Cache Creation
+
+        #region SQLite-specific Clean
+
+        [Test]
+        public void Clean_InvalidValues()
+        {
+            foreach (var t in StringItems)
+            {
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            Cache.Clear();
+            Assert.AreEqual(0, Cache.Count());
+            foreach (var t in StringItems)
+            {
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            var persistentCache = (PersistentCache) Cache;
+            persistentCache.Clear(CacheReadMode.ConsiderExpiryDate);
+            Assert.AreEqual(0, Cache.Count());
+            foreach (var t in StringItems)
+            {
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            persistentCache.Clear(CacheReadMode.IgnoreExpiryDate);
+            Assert.AreEqual(0, Cache.Count());
+        }
+
+        [Test]
+        public void Clean_ValidValues()
+        {
+            foreach (var t in StringItems)
+            {
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.AddMinutes(10));
+            }
+            Cache.Clear();
+            Assert.AreEqual(0, Cache.Count());
+
+            foreach (var t in StringItems)
+            {
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.AddMinutes(10));
+            }
+            var persistentCache = (PersistentCache) Cache;
+            persistentCache.Clear(CacheReadMode.ConsiderExpiryDate);
+            Assert.AreEqual(StringItems.Count, Cache.Count());
+
+            persistentCache.Clear(CacheReadMode.IgnoreExpiryDate);
+            Assert.AreEqual(0, Cache.Count());
+        }
+
+        #endregion SQLite-specific Clean
     }
 }

@@ -37,7 +37,6 @@ namespace UnitTests
         [SetUp]
         public override void SetUp()
         {
-            VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             Cache = Kernel.Get<VolatileCache>();
             base.SetUp();
         }
@@ -45,16 +44,10 @@ namespace UnitTests
         [TearDown]
         public override void TearDown()
         {
-            VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             base.TearDown();
         }
 
         #endregion Setup/Teardown
-
-        protected override VolatileCache DefaultInstance
-        {
-            get { return VolatileCache.DefaultInstance; }
-        }
 
         #region Cache Creation
 
@@ -112,6 +105,56 @@ namespace UnitTests
 
         #endregion Cache Creation
 
+        #region SQLite-specific Clean
+
+        [Test]
+        public void Clean_InvalidValues()
+        {
+            foreach (var t in StringItems)
+            {
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            Cache.Clear();
+            Assert.AreEqual(0, Cache.Count());
+            foreach (var t in StringItems)
+            {
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            var volatileCache = (VolatileCache) Cache;
+            volatileCache.Clear(CacheReadMode.ConsiderExpiryDate);
+            Assert.AreEqual(0, Cache.Count());
+            foreach (var t in StringItems)
+            {
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            }
+            volatileCache.Clear(CacheReadMode.IgnoreExpiryDate);
+            Assert.AreEqual(0, Cache.Count());
+        }
+
+        [Test]
+        public void Clean_ValidValues()
+        {
+            foreach (var t in StringItems)
+            {
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.AddMinutes(10));
+            }
+            Cache.Clear();
+            Assert.AreEqual(0, Cache.Count());
+
+            foreach (var t in StringItems)
+            {
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.AddMinutes(10));
+            }
+            var volatileCache = (VolatileCache) Cache;
+            volatileCache.Clear(CacheReadMode.ConsiderExpiryDate);
+            Assert.AreEqual(StringItems.Count, Cache.Count());
+
+            volatileCache.Clear(CacheReadMode.IgnoreExpiryDate);
+            Assert.AreEqual(0, Cache.Count());
+        }
+
+        #endregion SQLite-specific Clean
+
         #region Multiple Caches
 
         [Test]
@@ -120,15 +163,15 @@ namespace UnitTests
             const string key = "key";
             var another = new VolatileCache(new VolatileCacheSettings { CacheName = "another" }, Kernel.Get<IClock>());
 
-            DefaultInstance.AddStatic(key, 1);
+            Cache.AddStatic(key, 1);
             another.AddStatic(key, 2);
-            Assert.True(DefaultInstance.Contains(key));
+            Assert.True(Cache.Contains(key));
             Assert.True(another.Contains(key));
-            Assert.AreEqual(1, DefaultInstance[key]);
+            Assert.AreEqual(1, ((VolatileCache) Cache)[key]);
             Assert.AreEqual(2, another[key]);
 
             another.AddStatic(key + key, 3);
-            Assert.False(DefaultInstance.Contains(key + key));
+            Assert.False(Cache.Contains(key + key));
             Assert.True(another.Contains(key + key));
             Assert.AreEqual(3, another[key + key]);
         }
