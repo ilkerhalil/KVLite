@@ -23,14 +23,8 @@
     <Setting Name="Nancy_ResponseCachePartition" Description="The partition used by Nancy response cache items." Type="System.String" Scope="Application">
       <Value Profile="(Default)">KVLite.Nancy.ResponseCache</Value>
     </Setting>
-    <Setting Name="Web_ViewStatePersisterType" Description="The ICache implementation that will be used by the Web Forms viewstate persister." Type="System.String" Scope="Application">
-      <Value Profile="(Default)">PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite</Value>
-    </Setting>
     <Setting Name="Web_ViewStatePersisterPartition" Description="The partition used by ViewState items." Type="System.String" Scope="Application">
       <Value Profile="(Default)">KVLite.Web.ViewStates</Value>
-    </Setting>
-    <Setting Name="Web_OutputCacheProviderType" Description="The ICache implementation that will be used by the Web Forms cache provider." Type="System.String" Scope="Application">
-      <Value Profile="(Default)">PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite</Value>
     </Setting>
     <Setting Name="Web_OutputCacheProviderPartition" Description="The partition used by output cache provider items." Type="System.String" Scope="Application">
       <Value Profile="(Default)">KVLite.Web.OutputCache</Value>

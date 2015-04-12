@@ -22,6 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics.Contracts;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Properties;
 using PommaLabs.KVLite.Utilities.Reflection;
 
@@ -34,29 +36,54 @@ namespace PommaLabs.KVLite.Web
     {
         #region Fields
 
-        private static readonly ICache Cache = ServiceLocator.Load<ICache>(Settings.Default.Web_OutputCacheProviderType);
+        private static ICache _cache = PersistentCache.DefaultInstance;
 
         #endregion Fields
 
+        #region Properties
+
+        /// <summary>
+        ///   Gets or sets the cache instance currently used by the provider.
+        /// </summary>
+        /// <value>
+        ///   The cache instance currently used by the provider.
+        /// </value>
+        public static ICache Cache
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<ICache>() != null);
+                return _cache;
+            }
+            set
+            {
+                Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullCache);
+                Contract.Ensures(ReferenceEquals(Cache, value));
+                _cache = value;
+            }
+        }
+
+        #endregion
+
         public override object Get(string key)
         {
-            return Cache.Get(Settings.Default.Web_ViewStatePersisterPartition, key);
+            return _cache.Get(Settings.Default.Web_ViewStatePersisterPartition, key);
         }
 
         public override object Add(string key, object entry, DateTime utcExpiry)
         {
-            Cache.AddTimed(Settings.Default.Web_ViewStatePersisterPartition, key, entry, utcExpiry);
+            _cache.AddTimed(Settings.Default.Web_ViewStatePersisterPartition, key, entry, utcExpiry);
             return entry;
         }
 
         public override void Set(string key, object entry, DateTime utcExpiry)
         {
-            Cache.AddTimed(Settings.Default.Web_ViewStatePersisterPartition, key, entry, utcExpiry);
+            _cache.AddTimed(Settings.Default.Web_ViewStatePersisterPartition, key, entry, utcExpiry);
         }
 
         public override void Remove(string key)
         {
-            Cache.Remove(Settings.Default.Web_ViewStatePersisterPartition, key);
+            _cache.Remove(Settings.Default.Web_ViewStatePersisterPartition, key);
         }
     }
 }

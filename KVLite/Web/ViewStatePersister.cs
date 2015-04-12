@@ -22,10 +22,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics.Contracts;
 using System.Web;
 using System.Web.UI;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Properties;
-using PommaLabs.KVLite.Utilities.Reflection;
 
 namespace PommaLabs.KVLite.Web
 {
@@ -36,13 +37,40 @@ namespace PommaLabs.KVLite.Web
     {
         #region Fields
 
-        private static readonly ICache Cache = ServiceLocator.Load<ICache>(Settings.Default.Web_ViewStatePersisterType);
+        private static ICache _cache = PersistentCache.DefaultInstance;
 
         private static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(HttpContext.Current.Session.Timeout + 1);
 
         #endregion Fields
 
-        //required constructor
+        #region Properties
+
+        /// <summary>
+        ///   Gets or sets the cache instance currently used by the provider.
+        /// </summary>
+        /// <value>The cache instance currently used by the provider.</value>
+        public static ICache Cache
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<ICache>() != null);
+                return _cache;
+            }
+            set
+            {
+                Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullCache);
+                Contract.Ensures(ReferenceEquals(Cache, value));
+                _cache = value;
+            }
+        }
+
+        #endregion Properties
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="ViewStatePersister"/> class.
+        /// </summary>
+        /// <param name="page">The page.</param>
+        /// <remarks>This constructor is required.</remarks>
         public ViewStatePersister(Page page)
             : base(page)
         {
@@ -72,20 +100,23 @@ namespace PommaLabs.KVLite.Web
             SetViewState(guid);
         }
 
+        /// <summary>
+        ///   Clears this persister instance.
+        /// </summary>
         public override void Clear()
         {
-            Cache.Clear();
+            _cache.Clear();
         }
 
         private static object GetViewState(string guid)
         {
-            return Cache.Get(Settings.Default.Web_ViewStatePersisterPartition, HiddenFieldName + guid);
+            return _cache.Get(Settings.Default.Web_ViewStatePersisterPartition, HiddenFieldName + guid);
         }
 
         private void SetViewState(string guid)
         {
             object state = new Pair(ControlState, ViewState);
-            Cache.AddSlidingAsync(Settings.Default.Web_ViewStatePersisterPartition, HiddenFieldName + guid, state, CacheInterval);
+            _cache.AddSlidingAsync(Settings.Default.Web_ViewStatePersisterPartition, HiddenFieldName + guid, state, CacheInterval);
         }
     }
 }

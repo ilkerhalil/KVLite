@@ -115,20 +115,6 @@ namespace PommaLabs.KVLite.Properties {
         }
         
         /// <summary>
-        /// The ICache implementation that will be used by the Web Forms viewstate persister.
-        /// </summary>
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Configuration.SettingsDescriptionAttribute("The ICache implementation that will be used by the Web Forms viewstate persister." +
-            "")]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite")]
-        public string Web_ViewStatePersisterType {
-            get {
-                return ((string)(this["Web_ViewStatePersisterType"]));
-            }
-        }
-        
-        /// <summary>
         /// The partition used by ViewState items.
         /// </summary>
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
@@ -138,19 +124,6 @@ namespace PommaLabs.KVLite.Properties {
         public string Web_ViewStatePersisterPartition {
             get {
                 return ((string)(this["Web_ViewStatePersisterPartition"]));
-            }
-        }
-        
-        /// <summary>
-        /// The ICache implementation that will be used by the Web Forms cache provider.
-        /// </summary>
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Configuration.SettingsDescriptionAttribute("The ICache implementation that will be used by the Web Forms cache provider.")]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("PommaLabs.KVLite.PersistentCache, PommaLabs.KVLite")]
-        public string Web_OutputCacheProviderType {
-            get {
-                return ((string)(this["Web_OutputCacheProviderType"]));
             }
         }
         

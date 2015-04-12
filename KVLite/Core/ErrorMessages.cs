@@ -29,6 +29,7 @@ namespace PommaLabs.KVLite.Core
         public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
         public const string NullOrEmptyCacheName = @"Cache name cannot be null or empty.";
         public const string NullOrEmptyCachePath = @"Cache path cannot be null or empty.";
+        public const string NullCache = @"Cache cannot be null, please specify one valid cache or use either PersistentCache or VolatileCache default instances.";
         public const string NullKey = @"Key cannot be null, please specify one non-null string.";
         public const string NullPartition = @"Partition cannot be null, please specify one non-null string.";
         public const string NullSettings = @"Settings cannot be null, please specify valid settings or use the default instance.";

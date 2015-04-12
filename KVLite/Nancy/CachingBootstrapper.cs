@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using Common.Logging;
 using Nancy;
@@ -62,6 +63,25 @@ namespace PommaLabs.KVLite.Nancy
         }
 
         #endregion Construction
+
+        #region Properties
+
+        /// <summary>
+        ///   Gets the cache instance currently used by the bootstrapper.
+        /// </summary>
+        /// <value>
+        ///   The cache instance currently used by the bootstrapper.
+        /// </value>
+        public ICache Cache
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<ICache>() != null);
+                return _cache;
+            }
+        }
+
+        #endregion
 
         /// <summary>
         ///   Handles application startup.
