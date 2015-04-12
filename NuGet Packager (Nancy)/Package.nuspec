@@ -4,31 +4,27 @@
     <metadata>
         <id>PommaLabs.KVLite.Nancy</id>
         <version>2.0.1</version>
-        <title>PommaLabs.KVLite (Nancy Caching Bootstrapper)</title>
+        <title>PommaLabs.KVLite - Nancy caching bootstrapper</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
         <description>
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Nancy caching bootstrapper.
         </description>
-        <releaseNotes></releaseNotes>
+        <releaseNotes>
+* KVLite is now IoC friendly.
+        </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Nancy caching bootstrapper.
         </summary>
         <language>en-US</language>
-        <projectUrl>https://bitbucket.org/pomma89/kvlite</projectUrl>
+        <projectUrl>https://bitbucket.org/pomma89/kvlite/overview</projectUrl>
         <iconUrl>https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-128.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
-            <group targetFramework="net45">
-                <dependency id="Nancy" version="1.1" />
-                <dependency id="PommaLabs.KVLite.Core" version="2.0.1" />
-            </group>
-            <group targetFramework="net40">
-                <dependency id="Nancy" version="1.1" />
-                <dependency id="PommaLabs.KVLite.Core" version="2.0.1" />
-            </group>
+            <dependency id="Nancy" version="1.1" />
+            <dependency id="PommaLabs.KVLite.Core" version="2.0.1" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>

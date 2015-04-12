@@ -17,7 +17,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
         </summary>
         <language>en-US</language>
-        <projectUrl>https://bitbucket.org/pomma89/kvlite</projectUrl>
+        <projectUrl>https://bitbucket.org/pomma89/kvlite/overview</projectUrl>
         <iconUrl>https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-128.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>

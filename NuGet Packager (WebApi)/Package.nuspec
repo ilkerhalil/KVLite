@@ -4,18 +4,20 @@
     <metadata>
         <id>PommaLabs.KVLite.WebApi</id>
         <version>2.0.1</version>
-        <title>PommaLabs.KVLite (Web API Output Cache Provider)</title>
+        <title>PommaLabs.KVLite - Web API output cache provider</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
         <description>
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Web API output cache provider.
         </description>
-        <releaseNotes></releaseNotes>
+        <releaseNotes>
+* KVLite is now IoC friendly.
+        </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Web API output cache provider.
         </summary>
         <language>en-US</language>
-        <projectUrl>https://bitbucket.org/pomma89/kvlite</projectUrl>
+        <projectUrl>https://bitbucket.org/pomma89/kvlite/overview</projectUrl>
         <iconUrl>https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-128.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>

@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Web.Http;
 using PommaLabs.KVLite.Properties;
@@ -58,23 +57,23 @@ namespace PommaLabs.KVLite.Web.Http
         /// <summary>
         ///   Initializes a new instance of the <see cref="ApiOutputCache"/> class.
         /// </summary>
-        /// <param name="cache">The cache.</param>
-        public ApiOutputCache(ICache cache)
+        /// <param name="cache">
+        ///   The cache that will be used as entry container. If <paramref name="cache"/> is null,
+        ///   then <see cref="PersistentCache.DefaultInstance"/> will be used instead.
+        /// </param>
+        public ApiOutputCache(ICache cache = null)
         {
-            Contract.Requires<ArgumentNullException>(cache != null);
-            _cache = cache;
+            _cache = cache ?? PersistentCache.DefaultInstance;
         }
 
-        #endregion
+        #endregion Construction
 
         #region Public Members
 
         /// <summary>
         ///   Gets the underlying cache.
         /// </summary>
-        /// <value>
-        ///   The underlying cache.
-        /// </value>
+        /// <value>The underlying cache.</value>
         public ICache Cache
         {
             get { return _cache; }
@@ -82,8 +81,8 @@ namespace PommaLabs.KVLite.Web.Http
 
         /// <summary>
         ///   Registers this class as the default API output cache provider. Please use
-        ///   <see cref="Settings.Web_Http_ApiOutputCacheProviderType"/> to customize the cache kind
-        ///   and the partition name.
+        ///   <see cref="Settings.Web_Http_ApiOutputCacheProviderPartition"/> to customize the
+        ///   partition name.
         /// </summary>
         /// <param name="configuration">The Web API configuration instance.</param>
         /// <param name="cache">The underlying cache.</param>
