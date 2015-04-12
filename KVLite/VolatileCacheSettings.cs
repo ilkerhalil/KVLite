@@ -63,6 +63,7 @@ namespace PommaLabs.KVLite
         ///   Gets the default settings for <see cref="VolatileCache"/>.
         /// </summary>
         /// <value>The default settings for <see cref="VolatileCache"/>.</value>
+        [Pure]
         public static VolatileCacheSettings Default
         {
             get

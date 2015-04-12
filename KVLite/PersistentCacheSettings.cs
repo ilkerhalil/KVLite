@@ -62,6 +62,7 @@ namespace PommaLabs.KVLite
         ///   Gets the default settings for <see cref="PersistentCache"/>.
         /// </summary>
         /// <value>The default settings for <see cref="PersistentCache"/>.</value>
+        [Pure]
         public static PersistentCacheSettings Default
         {
             get

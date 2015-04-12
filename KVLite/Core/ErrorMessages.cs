@@ -23,15 +23,15 @@
 
 namespace PommaLabs.KVLite.Core
 {
-    internal static partial class ErrorMessages
+    internal static class ErrorMessages
     {
         public const string InvalidCacheName = "In-memory cache name can only contain alphanumeric characters, dots and underscores.";
         public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
         public const string NullOrEmptyCacheName = @"Cache name cannot be null or empty.";
         public const string NullOrEmptyCachePath = @"Cache path cannot be null or empty.";
-        public const string NullKey = @"Key cannot be null.";
-        public const string NullPartition = @"Partition cannot be null.";
-        public const string NullValue = @"Value cannot be null.";
-        public const string ObsoleteDefaultInstance = @"DefaultInstance property is left here for compatibility, but you should not use it and instead rely on IoC container.";
+        public const string NullKey = @"Key cannot be null, please specify one non-null string.";
+        public const string NullPartition = @"Partition cannot be null, please specify one non-null string.";
+        public const string NullSettings = @"Settings cannot be null, please specify valid settings or use the default instance.";
+        public const string NullValue = @"Value cannot be null, please specify one non-null object.";
     }
 }

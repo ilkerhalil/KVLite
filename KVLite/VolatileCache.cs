@@ -105,7 +105,7 @@ namespace PommaLabs.KVLite
         ///   Gets the default instance for this cache kind. Default instance is configured using
         ///   default application settings.
         /// </summary>
-        [Pure, Obsolete(ErrorMessages.ObsoleteDefaultInstance)]
+        [Pure]
         public static VolatileCache DefaultInstance
         {
             get 

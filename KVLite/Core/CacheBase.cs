@@ -98,7 +98,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="clock">The clock.</param>
         internal CacheBase(TCacheSettings settings, IClock clock)
         {
-            Contract.Requires<ArgumentNullException>(settings != null);
+            Contract.Requires<ArgumentNullException>(settings != null, ErrorMessages.NullSettings);
             _settings = settings;
             _clock = clock ?? new SystemClock();
 
