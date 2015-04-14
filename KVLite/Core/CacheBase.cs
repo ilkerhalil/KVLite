@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
@@ -114,7 +115,6 @@ namespace PommaLabs.KVLite.Core
 
             // Connection string must be customized by each cache.
             InitConnectionString();
-            _log.Trace(m => m("Cache connection at {0}", _connectionString));
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -523,7 +523,7 @@ namespace PommaLabs.KVLite.Core
             Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
 
             // Logs the path where SQLite has been set.
-            LogManager.GetLogger<PersistentCache>().InfoFormat("SQLite native libraries set at {0}", nativePath);
+            Trace.WriteLine("SQLite native libraries set at {0}", nativePath);
         }
 
         #endregion Protected Methods
