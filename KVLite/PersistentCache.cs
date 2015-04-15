@@ -42,7 +42,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The default cache instance.
         /// </summary>
-        private static readonly PersistentCache CachedDefaultInstance = new PersistentCache(new PersistentCacheSettings());
+        private static readonly PersistentCache CachedDefaultInstance;
 
         /// <summary>
         ///   Gets the default instance for this cache kind. Default instance is configured using
@@ -61,6 +61,7 @@ namespace PommaLabs.KVLite
         static PersistentCache()
         {
             InitSQLite();
+            CachedDefaultInstance = new PersistentCache(new PersistentCacheSettings());
         }
 
         /// <summary>

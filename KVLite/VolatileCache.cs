@@ -42,7 +42,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The default cache instance.
         /// </summary>
-        private static readonly VolatileCache CachedDefaultInstance = new VolatileCache(new VolatileCacheSettings());
+        private static readonly VolatileCache CachedDefaultInstance;
 
         /// <summary>
         ///   Gets the default instance for this cache kind. Default instance is configured using
@@ -61,6 +61,7 @@ namespace PommaLabs.KVLite
         static VolatileCache()
         {
             InitSQLite();
+            CachedDefaultInstance = new VolatileCache(new VolatileCacheSettings());
         }
 
         /// <summary>

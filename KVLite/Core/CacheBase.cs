@@ -520,10 +520,13 @@ namespace PommaLabs.KVLite.Core
         {
             // Makes SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
             var nativePath = (GEnvironment.AppIsRunningOnAspNet ? "bin/KVLite/" : "KVLite/").MapPath();
+
+            // Trace the path from which we load SQLite libraries and load them.
+            Trace.WriteLine("Loading SQLite native libraries from '" + nativePath + "'...");
             Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
 
-            // Logs the path where SQLite has been set.
-            Trace.WriteLine("SQLite native libraries set at {0}", nativePath);
+            // Logs the path where SQLite has been successfully set.
+            Trace.WriteLine("SQLite native libraries set at '" + nativePath + "'.");
         }
 
         #endregion Protected Methods
