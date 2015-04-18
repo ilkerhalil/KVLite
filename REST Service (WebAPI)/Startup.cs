@@ -8,11 +8,11 @@ using Ninject.Web.WebApi.OwinHost;
 using Owin;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Web.Http;
-using RestService.Mvc;
+using RestService.WebApi;
 
 [assembly: OwinStartup(typeof(Startup))]
 
-namespace RestService.Mvc
+namespace RestService.WebApi
 {
     public sealed class Startup
     {

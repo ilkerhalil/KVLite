@@ -13,7 +13,7 @@
 using System.Web.Http;
 using Finsa.WebApi.HelpPage.AnyHost;
 
-namespace RestService.Mvc.Controllers
+namespace RestService.WebApi.Controllers
 {
     /// <summary>
     ///   The HELP controller.

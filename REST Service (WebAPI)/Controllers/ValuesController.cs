@@ -2,7 +2,7 @@
 using System.Web.Http;
 using WebApi.OutputCache.V2;
 
-namespace RestService.Mvc.Controllers
+namespace RestService.WebApi.Controllers
 {
     [RoutePrefix("values")]
     public class ValuesController : ApiController

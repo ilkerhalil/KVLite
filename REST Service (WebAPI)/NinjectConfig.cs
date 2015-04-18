@@ -4,7 +4,7 @@ using Finsa.CodeServices.Clock;
 using Ninject.Modules;
 using PommaLabs.KVLite;
 
-namespace RestService.Mvc
+namespace RestService.WebApi
 {
     public sealed class NinjectConfig : NinjectModule
     {
