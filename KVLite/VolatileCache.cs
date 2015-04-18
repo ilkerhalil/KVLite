@@ -21,13 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Common.Logging;
+using Finsa.CodeServices.Clock;
+using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
-using Finsa.CodeServices.Clock;
-using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.Utilities;
 
 namespace PommaLabs.KVLite
 {
@@ -36,11 +37,31 @@ namespace PommaLabs.KVLite
     /// </summary>
     public sealed class VolatileCache : CacheBase<VolatileCache, VolatileCacheSettings>
     {
+        #region Default Instance
+
+        /// <summary>
+        ///   The default cache instance.
+        /// </summary>
+        private static readonly VolatileCache CachedDefaultInstance;
+
+        /// <summary>
+        ///   Gets the default instance for this cache kind. Default instance is configured using
+        ///   default application settings.
+        /// </summary>
+        [Pure]
+        public static VolatileCache DefaultInstance
+        {
+            get { return CachedDefaultInstance; }
+        }
+
+        #endregion Default Instance
+
         #region Construction
 
         static VolatileCache()
         {
             InitSQLite();
+            CachedDefaultInstance = new VolatileCache(new VolatileCacheSettings());
         }
 
         /// <summary>
@@ -48,8 +69,9 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="clock">The clock.</param>
-        public VolatileCache(VolatileCacheSettings settings, IClock clock = null)
-            : base(settings, clock)
+        /// <param name="log">The log.</param>
+        public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ILog log = null)
+            : base(settings, clock, log)
         {
         }
 
@@ -93,27 +115,5 @@ namespace PommaLabs.KVLite
         }
 
         #endregion CacheBase Members
-
-        #region Default Instance - Obsolete
-
-        /// <summary>
-        ///   The default cache instance.
-        /// </summary>
-        private static VolatileCache _cachedDefaultInstance;
-
-        /// <summary>
-        ///   Gets the default instance for this cache kind. Default instance is configured using
-        ///   default application settings.
-        /// </summary>
-        [Pure]
-        public static VolatileCache DefaultInstance
-        {
-            get 
-            {
-                return _cachedDefaultInstance ?? (_cachedDefaultInstance = new VolatileCache(new VolatileCacheSettings(), new SystemClock()));
-            }
-        }
-
-        #endregion
     }
 }

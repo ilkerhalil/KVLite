@@ -1,4 +1,6 @@
-﻿using Finsa.CodeServices.Clock;
+﻿using Common.Logging;
+using Common.Logging.Simple;
+using Finsa.CodeServices.Clock;
 using Ninject.Modules;
 
 namespace UnitTests
@@ -11,6 +13,7 @@ namespace UnitTests
         public override void Load()
         {
             Bind<IClock>().To<MockClock>().InSingletonScope();
+            Bind<ILog>().To<NoOpLogger>();
             //Bind<ICache>().To<PersistentCache>().WhenInjectedInto<PersistentCacheTests>();
             //Bind<ICache>().To<VolatileCache>().WhenInjectedInto<VolatileCacheTests>();
         }

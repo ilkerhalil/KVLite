@@ -26,11 +26,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using CodeProject.ObjectPool;
 using Common.Logging;
+using Common.Logging.Simple;
 using Dapper;
 using Finsa.CodeServices.Clock;
 using PommaLabs.KVLite.Utilities;
@@ -86,6 +88,11 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         private readonly IClock _clock;
 
+        /// <summary>
+        ///   The log used by the cache.
+        /// </summary>
+        private readonly ILog _log;
+
         #endregion Fields
 
         #region Construction
@@ -96,15 +103,17 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="clock">The clock.</param>
-        internal CacheBase(TCacheSettings settings, IClock clock)
+        /// <param name="log">The log.</param>
+        internal CacheBase(TCacheSettings settings, IClock clock, ILog log)
         {
             Contract.Requires<ArgumentNullException>(settings != null, ErrorMessages.NullSettings);
             _settings = settings;
             _clock = clock ?? new SystemClock();
+            _log = log ?? new NoOpLogger();
 
             _settings.PropertyChanged += Settings_PropertyChanged;
 
-            // ...
+            // Connection string must be customized by each cache.
             InitConnectionString();
 
             using (var ctx = _connectionPool.GetObject())
@@ -162,12 +171,19 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   Gets the clock used by the cache.
         /// </summary>
-        /// <value>
-        ///   The clock used by the cache.
-        /// </value>
+        /// <value>The clock used by the cache.</value>
         public IClock Clock
         {
             get { return _clock; }
+        }
+
+        /// <summary>
+        ///   Gets the log used by the cache.
+        /// </summary>
+        /// <value>The log used by the cache.</value>
+        public ILog Log
+        {
+            get { return _log; }
         }
 
         /// <summary>
@@ -504,10 +520,13 @@ namespace PommaLabs.KVLite.Core
         {
             // Makes SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
             var nativePath = (GEnvironment.AppIsRunningOnAspNet ? "bin/KVLite/" : "KVLite/").MapPath();
+
+            // Trace the path from which we load SQLite libraries and load them.
+            Trace.WriteLine("Loading SQLite native libraries from '" + nativePath + "'...");
             Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
 
-            // Logs the path where SQLite has been set.
-            LogManager.GetLogger<PersistentCache>().InfoFormat("SQLite native libraries set at {0}", nativePath);
+            // Logs the path where SQLite has been successfully set.
+            Trace.WriteLine("SQLite native libraries set at '" + nativePath + "'.");
         }
 
         #endregion Protected Methods

@@ -21,13 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Common.Logging;
+using Finsa.CodeServices.Clock;
+using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Utilities;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using System.IO;
-using Finsa.CodeServices.Clock;
-using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.Utilities;
 
 namespace PommaLabs.KVLite
 {
@@ -36,11 +37,31 @@ namespace PommaLabs.KVLite
     /// </summary>
     public sealed class PersistentCache : CacheBase<PersistentCache, PersistentCacheSettings>
     {
+        #region Default Instance
+
+        /// <summary>
+        ///   The default cache instance.
+        /// </summary>
+        private static readonly PersistentCache CachedDefaultInstance;
+
+        /// <summary>
+        ///   Gets the default instance for this cache kind. Default instance is configured using
+        ///   default application settings.
+        /// </summary>
+        [Pure]
+        public static PersistentCache DefaultInstance
+        {
+            get { return CachedDefaultInstance; }
+        }
+
+        #endregion Default Instance
+
         #region Construction
 
         static PersistentCache()
         {
             InitSQLite();
+            CachedDefaultInstance = new PersistentCache(new PersistentCacheSettings());
         }
 
         /// <summary>
@@ -48,8 +69,9 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="clock">The clock.</param>
-        public PersistentCache(PersistentCacheSettings settings, IClock clock = null)
-            : base(settings, clock)
+        /// <param name="log">The log.</param>
+        public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ILog log = null)
+            : base(settings, clock, log)
         {
         }
 
@@ -104,27 +126,5 @@ namespace PommaLabs.KVLite
         }
 
         #endregion CacheBase Members
-
-        #region Default Instance - Obsolete
-
-        /// <summary>
-        ///   The default cache instance.
-        /// </summary>
-        private static PersistentCache _cachedDefaultInstance;
-
-        /// <summary>
-        ///   Gets the default instance for this cache kind. Default instance is configured using
-        ///   default application settings.
-        /// </summary>
-        [Pure]
-        public static PersistentCache DefaultInstance
-        {
-            get 
-            {
-                return _cachedDefaultInstance ?? (_cachedDefaultInstance = new PersistentCache(new PersistentCacheSettings(), new SystemClock()));
-            }
-        }
-
-        #endregion
     }
 }
