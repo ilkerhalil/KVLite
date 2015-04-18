@@ -33,7 +33,6 @@ using Ninject;
 using NUnit.Framework;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.Properties;
 using PommaLabs.KVLite.Utilities.Extensions;
 using PommaLabs.KVLite.Utilities.Testing;
 
@@ -170,7 +169,7 @@ namespace UnitTests
             Assert.AreEqual(v1, info.Value.Item1);
             Assert.AreEqual(v2, info.Value.Item2);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(TimeSpan.FromDays(Settings.Default.AllCaches_DefaultStaticIntervalInDays), info.Interval);
+            Assert.AreEqual(TimeSpan.FromDays(Cache.Settings.StaticIntervalInDays), info.Interval);
         }
 
         [Test]
@@ -188,7 +187,7 @@ namespace UnitTests
             Assert.AreEqual(v1, info.Value.Item1);
             Assert.AreEqual(v2, info.Value.Item2);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(TimeSpan.FromDays(Settings.Default.AllCaches_DefaultStaticIntervalInDays), info.Interval);
+            Assert.AreEqual(TimeSpan.FromDays(Cache.Settings.StaticIntervalInDays), info.Interval);
         }
 
         [Test]
@@ -643,7 +642,7 @@ namespace UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_InvalidValues()
         {
-            for (var i = 0; i < Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean; ++i)
+            for (var i = 0; i < Cache.Settings.InsertionCountBeforeAutoClean; ++i)
             {
                 Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
@@ -653,11 +652,11 @@ namespace UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_ValidValues()
         {
-            for (var i = 0; i < Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean; ++i)
+            for (var i = 0; i < Cache.Settings.InsertionCountBeforeAutoClean; ++i)
             {
                 Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
             }
-            Assert.AreEqual(Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean, Cache.Count());
+            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean, Cache.Count());
         }
 
         [TestCase(SmallItemCount)]

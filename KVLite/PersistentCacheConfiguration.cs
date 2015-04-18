@@ -21,12 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Utilities;
 using Westwind.Utilities.Configuration;
 
 namespace PommaLabs.KVLite
 {
     /// <summary>
-    ///   Configuration class for the <see cref="PersistentCache"/>.
+    ///   Configuration class for the <see cref="PersistentCache"/>. Default values are set inside
+    ///   the configuration file itself.
     /// </summary>
     public sealed class PersistentCacheConfiguration : AppConfiguration
     {
@@ -37,7 +39,11 @@ namespace PommaLabs.KVLite
         static PersistentCacheConfiguration()
         {
             CachedInstance = new PersistentCacheConfiguration();
-            CachedInstance.Initialize();
+            CachedInstance.Initialize(new ConfigurationFileConfigurationProvider<PersistentCacheConfiguration>()
+            {
+                ConfigurationFile =  "KVLite/kvlite.persistent.config".MapPath(),
+                ConfigurationSection = "persistentCache"
+            });
         }
 
         /// <summary>
@@ -50,20 +56,6 @@ namespace PommaLabs.KVLite
         }
 
         #endregion Static instance
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="PersistentCacheConfiguration"/> class and
-        ///   it sets the default values for this configuration.
-        /// </summary>
-        public PersistentCacheConfiguration()
-        {
-            DefaultCacheFile = "PersistentCache.sqlite";
-            DefaultPartition = "KVLite.DefaultPartition";
-            DefaultStaticIntervalInDays = 30;
-            DefaultInsertionCountBeforeAutoClean = 64;
-            DefaultMaxCacheSizeInMB = 1024;
-            DefaultMaxJournalSizeInMB = 32;
-        }
 
         /// <summary>
         ///   Gets or sets the default cache file, that is, the default SQLite DB for the persistent cache.

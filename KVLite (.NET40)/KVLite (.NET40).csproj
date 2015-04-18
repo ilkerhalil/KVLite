@@ -388,6 +388,7 @@
   <ItemGroup>
     <None Include="..\KVLite\KVLite\kvlite.persistent.config">
       <Link>KVLite\kvlite.persistent.config</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\KVLite\KVLite\kvlite.volatile.config">
       <Link>KVLite\kvlite.volatile.config</Link>

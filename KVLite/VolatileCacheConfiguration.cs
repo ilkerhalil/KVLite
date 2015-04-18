@@ -21,12 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Utilities;
 using Westwind.Utilities.Configuration;
 
 namespace PommaLabs.KVLite
 {
     /// <summary>
-    ///   Configuration class for the <see cref="VolatileCache"/>.
+    ///   Configuration class for the <see cref="VolatileCache"/>. Default values are set inside
+    ///   the configuration file itself.
     /// </summary>
     public sealed class VolatileCacheConfiguration : AppConfiguration
     {
@@ -37,7 +39,11 @@ namespace PommaLabs.KVLite
         static VolatileCacheConfiguration()
         {
             CachedInstance = new VolatileCacheConfiguration();
-            CachedInstance.Initialize();
+            CachedInstance.Initialize(new ConfigurationFileConfigurationProvider<PersistentCacheConfiguration>()
+            {
+                ConfigurationFile = "KVLite/kvlite.volatile.config".MapPath(),
+                ConfigurationSection = "volatileCache"
+            });
         }
 
         /// <summary>
@@ -50,20 +56,6 @@ namespace PommaLabs.KVLite
         }
 
         #endregion Static instance
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="VolatileCacheConfiguration"/> class and
-        ///   it sets the default values for this configuration.
-        /// </summary>
-        public VolatileCacheConfiguration()
-        {
-            DefaultCacheName = "VolatileCache";
-            DefaultPartition = "KVLite.DefaultPartition";
-            DefaultStaticIntervalInDays = 30;
-            DefaultInsertionCountBeforeAutoClean = 64;
-            DefaultMaxCacheSizeInMB = 256;
-            DefaultMaxJournalSizeInMB = 32;
-        }
 
         /// <summary>
         ///   Gets or sets the default name of the cache, that is, the default cache name used by
