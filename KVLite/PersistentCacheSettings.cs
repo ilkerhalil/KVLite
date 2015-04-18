@@ -44,7 +44,7 @@ namespace PommaLabs.KVLite
         #region Construction
 
         /// <summary>
-        ///   Sets default values read from <see cref="Settings"/>.
+        ///   Sets default values read from <see cref="PersistentCacheConfiguration"/>.
         /// </summary>
         public PersistentCacheSettings()
         {
