@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web.Http;
-using PommaLabs.KVLite.Properties;
 using WebApi.OutputCache.Core.Cache;
 
 #if NET45
@@ -47,6 +46,11 @@ namespace PommaLabs.KVLite.Web.Http
     public sealed class ApiOutputCache : IApiOutputCache
     {
         #region Fields
+
+        /// <summary>
+        ///   The partition used by Web API output cache provider items.
+        /// </summary>
+        private const string ResponseCachePartition = "";
 
         private readonly ICache _cache;
 
@@ -99,43 +103,43 @@ namespace PommaLabs.KVLite.Web.Http
 
         public IEnumerable<string> AllKeys
         {
-            get { return _cache.GetManyItems(Settings.Default.Web_Http_ApiOutputCacheProviderPartition).Select(i => i.Key); }
+            get { return _cache.GetManyItems(ResponseCachePartition).Select(i => i.Key); }
         }
 
         public void RemoveStartsWith(string key)
         {
-            var items = _cache.GetManyItems(Settings.Default.Web_Http_ApiOutputCacheProviderPartition);
+            var items = _cache.GetManyItems(ResponseCachePartition);
             foreach (var i in items.Where(item => item.Key.StartsWith(key)))
             {
-                Debug.Assert(i.Partition == Settings.Default.Web_Http_ApiOutputCacheProviderPartition);
-                _cache.Remove(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, i.Key);
+                Debug.Assert(i.Partition == ResponseCachePartition);
+                _cache.Remove(ResponseCachePartition, i.Key);
             }
         }
 
         public T Get<T>(string key) where T : class
         {
-            return _cache.Get<T>(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key);
+            return _cache.Get<T>(ResponseCachePartition, key);
         }
 
         public object Get(string key)
         {
-            return _cache.Get(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key);
+            return _cache.Get(ResponseCachePartition, key);
         }
 
         public void Remove(string key)
         {
-            _cache.Remove(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key);
+            _cache.Remove(ResponseCachePartition, key);
         }
 
         public bool Contains(string key)
         {
-            return _cache.Contains(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key);
+            return _cache.Contains(ResponseCachePartition, key);
         }
 
         public void Add(string key, object o, DateTimeOffset expiration, string dependsOnKey = null)
         {
             // KVLite does not support dependency handling; therefore, we ignore the dependsOnKey parameter.
-            _cache.AddTimed(Settings.Default.Web_Http_ApiOutputCacheProviderPartition, key, o, expiration.UtcDateTime);
+            _cache.AddTimed(ResponseCachePartition, key, o, expiration.UtcDateTime);
         }
 
 #pragma warning restore 1591

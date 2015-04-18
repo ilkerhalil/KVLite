@@ -24,7 +24,6 @@
 using System;
 using System.Diagnostics.Contracts;
 using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.Properties;
 
 namespace PommaLabs.KVLite
 {
@@ -38,7 +37,7 @@ namespace PommaLabs.KVLite
 
         private static readonly PersistentCacheSettings CachedDefault = new PersistentCacheSettings();
 
-        private string _cacheFile = Settings.Default.PersistentCache_DefaultCacheFile;
+        private string _cacheFile = PersistentCacheConfiguration.Instance.DefaultCacheFile;
 
         #endregion Fields
 
@@ -49,9 +48,11 @@ namespace PommaLabs.KVLite
         /// </summary>
         public PersistentCacheSettings()
         {
-            InsertionCountBeforeAutoClean = Settings.Default.PersistentCache_DefaultInsertionCountBeforeAutoClean;
-            MaxCacheSizeInMB = Settings.Default.PersistentCache_DefaultMaxCacheSizeInMB;
-            MaxJournalSizeInMB = Settings.Default.PersistentCache_DefaultMaxJournalSizeInMB;
+            DefaultPartition = PersistentCacheConfiguration.Instance.DefaultPartition;
+            StaticIntervalInDays = PersistentCacheConfiguration.Instance.DefaultStaticIntervalInDays;
+            InsertionCountBeforeAutoClean = PersistentCacheConfiguration.Instance.DefaultInsertionCountBeforeAutoClean;
+            MaxCacheSizeInMB = PersistentCacheConfiguration.Instance.DefaultMaxCacheSizeInMB;
+            MaxJournalSizeInMB = PersistentCacheConfiguration.Instance.DefaultMaxJournalSizeInMB;
         }
 
         #endregion Construction

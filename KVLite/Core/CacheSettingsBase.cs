@@ -26,7 +26,6 @@ using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using PommaLabs.KVLite.Annotations;
-using PommaLabs.KVLite.Properties;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -47,19 +46,6 @@ namespace PommaLabs.KVLite.Core
         internal TimeSpan StaticInterval;
 
         #endregion Fields
-
-        #region Construction
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="CacheSettingsBase"/> class.
-        /// </summary>
-        internal CacheSettingsBase()
-        {
-            DefaultPartition = Settings.Default.AllCaches_DefaultPartition;
-            StaticIntervalInDays = Settings.Default.AllCaches_DefaultStaticIntervalInDays;
-        }
-
-        #endregion Construction
 
         #region Settings
 

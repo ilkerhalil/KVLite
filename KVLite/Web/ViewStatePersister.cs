@@ -26,7 +26,6 @@ using System.Diagnostics.Contracts;
 using System.Web;
 using System.Web.UI;
 using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.Properties;
 
 namespace PommaLabs.KVLite.Web
 {
@@ -36,6 +35,11 @@ namespace PommaLabs.KVLite.Web
     public sealed class ViewStatePersister : BaseStatePersister
     {
         #region Fields
+
+        /// <summary>
+        ///   The partition used by ViewState items.
+        /// </summary>
+        private const string ViewStatePartition = "KVLite.Web.ViewStates";
 
         private static ICache _cache = PersistentCache.DefaultInstance;
 
@@ -110,13 +114,13 @@ namespace PommaLabs.KVLite.Web
 
         private static object GetViewState(string guid)
         {
-            return _cache.Get(Settings.Default.Web_ViewStatePersisterPartition, HiddenFieldName + guid);
+            return _cache.Get(ViewStatePartition, HiddenFieldName + guid);
         }
 
         private void SetViewState(string guid)
         {
             object state = new Pair(ControlState, ViewState);
-            _cache.AddSlidingAsync(Settings.Default.Web_ViewStatePersisterPartition, HiddenFieldName + guid, state, CacheInterval);
+            _cache.AddSlidingAsync(ViewStatePartition, HiddenFieldName + guid, state, CacheInterval);
         }
     }
 }

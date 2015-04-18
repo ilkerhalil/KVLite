@@ -25,7 +25,6 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.Properties;
 
 namespace PommaLabs.KVLite
 {
@@ -39,7 +38,7 @@ namespace PommaLabs.KVLite
 
         private static readonly VolatileCacheSettings CachedDefault = new VolatileCacheSettings();
 
-        private string _cacheFile = Settings.Default.VolatileCache_DefaultCacheName;
+        private string _cacheFile = VolatileCacheConfiguration.Instance.DefaultCacheName;
 
         #endregion Fields
 
@@ -50,9 +49,11 @@ namespace PommaLabs.KVLite
         /// </summary>
         public VolatileCacheSettings()
         {
-            InsertionCountBeforeAutoClean = Settings.Default.VolatileCache_DefaultInsertionCountBeforeAutoClean;
-            MaxCacheSizeInMB = Settings.Default.VolatileCache_DefaultMaxCacheSizeInMB;
-            MaxJournalSizeInMB = Settings.Default.VolatileCache_DefaultMaxJournalSizeInMB;
+            DefaultPartition = VolatileCacheConfiguration.Instance.DefaultPartition;
+            StaticIntervalInDays = VolatileCacheConfiguration.Instance.DefaultStaticIntervalInDays;
+            InsertionCountBeforeAutoClean = VolatileCacheConfiguration.Instance.DefaultInsertionCountBeforeAutoClean;
+            MaxCacheSizeInMB = VolatileCacheConfiguration.Instance.DefaultMaxCacheSizeInMB;
+            MaxJournalSizeInMB = VolatileCacheConfiguration.Instance.DefaultMaxJournalSizeInMB;
         }
 
         #endregion Construction

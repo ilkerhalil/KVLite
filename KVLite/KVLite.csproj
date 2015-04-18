@@ -199,6 +199,9 @@
     <Reference Include="WebApi.OutputCache.V2">
       <HintPath>..\packages\Strathweb.CacheOutput.WebApi2.0.6\lib\net45\WebApi.OutputCache.V2.dll</HintPath>
     </Reference>
+    <Reference Include="Westwind.Utilities.Configuration">
+      <HintPath>..\packages\Westwind.Utilities.Configuration.2.25\lib\net40\Westwind.Utilities.Configuration.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CacheExtensions.cs" />
@@ -228,16 +231,12 @@
     <Compile Include="Nancy\CachingBootstrapper.cs" />
     <Compile Include="Nancy\ContextExtensions.cs" />
     <Compile Include="PersistentCache.cs" />
+    <Compile Include="VolatileCacheConfiguration.cs" />
+    <Compile Include="PersistentCacheConfiguration.cs" />
     <Compile Include="PersistentCacheSettings.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\SQLiteQueries.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Settings.cs" />
     <Compile Include="Utilities\Collections\Concurrent\ConcurrentDictionary.cs" />
     <Compile Include="Utilities\Collections\Concurrent\ConcurrentDoublyLinkedList.cs" />
     <Compile Include="Utilities\Collections\Concurrent\ConcurrentHashLinkedList.cs" />
@@ -297,12 +296,14 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="doxyfile.txt" />
+    <None Include="KVLite\kvlite.volatile.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="KVLite\kvlite.persistent.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
-    </None>
-    <None Include="Properties\Settings.settings">
-      <Generator>PublicSettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>

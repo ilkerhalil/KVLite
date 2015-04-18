@@ -213,6 +213,9 @@
     <Reference Include="WebApi.OutputCache.Core">
       <HintPath>..\packages\Strathweb.CacheOutput.0.5\lib\net40\WebApi.OutputCache.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Westwind.Utilities.Configuration">
+      <HintPath>..\packages\Westwind.Utilities.Configuration.2.25\lib\net40\Westwind.Utilities.Configuration.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\KVLite\CacheReadMode.cs">
@@ -263,11 +266,11 @@
     <Compile Include="..\KVLite\Core\Snappy\Utils.cs">
       <Link>Core\Snappy\Utils.cs</Link>
     </Compile>
+    <Compile Include="..\KVLite\PersistentCacheConfiguration.cs">
+      <Link>PersistentCacheConfiguration.cs</Link>
+    </Compile>
     <Compile Include="..\KVLite\Properties\Annotations.cs">
       <Link>Properties\Annotations.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Properties\Settings.Designer.cs">
-      <Link>Properties\Settings.Designer.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\CacheExtensions.cs">
       <Link>CacheExtensions.cs</Link>
@@ -308,11 +311,11 @@
     <Compile Include="..\KVLite\PersistentCacheSettings.cs">
       <Link>PersistentCacheSettings.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Settings.cs">
-      <Link>Settings.cs</Link>
-    </Compile>
     <Compile Include="..\KVLite\VolatileCache.cs">
       <Link>VolatileCache.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\VolatileCacheConfiguration.cs">
+      <Link>VolatileCacheConfiguration.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\VolatileCacheSettings.cs">
       <Link>VolatileCacheSettings.cs</Link>
@@ -383,6 +386,13 @@
     <Compile Include="Utilities\XML\DynamicXml.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\KVLite\KVLite\kvlite.persistent.config">
+      <Link>KVLite\kvlite.persistent.config</Link>
+    </None>
+    <None Include="..\KVLite\KVLite\kvlite.volatile.config">
+      <Link>KVLite\kvlite.volatile.config</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>

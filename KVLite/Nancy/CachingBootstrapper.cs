@@ -29,7 +29,6 @@ using Common.Logging;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
-using PommaLabs.KVLite.Properties;
 
 namespace PommaLabs.KVLite.Nancy
 {
@@ -41,6 +40,11 @@ namespace PommaLabs.KVLite.Nancy
     public abstract class CachingBootstrapper : DefaultNancyBootstrapper
     {
         #region Fields
+
+        /// <summary>
+        ///   The partition used by Nancy response cache items.
+        /// </summary>
+        private const string ResponseCachePartition = "KVLite.Nancy.ResponseCache";
 
         private readonly ICache _cache;
 
@@ -69,9 +73,7 @@ namespace PommaLabs.KVLite.Nancy
         /// <summary>
         ///   Gets the cache instance currently used by the bootstrapper.
         /// </summary>
-        /// <value>
-        ///   The cache instance currently used by the bootstrapper.
-        /// </value>
+        /// <value>The cache instance currently used by the bootstrapper.</value>
         public ICache Cache
         {
             get
@@ -81,7 +83,7 @@ namespace PommaLabs.KVLite.Nancy
             }
         }
 
-        #endregion
+        #endregion Properties
 
         /// <summary>
         ///   Handles application startup.
@@ -104,7 +106,7 @@ namespace PommaLabs.KVLite.Nancy
         private Response CheckCache(NancyContext context)
         {
             var cacheKey = context.GetRequestFingerprint();
-            var cachedSummary = _cache.Get<ResponseSummary>(Settings.Default.Nancy_ResponseCachePartition, cacheKey);
+            var cachedSummary = _cache.Get<ResponseSummary>(ResponseCachePartition, cacheKey);
             return (cachedSummary == null) ? null : cachedSummary.ToResponse();
         }
 
@@ -143,7 +145,7 @@ namespace PommaLabs.KVLite.Nancy
             {
                 var cacheKey = context.GetRequestFingerprint();
                 var cachedSummary = new ResponseSummary(responseToBeCached);
-                _cache.AddTimedAsync(Settings.Default.Nancy_ResponseCachePartition, cacheKey, cachedSummary, _cache.Clock.UtcNow.AddSeconds(cacheSeconds));
+                _cache.AddTimedAsync(ResponseCachePartition, cacheKey, cachedSummary, _cache.Clock.UtcNow.AddSeconds(cacheSeconds));
                 context.Response = cachedSummary.ToResponse();
             }
             catch (Exception ex)

@@ -24,8 +24,6 @@
 using System;
 using System.Diagnostics.Contracts;
 using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.Properties;
-using PommaLabs.KVLite.Utilities.Reflection;
 
 namespace PommaLabs.KVLite.Web
 {
@@ -35,6 +33,11 @@ namespace PommaLabs.KVLite.Web
     public sealed class OutputCacheProvider : System.Web.Caching.OutputCacheProvider
     {
         #region Fields
+
+        /// <summary>
+        ///   The partition used by output cache provider items.
+        /// </summary>
+        private const string OutputCachePartition = "KVLite.Web.OutputCache";
 
         private static ICache _cache = PersistentCache.DefaultInstance;
 
@@ -67,23 +70,23 @@ namespace PommaLabs.KVLite.Web
 
         public override object Get(string key)
         {
-            return _cache.Get(Settings.Default.Web_ViewStatePersisterPartition, key);
+            return _cache.Get(OutputCachePartition, key);
         }
 
         public override object Add(string key, object entry, DateTime utcExpiry)
         {
-            _cache.AddTimed(Settings.Default.Web_ViewStatePersisterPartition, key, entry, utcExpiry);
+            _cache.AddTimed(OutputCachePartition, key, entry, utcExpiry);
             return entry;
         }
 
         public override void Set(string key, object entry, DateTime utcExpiry)
         {
-            _cache.AddTimed(Settings.Default.Web_ViewStatePersisterPartition, key, entry, utcExpiry);
+            _cache.AddTimed(OutputCachePartition, key, entry, utcExpiry);
         }
 
         public override void Remove(string key)
         {
-            _cache.Remove(Settings.Default.Web_ViewStatePersisterPartition, key);
+            _cache.Remove(OutputCachePartition, key);
         }
     }
 }
