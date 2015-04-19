@@ -26,6 +26,8 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Common.Logging;
 using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Compression;
+using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite.Contracts
@@ -41,9 +43,7 @@ namespace PommaLabs.KVLite.Contracts
         /// <summary>
         ///   Gets the clock used by the cache.
         /// </summary>
-        /// <value>
-        ///   The clock used by the cache.
-        /// </value>
+        /// <value>The clock used by the cache.</value>
         public IClock Clock
         {
             get
@@ -53,12 +53,42 @@ namespace PommaLabs.KVLite.Contracts
             }
         }
 
+        /// <summary>
+        ///   Gets the compressor used by the cache.
+        /// </summary>
+        /// <value>The compressor used by the cache.</value>
+        public ICompressor Compressor
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<ICompressor>() != null);
+                return default(ICompressor);
+            }
+        }
+
+        /// <summary>
+        ///   Gets the log used by the cache.
+        /// </summary>
+        /// <value>The log used by the cache.</value>
         public ILog Log
         {
             get
             {
                 Contract.Ensures(Contract.Result<ILog>() != null);
                 return default(ILog);
+            }
+        }
+
+        /// <summary>
+        ///   Gets the serializer used by the cache.
+        /// </summary>
+        /// <value>The serializer used by the cache.</value>
+        public ISerializer Serializer
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<ISerializer>() != null);
+                return default(ISerializer);
             }
         }
 

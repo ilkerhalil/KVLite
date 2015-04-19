@@ -4,13 +4,13 @@
         <name>RestService.WebApi</name>
     </assembly>
     <members>
-        <member name="T:RestService.Mvc.Controllers.HelpController">
+        <member name="T:RestService.WebApi.Controllers.HelpController">
             <summary>
               The HELP controller.
             </summary>
             <remarks>Adjust routing prefix according to your own needs.</remarks>
         </member>
-        <member name="M:RestService.Mvc.Controllers.HelpController.#ctor">
+        <member name="M:RestService.WebApi.Controllers.HelpController.#ctor">
             <summary>
               Override here default info.
             </summary>

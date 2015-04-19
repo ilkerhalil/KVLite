@@ -23,6 +23,8 @@
 
 using Common.Logging;
 using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Compression;
+using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Utilities;
 using System.Collections.Generic;
@@ -70,8 +72,10 @@ namespace PommaLabs.KVLite
         /// <param name="settings">Cache settings.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="log">The log.</param>
-        public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ILog log = null)
-            : base(settings, clock, log)
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="compressor">The compressor.</param>
+        public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null)
+            : base(settings, clock, log, serializer, compressor)
         {
         }
 

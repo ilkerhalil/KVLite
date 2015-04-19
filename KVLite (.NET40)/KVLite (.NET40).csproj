@@ -148,6 +148,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Finsa.CodeServices.Clock.1.0.1\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
     </Reference>
+    <Reference Include="Finsa.CodeServices.Compression">
+      <HintPath>..\packages\Finsa.CodeServices.Compression.1.0.1\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
+    </Reference>
+    <Reference Include="Finsa.CodeServices.Serialization">
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.1.0.1\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
+    </Reference>
     <Reference Include="Finsa.CodeServices.Testing, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.1\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
@@ -221,6 +227,9 @@
     <Compile Include="..\KVLite\CacheReadMode.cs">
       <Link>CacheReadMode.cs</Link>
     </Compile>
+    <Compile Include="..\KVLite\CodeServices\Compression\SnappyCompressor.cs">
+      <Link>CodeServices\Compression\SnappyCompressor.cs</Link>
+    </Compile>
     <Compile Include="..\KVLite\Core\Crc32C\Crc32CAlgorithm.cs">
       <Link>Core\Crc32C\Crc32CAlgorithm.cs</Link>
     </Compile>
@@ -280,9 +289,6 @@
     </Compile>
     <Compile Include="..\KVLite\Contracts\CacheContract.cs">
       <Link>Contracts\CacheContract.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\BinarySerializer.cs">
-      <Link>Core\BinarySerializer.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Core\CacheBase.cs">
       <Link>Core\CacheBase.cs</Link>

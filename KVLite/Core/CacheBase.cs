@@ -29,12 +29,16 @@ using System.Data.SQLite;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
 using System.Threading.Tasks;
 using CodeProject.ObjectPool;
 using Common.Logging;
 using Common.Logging.Simple;
 using Dapper;
 using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Compression;
+using Finsa.CodeServices.Serialization;
+using PommaLabs.KVLite.CodeServices.Compression;
 using PommaLabs.KVLite.Utilities;
 using PommaLabs.KVLite.Utilities.Extensions;
 
@@ -93,6 +97,16 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         private readonly ILog _log;
 
+        /// <summary>
+        ///   The serializer used by the cache.
+        /// </summary>
+        private readonly ISerializer _serializer;
+
+        /// <summary>
+        ///   The compressor used by the cache.
+        /// </summary>
+        private readonly ICompressor _compressor;
+
         #endregion Fields
 
         #region Construction
@@ -104,12 +118,44 @@ namespace PommaLabs.KVLite.Core
         /// <param name="settings">The settings.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="log">The log.</param>
-        internal CacheBase(TCacheSettings settings, IClock clock, ILog log)
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="compressor">The compressor.</param>
+        internal CacheBase(TCacheSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor)
         {
             Contract.Requires<ArgumentNullException>(settings != null, ErrorMessages.NullSettings);
             _settings = settings;
             _clock = clock ?? new SystemClock();
             _log = log ?? new NoOpLogger();
+            _compressor = compressor ?? new SnappyCompressor();
+            _serializer = serializer ?? new BinarySerializer(new BinarySerializerSettings
+            {
+                // In simple mode, the assembly used during deserialization need not match exactly
+                // the assembly used during serialization. Specifically, the version numbers need
+                // not match as the LoadWithPartialName method is used to load the assembly.
+                AssemblyFormat = FormatterAssemblyStyle.Simple,
+
+                // The low deserialization level for .NET Framework remoting. It supports types
+                // associated with basic remoting functionality.
+                FilterLevel = TypeFilterLevel.Low,
+
+                // Indicates that types can be stated only for arrays of objects, object members of
+                // type Object, and ISerializable non-primitive value types. The XsdString and
+                // TypesWhenNeeded settings are meant for high performance serialization between
+                // services built on the same version of the .NET Framework. These two values do not
+                // support VTS (Version Tolerant Serialization) because they intentionally omit type
+                // information that VTS uses to skip or add optional fields and properties. You
+                // should not use the XsdString or TypesWhenNeeded type formats when serializing and
+                // deserializing types on a computer running a different version of the .NET
+                // Framework than the computer on which the type was serialized. Serializing and
+                // deserializing on computers running different versions of the .NET Framework
+                // causes the formatter to skip serialization of type information, thus making it
+                // impossible for the deserializer to skip optional fields if they are not present
+                // in certain types that may exist in the other version of the .NET Framework. If
+                // you must use XsdString or TypesWhenNeeded in such a scenario, you must provide
+                // custom serialization for types that have changed from one version of the .NET
+                // Framework to the other.
+                TypeFormat = FormatterTypeStyle.TypesWhenNeeded,
+            });
 
             _settings.PropertyChanged += Settings_PropertyChanged;
 
@@ -178,12 +224,30 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
+        ///   Gets the compressor used by the cache.
+        /// </summary>
+        /// <value>The compressor used by the cache.</value>
+        public ICompressor Compressor
+        {
+            get { return _compressor; }
+        }
+
+        /// <summary>
         ///   Gets the log used by the cache.
         /// </summary>
         /// <value>The log used by the cache.</value>
         public ILog Log
         {
             get { return _log; }
+        }
+
+        /// <summary>
+        ///   Gets the serializer used by the cache.
+        /// </summary>
+        /// <value>The serializer used by the cache.</value>
+        public ISerializer Serializer
+        {
+            get { return _serializer; }
         }
 
         /// <summary>
@@ -539,7 +603,9 @@ namespace PommaLabs.KVLite.Core
             byte[] serializedValue;
             try
             {
-                serializedValue = BinarySerializer.SerializeObject(value);
+                var serializedStream = _serializer.SerializeToStream(value);
+                var compressedStream = _compressor.Compress(serializedStream);
+                serializedValue = compressedStream.ToArray();
             }
             catch (Exception ex)
             {
@@ -634,11 +700,14 @@ namespace PommaLabs.KVLite.Core
             return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
 
-        private static object DeserializeValue(byte[] serializedValue)
+        private object DeserializeValue(byte[] serializedValue)
         {
             try
             {
-                return BinarySerializer.DeserializeObject(serializedValue);
+                using (var decompressedStream = _compressor.Decompress(serializedValue))
+                {
+                    return _serializer.DeserializeFromStream<object>(decompressedStream);
+                }
             }
             catch
             {
@@ -699,12 +768,15 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private static CacheItem ToCacheItem(DbCacheItem src)
+        private CacheItem ToCacheItem(DbCacheItem src)
         {
             object deserializedValue;
             try
             {
-                deserializedValue = BinarySerializer.DeserializeObject(src.SerializedValue);
+                using (var decompressedStream = _compressor.Decompress(src.SerializedValue))
+                {
+                    deserializedValue = _serializer.DeserializeFromStream<object>(decompressedStream);
+                }
             }
             catch
             {
