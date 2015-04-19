@@ -29,10 +29,20 @@ using PommaLabs.KVLite.Core.Snappy;
 namespace PommaLabs.KVLite.CodeServices.Compression
 {
     /// <summary>
-    ///   A custom compressor based on Snappy. 
+    ///   A custom compressor based on Snappy.
     /// </summary>
     public sealed class SnappyCompressor : AbstractCompressor
     {
+        /// <summary>
+        ///   Creates a new compression stream.
+        /// </summary>
+        /// <param name="backingStream">The backing stream.</param>
+        /// <returns>A new compression stream.</returns>
+        protected override Stream CreateCompressionStreamInternal(Stream backingStream)
+        {
+            return new SnappyStream(backingStream, CompressionMode.Compress, true);
+        }
+
         /// <summary>
         ///   Compresses the first stream into the second steam.
         /// </summary>
@@ -40,10 +50,20 @@ namespace PommaLabs.KVLite.CodeServices.Compression
         /// <param name="compressedStream">The compressed stream.</param>
         protected override void CompressInternal(Stream decompressedStream, Stream compressedStream)
         {
-            using (var snappyStream = new SnappyStream(compressedStream, CompressionMode.Compress, true))
+            using (var snappyStream = CreateCompressionStreamInternal(compressedStream))
             {
                 decompressedStream.CopyTo(snappyStream);
             }
+        }
+
+        /// <summary>
+        ///   Creates a new decompression stream.
+        /// </summary>
+        /// <param name="backingStream">The backing stream.</param>
+        /// <returns>A new decompression stream.</returns>
+        protected override Stream CreateDecompressionStreamInternal(Stream backingStream)
+        {
+            return new SnappyStream(backingStream, CompressionMode.Decompress, true);
         }
 
         /// <summary>
@@ -53,7 +73,7 @@ namespace PommaLabs.KVLite.CodeServices.Compression
         /// <param name="decompressedStream">The decompressed stream.</param>
         protected override void DecompressInternal(Stream compressedStream, Stream decompressedStream)
         {
-            using (var snappyStream = new SnappyStream(compressedStream, CompressionMode.Decompress, true))
+            using (var snappyStream = CreateDecompressionStreamInternal(compressedStream))
             {
                 snappyStream.CopyTo(decompressedStream);
             }

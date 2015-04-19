@@ -28,6 +28,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters;
 using System.Threading.Tasks;
@@ -603,9 +604,14 @@ namespace PommaLabs.KVLite.Core
             byte[] serializedValue;
             try
             {
-                var serializedStream = _serializer.SerializeToStream(value);
-                var compressedStream = _compressor.Compress(serializedStream);
-                serializedValue = compressedStream.ToArray();
+                using (var memoryStream = new MemoryStream(1024))
+                {
+                    using (var compressionStream = _compressor.CreateCompressionStream(memoryStream))
+                    {
+                        _serializer.SerializeToStream(value, compressionStream);
+                    }
+                    serializedValue = memoryStream.ToArray();
+                }
             }
             catch (Exception ex)
             {
@@ -704,16 +710,22 @@ namespace PommaLabs.KVLite.Core
         {
             try
             {
-                using (var decompressedStream = _compressor.Decompress(serializedValue))
-                {
-                    return _serializer.DeserializeFromStream<object>(decompressedStream);
-                }
+                return UnsafeDeserializeValue(serializedValue);
             }
             catch
             {
                 // Something wrong happened during deserialization. Therefore, we act as if there
                 // was no value.
                 return null;
+            }
+        }
+
+        private object UnsafeDeserializeValue(byte[] serializedValue)
+        {
+            using (var memoryStream = new MemoryStream(serializedValue))
+            using (var decompressionStream = _compressor.CreateDecompressionStream(memoryStream))
+            {
+                return _serializer.DeserializeFromStream<object>(decompressionStream);
             }
         }
 
@@ -773,10 +785,7 @@ namespace PommaLabs.KVLite.Core
             object deserializedValue;
             try
             {
-                using (var decompressedStream = _compressor.Decompress(src.SerializedValue))
-                {
-                    deserializedValue = _serializer.DeserializeFromStream<object>(decompressedStream);
-                }
+                deserializedValue = UnsafeDeserializeValue(src.SerializedValue);
             }
             catch
             {
