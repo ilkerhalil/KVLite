@@ -39,7 +39,6 @@ using Dapper;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
-using PommaLabs.KVLite.CodeServices.Compression;
 using PommaLabs.KVLite.Utilities;
 using PommaLabs.KVLite.Utilities.Extensions;
 
@@ -51,8 +50,7 @@ namespace PommaLabs.KVLite.Core
     /// <typeparam name="TCache">The type of the cache.</typeparam>
     /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     [Serializable]
-    public abstract class CacheBase<TCache, TCacheSettings> : FormattableObject, ICache<TCacheSettings>
-        where TCache : CacheBase<TCache, TCacheSettings>, ICache<TCacheSettings>
+    public abstract class CacheBase<TCacheSettings> : FormattableObject, ICache<TCacheSettings>
         where TCacheSettings : CacheSettingsBase
     {
         #region Constants

@@ -37,7 +37,7 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   An SQLite-based persistent cache.
     /// </summary>
-    public sealed class PersistentCache : CacheBase<PersistentCache, PersistentCacheSettings>
+    public sealed class PersistentCache : CacheBase<PersistentCacheSettings>
     {
         #region Default Instance
 

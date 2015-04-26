@@ -215,21 +215,6 @@
   <ItemGroup>
     <Compile Include="CacheExtensions.cs" />
     <Compile Include="CacheItem.cs" />
-    <Compile Include="CodeServices\Compression\SnappyCompressor.cs" />
-    <Compile Include="Core\Crc32C\Crc32CAlgorithm.cs" />
-    <Compile Include="Core\Crc32C\Native32.cs" />
-    <Compile Include="Core\Crc32C\Native64.cs" />
-    <Compile Include="Core\Crc32C\NativeProxy.cs" />
-    <Compile Include="Core\Crc32C\Utils.cs" />
-    <Compile Include="Core\Snappy\Native32.cs" />
-    <Compile Include="Core\Snappy\Native64.cs" />
-    <Compile Include="Core\Snappy\NativeProxy.cs" />
-    <Compile Include="Core\Snappy\SnappyCodec.cs" />
-    <Compile Include="Core\Snappy\SnappyFrame.cs" />
-    <Compile Include="Core\Snappy\SnappyFrameType.cs" />
-    <Compile Include="Core\Snappy\SnappyStatus.cs" />
-    <Compile Include="Core\Snappy\SnappyStream.cs" />
-    <Compile Include="Core\Snappy\Utils.cs" />
     <Compile Include="Core\TaskRunner.cs" />
     <Compile Include="CacheReadMode.cs" />
     <Compile Include="Contracts\CacheContract.cs" />

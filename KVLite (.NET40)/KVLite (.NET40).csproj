@@ -229,53 +229,8 @@
     <Compile Include="..\KVLite\CacheReadMode.cs">
       <Link>CacheReadMode.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\CodeServices\Compression\SnappyCompressor.cs">
-      <Link>CodeServices\Compression\SnappyCompressor.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Crc32C\Crc32CAlgorithm.cs">
-      <Link>Core\Crc32C\Crc32CAlgorithm.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Crc32C\Native32.cs">
-      <Link>Core\Crc32C\Native32.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Crc32C\Native64.cs">
-      <Link>Core\Crc32C\Native64.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Crc32C\NativeProxy.cs">
-      <Link>Core\Crc32C\NativeProxy.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Crc32C\Utils.cs">
-      <Link>Core\Crc32C\Utils.cs</Link>
-    </Compile>
     <Compile Include="..\KVLite\Core\ErrorMessages.cs">
       <Link>Core\ErrorMessages.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Snappy\Native32.cs">
-      <Link>Core\Snappy\Native32.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Snappy\Native64.cs">
-      <Link>Core\Snappy\Native64.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Snappy\NativeProxy.cs">
-      <Link>Core\Snappy\NativeProxy.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Snappy\SnappyCodec.cs">
-      <Link>Core\Snappy\SnappyCodec.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Snappy\SnappyFrame.cs">
-      <Link>Core\Snappy\SnappyFrame.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Snappy\SnappyFrameType.cs">
-      <Link>Core\Snappy\SnappyFrameType.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Snappy\SnappyStatus.cs">
-      <Link>Core\Snappy\SnappyStatus.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Snappy\SnappyStream.cs">
-      <Link>Core\Snappy\SnappyStream.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\Snappy\Utils.cs">
-      <Link>Core\Snappy\Utils.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\PersistentCacheConfiguration.cs">
       <Link>PersistentCacheConfiguration.cs</Link>

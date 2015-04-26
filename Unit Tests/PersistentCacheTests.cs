@@ -30,7 +30,7 @@ using PommaLabs.KVLite.Core;
 
 namespace UnitTests
 {
-    internal sealed class PersistentCacheTests : TestBase<PersistentCache, PersistentCacheSettings>
+    internal sealed class PersistentCacheTests : TestBase<PersistentCacheSettings>
     {
         private const string BlankPath = "   ";
 

@@ -27,7 +27,6 @@ using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using Ninject.Modules;
-using PommaLabs.KVLite.CodeServices.Compression;
 
 namespace UnitTests
 {
@@ -39,12 +38,10 @@ namespace UnitTests
         public override void Load()
         {
             Bind<IClock>().To<MockClock>().InSingletonScope();
-            Bind<ICompressor>().To<SnappyCompressor>().InSingletonScope();
+            Bind<ICompressor>().To<DeflateCompressor>().InSingletonScope();
             Bind<ILog>().To<NoOpLogger>().InSingletonScope();
-            Bind<ISerializer>().To<BinarySerializer>();
+            Bind<ISerializer>().To<BinarySerializer>().InSingletonScope();
             Bind<BinarySerializerSettings>().ToMethod(ctx => new BinarySerializerSettings());
-            //Bind<ICache>().To<PersistentCache>().WhenInjectedInto<PersistentCacheTests>();
-            //Bind<ICache>().To<VolatileCache>().WhenInjectedInto<VolatileCacheTests>();
         }
     }
 }

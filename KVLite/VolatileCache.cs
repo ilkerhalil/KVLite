@@ -37,7 +37,7 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   An SQLite-based in-memory cache.
     /// </summary>
-    public sealed class VolatileCache : CacheBase<VolatileCache, VolatileCacheSettings>
+    public sealed class VolatileCache : CacheBase<VolatileCacheSettings>
     {
         #region Default Instance
 

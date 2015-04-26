@@ -39,8 +39,7 @@ using PommaLabs.KVLite.Utilities.Testing;
 namespace UnitTests
 {
     [TestFixture]
-    internal abstract class TestBase<TCache, TCacheSettings>
-        where TCache : CacheBase<TCache, TCacheSettings>
+    internal abstract class TestBase<TCacheSettings>
         where TCacheSettings : CacheSettingsBase, new()
     {
         #region Setup/Teardown
