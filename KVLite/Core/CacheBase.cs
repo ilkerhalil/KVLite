@@ -127,7 +127,7 @@ namespace PommaLabs.KVLite.Core
             _settings = settings;
             _clock = clock ?? new SystemClock();
             _log = log ?? new NoOpLogger();
-            _compressor = compressor ?? new SnappyCompressor();
+            _compressor = compressor ?? new DeflateCompressor();
             _serializer = serializer ?? new BinarySerializer(new BinarySerializerSettings
             {
                 // In simple mode, the assembly used during deserialization need not match exactly
@@ -583,15 +583,15 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         protected static void InitSQLite()
         {
-            // Makes SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
-            var nativePath = (GEnvironment.AppIsRunningOnAspNet ? "bin/KVLite/" : "KVLite/").MapPath();
+            //// Makes SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
+            //var nativePath = (GEnvironment.AppIsRunningOnAspNet ? "bin/KVLite/" : "KVLite/").MapPath();
 
-            // Trace the path from which we load SQLite libraries and load them.
-            Trace.WriteLine("Loading SQLite native libraries from '" + nativePath + "'...");
-            Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
+            //// Trace the path from which we load SQLite libraries and load them.
+            //Trace.WriteLine("Loading SQLite native libraries from '" + nativePath + "'...");
+            //Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
 
-            // Logs the path where SQLite has been successfully set.
-            Trace.WriteLine("SQLite native libraries set at '" + nativePath + "'.");
+            //// Logs the path where SQLite has been successfully set.
+            //Trace.WriteLine("SQLite native libraries set at '" + nativePath + "'.");
         }
 
         #endregion Protected Methods

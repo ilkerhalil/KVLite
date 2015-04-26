@@ -40,10 +40,18 @@ namespace PommaLabs.KVLite
 
         static PersistentCacheConfiguration()
         {
+            var configurationFile = "KVLite/kvlite.persistent.config";
+            if (GEnvironment.AppIsRunningOnAspNet)
+            {
+                // If application is running on ASP.NET, then we look for the configuration file
+                // inside the root of the project. Usually, configuration file are not stored into
+                // the "bin" directory, because every change would make the application restart.
+                configurationFile = "~/" + configurationFile;
+            }
             CachedInstance = new PersistentCacheConfiguration();
             CachedInstance.Initialize(new ConfigurationFileConfigurationProvider<PersistentCacheConfiguration>
             {
-                ConfigurationFile = "KVLite/kvlite.persistent.config".MapPath(),
+                ConfigurationFile = configurationFile.MapPath(),
                 ConfigurationSection = "persistentCache"
             });
         }

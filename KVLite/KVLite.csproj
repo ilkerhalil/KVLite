@@ -305,11 +305,11 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="doxyfile.txt" />
-    <None Include="KVLite\kvlite.volatile.config">
+    <None Include="KVLite\VolatileCache.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
-    <None Include="KVLite\kvlite.persistent.config">
+    <None Include="KVLite\PersistentCache.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config">

@@ -394,12 +394,12 @@
     <Compile Include="Utilities\XML\DynamicXml.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\KVLite\KVLite\kvlite.persistent.config">
-      <Link>KVLite\kvlite.persistent.config</Link>
+    <None Include="..\KVLite\KVLite\PersistentCache.config">
+      <Link>KVLite\PersistentCache.config</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\KVLite\KVLite\kvlite.volatile.config">
-      <Link>KVLite\kvlite.volatile.config</Link>
+    <None Include="..\KVLite\KVLite\VolatileCache.config">
+      <Link>KVLite\VolatileCache.config</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="app.config" />
