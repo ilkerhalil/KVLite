@@ -32,38 +32,45 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   An item that is stored in the cache.
     /// </summary>
+    /// <typeparam name="TVal">The type of the value.</typeparam>
     [Serializable, JsonObject(MemberSerialization.OptIn)]
-    public class CacheItem : EquatableObject<CacheItem>
+    public class CacheItem<TVal> : EquatableObject<CacheItem<TVal>>
     {
         #region Public Properties
 
         /// <summary>
-        ///   </summary>
+        ///   The partition corresponding to this entry.
+        /// </summary>
         [JsonProperty(Order = 0)]
         public string Partition { get; set; }
 
         /// <summary>
-        ///   </summary>
+        ///   The key corresponding to this entry.
+        /// </summary>
         [JsonProperty(Order = 1)]
         public string Key { get; set; }
 
         /// <summary>
-        ///   </summary>
+        ///   The typed value.
+        /// </summary>
         [JsonProperty(Order = 2)]
-        public object Value { get; set; }
+        public TVal Value { get; set; }
 
         /// <summary>
-        ///   </summary>
+        ///   When the cache item was created.
+        /// </summary>
         [JsonProperty(Order = 3)]
         public DateTime UtcCreation { get; set; }
 
         /// <summary>
-        ///   </summary>
+        ///   When the cache item will expire.
+        /// </summary>
         [JsonProperty(Order = 4)]
-        public DateTime? UtcExpiry { get; set; }
+        public DateTime UtcExpiry { get; set; }
 
         /// <summary>
-        ///   </summary>
+        ///   The refresh interval, if the item is sliding.
+        /// </summary>
         [JsonProperty(Order = 5)]
         public TimeSpan? Interval { get; set; }
 
@@ -97,23 +104,5 @@ namespace PommaLabs.KVLite
         }
 
         #endregion EquatableObject<CacheItem> Members
-    }
-
-    /// <summary>
-    ///   A cache item whose value is typed.
-    /// </summary>
-    /// <typeparam name="TVal">The type of the value.</typeparam>
-    [Serializable, JsonObject(MemberSerialization.OptIn)]
-    public sealed class CacheItem<TVal> : CacheItem
-    {
-        #region Public Properties
-
-        /// <summary>
-        ///   The typed value.
-        /// </summary>
-        [JsonProperty(Order = 2)]
-        public new TVal Value { get; set; }
-
-        #endregion Public Properties
     }
 }

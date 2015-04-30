@@ -233,11 +233,10 @@ namespace UnitTests
             Assert.AreEqual(v2, info.Value.Item2);
 
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.True(info.UtcExpiry != null);
-            Assert.AreEqual(e.Date, info.UtcExpiry.Value.Date);
-            Assert.AreEqual(e.Hour, info.UtcExpiry.Value.Hour);
-            Assert.AreEqual(e.Minute, info.UtcExpiry.Value.Minute);
-            Assert.AreEqual(e.Second, info.UtcExpiry.Value.Second);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
 
             Assert.IsNull(info.Interval);
         }
@@ -259,11 +258,10 @@ namespace UnitTests
             Assert.AreEqual(v2, info.Value.Item2);
 
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.True(info.UtcExpiry != null);
-            Assert.AreEqual(e.Date, info.UtcExpiry.Value.Date);
-            Assert.AreEqual(e.Hour, info.UtcExpiry.Value.Hour);
-            Assert.AreEqual(e.Minute, info.UtcExpiry.Value.Minute);
-            Assert.AreEqual(e.Second, info.UtcExpiry.Value.Second);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
 
             Assert.IsNull(info.Interval);
         }
@@ -615,8 +613,7 @@ namespace UnitTests
             {
                 var item = Cache.GetItem<string>(StringItems[i]).Value;
                 Assert.IsNotNull(item);
-                Assert.True(item.UtcExpiry != null);
-                Assert.AreEqual(item.UtcExpiry.Value.ToUnixTime(), (Cache.Clock.UtcNow + interval).ToUnixTime());
+                Assert.AreEqual(item.UtcExpiry.ToUnixTime(), (Cache.Clock.UtcNow + interval).ToUnixTime());
             }
         }
 
@@ -636,8 +633,7 @@ namespace UnitTests
             {
                 var item = items[i];
                 Assert.IsNotNull(item);
-                Assert.True(item.UtcExpiry != null);
-                Assert.AreEqual(item.UtcExpiry.Value.ToUnixTime(), (Cache.Clock.UtcNow + interval).ToUnixTime());
+                Assert.AreEqual(item.UtcExpiry.ToUnixTime(), (Cache.Clock.UtcNow + interval).ToUnixTime());
             }
         }
 
@@ -739,11 +735,10 @@ namespace UnitTests
                 Assert.IsNotNull(value);
                 Assert.AreEqual(StringItems[i], value);
                 var item = Cache.PeekItem<string>(StringItems[i]).Value;
-                Assert.True(item.UtcExpiry != null);
-                Assert.AreEqual(expiryDate.Date, item.UtcExpiry.Value.Date);
-                Assert.AreEqual(expiryDate.Hour, item.UtcExpiry.Value.Hour);
-                Assert.AreEqual(expiryDate.Minute, item.UtcExpiry.Value.Minute);
-                Assert.AreEqual(expiryDate.Second, item.UtcExpiry.Value.Second);
+                Assert.AreEqual(expiryDate.Date, item.UtcExpiry.Date);
+                Assert.AreEqual(expiryDate.Hour, item.UtcExpiry.Hour);
+                Assert.AreEqual(expiryDate.Minute, item.UtcExpiry.Minute);
+                Assert.AreEqual(expiryDate.Second, item.UtcExpiry.Second);
             }
         }
 

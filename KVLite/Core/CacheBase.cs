@@ -786,7 +786,7 @@ namespace PommaLabs.KVLite.Core
                     Key = src.Key,
                     Value = UnsafeDeserializeValue<TVal>(src.SerializedValue),
                     UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcCreation),
-                    UtcExpiry = src.UtcExpiry == null ? new DateTime?() : DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry.Value),
+                    UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry),
                     Interval = src.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(src.Interval.Value)
                 });
             }
@@ -869,7 +869,7 @@ namespace PommaLabs.KVLite.Core
             public long UtcCreation { get; set; }
 
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            public long? UtcExpiry { get; set; }
+            public long UtcExpiry { get; set; }
 
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public long? Interval { get; set; }
