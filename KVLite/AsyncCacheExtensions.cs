@@ -1,4 +1,4 @@
-﻿// File name: CacheExtensions.cs
+﻿// File name: AsyncCacheExtensions.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -31,7 +31,7 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   Extension methods for the <see cref="ICache"/> interface.
     /// </summary>
-    public static class CacheExtensions
+    public static class AsyncCacheExtensions
     {
         #region Extensions - Default Partition
 
@@ -89,18 +89,6 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   Determines whether cache the specified key.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>True if key is contained, false otherwise.</returns>
-        [Pure]
-        public static bool Contains(this ICache cache, string key)
-        {
-            return cache.Contains(cache.Settings.DefaultPartition, key);
-        }
-
-        /// <summary>
         ///   The number of elements inside the cache.
         /// </summary>
         /// <param name="cache">The cache.</param>
@@ -126,50 +114,6 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by corresponding interval.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>The value with specified partition and key.</returns>
-        public static object Get(this ICache cache, string key)
-        {
-            return cache.Get(cache.Settings.DefaultPartition, key);
-        }
-
-        /// <summary>
-        ///   Gets the cache item with specified key. If it is a "sliding" or "static" value, its
-        ///   lifetime will be increased by corresponding interval.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>The cache item with specified key.</returns>
-        public static CacheItem GetItem(this ICache cache, string key)
-        {
-            return cache.GetItem(cache.Settings.DefaultPartition, key);
-        }
-
-        /// <summary>
-        ///   Gets the value corresponding to given key, without updating expiry date.
-        /// </summary>
-        /// <returns>The value corresponding to given key, without updating expiry date.</returns>
-        [Pure]
-        public static object Peek(this ICache cache, string key)
-        {
-            return cache.Peek(cache.Settings.DefaultPartition, key);
-        }
-
-        /// <summary>
-        ///   Gets the item corresponding to given key, without updating expiry date.
-        /// </summary>
-        /// <returns>The item corresponding to given key, without updating expiry date.</returns>
-        [Pure]
-        public static CacheItem PeekItem(this ICache cache, string key)
-        {
-            return cache.PeekItem(cache.Settings.DefaultPartition, key);
-        }
-
-        /// <summary>
         ///   Removes the specified key.
         /// </summary>
         /// <param name="cache">The cache.</param>
@@ -180,8 +124,6 @@ namespace PommaLabs.KVLite
         }
 
         #endregion Extensions - Default Partition
-
-        #region Extensions - Async Methods
 
         /// <summary>
         ///   Adds a "sliding" value with given partition and key. Value will last as much as
@@ -309,95 +251,5 @@ namespace PommaLabs.KVLite
             Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
             return TaskRunner.Run(() => cache.Remove(cache.Settings.DefaultPartition, key));
         }
-
-        #endregion Extensions - Async Methods
-
-        #region Extensions - Typed Retrieval
-
-        public static TVal Get<TVal>(this ICache cache, string partition, string key)
-        {
-            return (TVal) cache.Get(partition, key);
-        }
-
-        public static TVal Get<TVal>(this ICache cache, string key)
-        {
-            return (TVal) cache.Get(cache.Settings.DefaultPartition, key);
-        }
-
-        public static CacheItem<TVal> GetItem<TVal>(this ICache cache, string partition, string key)
-        {
-            var item = cache.GetItem(partition, key);
-            return (item == null)
-                ? null
-                : new CacheItem<TVal>
-                {
-                    Partition = item.Partition,
-                    Key = item.Key,
-                    Value = (TVal) item.Value,
-                    UtcCreation = item.UtcCreation,
-                    UtcExpiry = item.UtcExpiry,
-                    Interval = item.Interval
-                };
-        }
-
-        public static CacheItem<TVal> GetItem<TVal>(this ICache cache, string key)
-        {
-            var item = cache.GetItem(cache.Settings.DefaultPartition, key);
-            return (item == null)
-                ? null
-                : new CacheItem<TVal>
-                {
-                    Partition = item.Partition,
-                    Key = item.Key,
-                    Value = (TVal) item.Value,
-                    UtcCreation = item.UtcCreation,
-                    UtcExpiry = item.UtcExpiry,
-                    Interval = item.Interval
-                };
-        }
-
-        public static TVal Peek<TVal>(this ICache cache, string partition, string key)
-        {
-            return (TVal) cache.Peek(partition, key);
-        }
-
-        public static TVal Peek<TVal>(this ICache cache, string key)
-        {
-            return (TVal) cache.Peek(cache.Settings.DefaultPartition, key);
-        }
-
-        public static CacheItem<TVal> PeekItem<TVal>(this ICache cache, string partition, string key)
-        {
-            var item = cache.PeekItem(partition, key);
-            return (item == null)
-                ? null
-                : new CacheItem<TVal>
-                {
-                    Partition = item.Partition,
-                    Key = item.Key,
-                    Value = (TVal) item.Value,
-                    UtcCreation = item.UtcCreation,
-                    UtcExpiry = item.UtcExpiry,
-                    Interval = item.Interval
-                };
-        }
-
-        public static CacheItem<TVal> PeekItem<TVal>(this ICache cache, string key)
-        {
-            var item = cache.PeekItem(cache.Settings.DefaultPartition, key);
-            return (item == null)
-                ? null
-                : new CacheItem<TVal>
-                {
-                    Partition = item.Partition,
-                    Key = item.Key,
-                    Value = (TVal) item.Value,
-                    UtcCreation = item.UtcCreation,
-                    UtcExpiry = item.UtcExpiry,
-                    Interval = item.Interval
-                };
-        }
-
-        #endregion Extensions - Typed Retrieval
     }
 }

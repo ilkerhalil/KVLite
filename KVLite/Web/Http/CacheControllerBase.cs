@@ -26,8 +26,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Results;
 using LinqToQuerystring.WebApi;
-
+using Microsoft.FSharp.Core;
 #if NET45
 
 using WebApi.OutputCache.V2;
@@ -45,7 +46,7 @@ namespace PommaLabs.KVLite.Web.Http
     /// </summary>
     public abstract class CacheControllerBase : ApiController
     {
-        private static readonly IQueryable<CacheItem> NoItems = new List<CacheItem>().AsQueryable();
+        private static readonly IQueryable<CacheItem<object>> NoItems = new List<CacheItem<object>>().AsQueryable();
             
         /// <summary>
         ///   Returns all _valid_ items stored in the cache.
@@ -56,10 +57,10 @@ namespace PommaLabs.KVLite.Web.Http
         [Route("items")]
 #endif
         [LinqToQueryable]
-        public virtual IQueryable<CacheItem> GetItems()
+        public virtual IQueryable<CacheItem<object>> GetItems()
         {
             var apiOutputCache = GetApiOutputCache();
-            return (apiOutputCache == null) ? NoItems : apiOutputCache.GetManyItems().AsQueryable();
+            return (apiOutputCache == null) ? NoItems : apiOutputCache.GetManyItems<object>().AsQueryable();
         }
 
         /// <summary>
@@ -88,10 +89,10 @@ namespace PommaLabs.KVLite.Web.Http
         [Route("items/{partition}")]
 #endif
         [LinqToQueryable]
-        public virtual IQueryable<CacheItem> GetItems(string partition)
+        public virtual IQueryable<CacheItem<object>> GetItems(string partition)
         {
             var apiOutputCache = GetApiOutputCache();
-            return (apiOutputCache == null) ? NoItems : apiOutputCache.GetManyItems(partition).AsQueryable();
+            return (apiOutputCache == null) ? NoItems : apiOutputCache.GetManyItems<object>(partition).AsQueryable();
         }
 
         /// <summary>
@@ -119,10 +120,17 @@ namespace PommaLabs.KVLite.Web.Http
 
         [Route("items/{partition}/{key}")]
 #endif
-        public virtual CacheItem GetItem(string partition, string key)
+        public virtual NegotiatedContentResult<CacheItem<object>> GetItem(string partition, string key)
         {
             var apiOutputCache = GetApiOutputCache();
-            return (apiOutputCache == null) ? null : apiOutputCache.GetItem(partition, key);
+            if (apiOutputCache == null)
+            {
+                return Content<CacheItem<object>>(HttpStatusCode.NotFound, null);
+            }
+            var item = apiOutputCache.GetItem<object>(partition, key);
+            return FSharpOption<CacheItem<object>>.get_IsNone(item) 
+                ? Content<CacheItem<object>>(HttpStatusCode.NotFound, null) 
+                : Content(HttpStatusCode.Found, item.Value);
         }
 
         /// <summary>

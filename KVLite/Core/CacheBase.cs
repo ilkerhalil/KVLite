@@ -26,10 +26,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SQLite;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters;
 using System.Threading.Tasks;
 using CodeProject.ObjectPool;
@@ -39,6 +39,7 @@ using Dapper;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
+using Microsoft.FSharp.Core;
 using PommaLabs.KVLite.Utilities;
 using PommaLabs.KVLite.Utilities.Extensions;
 
@@ -47,7 +48,6 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Base class for caches, implements common functionalities.
     /// </summary>
-    /// <typeparam name="TCache">The type of the cache.</typeparam>
     /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     [Serializable]
     public abstract class CacheBase<TCacheSettings> : FormattableObject, ICache<TCacheSettings>
@@ -111,7 +111,7 @@ namespace PommaLabs.KVLite.Core
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="CacheBase{TCache, TCacheSettings}"/>
+        ///   Initializes a new instance of the <see cref="CacheBase{TCacheSettings}"/>
         ///   class with given settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
@@ -181,18 +181,6 @@ namespace PommaLabs.KVLite.Core
         #endregion Construction
 
         #region Public Members
-
-        /// <summary>
-        ///   Gets the value with the specified key and belonging to the default partition.
-        /// </summary>
-        /// <value>The value with the specified key and belonging to the default partition.</value>
-        /// <param name="key">The key.</param>
-        /// <returns>The value with the specified key and belonging to the default partition.</returns>
-        [Pure]
-        public object this[string key]
-        {
-            get { return Get(Settings.DefaultPartition, key); }
-        }
 
         /// <summary>
         ///   Returns current cache size in kilobytes.
@@ -272,9 +260,21 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with the specified partition and key.</returns>
-        public object this[string partition, string key]
+        public FSharpOption<object> this[string partition, string key]
         {
-            get { return Get(partition, key); }
+            get { return Get<object>(partition, key); }
+        }
+
+        /// <summary>
+        ///   Gets the value with the specified key and belonging to the default partition.
+        /// </summary>
+        /// <value>The value with the specified key and belonging to the default partition.</value>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with the specified key and belonging to the default partition.</returns>
+        [Pure]
+        public FSharpOption<object> this[string key]
+        {
+            get { return Get<object>(Settings.DefaultPartition, key); }
         }
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
-        public void AddSliding(string partition, string key, object value, TimeSpan interval)
+        public void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval)
         {
             DoAdd(partition, key, value, _clock.UtcNow + interval, interval);
         }
@@ -299,7 +299,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        public void AddTimed(string partition, string key, object value, DateTime utcExpiry)
+        public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry)
         {
             DoAdd(partition, key, value, utcExpiry, null);
         }
@@ -322,6 +322,28 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
+        ///   Determines whether cache contains the specified partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>Whether cache contains the specified partition and key.</returns>
+        public bool Contains(string partition, string key)
+        {
+            return DoContains(partition, key);
+        }
+
+        /// <summary>
+        ///   Determines whether cache contains the specified partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>Whether cache contains the specified partition and key.</returns>
+        public bool Contains(string key)
+        {
+            return DoContains(Settings.DefaultPartition, key);
+        }
+
+        /// <summary>
         ///   The number of items in the cache.
         /// </summary>
         /// <returns>The number of items in the cache.</returns>
@@ -340,14 +362,24 @@ namespace PommaLabs.KVLite.Core
             return DoCount(partition);
         }
 
+        public FSharpOption<TVal> Get<TVal>(string key)
+        {
+            return Get<TVal>(Settings.DefaultPartition, key);
+        }
+
+        public FSharpOption<CacheItem<TVal>> GetItem<TVal>(string key)
+        {
+            return GetItem<TVal>(Settings.DefaultPartition, key);
+        }
+
         /// <summary>
         ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will
         ///   be increased by corresponding interval.
         /// </summary>
         /// <returns>All cache items.</returns>
-        public IList<CacheItem> GetManyItems()
+        public IList<CacheItem<TVal>> GetManyItems<TVal>()
         {
-            return DoGetManyItems(null);
+            return DoGetManyItems<TVal>(null);
         }
 
         /// <summary>
@@ -356,18 +388,28 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <returns>All cache items in given partition.</returns>
-        public IList<CacheItem> GetManyItems(string partition)
+        public IList<CacheItem<TVal>> GetManyItems<TVal>(string partition)
         {
-            return DoGetManyItems(partition);
+            return DoGetManyItems<TVal>(partition);
+        }
+
+        public FSharpOption<TVal> Peek<TVal>(string key)
+        {
+            return Peek<TVal>(Settings.DefaultPartition, key);
+        }
+
+        public FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string key)
+        {
+            return PeekItem<TVal>(Settings.DefaultPartition, key);
         }
 
         /// <summary>
         ///   Gets the all values, without updating expiry dates.
         /// </summary>
         /// <returns>All values, without updating expiry dates.</returns>
-        public IList<CacheItem> PeekManyItems()
+        public IList<CacheItem<TVal>> PeekManyItems<TVal>()
         {
-            return DoPeekManyItems(null);
+            return DoPeekManyItems<TVal>(null);
         }
 
         /// <summary>
@@ -375,28 +417,9 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="partition"></param>
         /// <returns>All items in given partition, without updating expiry dates.</returns>
-        public IList<CacheItem> PeekManyItems(string partition)
+        public IList<CacheItem<TVal>> PeekManyItems<TVal>(string partition)
         {
-            return DoPeekManyItems(partition);
-        }
-
-        /// <summary>
-        ///   Determines whether cache contains the specified partition and key.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>Whether cache contains the specified partition and key.</returns>
-        public bool Contains(string partition, string key)
-        {
-            var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-            p.Add("key", key, DbType.String);
-            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
-
-            using (var ctx = _connectionPool.GetObject())
-            {
-                return ctx.InternalResource.Query<int>(SQLiteQueries.Contains, p).First() > 0;
-            }
+            return DoPeekManyItems<TVal>(partition);
         }
 
         /// <summary>
@@ -406,7 +429,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
-        public object Get(string partition, string key)
+        public FSharpOption<TVal> Get<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -415,7 +438,7 @@ namespace PommaLabs.KVLite.Core
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.GetOne, p).Select(DeserializeValue).FirstOrDefault(NotNull);
+                return DeserializeValue<TVal>(ctx.InternalResource.ExecuteScalar<byte[]>(SQLiteQueries.GetOne, p));
             }
         }
 
@@ -426,7 +449,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        public CacheItem GetItem(string partition, string key)
+        public FSharpOption<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -435,7 +458,8 @@ namespace PommaLabs.KVLite.Core
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.GetOneItem, p).Select(ToCacheItem).FirstOrDefault(NotNull);
+                var tmp = ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.GetOneItem, p, buffered: false).FirstOrDefault();
+                return DeserializeCacheItem<TVal>(tmp);
             }
         }
 
@@ -447,7 +471,7 @@ namespace PommaLabs.KVLite.Core
         /// <returns>
         ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        public object Peek(string partition, string key)
+        public FSharpOption<TVal> Peek<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -456,7 +480,7 @@ namespace PommaLabs.KVLite.Core
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<byte[]>(SQLiteQueries.PeekOne, p).Select(DeserializeValue).FirstOrDefault(NotNull);
+                return DeserializeValue<TVal>(ctx.InternalResource.ExecuteScalar<byte[]>(SQLiteQueries.PeekOne, p));
             }
         }
 
@@ -468,7 +492,7 @@ namespace PommaLabs.KVLite.Core
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        public CacheItem PeekItem(string partition, string key)
+        public FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -477,7 +501,8 @@ namespace PommaLabs.KVLite.Core
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekOneItem, p).Select(ToCacheItem).FirstOrDefault(NotNull);
+                var tmp = ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekOneItem, p, buffered: false).FirstOrDefault();
+                return DeserializeCacheItem<TVal>(tmp);
             }
         }
 
@@ -596,7 +621,7 @@ namespace PommaLabs.KVLite.Core
 
         #region Private Methods
 
-        private void DoAdd(string partition, string key, object value, DateTime? utcExpiry, TimeSpan? interval)
+        private void DoAdd<TVal>(string partition, string key, TVal value, DateTime? utcExpiry, TimeSpan? interval)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
             byte[] serializedValue;
@@ -620,7 +645,7 @@ namespace PommaLabs.KVLite.Core
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
             p.Add("serializedValue", serializedValue, DbType.Binary, size: serializedValue.Length);
-            p.Add("utcExpiry", utcExpiry.HasValue ? DateTimeExtensions.ToUnixTime(utcExpiry.Value) : new long?(), DbType.Int64);
+            p.Add("utcExpiry", utcExpiry.HasValue ? utcExpiry.Value.ToUnixTime() : new long?(), DbType.Int64);
             p.Add("interval", interval.HasValue ? (long) interval.Value.TotalSeconds : new long?(), DbType.Int64);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
@@ -654,6 +679,19 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+        private bool DoContains(string partition, string key)
+        {
+            var p = new DynamicParameters();
+            p.Add("partition", partition, DbType.String);
+            p.Add("key", key, DbType.String);
+            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
+
+            using (var ctx = _connectionPool.GetObject())
+            {
+                return ctx.InternalResource.ExecuteScalar<int>(SQLiteQueries.Contains, p) > 0;
+            }
+        }
+
         private long DoCount(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate)
         {
             var p = new DynamicParameters();
@@ -668,7 +706,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private IList<CacheItem> DoGetManyItems(string partition)
+        private IList<CacheItem<TVal>> DoGetManyItems<TVal>(string partition)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -676,11 +714,12 @@ namespace PommaLabs.KVLite.Core
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.GetManyItems, p).Select(ToCacheItem).Where(NotNull).ToList();
+                var dbCacheItems = ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.GetManyItems, p, buffered: false);
+                return dbCacheItems.Select(DeserializeCacheItem<TVal>).Where(FSharpOption<CacheItem<TVal>>.get_IsNone).Select(i => i.Value).ToList();
             }
         }
 
-        private IList<CacheItem> DoPeekManyItems(string partition)
+        private IList<CacheItem<TVal>> DoPeekManyItems<TVal>(string partition)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -688,7 +727,8 @@ namespace PommaLabs.KVLite.Core
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekManyItems, p).Select(ToCacheItem).Where(NotNull).ToList();
+                var dbCacheItems = ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekManyItems, p, buffered: false);
+                return dbCacheItems.Select(DeserializeCacheItem<TVal>).Where(FSharpOption<CacheItem<TVal>>.get_IsNone).Select(i => i.Value).ToList();
             }
         }
 
@@ -704,26 +744,59 @@ namespace PommaLabs.KVLite.Core
             return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
 
-        private object DeserializeValue(byte[] serializedValue)
-        {
-            try
-            {
-                return UnsafeDeserializeValue(serializedValue);
-            }
-            catch
-            {
-                // Something wrong happened during deserialization. Therefore, we act as if there
-                // was no value.
-                return null;
-            }
-        }
-
-        private object UnsafeDeserializeValue(byte[] serializedValue)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
         {
             using (var memoryStream = new MemoryStream(serializedValue))
             using (var decompressionStream = _compressor.CreateDecompressionStream(memoryStream))
             {
-                return _serializer.DeserializeFromStream<object>(decompressionStream);
+                return _serializer.DeserializeFromStream<TVal>(decompressionStream);
+            }
+        }
+
+        private FSharpOption<TVal> DeserializeValue<TVal>(byte[] serializedValue)
+        {
+            if (serializedValue == null)
+            {
+                // Nothing to deserialize, return None.
+                return FSharpOption<TVal>.None;
+            }
+            try
+            {
+                return FSharpOption<TVal>.Some(UnsafeDeserializeValue<TVal>(serializedValue));
+            }
+            catch
+            {
+                // Something wrong happened during deserialization. Therefore, we act as if there
+                // was no value and we return None.
+                return FSharpOption<TVal>.None;
+            }
+        }
+
+        private FSharpOption<CacheItem<TVal>> DeserializeCacheItem<TVal>(DbCacheItem src)
+        {
+            if (src == null)
+            {
+                // Nothing to deserialize, return None.
+                return FSharpOption<CacheItem<TVal>>.None;
+            }
+            try
+            {
+                return FSharpOption<CacheItem<TVal>>.Some(new CacheItem<TVal>
+                {
+                    Partition = src.Partition,
+                    Key = src.Key,
+                    Value = UnsafeDeserializeValue<TVal>(src.SerializedValue),
+                    UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcCreation),
+                    UtcExpiry = src.UtcExpiry == null ? new DateTime?() : DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry.Value),
+                    Interval = src.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(src.Interval.Value)
+                });
+            }
+            catch
+            {
+                // Something wrong happened during deserialization. Therefore, we act as if there
+                // was no element and we return None.
+                return FSharpOption<CacheItem<TVal>>.None;
             }
         }
 
@@ -765,11 +838,6 @@ namespace PommaLabs.KVLite.Core
             _connectionPool = new ObjectPool<PooledObjectWrapper<SQLiteConnection>>(1, 10, CreatePooledConnection);
         }
 
-        private static bool NotNull<T>(T obj)
-        {
-            return !ReferenceEquals(obj, null);
-        }
-
         private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (DataSourceHasChanged(e.PropertyName))
@@ -778,49 +846,34 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private CacheItem ToCacheItem(DbCacheItem src)
-        {
-            object deserializedValue;
-            try
-            {
-                deserializedValue = UnsafeDeserializeValue(src.SerializedValue);
-            }
-            catch
-            {
-                // Something wrong happened during deserialization. Therefore, we act as if there
-                // was no element.
-                return null;
-            }
-            return new CacheItem
-            {
-                Partition = src.Partition,
-                Key = src.Key,
-                Value = deserializedValue,
-                UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcCreation),
-                UtcExpiry = src.UtcExpiry == null ? new DateTime?() : DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry.Value),
-                Interval = src.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(src.Interval.Value)
-            };
-        }
-
         #endregion Private Methods
 
         #region Nested type: DbCacheItem
 
+        /// <summary>
+        ///   Represents a row in the cache table.
+        /// </summary>
         [Serializable]
         private sealed class DbCacheItem : EquatableObject<DbCacheItem>
         {
             #region Public Properties
 
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public string Partition { get; set; }
 
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public string Key { get; set; }
 
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public byte[] SerializedValue { get; set; }
 
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public long UtcCreation { get; set; }
 
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public long? UtcExpiry { get; set; }
 
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public long? Interval { get; set; }
 
             #endregion Public Properties

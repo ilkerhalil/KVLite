@@ -114,7 +114,7 @@ namespace PommaLabs.KVLite.Web
 
         private static object GetViewState(string guid)
         {
-            return _cache.Get(ViewStatePartition, HiddenFieldName + guid);
+            return _cache.Get<object>(ViewStatePartition, HiddenFieldName + guid).Value;
         }
 
         private void SetViewState(string guid)

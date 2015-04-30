@@ -28,6 +28,7 @@ using Common.Logging;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
+using Microsoft.FSharp.Core;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite.Contracts
@@ -104,20 +105,24 @@ namespace PommaLabs.KVLite.Contracts
             }
         }
 
-        /// <summary>
-        ///   Gets the value with the specified partition and key.
-        /// </summary>
-        /// <value>The value with the specified partition and key.</value>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>The value with the specified partition and key.</returns>
-        object ICache.this[string partition, string key]
+        FSharpOption<object> ICache.this[string partition, string key]
         {
             get
             {
                 Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
                 Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-                return default(object);
+                Contract.Ensures(Contract.Result<FSharpOption<object>>() != null);
+                return default(FSharpOption<object>);
+            }
+        }
+
+        FSharpOption<object> ICache.this[string key]
+        {
+            get
+            {
+                Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+                Contract.Ensures(Contract.Result<FSharpOption<object>>() != null);
+                return default(FSharpOption<object>);
             }
         }
 
@@ -126,16 +131,16 @@ namespace PommaLabs.KVLite.Contracts
         ///   specified in given interval and, if accessed before expiry, its lifetime will be
         ///   extended by the interval itself.
         /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
-        public void AddSliding(string partition, string key, object value, TimeSpan interval)
+        public void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
         }
 
         /// <summary>
@@ -146,12 +151,11 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        public void AddTimed(string partition, string key, object value, DateTime utcExpiry)
+        public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullValue);
-            Contract.Requires<ArgumentException>(value.GetType().IsSerializable, ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
         }
 
         /// <summary>
@@ -187,6 +191,19 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
+        ///   Determines whether cache contains the specified key in the default partition.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>Whether cache contains the specified key in the default partition.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        /// <exception cref="ArgumentNullException">Key is null.</exception>
+        public bool Contains(string key)
+        {
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            return default(bool);
+        }
+
+        /// <summary>
         ///   The number of items in the cache.
         /// </summary>
         /// <returns>The number of items in the cache.</returns>
@@ -215,11 +232,26 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
-        public object Get(string partition, string key)
+        public FSharpOption<TVal> Get<TVal>(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            return default(object);
+            Contract.Ensures(Contract.Result<FSharpOption<TVal>>() != null);
+            return default(FSharpOption<TVal>);
+        }
+
+        /// <summary>
+        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with specified partition and key.</returns>
+        public FSharpOption<TVal> Get<TVal>(string key)
+        {
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(Contract.Result<FSharpOption<TVal>>() != null);
+            return default(FSharpOption<TVal>);
         }
 
         /// <summary>
@@ -229,11 +261,26 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        public CacheItem GetItem(string partition, string key)
+        public FSharpOption<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            return default(CacheItem);
+            Contract.Ensures(Contract.Result<FSharpOption<CacheItem<TVal>>>() != null);
+            return default(FSharpOption<CacheItem<TVal>>);
+        }
+
+        /// <summary>
+        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The cache item with specified partition and key.</returns>
+        public FSharpOption<CacheItem<TVal>> GetItem<TVal>(string key)
+        {
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(Contract.Result<FSharpOption<CacheItem<TVal>>>() != null);
+            return default(FSharpOption<CacheItem<TVal>>);
         }
 
         /// <summary>
@@ -241,10 +288,10 @@ namespace PommaLabs.KVLite.Contracts
         ///   be increased by corresponding interval.
         /// </summary>
         /// <returns>All cache items.</returns>
-        public IList<CacheItem> GetManyItems()
+        public IList<CacheItem<TVal>> GetManyItems<TVal>()
         {
-            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
-            return default(IList<CacheItem>);
+            Contract.Ensures(Contract.Result<IList<CacheItem<TVal>>>() != null);
+            return default(IList<CacheItem<TVal>>);
         }
 
         /// <summary>
@@ -253,11 +300,11 @@ namespace PommaLabs.KVLite.Contracts
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <returns>All cache items in given partition.</returns>
-        public IList<CacheItem> GetManyItems(string partition)
+        public IList<CacheItem<TVal>> GetManyItems<TVal>(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
-            return default(IList<CacheItem>);
+            Contract.Ensures(Contract.Result<IList<CacheItem<TVal>>>() != null);
+            return default(IList<CacheItem<TVal>>);
         }
 
         /// <summary>
@@ -268,11 +315,27 @@ namespace PommaLabs.KVLite.Contracts
         /// <returns>
         ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        public object Peek(string partition, string key)
+        public FSharpOption<TVal> Peek<TVal>(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            return default(object);
+            Contract.Ensures(Contract.Result<FSharpOption<TVal>>() != null);
+            return default(FSharpOption<TVal>);
+        }
+
+        /// <summary>
+        ///   Gets the value corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <returns>
+        ///   The value corresponding to given partition and key, without updating expiry date.
+        /// </returns>
+        public FSharpOption<TVal> Peek<TVal>(string key)
+        {
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(Contract.Result<FSharpOption<TVal>>() != null);
+            return default(FSharpOption<TVal>);
         }
 
         /// <summary>
@@ -283,21 +346,37 @@ namespace PommaLabs.KVLite.Contracts
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        public CacheItem PeekItem(string partition, string key)
+        public FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            return default(CacheItem);
+            Contract.Ensures(Contract.Result<FSharpOption<CacheItem<TVal>>>() != null);
+            return default(FSharpOption<CacheItem<TVal>>);
+        }
+
+        /// <summary>
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <param name="key"></param>
+        /// <returns>
+        ///   The item corresponding to given partition and key, without updating expiry date.
+        /// </returns>
+        public FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string key)
+        {
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(Contract.Result<FSharpOption<CacheItem<TVal>>>() != null);
+            return default(FSharpOption<CacheItem<TVal>>);
         }
 
         /// <summary>
         ///   Gets the all values, without updating expiry dates.
         /// </summary>
         /// <returns>All values, without updating expiry dates.</returns>
-        public IList<CacheItem> PeekManyItems()
+        public IList<CacheItem<TVal>> PeekManyItems<TVal>()
         {
-            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
-            return default(IList<CacheItem>);
+            Contract.Ensures(Contract.Result<IList<CacheItem<TVal>>>() != null);
+            return default(IList<CacheItem<TVal>>);
         }
 
         /// <summary>
@@ -305,11 +384,11 @@ namespace PommaLabs.KVLite.Contracts
         /// </summary>
         /// <param name="partition"></param>
         /// <returns>All items in given partition, without updating expiry dates.</returns>
-        public IList<CacheItem> PeekManyItems(string partition)
+        public IList<CacheItem<TVal>> PeekManyItems<TVal>(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<IList<CacheItem>>() != null);
-            return default(IList<CacheItem>);
+            Contract.Ensures(Contract.Result<IList<CacheItem<TVal>>>() != null);
+            return default(IList<CacheItem<TVal>>);
         }
 
         /// <summary>

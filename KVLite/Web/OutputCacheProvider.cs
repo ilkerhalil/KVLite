@@ -70,7 +70,7 @@ namespace PommaLabs.KVLite.Web
 
         public override object Get(string key)
         {
-            return _cache.Get(OutputCachePartition, key);
+            return _cache.Get<object>(OutputCachePartition, key);
         }
 
         public override object Add(string key, object entry, DateTime utcExpiry)

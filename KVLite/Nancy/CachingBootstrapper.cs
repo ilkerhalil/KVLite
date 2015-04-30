@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using Common.Logging;
+using Microsoft.FSharp.Core;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
@@ -107,7 +108,7 @@ namespace PommaLabs.KVLite.Nancy
         {
             var cacheKey = context.GetRequestFingerprint();
             var cachedSummary = _cache.Get<ResponseSummary>(ResponseCachePartition, cacheKey);
-            return (cachedSummary == null) ? null : cachedSummary.ToResponse();
+            return (cachedSummary == null || FSharpOption<ResponseSummary>.get_IsNone(cachedSummary)) ? null : cachedSummary.Value.ToResponse();
         }
 
         /// <summary>

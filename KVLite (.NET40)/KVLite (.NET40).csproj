@@ -152,13 +152,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Finsa.CodeServices.Compression.1.0.2\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Serialization, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Finsa.CodeServices.Serialization.1.0.2\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Serialization">
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.1.0.3\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Testing, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.2\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Testing">
+      <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.3\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharp.Core">
+      <HintPath>..\packages\FSharp.Core.3.1.2.1\lib\net40\FSharp.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="LinqToQuerystring, Version=0.7.0.8, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -168,9 +172,9 @@
       <HintPath>..\packages\LinqToQuerystring.WebApi.1.4.1.14\lib\net40\LinqToQuerystring.WebApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Nancy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Nancy.1.1\lib\net40\Nancy.dll</HintPath>
+    <Reference Include="Nancy, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.1.2.0\lib\net40\Nancy.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -226,6 +230,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\KVLite\AsyncCacheExtensions.cs">
+      <Link>AsyncCacheExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\KVLite\CacheReadMode.cs">
       <Link>CacheReadMode.cs</Link>
     </Compile>
@@ -237,9 +244,6 @@
     </Compile>
     <Compile Include="..\KVLite\Properties\Annotations.cs">
       <Link>Properties\Annotations.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\CacheExtensions.cs">
-      <Link>CacheExtensions.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\CacheItem.cs">
       <Link>CacheItem.cs</Link>

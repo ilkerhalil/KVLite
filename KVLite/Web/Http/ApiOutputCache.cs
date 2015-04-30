@@ -103,12 +103,12 @@ namespace PommaLabs.KVLite.Web.Http
 
         public IEnumerable<string> AllKeys
         {
-            get { return _cache.GetManyItems(ResponseCachePartition).Select(i => i.Key); }
+            get { return _cache.GetManyItems<object>(ResponseCachePartition).Select(i => i.Key); }
         }
 
         public void RemoveStartsWith(string key)
         {
-            var items = _cache.GetManyItems(ResponseCachePartition);
+            var items = _cache.GetManyItems<object>(ResponseCachePartition);
             foreach (var i in items.Where(item => item.Key.StartsWith(key)))
             {
                 Debug.Assert(i.Partition == ResponseCachePartition);
@@ -118,12 +118,12 @@ namespace PommaLabs.KVLite.Web.Http
 
         public T Get<T>(string key) where T : class
         {
-            return _cache.Get<T>(ResponseCachePartition, key);
+            return _cache.Get<T>(ResponseCachePartition, key).Value;
         }
 
         public object Get(string key)
         {
-            return _cache.Get(ResponseCachePartition, key);
+            return _cache.Get<object>(ResponseCachePartition, key).Value;
         }
 
         public void Remove(string key)
