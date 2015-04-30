@@ -2,53 +2,55 @@ namespace PommaLabs.KVLite.Utilities
 {
     internal static class Option
     {
-        public static Option<T> None<T>() where T : class
+        public static Option<T> None<T>()
         {
             return new Option<T>();
         }
 
-        public static Option<T> Some<T>(T value) where T : class
+        public static Option<T> Some<T>(T value)
         {
             return new Option<T>(value);
         }
     }
 
-    internal struct Option<T> : System.IEquatable<Option<T>> where T : class
+    internal struct Option<T> : System.IEquatable<Option<T>>
     {
+        private readonly bool _hasValue;
         private readonly T _value;
 
         public Option(T value)
         {
+            _hasValue = true;
             _value = value;
         }
 
         public bool HasValue
         {
-            get { return ReferenceEquals(_value, null); }
+            get { return _hasValue; }
         }
 
         public T Value
         {
             get
             {
-                Diagnostics.Raise<System.InvalidOperationException>.IfIsNull(_value);
+                Diagnostics.Raise<System.InvalidOperationException>.IfNot(_hasValue);
                 return _value;
             }
         }
 
         public Option<TResult> Select<TResult>(System.Func<T, TResult> getter) where TResult : class
         {
-            return new Option<TResult>(HasValue ? null : getter(_value));
+            return _hasValue ? new Option<TResult>(getter(_value)) : Option.None<TResult>();
         }
 
         public TResult Select<TResult>(System.Func<T, TResult> getter, TResult alternative)
         {
-            return HasValue ? alternative : getter(_value);
+            return _hasValue ? alternative : getter(_value);
         }
 
         public void Do(System.Action<T> action)
         {
-            if (_value != null)
+            if (_hasValue)
             {
                 action(_value);
             }
@@ -69,6 +71,14 @@ namespace PommaLabs.KVLite.Utilities
             return Equals(ref other);
         }
 
+        /// <summary>
+        ///   Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        ///   true if the current object is equal to the <paramref name="other"/> parameter;
+        ///   otherwise, false.
+        /// </returns>
         public bool Equals(ref Option<T> other)
         {
             return System.Collections.Generic.EqualityComparer<T>.Default.Equals(_value, other._value);

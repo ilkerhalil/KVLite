@@ -30,6 +30,7 @@ using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Contracts;
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Utilities;
 
 namespace PommaLabs.KVLite
 {
@@ -78,6 +79,11 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with the specified partition and key.</returns>
+        /// <remarks>
+        ///   This method, differently from other readers (like <see cref="Get{TVal}"/> or
+        ///   <see cref="Peek{TVal}"/>), does not have a typed return object, because indexers
+        ///   cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
+        /// </remarks>
         [Pure]
         object this[string partition, string key] { get; }
 
@@ -141,8 +147,14 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
         /// <returns>The value with specified partition and key.</returns>
-        object Get(string partition, string key);
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        Option<TVal> Get<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
@@ -150,55 +162,97 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
         /// <returns>The cache item with specified partition and key.</returns>
-        CacheItem GetItem(string partition, string key);
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        Option<CacheItem<TVal>> GetItem<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will
         ///   be increased by corresponding interval.
         /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
-        IList<CacheItem> GetManyItems();
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        IList<CacheItem<TVal>> GetManyItems<TVal>();
 
         /// <summary>
         ///   Gets all cache items in given partition. If an item is a "sliding" or "static" value,
         ///   its lifetime will be increased by corresponding interval.
         /// </summary>
         /// <param name="partition">The partition.</param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items in given partition.</returns>
-        IList<CacheItem> GetManyItems(string partition);
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        IList<CacheItem<TVal>> GetManyItems<TVal>(string partition);
 
         /// <summary>
         ///   Gets the value corresponding to given partition and key, without updating expiry date.
         /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>
         ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         [Pure]
-        object Peek(string partition, string key);
+        Option<TVal> Peek<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
         /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         [Pure]
-        CacheItem PeekItem(string partition, string key);
+        Option<CacheItem<TVal>> PeekItem<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets the all values, without updating expiry dates.
         /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All values, without updating expiry dates.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         [Pure]
-        IList<CacheItem> PeekManyItems();
+        IList<CacheItem<TVal>> PeekManyItems<TVal>();
 
         /// <summary>
         ///   Gets the all items in given partition, without updating expiry dates.
         /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All items in given partition, without updating expiry dates.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         [Pure]
-        IList<CacheItem> PeekManyItems(string partition);
+        IList<CacheItem<TVal>> PeekManyItems<TVal>(string partition);
 
         /// <summary>
         ///   Removes the value with given partition and key.

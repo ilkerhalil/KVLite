@@ -112,7 +112,7 @@ namespace PommaLabs.KVLite
         ///   The typed value.
         /// </summary>
         [JsonProperty(Order = 2)]
-        public new TVal Value { get; set; }
+        public new Option<TVal> Value { get; set; }
 
         #endregion Public Properties
     }
