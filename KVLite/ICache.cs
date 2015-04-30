@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Common.Logging;
 using Finsa.CodeServices.Clock;
@@ -45,8 +44,8 @@ namespace PommaLabs.KVLite
     ///   handling entries.
     /// 
     ///   In any case, to increase the ease of use, it is not mandatory neither to specify a
-    ///   partition, nor to specify an expiration time. In both cases, a default value is used, which
-    ///   can be customized by editing the KVLite configuration file.
+    ///   partition, nor to specify an expiration time. In both cases, a default value is used,
+    ///   which can be customized by editing the KVLite configuration file.
     /// </summary>
     [ContractClass(typeof(CacheContract))]
     public interface ICache
@@ -95,9 +94,10 @@ namespace PommaLabs.KVLite
         /// <returns>The value with the specified partition and key.</returns>
         /// <exception cref="ArgumentNullException">Partition or key are null.</exception>
         /// <remarks>
-        ///   This method, differently from other readers (like <see cref="Get{TVal}(string,string)"/> or
-        ///   <see cref="Peek{TVal}(string,string)"/>), does not have a typed return object, because indexers
-        ///   cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
+        ///   This method, differently from other readers (like
+        ///   <see cref="Get{TVal}(string,string)"/> or <see cref="Peek{TVal}(string,string)"/>),
+        ///   does not have a typed return object, because indexers cannot be generic. Therefore, we
+        ///   have to return a simple <see cref="object"/>.
         /// </remarks>
         [Pure]
         FSharpOption<object> this[string partition, string key] { get; }
@@ -111,8 +111,8 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">Key is null.</exception>
         /// <remarks>
         ///   This method, differently from other readers (like <see cref="Get{TVal}(string)"/> or
-        ///   <see cref="Peek{TVal}(string)"/>), does not have a typed return object, because indexers
-        ///   cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
+        ///   <see cref="Peek{TVal}(string)"/>), does not have a typed return object, because
+        ///   indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
         /// </remarks>
         [Pure]
         FSharpOption<object> this[string key] { get; }
@@ -130,6 +130,34 @@ namespace PommaLabs.KVLite
         void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval);
 
         /// <summary>
+        ///   Adds a "sliding" value with given key. Value will last as much as specified in given
+        ///   interval and, if accessed before expiry, its lifetime will be extended by the interval itself.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="interval">The interval.</param>
+        void AddSliding<TVal>(string key, TVal value, TimeSpan interval);
+
+        /// <summary>
+        ///   Adds a "static" value with given partition and key. Value will last as much as
+        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        void AddStatic<TVal>(string partition, string key, TVal value);
+
+        /// <summary>
+        ///   Adds a "static" value with given key. Value will last as much as specified in
+        ///   <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry,
+        ///   its lifetime will be extended by that interval.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        void AddStatic<TVal>(string key, TVal value);
+
+        /// <summary>
         ///   Adds a "timed" value with given partition and key. Value will last until the specified
         ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
@@ -139,6 +167,15 @@ namespace PommaLabs.KVLite
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
         void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry);
+
+        /// <summary>
+        ///   Adds a "timed" value with given key. Value will last until the specified time and, if
+        ///   accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
+        void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry);
 
         /// <summary>
         ///   Clears this instance, that is, it removes all values.
@@ -172,6 +209,21 @@ namespace PommaLabs.KVLite
         bool Contains(string key);
 
         /// <summary>
+        ///   The number of elements inside the cache.
+        /// </summary>
+        /// <returns>The number of elements inside the cache.</returns>
+        [Pure]
+        int Count();
+
+        /// <summary>
+        ///   The number of elements inside given partition.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <returns>The number of elements inside given partition.</returns>
+        [Pure]
+        int Count(string partition);
+
+        /// <summary>
         ///   The number of items in the cache.
         /// </summary>
         /// <returns>The number of items in the cache.</returns>
@@ -203,8 +255,8 @@ namespace PommaLabs.KVLite
         FSharpOption<TVal> Get<TVal>(string partition, string key);
 
         /// <summary>
-        ///   Gets the value with default partition and specified key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by corresponding interval.
+        ///   Gets the value with default partition and specified key. If it is a "sliding" or
+        ///   "static" value, its lifetime will be increased by corresponding interval.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <typeparam name="TVal">The type of the expected value.</typeparam>
@@ -232,8 +284,8 @@ namespace PommaLabs.KVLite
         FSharpOption<CacheItem<TVal>> GetItem<TVal>(string partition, string key);
 
         /// <summary>
-        ///   Gets the cache item with default partition and specified key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by corresponding interval.
+        ///   Gets the cache item with default partition and specified key. If it is a "sliding" or
+        ///   "static" value, its lifetime will be increased by corresponding interval.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <typeparam name="TVal">The type of the expected value.</typeparam>
@@ -256,7 +308,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        IList<CacheItem<TVal>> GetManyItems<TVal>();
+        CacheItem<TVal>[] GetManyItems<TVal>();
 
         /// <summary>
         ///   Gets all cache items in given partition. If an item is a "sliding" or "static" value,
@@ -270,7 +322,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        IList<CacheItem<TVal>> GetManyItems<TVal>(string partition);
+        CacheItem<TVal>[] GetManyItems<TVal>(string partition);
 
         /// <summary>
         ///   Gets the value corresponding to given partition and key, without updating expiry date.
@@ -290,7 +342,8 @@ namespace PommaLabs.KVLite
         FSharpOption<TVal> Peek<TVal>(string partition, string key);
 
         /// <summary>
-        ///   Gets the value corresponding to default partition and given key, without updating expiry date.
+        ///   Gets the value corresponding to default partition and given key, without updating
+        ///   expiry date.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
@@ -323,7 +376,8 @@ namespace PommaLabs.KVLite
         FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string partition, string key);
 
         /// <summary>
-        ///   Gets the item corresponding to default partition and given key, without updating expiry date.
+        ///   Gets the item corresponding to default partition and given key, without updating
+        ///   expiry date.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
@@ -349,7 +403,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         [Pure]
-        IList<CacheItem<TVal>> PeekManyItems<TVal>();
+        CacheItem<TVal>[] PeekManyItems<TVal>();
 
         /// <summary>
         ///   Gets the all items in given partition, without updating expiry dates.
@@ -363,7 +417,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         [Pure]
-        IList<CacheItem<TVal>> PeekManyItems<TVal>(string partition);
+        CacheItem<TVal>[] PeekManyItems<TVal>(string partition);
 
         /// <summary>
         ///   Removes the value with given partition and key.
@@ -371,6 +425,12 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         void Remove(string partition, string key);
+
+        /// <summary>
+        ///   Removes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        void Remove(string key);
     }
 
     /// <summary>

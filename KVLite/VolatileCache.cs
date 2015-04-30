@@ -37,7 +37,7 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   An SQLite-based in-memory cache.
     /// </summary>
-    public sealed class VolatileCache : CacheBase<VolatileCacheSettings>
+    public sealed class VolatileCache : AbstractCache<VolatileCacheSettings>
     {
         #region Default Instance
 
@@ -81,7 +81,7 @@ namespace PommaLabs.KVLite
 
         #endregion Construction
 
-        #region CacheBase Members
+        #region AbstractCache Members
 
         /// <summary>
         ///   Returns whether the changed property is the data source.
@@ -118,6 +118,6 @@ namespace PommaLabs.KVLite
             yield return GKeyValuePair.Create("CacheName", Settings.CacheName);
         }
 
-        #endregion CacheBase Members
+        #endregion AbstractCache Members
     }
 }

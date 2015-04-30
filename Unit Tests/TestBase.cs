@@ -146,10 +146,9 @@ namespace UnitTests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddStatic_NullValue()
         {
-            Cache.AddStatic(StringItems[0], null);
+            Cache.AddStatic(StringItems[0], (object) null);
         }
 
         [Test]
@@ -342,9 +341,9 @@ namespace UnitTests
         public void AddTimed_TwoValues_SameKey()
         {
             Cache.AddTimed(StringItems[0], StringItems[1], Cache.Clock.UtcNow.AddMinutes(10));
-            Assert.AreEqual(StringItems[1], Cache.Get<string>(StringItems[0]));
+            Assert.AreEqual(StringItems[1], Cache.Get<string>(StringItems[0]).Value);
             Cache.AddTimed(StringItems[0], StringItems[2], Cache.Clock.UtcNow.AddMinutes(10));
-            Assert.AreEqual(StringItems[2], Cache.Get<string>(StringItems[0]));
+            Assert.AreEqual(StringItems[2], Cache.Get<string>(StringItems[0]).Value);
         }
 
         [Test]
@@ -471,8 +470,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var item = Cache.Get<string>(StringItems[i]);
-                Assert.IsNotNull(item);
-                Assert.AreEqual(StringItems[i], item);
+                Assert.AreEqual(StringItems[i], item.Value);
             }
         }
 
@@ -732,8 +730,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var value = Cache.Peek<string>(StringItems[i]);
-                Assert.IsNotNull(value);
-                Assert.AreEqual(StringItems[i], value);
+                Assert.AreEqual(StringItems[i], value.Value);
                 var item = Cache.PeekItem<string>(StringItems[i]).Value;
                 Assert.AreEqual(expiryDate.Date, item.UtcExpiry.Date);
                 Assert.AreEqual(expiryDate.Hour, item.UtcExpiry.Hour);

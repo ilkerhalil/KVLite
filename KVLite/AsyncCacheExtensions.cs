@@ -29,102 +29,10 @@ using PommaLabs.KVLite.Core;
 namespace PommaLabs.KVLite
 {
     /// <summary>
-    ///   Extension methods for the <see cref="ICache"/> interface.
+    ///   Async extension methods for the <see cref="ICache"/> interface.
     /// </summary>
     public static class AsyncCacheExtensions
     {
-        #region Extensions - Default Partition
-
-        /// <summary>
-        ///   Adds a "sliding" value with given key. Value will last as much as specified in given
-        ///   interval and, if accessed before expiry, its lifetime will be extended by the interval itself.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="interval">The interval.</param>
-        public static void AddSliding(this ICache cache, string key, object value, TimeSpan interval)
-        {
-            cache.AddSliding(cache.Settings.DefaultPartition, key, value, interval);
-        }
-
-        /// <summary>
-        ///   Adds a "static" value with given partition and key. Value will last as much as
-        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed
-        ///   before expiry, its lifetime will be extended by that interval.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        public static void AddStatic(this ICache cache, string partition, string key, object value)
-        {
-            cache.AddSliding(partition, key, value, cache.Settings.StaticInterval);
-        }
-
-        /// <summary>
-        ///   Adds a "static" value with given key. Value will last as much as specified in
-        ///   <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry,
-        ///   its lifetime will be extended by that interval.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        public static void AddStatic(this ICache cache, string key, object value)
-        {
-            cache.AddSliding(cache.Settings.DefaultPartition, key, value, cache.Settings.StaticInterval);
-        }
-
-        /// <summary>
-        ///   Adds a "timed" value with given key. Value will last until the specified time and, if
-        ///   accessed before expiry, its lifetime will _not_ be extended.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="utcExpiry">The UTC expiry.</param>
-        public static void AddTimed(this ICache cache, string key, object value, DateTime utcExpiry)
-        {
-            cache.AddTimed(cache.Settings.DefaultPartition, key, value, utcExpiry);
-        }
-
-        /// <summary>
-        ///   The number of elements inside the cache.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <returns>The number of elements inside the cache.</returns>
-        [Pure]
-        public static int Count(this ICache cache)
-        {
-            Contract.Ensures(Contract.Result<int>() >= 0);
-            return Convert.ToInt32(cache.LongCount());
-        }
-
-        /// <summary>
-        ///   The number of elements inside given partition.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <param name="partition">The partition.</param>
-        /// <returns>The number of elements inside given partition.</returns>
-        [Pure]
-        public static int Count(this ICache cache, string partition)
-        {
-            Contract.Ensures(Contract.Result<int>() >= 0);
-            return Convert.ToInt32(cache.LongCount(partition));
-        }
-
-        /// <summary>
-        ///   Removes the specified key.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <param name="key">The key.</param>
-        public static void Remove(this ICache cache, string key)
-        {
-            cache.Remove(cache.Settings.DefaultPartition, key);
-        }
-
-        #endregion Extensions - Default Partition
-
         /// <summary>
         ///   Adds a "sliding" value with given partition and key. Value will last as much as
         ///   specified in given interval and, if accessed before expiry, its lifetime will be

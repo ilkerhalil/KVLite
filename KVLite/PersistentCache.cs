@@ -37,7 +37,7 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   An SQLite-based persistent cache.
     /// </summary>
-    public sealed class PersistentCache : CacheBase<PersistentCacheSettings>
+    public sealed class PersistentCache : AbstractCache<PersistentCacheSettings>
     {
         #region Default Instance
 
@@ -81,7 +81,7 @@ namespace PommaLabs.KVLite
 
         #endregion Construction
 
-        #region CacheBase Members
+        #region AbstractCache Members
 
         /// <summary>
         ///   Returns whether the changed property is the data source.
@@ -129,6 +129,6 @@ namespace PommaLabs.KVLite
             yield return GKeyValuePair.Create("CacheFile", Settings.CacheFile);
         }
 
-        #endregion CacheBase Members
+        #endregion AbstractCache Members
     }
 }

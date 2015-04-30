@@ -1,4 +1,4 @@
-// File name: CacheBase.cs
+// File name: AbstractCache.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -49,7 +49,7 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     [Serializable]
-    public abstract class CacheBase<TCacheSettings> : FormattableObject, ICache<TCacheSettings>
+    public abstract class AbstractCache<TCacheSettings> : FormattableObject, ICache<TCacheSettings>
         where TCacheSettings : CacheSettingsBase
     {
         #region Constants
@@ -110,7 +110,7 @@ namespace PommaLabs.KVLite.Core
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="CacheBase{TCacheSettings}"/>
+        ///   Initializes a new instance of the <see cref="AbstractCache{TCacheSettings}"/>
         ///   class with given settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
@@ -118,7 +118,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
-        internal CacheBase(TCacheSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor)
+        internal AbstractCache(TCacheSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor)
         {
             Contract.Requires<ArgumentNullException>(settings != null, ErrorMessages.NullSettings);
             _settings = settings;
@@ -290,6 +290,21 @@ namespace PommaLabs.KVLite.Core
             DoAdd(partition, key, value, _clock.UtcNow + interval, interval);
         }
 
+        public void AddSliding<TVal>(string key, TVal value, TimeSpan interval)
+        {
+            DoAdd(Settings.DefaultPartition, key, value, _clock.UtcNow + interval, interval);
+        }
+
+        public void AddStatic<TVal>(string partition, string key, TVal value)
+        {
+            DoAdd(partition, key, value, _clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
+        }
+
+        public void AddStatic<TVal>(string key, TVal value)
+        {
+            DoAdd(Settings.DefaultPartition, key, value, _clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
+        }
+
         /// <summary>
         ///   Adds a "timed" value with given partition and key. Value will last until the specified
         ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
@@ -301,6 +316,11 @@ namespace PommaLabs.KVLite.Core
         public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry)
         {
             DoAdd(partition, key, value, utcExpiry, null);
+        }
+
+        public void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry)
+        {
+            DoAdd(Settings.DefaultPartition, key, value, utcExpiry, null);
         }
 
         /// <summary>
@@ -342,6 +362,16 @@ namespace PommaLabs.KVLite.Core
             return DoContains(Settings.DefaultPartition, key);
         }
 
+        public int Count()
+        {
+            return Convert.ToInt32(DoCount(null));
+        }
+
+        public int Count(string partition)
+        {
+            return Convert.ToInt32(DoCount(partition));
+        }
+
         /// <summary>
         ///   The number of items in the cache.
         /// </summary>
@@ -376,7 +406,7 @@ namespace PommaLabs.KVLite.Core
         ///   be increased by corresponding interval.
         /// </summary>
         /// <returns>All cache items.</returns>
-        public IList<CacheItem<TVal>> GetManyItems<TVal>()
+        public CacheItem<TVal>[] GetManyItems<TVal>()
         {
             return DoGetManyItems<TVal>(null);
         }
@@ -387,7 +417,7 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <returns>All cache items in given partition.</returns>
-        public IList<CacheItem<TVal>> GetManyItems<TVal>(string partition)
+        public CacheItem<TVal>[] GetManyItems<TVal>(string partition)
         {
             return DoGetManyItems<TVal>(partition);
         }
@@ -406,7 +436,7 @@ namespace PommaLabs.KVLite.Core
         ///   Gets the all values, without updating expiry dates.
         /// </summary>
         /// <returns>All values, without updating expiry dates.</returns>
-        public IList<CacheItem<TVal>> PeekManyItems<TVal>()
+        public CacheItem<TVal>[] PeekManyItems<TVal>()
         {
             return DoPeekManyItems<TVal>(null);
         }
@@ -416,9 +446,14 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="partition"></param>
         /// <returns>All items in given partition, without updating expiry dates.</returns>
-        public IList<CacheItem<TVal>> PeekManyItems<TVal>(string partition)
+        public CacheItem<TVal>[] PeekManyItems<TVal>(string partition)
         {
             return DoPeekManyItems<TVal>(partition);
+        }
+
+        public void Remove(string key)
+        {
+            Remove(Settings.DefaultPartition, key);
         }
 
         /// <summary>
@@ -526,31 +561,62 @@ namespace PommaLabs.KVLite.Core
 
         #region Public Methods
 
+        /// <summary>
+        ///   Clears the cache using the specified cache read mode.
+        /// </summary>
+        /// <param name="cacheReadMode">The cache read mode.</param>
         public void Clear(CacheReadMode cacheReadMode)
         {
             DoClear(null, cacheReadMode);
         }
 
+        /// <summary>
+        ///   Clears the specified partition using the specified cache read mode.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="cacheReadMode">The cache read mode.</param>
         public void Clear(string partition, CacheReadMode cacheReadMode)
         {
             DoClear(partition, cacheReadMode);
         }
 
+        /// <summary>
+        ///   The number of items in the cache.
+        /// </summary>
+        /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
+        /// <returns>The number of items in the cache.</returns>
         public int Count(CacheReadMode cacheReadMode)
         {
             return Convert.ToInt32(DoCount(null, cacheReadMode));
         }
 
+        /// <summary>
+        ///   The number of items in the cache for given partition.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
+        /// <returns>The number of items in the cache.</returns>
         public int Count(string partition, CacheReadMode cacheReadMode)
         {
             return Convert.ToInt32(DoCount(partition, cacheReadMode));
         }
 
+        /// <summary>
+        ///   The number of items in the cache.
+        /// </summary>
+        /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
+        /// <returns>The number of items in the cache.</returns>
         public long LongCount(CacheReadMode cacheReadMode)
         {
             return DoCount(null, cacheReadMode);
         }
 
+        /// <summary>
+        ///   The number of items in the cache for given partition.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
+        /// <returns>The number of items in the cache.</returns>
         public long LongCount(string partition, CacheReadMode cacheReadMode)
         {
             return DoCount(partition, cacheReadMode);
@@ -705,7 +771,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private IList<CacheItem<TVal>> DoGetManyItems<TVal>(string partition)
+        private CacheItem<TVal>[] DoGetManyItems<TVal>(string partition)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -713,12 +779,16 @@ namespace PommaLabs.KVLite.Core
 
             using (var ctx = _connectionPool.GetObject())
             {
-                var dbCacheItems = ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.GetManyItems, p, buffered: false);
-                return dbCacheItems.Select(DeserializeCacheItem<TVal>).Where(FSharpOption<CacheItem<TVal>>.get_IsNone).Select(i => i.Value).ToList();
+                return ctx.InternalResource
+                    .Query<DbCacheItem>(SQLiteQueries.GetManyItems, p, buffered: false)
+                    .Select(DeserializeCacheItem<TVal>)
+                    .Where(FSharpOption<CacheItem<TVal>>.get_IsSome)
+                    .Select(i => i.Value)
+                    .ToArray();
             }
         }
 
-        private IList<CacheItem<TVal>> DoPeekManyItems<TVal>(string partition)
+        private CacheItem<TVal>[] DoPeekManyItems<TVal>(string partition)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -726,21 +796,13 @@ namespace PommaLabs.KVLite.Core
 
             using (var ctx = _connectionPool.GetObject())
             {
-                var dbCacheItems = ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekManyItems, p, buffered: false);
-                return dbCacheItems.Select(DeserializeCacheItem<TVal>).Where(FSharpOption<CacheItem<TVal>>.get_IsNone).Select(i => i.Value).ToList();
+                return ctx.InternalResource
+                    .Query<DbCacheItem>(SQLiteQueries.PeekManyItems, p, buffered: false)
+                    .Select(DeserializeCacheItem<TVal>)
+                    .Where(FSharpOption<CacheItem<TVal>>.get_IsSome)
+                    .Select(i => i.Value)
+                    .ToArray();
             }
-        }
-
-        private PooledObjectWrapper<SQLiteConnection> CreatePooledConnection()
-        {
-            var connection = new SQLiteConnection(_connectionString);
-            connection.Open();
-            // Sets PRAGMAs for this new connection.
-            var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB * 1024 * 1024;
-            var walAutoCheckpointInPages = journalSizeLimitInBytes / PageSizeInBytes / 3;
-            var pragmas = String.Format(SQLiteQueries.SetPragmas, PageSizeInBytes, journalSizeLimitInBytes, walAutoCheckpointInPages);
-            connection.Execute(pragmas);
-            return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
 
         private TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
@@ -796,6 +858,18 @@ namespace PommaLabs.KVLite.Core
                 // was no element and we return None.
                 return FSharpOption<CacheItem<TVal>>.None;
             }
+        }
+
+        private PooledObjectWrapper<SQLiteConnection> CreatePooledConnection()
+        {
+            var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+            // Sets PRAGMAs for this new connection.
+            var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB * 1024 * 1024;
+            var walAutoCheckpointInPages = journalSizeLimitInBytes / PageSizeInBytes / 3;
+            var pragmas = String.Format(SQLiteQueries.SetPragmas, PageSizeInBytes, journalSizeLimitInBytes, walAutoCheckpointInPages);
+            connection.Execute(pragmas);
+            return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
 
         private void InitConnectionString()

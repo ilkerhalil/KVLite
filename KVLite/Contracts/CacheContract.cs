@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Common.Logging;
 using Finsa.CodeServices.Clock;
@@ -143,6 +142,25 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
         }
 
+        public void AddSliding<TVal>(string key, TVal value, TimeSpan interval)
+        {
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
+        }
+
+        public void AddStatic<TVal>(string partition, string key, TVal value)
+        {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
+        }
+
+        public void AddStatic<TVal>(string key, TVal value)
+        {
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
+        }
+
         /// <summary>
         ///   Adds a "timed" value with given partition and key. Value will last until the specified
         ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
@@ -154,6 +172,12 @@ namespace PommaLabs.KVLite.Contracts
         public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
+        }
+
+        public void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry)
+        {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
         }
@@ -203,6 +227,19 @@ namespace PommaLabs.KVLite.Contracts
             return default(bool);
         }
 
+        public int Count()
+        {
+            Contract.Ensures(Contract.Result<int>() >= 0);
+            return default(int);
+        }
+
+        public int Count(string partition)
+        {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Ensures(Contract.Result<int>() >= 0);
+            return default(int);
+        }
+
         /// <summary>
         ///   The number of items in the cache.
         /// </summary>
@@ -236,7 +273,6 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contract.Result<FSharpOption<TVal>>() != null);
             return default(FSharpOption<TVal>);
         }
 
@@ -250,7 +286,6 @@ namespace PommaLabs.KVLite.Contracts
         public FSharpOption<TVal> Get<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contract.Result<FSharpOption<TVal>>() != null);
             return default(FSharpOption<TVal>);
         }
 
@@ -265,7 +300,6 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contract.Result<FSharpOption<CacheItem<TVal>>>() != null);
             return default(FSharpOption<CacheItem<TVal>>);
         }
 
@@ -279,7 +313,6 @@ namespace PommaLabs.KVLite.Contracts
         public FSharpOption<CacheItem<TVal>> GetItem<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contract.Result<FSharpOption<CacheItem<TVal>>>() != null);
             return default(FSharpOption<CacheItem<TVal>>);
         }
 
@@ -288,10 +321,10 @@ namespace PommaLabs.KVLite.Contracts
         ///   be increased by corresponding interval.
         /// </summary>
         /// <returns>All cache items.</returns>
-        public IList<CacheItem<TVal>> GetManyItems<TVal>()
+        public CacheItem<TVal>[] GetManyItems<TVal>()
         {
-            Contract.Ensures(Contract.Result<IList<CacheItem<TVal>>>() != null);
-            return default(IList<CacheItem<TVal>>);
+            Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
+            return default(CacheItem<TVal>[]);
         }
 
         /// <summary>
@@ -300,11 +333,11 @@ namespace PommaLabs.KVLite.Contracts
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <returns>All cache items in given partition.</returns>
-        public IList<CacheItem<TVal>> GetManyItems<TVal>(string partition)
+        public CacheItem<TVal>[] GetManyItems<TVal>(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<IList<CacheItem<TVal>>>() != null);
-            return default(IList<CacheItem<TVal>>);
+            Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
+            return default(CacheItem<TVal>[]);
         }
 
         /// <summary>
@@ -319,7 +352,6 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contract.Result<FSharpOption<TVal>>() != null);
             return default(FSharpOption<TVal>);
         }
 
@@ -334,7 +366,6 @@ namespace PommaLabs.KVLite.Contracts
         public FSharpOption<TVal> Peek<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contract.Result<FSharpOption<TVal>>() != null);
             return default(FSharpOption<TVal>);
         }
 
@@ -350,7 +381,6 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contract.Result<FSharpOption<CacheItem<TVal>>>() != null);
             return default(FSharpOption<CacheItem<TVal>>);
         }
 
@@ -365,7 +395,6 @@ namespace PommaLabs.KVLite.Contracts
         public FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contract.Result<FSharpOption<CacheItem<TVal>>>() != null);
             return default(FSharpOption<CacheItem<TVal>>);
         }
 
@@ -373,10 +402,10 @@ namespace PommaLabs.KVLite.Contracts
         ///   Gets the all values, without updating expiry dates.
         /// </summary>
         /// <returns>All values, without updating expiry dates.</returns>
-        public IList<CacheItem<TVal>> PeekManyItems<TVal>()
+        public CacheItem<TVal>[] PeekManyItems<TVal>()
         {
-            Contract.Ensures(Contract.Result<IList<CacheItem<TVal>>>() != null);
-            return default(IList<CacheItem<TVal>>);
+            Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
+            return default(CacheItem<TVal>[]);
         }
 
         /// <summary>
@@ -384,11 +413,11 @@ namespace PommaLabs.KVLite.Contracts
         /// </summary>
         /// <param name="partition"></param>
         /// <returns>All items in given partition, without updating expiry dates.</returns>
-        public IList<CacheItem<TVal>> PeekManyItems<TVal>(string partition)
+        public CacheItem<TVal>[] PeekManyItems<TVal>(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
-            Contract.Ensures(Contract.Result<IList<CacheItem<TVal>>>() != null);
-            return default(IList<CacheItem<TVal>>);
+            Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
+            return default(CacheItem<TVal>[]);
         }
 
         /// <summary>
@@ -399,6 +428,11 @@ namespace PommaLabs.KVLite.Contracts
         public void Remove(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
+            Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+        }
+
+        public void Remove(string key)
+        {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
         }
 

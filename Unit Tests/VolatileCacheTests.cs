@@ -167,13 +167,13 @@ namespace UnitTests
             another.AddStatic(key, 2);
             Assert.True(Cache.Contains(key));
             Assert.True(another.Contains(key));
-            Assert.AreEqual(1, ((VolatileCache) Cache)[key]);
-            Assert.AreEqual(2, another[key]);
+            Assert.AreEqual(1, ((VolatileCache) Cache)[key].Value);
+            Assert.AreEqual(2, another[key].Value);
 
             another.AddStatic(key + key, 3);
             Assert.False(Cache.Contains(key + key));
             Assert.True(another.Contains(key + key));
-            Assert.AreEqual(3, another[key + key]);
+            Assert.AreEqual(3, another[key + key].Value);
         }
 
         #endregion Multiple Caches
