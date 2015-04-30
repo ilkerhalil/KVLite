@@ -30,7 +30,7 @@ using PommaLabs.KVLite.Core;
 
 namespace UnitTests
 {
-    internal sealed class PersistentCacheTests : TestBase<PersistentCacheSettings>
+    internal sealed class PersistentCacheTests : TestBase
     {
         private const string BlankPath = "   ";
 
@@ -58,6 +58,7 @@ namespace UnitTests
         {
             try
             {
+                // ReSharper disable once ObjectCreationAsStatement
                 new PersistentCache(new PersistentCacheSettings { CacheFile = BlankPath }, Kernel.Get<IClock>());
             }
             catch (Exception ex)
@@ -72,6 +73,7 @@ namespace UnitTests
         {
             try
             {
+                // ReSharper disable once ObjectCreationAsStatement
                 new PersistentCache(new PersistentCacheSettings { CacheFile = String.Empty }, Kernel.Get<IClock>());
             }
             catch (Exception ex)
@@ -86,6 +88,7 @@ namespace UnitTests
         {
             try
             {
+                // ReSharper disable once ObjectCreationAsStatement
                 new PersistentCache(new PersistentCacheSettings { CacheFile = null }, Kernel.Get<IClock>());
             }
             catch (Exception ex)

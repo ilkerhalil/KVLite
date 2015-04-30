@@ -26,9 +26,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using System.Web.Http.Results;
 using LinqToQuerystring.WebApi;
 using Microsoft.FSharp.Core;
+
 #if NET45
 
 using WebApi.OutputCache.V2;
@@ -70,14 +70,13 @@ namespace PommaLabs.KVLite.Web.Http
 
         [Route("items")]
 #endif
-        public virtual HttpResponseMessage DeleteItems()
+        public virtual void DeleteItems()
         {
             var apiOutputCache = GetApiOutputCache();
             if (apiOutputCache != null)
             {
                 apiOutputCache.Clear();
             }
-            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         /// <summary>
@@ -102,14 +101,13 @@ namespace PommaLabs.KVLite.Web.Http
 
         [Route("items/{partition}")]
 #endif
-        public virtual HttpResponseMessage DeleteItems(string partition)
+        public virtual void DeleteItems(string partition)
         {
             var apiOutputCache = GetApiOutputCache();
             if (apiOutputCache != null)
             {
                 apiOutputCache.Clear(partition);
             }
-            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         /// <summary>
@@ -120,17 +118,17 @@ namespace PommaLabs.KVLite.Web.Http
 
         [Route("items/{partition}/{key}")]
 #endif
-        public virtual NegotiatedContentResult<CacheItem<object>> GetItem(string partition, string key)
+        public virtual HttpResponseMessage GetItem(string partition, string key)
         {
             var apiOutputCache = GetApiOutputCache();
             if (apiOutputCache == null)
             {
-                return Content<CacheItem<object>>(HttpStatusCode.NotFound, null);
+                return Request.CreateResponse(HttpStatusCode.NotFound);
             }
             var item = apiOutputCache.GetItem<object>(partition, key);
-            return FSharpOption<CacheItem<object>>.get_IsNone(item) 
-                ? Content<CacheItem<object>>(HttpStatusCode.NotFound, null) 
-                : Content(HttpStatusCode.Found, item.Value);
+            return FSharpOption<CacheItem<object>>.get_IsNone(item)
+                ? Request.CreateResponse(HttpStatusCode.NotFound)
+                : Request.CreateResponse(HttpStatusCode.Found, item.Value);
         }
 
         /// <summary>
@@ -140,14 +138,13 @@ namespace PommaLabs.KVLite.Web.Http
 
         [Route("items/{partition}/{key}")]
 #endif
-        public virtual HttpResponseMessage DeleteItem(string partition, string key)
+        public virtual void DeleteItem(string partition, string key)
         {
             var apiOutputCache = GetApiOutputCache();
             if (apiOutputCache != null)
             {
                 apiOutputCache.Remove(partition, key);
             }
-            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         private ICache GetApiOutputCache()

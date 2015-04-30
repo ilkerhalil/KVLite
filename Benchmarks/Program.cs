@@ -30,6 +30,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
+using Microsoft.FSharp.Core;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Utilities.Testing;
 
@@ -281,7 +282,7 @@ namespace Benchmarks
             foreach (var table in tables)
             {
                 var returnedTable = PersistentCache.DefaultInstance.Get<DataTable>(table.TableName);
-                if (returnedTable == null || returnedTable.TableName != table.TableName)
+                if (returnedTable == null || returnedTable.Value.TableName != table.TableName)
                 {
                     throw new Exception("Wrong data table read from cache! :(");
                 }
@@ -305,15 +306,15 @@ namespace Benchmarks
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var tasks = new List<Task<object>>();
+            var tasks = new List<Task<FSharpOption<DataTable>>>();
             foreach (var table in tables)
             {
                 var tmp = table; // Suggested by R#
-                tasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get(tmp.TableName)));
+                tasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get<DataTable>(tmp.TableName)));
             }
             foreach (var task in tasks)
             {
-                var returnedTable = task.Result as DataTable;
+                var returnedTable = task.Result;
                 if (returnedTable == null)
                 {
                     throw new Exception("Wrong data table read from cache! :(");
@@ -338,10 +339,11 @@ namespace Benchmarks
             {
                 writeTasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
             }
-            var readTasks = new List<Task<object>>();
+            var readTasks = new List<Task<FSharpOption<DataTable>>>();
             foreach (var table in tables)
             {
-                readTasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get(table.TableName)));
+                DataTable localTable = table;
+                readTasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get<DataTable>(localTable.TableName)));
             }
             foreach (var task in writeTasks)
             {

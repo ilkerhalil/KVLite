@@ -30,7 +30,7 @@ using PommaLabs.KVLite.Core;
 
 namespace UnitTests
 {
-    internal sealed class VolatileCacheTests : TestBase<VolatileCacheSettings>
+    internal sealed class VolatileCacheTests : TestBase
     {
         #region Setup/Teardown
 

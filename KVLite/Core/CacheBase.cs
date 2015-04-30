@@ -29,7 +29,6 @@ using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters;
 using System.Threading.Tasks;
 using CodeProject.ObjectPool;
@@ -744,7 +743,6 @@ namespace PommaLabs.KVLite.Core
             return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
         {
             using (var memoryStream = new MemoryStream(serializedValue))
