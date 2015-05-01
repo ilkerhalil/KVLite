@@ -140,7 +140,7 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   Adds a "static" value with given partition and key. Value will last as much as
-        ///   specified in <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed
+        ///   specified in <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed
         ///   before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <param name="partition">The partition.</param>
@@ -150,7 +150,7 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   Adds a "static" value with given key. Value will last as much as specified in
-        ///   <see cref="CacheSettingsBase.StaticIntervalInDays"/> and, if accessed before expiry,
+        ///   <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed before expiry,
         ///   its lifetime will be extended by that interval.
         /// </summary>
         /// <param name="key">The key.</param>

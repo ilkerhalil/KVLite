@@ -50,7 +50,7 @@ namespace PommaLabs.KVLite.Web.Http
         /// <summary>
         ///   The partition used by Web API output cache provider items.
         /// </summary>
-        private const string ResponseCachePartition = "";
+        private const string ResponseCachePartition = "KVLite.Web.Http.ApiOutputCache";
 
         private readonly ICache _cache;
 
@@ -84,9 +84,7 @@ namespace PommaLabs.KVLite.Web.Http
         }
 
         /// <summary>
-        ///   Registers this class as the default API output cache provider. Please use
-        ///   <see cref="Settings.Web_Http_ApiOutputCacheProviderPartition"/> to customize the
-        ///   partition name.
+        ///   Registers this class as the default API output cache provider.
         /// </summary>
         /// <param name="configuration">The Web API configuration instance.</param>
         /// <param name="cache">The underlying cache.</param>

@@ -1,4 +1,4 @@
-﻿// File name: TestBase.cs
+﻿// File name: AbstractCacheTests.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -29,17 +29,20 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Finsa.CodeServices.Clock;
+using FSharpx;
+using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 using Ninject;
 using NUnit.Framework;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Utilities.Extensions;
 using PommaLabs.KVLite.Utilities.Testing;
+using Task = System.Threading.Tasks.Task;
 
 namespace UnitTests
 {
     [TestFixture]
-    internal abstract class TestBase
+    internal abstract class AbstractCacheTests
     {
         #region Setup/Teardown
 
@@ -74,7 +77,7 @@ namespace UnitTests
             .Range(MinItem, LargeItemCount)
             .Select(x => x.ToString(CultureInfo.InvariantCulture))
             .ToList();
-        
+
         protected readonly IKernel Kernel = new StandardKernel(new NinjectConfig());
 
         #endregion Constants
@@ -399,11 +402,24 @@ namespace UnitTests
         [TestCase(SmallItemCount)]
         [TestCase(MediumItemCount)]
         [TestCase(LargeItemCount)]
+        public void Indexer_EmptyCache(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Assert.IsNull(Cache[Cache.Settings.DefaultPartition, StringItems[i]]);
+                Assert.IsNull(Cache[StringItems[i]]);
+            }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
         public void Get_EmptyCache(int itemCount)
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.Get<string>(StringItems[i]));
+                Assert.IsNull(Cache.Get<object>(Cache.Settings.DefaultPartition, StringItems[i]));
+                Assert.IsNull(Cache.Get<object>(StringItems[i]));
             }
         }
 
@@ -414,6 +430,7 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
+                Assert.IsNull(Cache.Get<string>(Cache.Settings.DefaultPartition, StringItems[i]));
                 Assert.IsNull(Cache.Get<string>(StringItems[i]));
             }
         }
@@ -425,7 +442,8 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.GetItem<string>(StringItems[i]));
+                Assert.IsNull(Cache.GetItem<object>(Cache.Settings.DefaultPartition, StringItems[i]));
+                Assert.IsNull(Cache.GetItem<object>(StringItems[i]));
             }
         }
 
@@ -436,6 +454,7 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
+                Assert.IsNull(Cache.GetItem<string>(Cache.Settings.DefaultPartition, StringItems[i]));
                 Assert.IsNull(Cache.GetItem<string>(StringItems[i]));
             }
         }
@@ -662,7 +681,8 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.Peek<string>(StringItems[i]));
+                Assert.IsNull(Cache.Peek<object>(Cache.Settings.DefaultPartition, StringItems[i]));
+                Assert.IsNull(Cache.Peek<object>(StringItems[i]));
             }
         }
 
@@ -673,6 +693,7 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
+                Assert.IsNull(Cache.Peek<string>(Cache.Settings.DefaultPartition, StringItems[i]));
                 Assert.IsNull(Cache.Peek<string>(StringItems[i]));
             }
         }
@@ -684,7 +705,8 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.PeekItem<string>(StringItems[i]));
+                Assert.IsNull(Cache.PeekItem<object>(Cache.Settings.DefaultPartition, StringItems[i]));
+                Assert.IsNull(Cache.PeekItem<object>(StringItems[i]));
             }
         }
 
@@ -695,6 +717,7 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
+                Assert.IsNull(Cache.PeekItem<string>(Cache.Settings.DefaultPartition, StringItems[i]));
                 Assert.IsNull(Cache.PeekItem<string>(StringItems[i]));
             }
         }
@@ -827,6 +850,17 @@ namespace UnitTests
             Cache.AddStatic("list", l);
             var lc = Cache.Get<SortedList<int, string>>("list").Value;
             Assert.True(l.SequenceEqual(lc));
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Collections_FSharpList(int itemCount)
+        {
+            var fl = FSharpList.Create(Enumerable.Range(1, itemCount).ToArray());
+            Cache.AddStatic("f#_list", fl);
+            var lc = Cache.Get<FSharpList<int>>("f#_list").Value;
+            Assert.True(fl.SequenceEqual(lc));
         }
 
         #endregion BCL Collections
