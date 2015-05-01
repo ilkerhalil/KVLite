@@ -40,7 +40,7 @@ namespace PommaLabs.KVLite
 
         static PersistentCacheConfiguration()
         {
-            var configurationFile = "KVLite/kvlite.persistent.config";
+            var configurationFile = "KVLite.config";
             if (GEnvironment.AppIsRunningOnAspNet)
             {
                 // If application is running on ASP.NET, then we look for the configuration file

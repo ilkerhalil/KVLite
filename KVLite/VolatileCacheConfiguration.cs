@@ -40,10 +40,18 @@ namespace PommaLabs.KVLite
 
         static VolatileCacheConfiguration()
         {
-            CachedInstance = new VolatileCacheConfiguration();
-            CachedInstance.Initialize(new ConfigurationFileConfigurationProvider<PersistentCacheConfiguration>
+            var configurationFile = "KVLite.config";
+            if (GEnvironment.AppIsRunningOnAspNet)
             {
-                ConfigurationFile = "KVLite/kvlite.volatile.config".MapPath(),
+                // If application is running on ASP.NET, then we look for the configuration file
+                // inside the root of the project. Usually, configuration file are not stored into
+                // the "bin" directory, because every change would make the application restart.
+                configurationFile = "~/" + configurationFile;
+            }
+            CachedInstance = new VolatileCacheConfiguration();
+            CachedInstance.Initialize(new ConfigurationFileConfigurationProvider<VolatileCacheConfiguration>
+            {
+                ConfigurationFile = configurationFile.MapPath(),
                 ConfigurationSection = "volatileCache"
             });
         }

@@ -227,7 +227,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="KVLite\kvlite.persistent.config" />
+    <Content Include="KVLite.config" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
