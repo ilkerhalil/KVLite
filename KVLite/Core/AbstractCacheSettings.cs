@@ -86,10 +86,6 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        #endregion Settings
-
-        #region Abstract Settings
-
         /// <summary>
         ///   Number of inserts before a cache cleanup is issued.
         /// </summary>
@@ -143,6 +139,16 @@ namespace PommaLabs.KVLite.Core
                 OnPropertyChanged();
             }
         }
+
+        #endregion Settings
+
+        #region Abstract Settings
+
+        /// <summary>
+        ///   Gets the cache URI; used for logging.
+        /// </summary>
+        /// <value>The cache URI.</value>
+        public abstract string CacheUri { get; }
 
         #endregion Abstract Settings
 

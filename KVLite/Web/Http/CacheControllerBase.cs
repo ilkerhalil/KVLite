@@ -60,7 +60,7 @@ namespace PommaLabs.KVLite.Web.Http
         public virtual IQueryable<CacheItem<object>> GetItems()
         {
             var apiOutputCache = GetApiOutputCache();
-            return (apiOutputCache == null) ? NoItems : apiOutputCache.GetManyItems<object>().AsQueryable();
+            return (apiOutputCache == null) ? NoItems : apiOutputCache.GetItems<object>().AsQueryable();
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace PommaLabs.KVLite.Web.Http
         public virtual IQueryable<CacheItem<object>> GetItems(string partition)
         {
             var apiOutputCache = GetApiOutputCache();
-            return (apiOutputCache == null) ? NoItems : apiOutputCache.GetManyItems<object>(partition).AsQueryable();
+            return (apiOutputCache == null) ? NoItems : apiOutputCache.GetItems<object>(partition).AsQueryable();
         }
 
         /// <summary>

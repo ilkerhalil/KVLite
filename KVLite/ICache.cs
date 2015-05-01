@@ -308,7 +308,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        CacheItem<TVal>[] GetManyItems<TVal>();
+        CacheItem<TVal>[] GetItems<TVal>();
 
         /// <summary>
         ///   Gets all cache items in given partition. If an item is a "sliding" or "static" value,
@@ -322,7 +322,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        CacheItem<TVal>[] GetManyItems<TVal>(string partition);
+        CacheItem<TVal>[] GetItems<TVal>(string partition);
 
         /// <summary>
         ///   Gets the value corresponding to given partition and key, without updating expiry date.
@@ -403,7 +403,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         [Pure]
-        CacheItem<TVal>[] PeekManyItems<TVal>();
+        CacheItem<TVal>[] PeekItems<TVal>();
 
         /// <summary>
         ///   Gets the all items in given partition, without updating expiry dates.
@@ -417,7 +417,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         [Pure]
-        CacheItem<TVal>[] PeekManyItems<TVal>(string partition);
+        CacheItem<TVal>[] PeekItems<TVal>(string partition);
 
         /// <summary>
         ///   Removes the value with given partition and key.

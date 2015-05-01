@@ -336,7 +336,7 @@ namespace PommaLabs.KVLite.Contracts
         ///   be increased by corresponding interval.
         /// </summary>
         /// <returns>All cache items.</returns>
-        public CacheItem<TVal>[] GetManyItems<TVal>()
+        public CacheItem<TVal>[] GetItems<TVal>()
         {
             Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
             Contract.Ensures(Contract.Result<CacheItem<TVal>[]>().Length == Count());
@@ -350,7 +350,7 @@ namespace PommaLabs.KVLite.Contracts
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <returns>All cache items in given partition.</returns>
-        public CacheItem<TVal>[] GetManyItems<TVal>(string partition)
+        public CacheItem<TVal>[] GetItems<TVal>(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
@@ -427,7 +427,7 @@ namespace PommaLabs.KVLite.Contracts
         ///   Gets the all values, without updating expiry dates.
         /// </summary>
         /// <returns>All values, without updating expiry dates.</returns>
-        public CacheItem<TVal>[] PeekManyItems<TVal>()
+        public CacheItem<TVal>[] PeekItems<TVal>()
         {
             Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
             Contract.Ensures(Contract.Result<CacheItem<TVal>[]>().Length == Count());
@@ -440,7 +440,7 @@ namespace PommaLabs.KVLite.Contracts
         /// </summary>
         /// <param name="partition"></param>
         /// <returns>All items in given partition, without updating expiry dates.</returns>
-        public CacheItem<TVal>[] PeekManyItems<TVal>(string partition)
+        public CacheItem<TVal>[] PeekItems<TVal>(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);

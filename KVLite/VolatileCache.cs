@@ -62,7 +62,6 @@ namespace PommaLabs.KVLite
 
         static VolatileCache()
         {
-            InitSQLite();
             CachedDefaultInstance = new VolatileCache(new VolatileCacheSettings());
         }
 

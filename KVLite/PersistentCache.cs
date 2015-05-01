@@ -62,7 +62,6 @@ namespace PommaLabs.KVLite
 
         static PersistentCache()
         {
-            InitSQLite();
             CachedDefaultInstance = new PersistentCache(new PersistentCacheSettings());
         }
 

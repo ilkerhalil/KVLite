@@ -101,12 +101,12 @@ namespace PommaLabs.KVLite.Web.Http
 
         public IEnumerable<string> AllKeys
         {
-            get { return _cache.GetManyItems<object>(ResponseCachePartition).Select(i => i.Key); }
+            get { return _cache.GetItems<object>(ResponseCachePartition).Select(i => i.Key); }
         }
 
         public void RemoveStartsWith(string key)
         {
-            var items = _cache.GetManyItems<object>(ResponseCachePartition);
+            var items = _cache.GetItems<object>(ResponseCachePartition);
             foreach (var i in items.Where(item => item.Key.StartsWith(key)))
             {
                 Debug.Assert(i.Partition == ResponseCachePartition);

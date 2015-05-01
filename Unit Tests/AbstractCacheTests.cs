@@ -300,7 +300,7 @@ namespace UnitTests
                 Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(Cache.Contains(StringItems[i]));
             }
-            var items = Cache.GetManyItems<string>();
+            var items = Cache.GetItems<string>();
             for (var i = 0; i < itemCount; ++i)
             {
                 var s = StringItems[i];
@@ -532,12 +532,12 @@ namespace UnitTests
         {
             AddSliding(Cache, itemCount, TimeSpan.FromSeconds(1));
             Cache.Clock.As<MockClock>().Add(TimeSpan.FromSeconds(2));
-            var items = new HashSet<string>(Cache.GetManyItems<string>().Select(i => i.Value));
+            var items = new HashSet<string>(Cache.GetItems<string>().Select(i => i.Value));
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.False(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(Cache.GetManyItems<string>().Select(x => x.Value));
+            items = new HashSet<string>(Cache.GetItems<string>().Select(x => x.Value));
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.False(items.Contains(StringItems[i]));
@@ -550,12 +550,12 @@ namespace UnitTests
         public void GetMany_RightItems_AfterAddSliding_ValidTime(int itemCount)
         {
             AddSliding(Cache, itemCount, TimeSpan.FromHours(1));
-            var items = new HashSet<string>(Cache.GetManyItems<string>().Select(i => i.Value));
+            var items = new HashSet<string>(Cache.GetItems<string>().Select(i => i.Value));
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.True(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(Cache.GetManyItems<string>().Select(x => x.Value));
+            items = new HashSet<string>(Cache.GetItems<string>().Select(x => x.Value));
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.True(items.Contains(StringItems[i]));
@@ -568,12 +568,12 @@ namespace UnitTests
         public void GetMany_RightItems_AfterAddStatic(int itemCount)
         {
             AddStatic(Cache, itemCount);
-            var items = new HashSet<string>(Cache.GetManyItems<string>().Select(i => i.Value));
+            var items = new HashSet<string>(Cache.GetItems<string>().Select(i => i.Value));
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.True(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(Cache.GetManyItems<string>().Select(x => x.Value));
+            items = new HashSet<string>(Cache.GetItems<string>().Select(x => x.Value));
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.True(items.Contains(StringItems[i]));
@@ -586,12 +586,12 @@ namespace UnitTests
         public void GetMany_RightItems_AfterAddTimed_InvalidTime(int itemCount)
         {
             AddTimed(Cache, itemCount, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
-            var items = new HashSet<string>(Cache.GetManyItems<string>().Select(i => i.Value));
+            var items = new HashSet<string>(Cache.GetItems<string>().Select(i => i.Value));
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.False(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(Cache.GetManyItems<string>().Select(x => x.Value));
+            items = new HashSet<string>(Cache.GetItems<string>().Select(x => x.Value));
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.False(items.Contains(StringItems[i]));
@@ -604,12 +604,12 @@ namespace UnitTests
         public void GetMany_RightItems_AfterAddTimed_ValidTime(int itemCount)
         {
             AddTimed(Cache, itemCount, Cache.Clock.UtcNow.AddMinutes(10));
-            var items = new HashSet<string>(Cache.GetManyItems<string>().Select(i => i.Value));
+            var items = new HashSet<string>(Cache.GetItems<string>().Select(i => i.Value));
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.True(items.Contains(StringItems[i]));
             }
-            items = new HashSet<string>(Cache.GetManyItems<string>().Select(x => x.Value));
+            items = new HashSet<string>(Cache.GetItems<string>().Select(x => x.Value));
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.True(items.Contains(StringItems[i]));
@@ -645,7 +645,7 @@ namespace UnitTests
                 Cache.AddSliding(StringItems[i], StringItems[i], interval);
             }
             Cache.Clock.As<MockClock>().Add(TimeSpan.FromMinutes(1));
-            var items = Cache.GetManyItems<string>();
+            var items = Cache.GetItems<string>();
             for (var i = 0; i < itemCount; ++i)
             {
                 var item = items[i];

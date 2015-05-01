@@ -95,6 +95,15 @@ namespace PommaLabs.KVLite
             }
         }
 
+        /// <summary>
+        ///   Gets the cache URI; used for logging.
+        /// </summary>
+        /// <value>The cache URI.</value>
+        public override string CacheUri
+        {
+            get { return CacheFile; }
+        }
+
         #endregion Settings
     }
 }

@@ -85,7 +85,7 @@ namespace PommaLabs.KVLite
         {
             get
             {
-                Contract.Ensures(!String.IsNullOrWhiteSpace(Contract.Result<string>()));
+                Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
                 return _cacheFile;
             }
             set
@@ -95,6 +95,15 @@ namespace PommaLabs.KVLite
                 _cacheFile = value;
                 OnPropertyChanged();
             }
+        }
+
+        /// <summary>
+        ///   Gets the cache URI; used for logging.
+        /// </summary>
+        /// <value>The cache URI.</value>
+        public override string CacheUri
+        {
+            get { return CacheName; }
         }
 
         #endregion Settings
