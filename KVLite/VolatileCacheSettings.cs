@@ -32,7 +32,7 @@ namespace PommaLabs.KVLite
     ///   Settings used by <see cref="VolatileCache"/>.
     /// </summary>
     [Serializable]
-    public sealed class VolatileCacheSettings : CacheSettingsBase
+    public sealed class VolatileCacheSettings : AbstractCacheSettings
     {
         #region Fields
 

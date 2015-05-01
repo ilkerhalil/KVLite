@@ -27,6 +27,7 @@ using Common.Logging;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
+using FSharpx;
 using Microsoft.FSharp.Core;
 using PommaLabs.KVLite.Core;
 
@@ -95,12 +96,12 @@ namespace PommaLabs.KVLite.Contracts
         /// <summary>
         ///   The available settings for the cache.
         /// </summary>
-        public CacheSettingsBase Settings
+        public AbstractCacheSettings Settings
         {
             get
             {
-                Contract.Ensures(Contract.Result<CacheSettingsBase>() != null);
-                return default(CacheSettingsBase);
+                Contract.Ensures(Contract.Result<AbstractCacheSettings>() != null);
+                return default(AbstractCacheSettings);
             }
         }
 
@@ -110,7 +111,7 @@ namespace PommaLabs.KVLite.Contracts
             {
                 Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
                 Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-                Contract.Ensures(Contract.Result<FSharpOption<object>>() != null);
+                Contract.Ensures(Contains(partition, key) == Contract.Result<FSharpOption<object>>().HasValue());
                 return default(FSharpOption<object>);
             }
         }
@@ -120,7 +121,8 @@ namespace PommaLabs.KVLite.Contracts
             get
             {
                 Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-                Contract.Ensures(Contract.Result<FSharpOption<object>>() != null);
+                Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<FSharpOption<object>>().HasValue());
+                Contract.Ensures(Contains(key) == Contract.Result<FSharpOption<object>>().HasValue());
                 return default(FSharpOption<object>);
             }
         }
@@ -139,26 +141,26 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
         }
 
         public void AddSliding<TVal>(string key, TVal value, TimeSpan interval)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
         }
 
         public void AddStatic<TVal>(string partition, string key, TVal value)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
         }
 
         public void AddStatic<TVal>(string key, TVal value)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
         }
 
         /// <summary>
@@ -173,13 +175,13 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
         }
 
         public void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentException>(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>(), ErrorMessages.NotSerializableValue);
+            Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
         }
 
         /// <summary>
@@ -273,6 +275,7 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(Contains(partition, key) == Contract.Result<FSharpOption<TVal>>().HasValue());
             return default(FSharpOption<TVal>);
         }
 
@@ -286,6 +289,8 @@ namespace PommaLabs.KVLite.Contracts
         public FSharpOption<TVal> Get<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<FSharpOption<TVal>>().HasValue());
+            Contract.Ensures(Contains(key) == Contract.Result<FSharpOption<TVal>>().HasValue());
             return default(FSharpOption<TVal>);
         }
 
@@ -300,6 +305,7 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(Contains(partition, key) == Contract.Result<FSharpOption<CacheItem<TVal>>>().HasValue());
             return default(FSharpOption<CacheItem<TVal>>);
         }
 
@@ -313,6 +319,8 @@ namespace PommaLabs.KVLite.Contracts
         public FSharpOption<CacheItem<TVal>> GetItem<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<FSharpOption<CacheItem<TVal>>>().HasValue());
+            Contract.Ensures(Contains(key) == Contract.Result<FSharpOption<CacheItem<TVal>>>().HasValue());
             return default(FSharpOption<CacheItem<TVal>>);
         }
 
@@ -352,6 +360,7 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(Contains(partition, key) == Contract.Result<FSharpOption<TVal>>().HasValue());
             return default(FSharpOption<TVal>);
         }
 
@@ -366,6 +375,8 @@ namespace PommaLabs.KVLite.Contracts
         public FSharpOption<TVal> Peek<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<FSharpOption<TVal>>().HasValue());
+            Contract.Ensures(Contains(key) == Contract.Result<FSharpOption<TVal>>().HasValue());
             return default(FSharpOption<TVal>);
         }
 
@@ -381,6 +392,7 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(Contains(partition, key) == Contract.Result<FSharpOption<CacheItem<TVal>>>().HasValue());
             return default(FSharpOption<CacheItem<TVal>>);
         }
 
@@ -395,6 +407,8 @@ namespace PommaLabs.KVLite.Contracts
         public FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<FSharpOption<CacheItem<TVal>>>().HasValue());
+            Contract.Ensures(Contains(key) == Contract.Result<FSharpOption<CacheItem<TVal>>>().HasValue());
             return default(FSharpOption<CacheItem<TVal>>);
         }
 
@@ -429,11 +443,14 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(!Contains(partition, key));
         }
 
         public void Remove(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
+            Contract.Ensures(!Contains(Settings.DefaultPartition, key));
+            Contract.Ensures(!Contains(key));
         }
 
         #endregion ICache Members

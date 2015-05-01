@@ -26,8 +26,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using FSharpx;
 using LinqToQuerystring.WebApi;
-using Microsoft.FSharp.Core;
 
 #if NET45
 
@@ -47,7 +47,7 @@ namespace PommaLabs.KVLite.Web.Http
     public abstract class CacheControllerBase : ApiController
     {
         private static readonly IQueryable<CacheItem<object>> NoItems = new List<CacheItem<object>>().AsQueryable();
-            
+
         /// <summary>
         ///   Returns all _valid_ items stored in the cache.
         /// </summary>
@@ -126,9 +126,9 @@ namespace PommaLabs.KVLite.Web.Http
                 return Request.CreateResponse(HttpStatusCode.NotFound);
             }
             var item = apiOutputCache.GetItem<object>(partition, key);
-            return FSharpOption<CacheItem<object>>.get_IsNone(item)
-                ? Request.CreateResponse(HttpStatusCode.NotFound)
-                : Request.CreateResponse(HttpStatusCode.Found, item.Value);
+            return item.HasValue()
+                ? Request.CreateResponse(HttpStatusCode.Found, item.Value)
+                : Request.CreateResponse(HttpStatusCode.NotFound);
         }
 
         /// <summary>

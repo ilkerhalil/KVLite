@@ -30,7 +30,6 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters;
-using System.Threading.Tasks;
 using CodeProject.ObjectPool;
 using Common.Logging;
 using Common.Logging.Simple;
@@ -38,9 +37,11 @@ using Dapper;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
+using FSharpx;
 using Microsoft.FSharp.Core;
 using PommaLabs.KVLite.Utilities;
 using PommaLabs.KVLite.Utilities.Extensions;
+using Task = System.Threading.Tasks.Task;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -50,7 +51,7 @@ namespace PommaLabs.KVLite.Core
     /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     [Serializable]
     public abstract class AbstractCache<TCacheSettings> : FormattableObject, ICache<TCacheSettings>
-        where TCacheSettings : CacheSettingsBase
+        where TCacheSettings : AbstractCacheSettings
     {
         #region Constants
 
@@ -239,7 +240,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   The available settings for the cache.
         /// </summary>
-        CacheSettingsBase ICache.Settings
+        AbstractCacheSettings ICache.Settings
         {
             get { return _settings; }
         }
@@ -782,7 +783,7 @@ namespace PommaLabs.KVLite.Core
                 return ctx.InternalResource
                     .Query<DbCacheItem>(SQLiteQueries.GetManyItems, p, buffered: false)
                     .Select(DeserializeCacheItem<TVal>)
-                    .Where(FSharpOption<CacheItem<TVal>>.get_IsSome)
+                    .Where(i => i.HasValue())
                     .Select(i => i.Value)
                     .ToArray();
             }
@@ -799,7 +800,7 @@ namespace PommaLabs.KVLite.Core
                 return ctx.InternalResource
                     .Query<DbCacheItem>(SQLiteQueries.PeekManyItems, p, buffered: false)
                     .Select(DeserializeCacheItem<TVal>)
-                    .Where(FSharpOption<CacheItem<TVal>>.get_IsSome)
+                    .Where(i => i.HasValue())
                     .Select(i => i.Value)
                     .ToArray();
             }
@@ -823,7 +824,7 @@ namespace PommaLabs.KVLite.Core
             }
             try
             {
-                return FSharpOption<TVal>.Some(UnsafeDeserializeValue<TVal>(serializedValue));
+                return UnsafeDeserializeValue<TVal>(serializedValue).Some();
             }
             catch
             {
@@ -842,7 +843,7 @@ namespace PommaLabs.KVLite.Core
             }
             try
             {
-                return FSharpOption<CacheItem<TVal>>.Some(new CacheItem<TVal>
+                return new CacheItem<TVal>
                 {
                     Partition = src.Partition,
                     Key = src.Key,
@@ -850,7 +851,7 @@ namespace PommaLabs.KVLite.Core
                     UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcCreation),
                     UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry),
                     Interval = src.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(src.Interval.Value)
-                });
+                }.Some();
             }
             catch
             {

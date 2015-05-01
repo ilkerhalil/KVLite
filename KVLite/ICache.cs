@@ -83,7 +83,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <value>The available settings for the cache.</value>
         [Pure]
-        CacheSettingsBase Settings { get; }
+        AbstractCacheSettings Settings { get; }
 
         /// <summary>
         ///   Gets the value with the specified partition and key.
@@ -438,7 +438,7 @@ namespace PommaLabs.KVLite
     /// </summary>
     /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     public interface ICache<out TCacheSettings> : ICache
-        where TCacheSettings : CacheSettingsBase
+        where TCacheSettings : AbstractCacheSettings
     {
         /// <summary>
         ///   The available settings for the cache.

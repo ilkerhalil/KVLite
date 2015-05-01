@@ -153,8 +153,24 @@
       <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.3\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FSharp.Control.AsyncSeq, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharp.Control.AsyncSeq.1.15.0\lib\net40\FSharp.Control.AsyncSeq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\FSharp.Core.3.1.2.1\lib\net40\FSharp.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharpx.Async, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharpx.Async.1.12.0\lib\net40\FSharpx.Async.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharpx.Collections, Version=1.10.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharpx.Collections.1.10.1\lib\net40\FSharpx.Collections.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharpx.Extras, Version=1.10.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharpx.Extras.1.10.2\lib\40\FSharpx.Extras.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LinqToQuerystring">
@@ -222,8 +238,8 @@
     <Compile Include="Core\TaskRunner.cs" />
     <Compile Include="CacheReadMode.cs" />
     <Compile Include="Contracts\CacheContract.cs" />
-    <Compile Include="Core\CacheBase.cs" />
-    <Compile Include="Core\CacheSettingsBase.cs" />
+    <Compile Include="Core\AbstractCache.cs" />
+    <Compile Include="Core\AbstractCacheSettings.cs" />
     <Compile Include="Core\ErrorMessages.cs" />
     <Compile Include="ICache.cs" />
     <Compile Include="Nancy\CachingBootstrapper.cs" />

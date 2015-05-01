@@ -1,4 +1,4 @@
-﻿// File name: CacheSettingsBase.cs
+﻿// File name: AbstractCacheSettings.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -33,7 +33,7 @@ namespace PommaLabs.KVLite.Core
     ///   Base class for cache settings. Contains settings shared among different caches.
     /// </summary>
     [Serializable]
-    public abstract class CacheSettingsBase : INotifyPropertyChanged
+    public abstract class AbstractCacheSettings : INotifyPropertyChanged
     {
         #region Fields
 

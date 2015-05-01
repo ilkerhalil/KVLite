@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <NuGetPackageImportStamp>72af91c3</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>22da484b</NuGetPackageImportStamp>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -160,8 +160,24 @@
       <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.3\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FSharp.Control.AsyncSeq, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharp.Control.AsyncSeq.1.15.0\lib\net40\FSharp.Control.AsyncSeq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FSharp.Core">
       <HintPath>..\packages\FSharp.Core.3.1.2.1\lib\net40\FSharp.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharpx.Async, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharpx.Async.1.12.0\lib\net40\FSharpx.Async.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharpx.Collections, Version=1.10.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharpx.Collections.1.10.1\lib\net40\FSharpx.Collections.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharpx.Extras, Version=1.10.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharpx.Extras.1.10.2\lib\40\FSharpx.Extras.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LinqToQuerystring, Version=0.7.0.8, Culture=neutral, processorArchitecture=MSIL">
@@ -184,8 +200,8 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite, Version=1.0.96.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\System.Data.SQLite.Core.MSIL.1.0.96.0\lib\net40\System.Data.SQLite.dll</HintPath>
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.96.0\lib\net40\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.IO">
       <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.IO.dll</HintPath>
@@ -236,6 +252,12 @@
     <Compile Include="..\KVLite\CacheReadMode.cs">
       <Link>CacheReadMode.cs</Link>
     </Compile>
+    <Compile Include="..\KVLite\Core\AbstractCache.cs">
+      <Link>Core\AbstractCache.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Core\AbstractCacheSettings.cs">
+      <Link>Core\AbstractCacheSettings.cs</Link>
+    </Compile>
     <Compile Include="..\KVLite\Core\ErrorMessages.cs">
       <Link>Core\ErrorMessages.cs</Link>
     </Compile>
@@ -250,12 +272,6 @@
     </Compile>
     <Compile Include="..\KVLite\Contracts\CacheContract.cs">
       <Link>Contracts\CacheContract.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\CacheBase.cs">
-      <Link>Core\CacheBase.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Core\CacheSettingsBase.cs">
-      <Link>Core\CacheSettingsBase.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Core\SQLiteQueries.cs">
       <Link>Core\SQLiteQueries.cs</Link>
@@ -372,6 +388,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.96.0\build\net40\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.96.0\build\net40\System.Data.SQLite.Core.targets'))" />
   </Target>
   <PropertyGroup>
     <PostBuildEvent>if not exist "$(SolutionDir)NuGet Packager (Core)/lib/net40" mkdir "$(SolutionDir)NuGet Packager (Core)/lib/net40"
@@ -380,6 +397,7 @@ copy "$(TargetDir)PommaLabs.KVLite.pdb" "$(SolutionDir)NuGet Packager (Core)/lib
 copy "$(TargetDir)PommaLabs.KVLite.xml" "$(SolutionDir)NuGet Packager (Core)/lib/net40"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.96.0\build\net40\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.96.0\build\net40\System.Data.SQLite.Core.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
