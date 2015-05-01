@@ -142,12 +142,15 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            // Contract.Ensures(Contains(partition, key));
         }
 
         public void AddSliding<TVal>(string key, TVal value, TimeSpan interval)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            Contract.Ensures(Contains(Settings.DefaultPartition, key));
+            // Contract.Ensures(Contains(key));
         }
 
         public void AddStatic<TVal>(string partition, string key, TVal value)
@@ -155,12 +158,14 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            // Contract.Ensures(Contains(partition, key));
         }
 
         public void AddStatic<TVal>(string key, TVal value)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            // Contract.Ensures(Contains(key));
         }
 
         /// <summary>
@@ -176,12 +181,14 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            // Contract.Ensures(Contains(partition, key));
         }
 
         public void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            // Contract.Ensures(Contains(key));
         }
 
         /// <summary>
@@ -189,7 +196,7 @@ namespace PommaLabs.KVLite.Contracts
         /// </summary>
         public void Clear()
         {
-            Contract.Ensures(this.Count() == 0);
+            Contract.Ensures(Count() == 0);
             Contract.Ensures(LongCount() == 0);
         }
 
@@ -199,7 +206,7 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="partition"></param>
         public void Clear(string partition)
         {
-            Contract.Ensures(this.Count(partition) == 0);
+            Contract.Ensures(Count(partition) == 0);
             Contract.Ensures(LongCount(partition) == 0);
         }
 
@@ -332,6 +339,8 @@ namespace PommaLabs.KVLite.Contracts
         public CacheItem<TVal>[] GetManyItems<TVal>()
         {
             Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
+            Contract.Ensures(Contract.Result<CacheItem<TVal>[]>().Length == Count());
+            Contract.Ensures(Contract.Result<CacheItem<TVal>[]>().LongLength == LongCount());
             return default(CacheItem<TVal>[]);
         }
 
@@ -345,6 +354,8 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
+            Contract.Ensures(Contract.Result<CacheItem<TVal>[]>().Length == Count(partition));
+            Contract.Ensures(Contract.Result<CacheItem<TVal>[]>().LongLength == LongCount(partition));
             return default(CacheItem<TVal>[]);
         }
 
@@ -419,6 +430,8 @@ namespace PommaLabs.KVLite.Contracts
         public CacheItem<TVal>[] PeekManyItems<TVal>()
         {
             Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
+            Contract.Ensures(Contract.Result<CacheItem<TVal>[]>().Length == Count());
+            Contract.Ensures(Contract.Result<CacheItem<TVal>[]>().LongLength == LongCount());
             return default(CacheItem<TVal>[]);
         }
 
@@ -431,6 +444,8 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
+            Contract.Ensures(Contract.Result<CacheItem<TVal>[]>().Length == Count(partition));
+            Contract.Ensures(Contract.Result<CacheItem<TVal>[]>().LongLength == LongCount(partition));
             return default(CacheItem<TVal>[]);
         }
 
