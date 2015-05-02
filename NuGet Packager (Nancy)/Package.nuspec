@@ -4,7 +4,7 @@
     <metadata>
         <id>PommaLabs.KVLite.Nancy</id>
         <version>3.0.1</version>
-        <title>PommaLabs.KVLite - Nancy caching bootstrapper</title>
+        <title>KVLite - Nancy caching bootstrapper</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
         <description>

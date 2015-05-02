@@ -4,7 +4,7 @@
     <metadata>
         <id>PommaLabs.KVLite.WebApi</id>
         <version>3.0.1</version>
-        <title>PommaLabs.KVLite - Web API output cache provider</title>
+        <title>KVLite - Web API output cache provider</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
         <description>
