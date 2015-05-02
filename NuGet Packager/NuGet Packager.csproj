@@ -51,18 +51,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="content\net40\App.config.install.xdt" />
-    <None Include="content\net40\App.config.transform" />
-    <None Include="content\net40\App.config.uninstall.xdt" />
-    <None Include="content\net40\Web.config.install.xdt" />
-    <None Include="content\net40\Web.config.transform" />
-    <None Include="content\net40\Web.config.uninstall.xdt" />
-    <None Include="content\net45\App.config.install.xdt" />
-    <None Include="content\net45\App.config.transform" />
-    <None Include="content\net45\App.config.uninstall.xdt" />
-    <None Include="content\net45\Web.config.install.xdt" />
-    <None Include="content\net45\Web.config.transform" />
-    <None Include="content\net45\Web.config.uninstall.xdt" />
+    <None Include="content\KVLite.config" />
     <None Include="NuGetPackage.ps1" />
     <None Include="NuGetSetup.ps1" />
     <None Include="NuGet.exe" />
@@ -70,49 +59,9 @@
     <None Include="Package.nuspec">
       <SubType>Designer</SubType>
     </None>
-    <None Include="tools\net40\install.ps1" />
-    <None Include="tools\net45\install.ps1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="content\net40\KVLite\x64\Crc32C.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="content\net40\KVLite\x64\Snappy.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="content\net40\KVLite\x64\SQLite.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="content\net40\KVLite\x86\Crc32C.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="content\net40\KVLite\x86\Snappy.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="content\net40\KVLite\x86\SQLite.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="content\net45\KVLite\x64\Crc32C.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="content\net45\KVLite\x64\Snappy.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="content\net45\KVLite\x64\SQLite.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="content\net45\KVLite\x86\Crc32C.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="content\net45\KVLite\x86\Snappy.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="content\net45\KVLite\x86\SQLite.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
