@@ -469,7 +469,7 @@ namespace UnitTests
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(tasks[i].Result);
+                Assert.IsFalse(tasks[i].Result.HasValue);
             }
         }
 
@@ -500,7 +500,7 @@ namespace UnitTests
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.Get<string>(StringItems[i]));
+                Assert.IsFalse(Cache.Get<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -732,7 +732,7 @@ namespace UnitTests
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(tasks[i].Result);
+                Assert.IsFalse(tasks[i].Result.HasValue);
             }
         }
 
@@ -769,7 +769,7 @@ namespace UnitTests
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.Peek<string>(StringItems[i]));
+                Assert.IsFalse(Cache.Peek<string>(StringItems[i]).HasValue);
             }
         }
 
