@@ -23,9 +23,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
+using Finsa.CodeServices.Common;
 using LinqToQuerystring.WebApi;
 
 #if NET45
@@ -48,15 +47,41 @@ namespace PommaLabs.KVLite.Web.Http
         private static readonly IQueryable<CacheItem<object>> NoItems = new List<CacheItem<object>>().AsQueryable();
 
         /// <summary>
-        ///   Returns all _valid_ items stored in the cache.
+        ///   Returns all _valid_ items stored in the cache. Values are omitted, in order to keep
+        ///   the response small.
         /// </summary>
         /// <returns>All _valid_ items stored in the cache.</returns>
+        /// <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
 #if NET45
 
         [Route("items")]
 #endif
         [LinqToQueryable]
         public virtual IQueryable<CacheItem<object>> GetItems()
+        {
+            var apiOutputCache = GetApiOutputCache();
+            if (apiOutputCache == null)
+            {
+                return NoItems;
+            }
+            var items = apiOutputCache.GetItems<object>();
+            foreach (var item in items)
+            {
+                item.Value = null; // Removes the value, as stated in the docs.
+            }
+            return items.AsQueryable();
+        }
+
+        /// <summary>
+        ///   Returns all _valid_ items stored in the cache. Values are included in the response.
+        /// </summary>
+        /// <returns>All _valid_ items stored in the cache.</returns>
+#if NET45
+
+        [Route("items/withValues")]
+#endif
+        [LinqToQueryable]
+        public virtual IQueryable<CacheItem<object>> GetItemsWithValues()
         {
             var apiOutputCache = GetApiOutputCache();
             return (apiOutputCache == null) ? NoItems : apiOutputCache.GetItems<object>().AsQueryable();
@@ -79,15 +104,42 @@ namespace PommaLabs.KVLite.Web.Http
         }
 
         /// <summary>
-        ///   Returns all _valid_ items stored in the cache for given partition.
+        ///   Returns all _valid_ items stored in the cache for given partition. Values are omitted,
+        ///   in order to keep the response small.
         /// </summary>
         /// <returns>All _valid_ items stored in the cache for given partition.</returns>
+        /// <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
 #if NET45
 
         [Route("items/{partition}")]
 #endif
         [LinqToQueryable]
         public virtual IQueryable<CacheItem<object>> GetItems(string partition)
+        {
+            var apiOutputCache = GetApiOutputCache();
+            if (apiOutputCache == null)
+            {
+                return NoItems;
+            }
+            var items = apiOutputCache.GetItems<object>(partition);
+            foreach (var item in items)
+            {
+                item.Value = null; // Removes the value, as stated in the docs.
+            }
+            return items.AsQueryable();
+        }
+
+        /// <summary>
+        ///   Returns all _valid_ items stored in the cache for given partition. Values are included
+        ///   in the response.
+        /// </summary>
+        /// <returns>All _valid_ items stored in the cache for given partition.</returns>
+#if NET45
+
+        [Route("items/{partition}/withValues")]
+#endif
+        [LinqToQueryable]
+        public virtual IQueryable<CacheItem<object>> GetItemsWithValues(string partition)
         {
             var apiOutputCache = GetApiOutputCache();
             return (apiOutputCache == null) ? NoItems : apiOutputCache.GetItems<object>(partition).AsQueryable();
@@ -117,17 +169,10 @@ namespace PommaLabs.KVLite.Web.Http
 
         [Route("items/{partition}/{key}")]
 #endif
-        public virtual HttpResponseMessage GetItem(string partition, string key)
+        public virtual Option<CacheItem<object>> GetItem(string partition, string key)
         {
             var apiOutputCache = GetApiOutputCache();
-            if (apiOutputCache == null)
-            {
-                return Request.CreateResponse(HttpStatusCode.NotFound);
-            }
-            var item = apiOutputCache.GetItem<object>(partition, key);
-            return item.HasValue
-                ? Request.CreateResponse(HttpStatusCode.Found, item.Value)
-                : Request.CreateResponse(HttpStatusCode.NotFound);
+            return (apiOutputCache == null) ? Option.None<CacheItem<object>>() : apiOutputCache.GetItem<object>(partition, key);
         }
 
         /// <summary>
