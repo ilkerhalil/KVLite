@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite</id>
-        <version>3.0.0</version>
+        <version>3.0.1</version>
         <title>KVLite - Key-value store built on SQLite</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -27,6 +27,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
             <dependency id="Dapper" version="1.40" />
             <dependency id="PommaLabs.KVLite.Core" version="3.0.2" />
             <dependency id="System.Data.SQLite.Core" version="1.0.96.0" />
+            <dependency id="Westwind.Utilities.Configuration" version="2.25" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
