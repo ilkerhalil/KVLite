@@ -127,6 +127,7 @@ namespace PommaLabs.KVLite.Utilities.Extensions
                         {
                             Formatting = Formatting.None,
                             NullValueHandling = NullValueHandling.Ignore,
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                         };
                         serializer.Serialize(jsonWriter, obj);
                     }

@@ -25,9 +25,9 @@ using System;
 using System.Diagnostics.Contracts;
 using Common.Logging;
 using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
-using Microsoft.FSharp.Core;
 using PommaLabs.KVLite.Contracts;
 using PommaLabs.KVLite.Core;
 
@@ -100,7 +100,7 @@ namespace PommaLabs.KVLite
         ///   have to return a simple <see cref="object"/>.
         /// </remarks>
         [Pure]
-        FSharpOption<object> this[string partition, string key] { get; }
+        Option<object> this[string partition, string key] { get; }
 
         /// <summary>
         ///   Gets the value with the default partition and specified key.
@@ -115,7 +115,7 @@ namespace PommaLabs.KVLite
         ///   indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
         /// </remarks>
         [Pure]
-        FSharpOption<object> this[string key] { get; }
+        Option<object> this[string key] { get; }
 
         /// <summary>
         ///   Adds a "sliding" value with given partition and key. Value will last as much as
@@ -252,7 +252,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        FSharpOption<TVal> Get<TVal>(string partition, string key);
+        Option<TVal> Get<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets the value with default partition and specified key. If it is a "sliding" or
@@ -266,7 +266,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        FSharpOption<TVal> Get<TVal>(string key);
+        Option<TVal> Get<TVal>(string key);
 
         /// <summary>
         ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
@@ -281,7 +281,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        FSharpOption<CacheItem<TVal>> GetItem<TVal>(string partition, string key);
+        Option<CacheItem<TVal>> GetItem<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets the cache item with default partition and specified key. If it is a "sliding" or
@@ -295,7 +295,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        FSharpOption<CacheItem<TVal>> GetItem<TVal>(string key);
+        Option<CacheItem<TVal>> GetItem<TVal>(string key);
 
         /// <summary>
         ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will
@@ -339,7 +339,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         [Pure]
-        FSharpOption<TVal> Peek<TVal>(string partition, string key);
+        Option<TVal> Peek<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets the value corresponding to default partition and given key, without updating
@@ -356,7 +356,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         [Pure]
-        FSharpOption<TVal> Peek<TVal>(string key);
+        Option<TVal> Peek<TVal>(string key);
 
         /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
@@ -373,7 +373,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         [Pure]
-        FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string partition, string key);
+        Option<CacheItem<TVal>> PeekItem<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets the item corresponding to default partition and given key, without updating
@@ -390,7 +390,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         [Pure]
-        FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string key);
+        Option<CacheItem<TVal>> PeekItem<TVal>(string key);
 
         /// <summary>
         ///   Gets the all values, without updating expiry dates.

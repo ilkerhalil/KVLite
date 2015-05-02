@@ -24,7 +24,7 @@
 using System;
 using System.IO;
 using Nancy;
-using PommaLabs.KVLite.Utilities.Extensions;
+using Finsa.CodeServices.Serialization.Extensions;
 
 namespace PommaLabs.KVLite.Nancy
 {
@@ -57,9 +57,9 @@ namespace PommaLabs.KVLite.Nancy
 
         #region Internal Methods
 
-        internal static string GetRequestFingerprint(this NancyContext context)
+        internal static string GetRequestFingerprint(this NancyContext context, Finsa.CodeServices.Serialization.ISerializer serializer)
         {
-            return new { path = context.Request.Path, body = context.ReadAllBody() }.ToMD5String();
+            return new { path = context.Request.Path, body = context.ReadAllBody() }.ToMD5String(serializer);
         }
 
         /// <summary>

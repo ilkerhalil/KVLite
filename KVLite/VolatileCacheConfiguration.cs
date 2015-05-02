@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using PommaLabs.KVLite.Utilities;
+using Finsa.CodeServices.Common.Portability;
 using Westwind.Utilities.Configuration;
 
 namespace PommaLabs.KVLite
@@ -41,7 +41,7 @@ namespace PommaLabs.KVLite
         static VolatileCacheConfiguration()
         {
             var configurationFile = "KVLite.config";
-            if (GEnvironment.AppIsRunningOnAspNet)
+            if (PortableEnvironment.AppIsRunningOnAspNet)
             {
                 // If application is running on ASP.NET, then we look for the configuration file
                 // inside the root of the project. Usually, configuration file are not stored into
@@ -51,7 +51,7 @@ namespace PommaLabs.KVLite
             CachedInstance = new VolatileCacheConfiguration();
             CachedInstance.Initialize(new ConfigurationFileConfigurationProvider<VolatileCacheConfiguration>
             {
-                ConfigurationFile = configurationFile.MapPath(),
+                ConfigurationFile = PortableEnvironment.MapPath(configurationFile),
                 ConfigurationSection = "volatileCache"
             });
         }

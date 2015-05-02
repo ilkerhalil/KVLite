@@ -87,7 +87,7 @@ namespace PommaLabs.KVLite.Web
             var compressed = node.Attributes["Compressed"];
             if (compressed != null)
             {
-                _compressed = (String.Compare(compressed.Value, bool.TrueString, true) == 0);
+                _compressed = (string.Compare(compressed.Value, bool.TrueString, StringComparison.OrdinalIgnoreCase) == 0);
             }
 
             var behavior = node.Attributes["RequestBehavior"];
@@ -97,6 +97,7 @@ namespace PommaLabs.KVLite.Web
                 {
                     _behavior = (ViewStateStorageBehavior) Enum.Parse(typeof(ViewStateStorageBehavior), behavior.Value, true);
                 }
+                // ReSharper disable once EmptyGeneralCatchClause
                 catch { }
             }
 
@@ -107,6 +108,7 @@ namespace PommaLabs.KVLite.Web
                 {
                     _fileage = Double.Parse(viewstatefilesMaxAge.Value);
                 }
+                // ReSharper disable once EmptyGeneralCatchClause
                 catch { }
             }
 
@@ -117,6 +119,7 @@ namespace PommaLabs.KVLite.Web
                 {
                     _maxAge = TimeSpan.Parse(viewstateCleanupInterval.Value);
                 }
+                // ReSharper disable once EmptyGeneralCatchClause
                 catch { }
             }
         }

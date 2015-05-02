@@ -54,19 +54,21 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Common.Logging.Core.3.1.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Clock, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Finsa.CodeServices.Clock.1.0.1\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
-    </Reference>
-    <Reference Include="Finsa.CodeServices.Compression">
-      <HintPath>..\packages\Finsa.CodeServices.Compression.1.0.2\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Clock, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Clock.1.0.4\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Serialization">
-      <HintPath>..\packages\Finsa.CodeServices.Serialization.1.0.3\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Common, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Common.1.0.6\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Testing">
-      <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.3\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Compression, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Compression.1.0.4\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Finsa.CodeServices.Testing, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.6\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.WebApi.HelpPage.AnyHost, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

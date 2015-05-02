@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using Common.Logging;
-using FSharpx;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
@@ -106,9 +105,9 @@ namespace PommaLabs.KVLite.Nancy
         /// <returns>Response or null.</returns>
         private Response CheckCache(NancyContext context)
         {
-            var cacheKey = context.GetRequestFingerprint();
+            var cacheKey = context.GetRequestFingerprint(_cache.Serializer);
             var cachedSummary = _cache.Get<ResponseSummary>(ResponseCachePartition, cacheKey);
-            return cachedSummary.HasValue() ? cachedSummary.Value.ToResponse() : null;
+            return cachedSummary.HasValue ? cachedSummary.Value.ToResponse() : null;
         }
 
         /// <summary>
@@ -144,7 +143,7 @@ namespace PommaLabs.KVLite.Nancy
 
             try
             {
-                var cacheKey = context.GetRequestFingerprint();
+                var cacheKey = context.GetRequestFingerprint(_cache.Serializer);
                 var cachedSummary = new ResponseSummary(responseToBeCached);
                 _cache.AddTimedAsync(ResponseCachePartition, cacheKey, cachedSummary, _cache.Clock.UtcNow.AddSeconds(cacheSeconds));
                 context.Response = cachedSummary.ToResponse();

@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Text.RegularExpressions;
-using PommaLabs.KVLite.Utilities;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -143,7 +142,7 @@ namespace PommaLabs.KVLite.Core
         private static string MinifyQuery(string query)
         {
             // Removes all SQL comments. Multiline excludes '/n' from '.' matches.
-            query = Regex.Replace(query, @"--.*", Constants.EmptyString, RegexOptions.Multiline);
+            query = Regex.Replace(query, @"--.*", string.Empty, RegexOptions.Multiline);
             // Removes all multiple blanks.
             query = Regex.Replace(query, @"\s+", " ");
             // Removes initial and ending blanks.

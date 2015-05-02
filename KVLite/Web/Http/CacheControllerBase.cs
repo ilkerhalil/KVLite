@@ -26,7 +26,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using FSharpx;
 using LinqToQuerystring.WebApi;
 
 #if NET45
@@ -126,7 +125,7 @@ namespace PommaLabs.KVLite.Web.Http
                 return Request.CreateResponse(HttpStatusCode.NotFound);
             }
             var item = apiOutputCache.GetItem<object>(partition, key);
-            return item.HasValue()
+            return item.HasValue
                 ? Request.CreateResponse(HttpStatusCode.Found, item.Value)
                 : Request.CreateResponse(HttpStatusCode.NotFound);
         }

@@ -26,11 +26,11 @@ using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
+using Finsa.CodeServices.Common;
 
 namespace PommaLabs.KVLite
 {
@@ -112,9 +112,9 @@ namespace PommaLabs.KVLite
         ///   Returns all property (or field) values, along with their names, so that they can be
         ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
         /// </returns>
-        protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
+        protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return GKeyValuePair.Create("CacheName", Settings.CacheName);
+            yield return KeyValuePair.Create("CacheName", Settings.CacheName);
         }
 
         #endregion AbstractCache Members

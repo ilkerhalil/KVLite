@@ -25,10 +25,9 @@ using System;
 using System.Diagnostics.Contracts;
 using Common.Logging;
 using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
-using FSharpx;
-using Microsoft.FSharp.Core;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite.Contracts
@@ -105,25 +104,25 @@ namespace PommaLabs.KVLite.Contracts
             }
         }
 
-        FSharpOption<object> ICache.this[string partition, string key]
+        Option<object> ICache.this[string partition, string key]
         {
             get
             {
                 Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
                 Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-                Contract.Ensures(Contains(partition, key) == Contract.Result<FSharpOption<object>>().HasValue());
-                return default(FSharpOption<object>);
+                Contract.Ensures(Contains(partition, key) == Contract.Result<Option<object>>().HasValue);
+                return default(Option<object>);
             }
         }
 
-        FSharpOption<object> ICache.this[string key]
+        Option<object> ICache.this[string key]
         {
             get
             {
                 Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-                Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<FSharpOption<object>>().HasValue());
-                Contract.Ensures(Contains(key) == Contract.Result<FSharpOption<object>>().HasValue());
-                return default(FSharpOption<object>);
+                Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<Option<object>>().HasValue);
+                Contract.Ensures(Contains(key) == Contract.Result<Option<object>>().HasValue);
+                return default(Option<object>);
             }
         }
 
@@ -278,12 +277,12 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
-        public FSharpOption<TVal> Get<TVal>(string partition, string key)
+        public Option<TVal> Get<TVal>(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contains(partition, key) == Contract.Result<FSharpOption<TVal>>().HasValue());
-            return default(FSharpOption<TVal>);
+            Contract.Ensures(Contains(partition, key) == Contract.Result<Option<TVal>>().HasValue);
+            return default(Option<TVal>);
         }
 
         /// <summary>
@@ -293,12 +292,12 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
-        public FSharpOption<TVal> Get<TVal>(string key)
+        public Option<TVal> Get<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<FSharpOption<TVal>>().HasValue());
-            Contract.Ensures(Contains(key) == Contract.Result<FSharpOption<TVal>>().HasValue());
-            return default(FSharpOption<TVal>);
+            Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<Option<TVal>>().HasValue);
+            Contract.Ensures(Contains(key) == Contract.Result<Option<TVal>>().HasValue);
+            return default(Option<TVal>);
         }
 
         /// <summary>
@@ -308,12 +307,12 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        public FSharpOption<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
+        public Option<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contains(partition, key) == Contract.Result<FSharpOption<CacheItem<TVal>>>().HasValue());
-            return default(FSharpOption<CacheItem<TVal>>);
+            Contract.Ensures(Contains(partition, key) == Contract.Result<Option<CacheItem<TVal>>>().HasValue);
+            return default(Option<CacheItem<TVal>>);
         }
 
         /// <summary>
@@ -323,12 +322,12 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        public FSharpOption<CacheItem<TVal>> GetItem<TVal>(string key)
+        public Option<CacheItem<TVal>> GetItem<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<FSharpOption<CacheItem<TVal>>>().HasValue());
-            Contract.Ensures(Contains(key) == Contract.Result<FSharpOption<CacheItem<TVal>>>().HasValue());
-            return default(FSharpOption<CacheItem<TVal>>);
+            Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<Option<CacheItem<TVal>>>().HasValue);
+            Contract.Ensures(Contains(key) == Contract.Result<Option<CacheItem<TVal>>>().HasValue);
+            return default(Option<CacheItem<TVal>>);
         }
 
         /// <summary>
@@ -367,12 +366,12 @@ namespace PommaLabs.KVLite.Contracts
         /// <returns>
         ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        public FSharpOption<TVal> Peek<TVal>(string partition, string key)
+        public Option<TVal> Peek<TVal>(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contains(partition, key) == Contract.Result<FSharpOption<TVal>>().HasValue());
-            return default(FSharpOption<TVal>);
+            Contract.Ensures(Contains(partition, key) == Contract.Result<Option<TVal>>().HasValue);
+            return default(Option<TVal>);
         }
 
         /// <summary>
@@ -383,12 +382,12 @@ namespace PommaLabs.KVLite.Contracts
         /// <returns>
         ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        public FSharpOption<TVal> Peek<TVal>(string key)
+        public Option<TVal> Peek<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<FSharpOption<TVal>>().HasValue());
-            Contract.Ensures(Contains(key) == Contract.Result<FSharpOption<TVal>>().HasValue());
-            return default(FSharpOption<TVal>);
+            Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<Option<TVal>>().HasValue);
+            Contract.Ensures(Contains(key) == Contract.Result<Option<TVal>>().HasValue);
+            return default(Option<TVal>);
         }
 
         /// <summary>
@@ -399,12 +398,12 @@ namespace PommaLabs.KVLite.Contracts
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        public FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string partition, string key)
+        public Option<CacheItem<TVal>> PeekItem<TVal>(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contains(partition, key) == Contract.Result<FSharpOption<CacheItem<TVal>>>().HasValue());
-            return default(FSharpOption<CacheItem<TVal>>);
+            Contract.Ensures(Contains(partition, key) == Contract.Result<Option<CacheItem<TVal>>>().HasValue);
+            return default(Option<CacheItem<TVal>>);
         }
 
         /// <summary>
@@ -415,12 +414,12 @@ namespace PommaLabs.KVLite.Contracts
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        public FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string key)
+        public Option<CacheItem<TVal>> PeekItem<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<FSharpOption<CacheItem<TVal>>>().HasValue());
-            Contract.Ensures(Contains(key) == Contract.Result<FSharpOption<CacheItem<TVal>>>().HasValue());
-            return default(FSharpOption<CacheItem<TVal>>);
+            Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<Option<CacheItem<TVal>>>().HasValue);
+            Contract.Ensures(Contains(key) == Contract.Result<Option<CacheItem<TVal>>>().HasValue);
+            return default(Option<CacheItem<TVal>>);
         }
 
         /// <summary>

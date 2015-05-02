@@ -35,12 +35,10 @@ using Common.Logging;
 using Common.Logging.Simple;
 using Dapper;
 using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Common.Extensions;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
-using FSharpx;
-using Microsoft.FSharp.Core;
-using PommaLabs.KVLite.Utilities;
-using PommaLabs.KVLite.Utilities.Extensions;
 using Task = System.Threading.Tasks.Task;
 
 namespace PommaLabs.KVLite.Core
@@ -260,7 +258,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with the specified partition and key.</returns>
-        public FSharpOption<object> this[string partition, string key]
+        public Option<object> this[string partition, string key]
         {
             get { return Get<object>(partition, key); }
         }
@@ -272,7 +270,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <returns>The value with the specified key and belonging to the default partition.</returns>
         [Pure]
-        public FSharpOption<object> this[string key]
+        public Option<object> this[string key]
         {
             get { return Get<object>(Settings.DefaultPartition, key); }
         }
@@ -399,12 +397,12 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
-        public FSharpOption<TVal> Get<TVal>(string partition, string key)
+        public Option<TVal> Get<TVal>(string partition, string key)
         {
             return GetInternal<TVal>(partition, key);
         }
 
-        public FSharpOption<TVal> Get<TVal>(string key)
+        public Option<TVal> Get<TVal>(string key)
         {
             return GetInternal<TVal>(Settings.DefaultPartition, key);
         }
@@ -416,12 +414,12 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        public FSharpOption<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
+        public Option<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
         {
             return GetItemInternal<TVal>(partition, key);
         }
 
-        public FSharpOption<CacheItem<TVal>> GetItem<TVal>(string key)
+        public Option<CacheItem<TVal>> GetItem<TVal>(string key)
         {
             return GetItemInternal<TVal>(Settings.DefaultPartition, key);
         }
@@ -455,12 +453,12 @@ namespace PommaLabs.KVLite.Core
         /// <returns>
         ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        public FSharpOption<TVal> Peek<TVal>(string partition, string key)
+        public Option<TVal> Peek<TVal>(string partition, string key)
         {
             return PeekInternal<TVal>(partition, key);
         }
 
-        public FSharpOption<TVal> Peek<TVal>(string key)
+        public Option<TVal> Peek<TVal>(string key)
         {
             return PeekInternal<TVal>(Settings.DefaultPartition, key);
         }
@@ -473,12 +471,12 @@ namespace PommaLabs.KVLite.Core
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        public FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string partition, string key)
+        public Option<CacheItem<TVal>> PeekItem<TVal>(string partition, string key)
         {
             return PeekItemInternal<TVal>(partition, key);
         }
 
-        public FSharpOption<CacheItem<TVal>> PeekItem<TVal>(string key)
+        public Option<CacheItem<TVal>> PeekItem<TVal>(string key)
         {
             return PeekItemInternal<TVal>(Settings.DefaultPartition, key);
         }
@@ -720,7 +718,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
-        private FSharpOption<TVal> GetInternal<TVal>(string partition, string key)
+        private Option<TVal> GetInternal<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -740,7 +738,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        private FSharpOption<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
+        private Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -765,7 +763,7 @@ namespace PommaLabs.KVLite.Core
                 return ctx.InternalResource
                     .Query<DbCacheItem>(SQLiteQueries.GetManyItems, p, buffered: false)
                     .Select(DeserializeCacheItem<TVal>)
-                    .Where(i => i.HasValue())
+                    .Where(i => i.HasValue)
                     .Select(i => i.Value)
                     .ToArray();
             }
@@ -779,7 +777,7 @@ namespace PommaLabs.KVLite.Core
         /// <returns>
         ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        private FSharpOption<TVal> PeekInternal<TVal>(string partition, string key)
+        private Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -800,7 +798,7 @@ namespace PommaLabs.KVLite.Core
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        private FSharpOption<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
+        private Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
             p.Add("partition", partition, DbType.String);
@@ -825,7 +823,7 @@ namespace PommaLabs.KVLite.Core
                 return ctx.InternalResource
                     .Query<DbCacheItem>(SQLiteQueries.PeekManyItems, p, buffered: false)
                     .Select(DeserializeCacheItem<TVal>)
-                    .Where(i => i.HasValue())
+                    .Where(i => i.HasValue)
                     .Select(i => i.Value)
                     .ToArray();
             }
@@ -857,36 +855,36 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private FSharpOption<TVal> DeserializeValue<TVal>(byte[] serializedValue)
+        private Option<TVal> DeserializeValue<TVal>(byte[] serializedValue)
         {
             if (serializedValue == null)
             {
                 // Nothing to deserialize, return None.
-                return FSharpOption<TVal>.None;
+                return Option.None<TVal>();
             }
             try
             {
-                return UnsafeDeserializeValue<TVal>(serializedValue).Some();
+                return Option.Some<TVal>(UnsafeDeserializeValue<TVal>(serializedValue));
             }
             catch (Exception ex)
             {
                 // Something wrong happened during deserialization. Therefore, we act as if there
                 // was no value and we return None.
                 _log.Warn("Something wrong happened during deserialization", ex);
-                return FSharpOption<TVal>.None;
+                return Option.None<TVal>();
             }
         }
 
-        private FSharpOption<CacheItem<TVal>> DeserializeCacheItem<TVal>(DbCacheItem src)
+        private Option<CacheItem<TVal>> DeserializeCacheItem<TVal>(DbCacheItem src)
         {
             if (src == null)
             {
                 // Nothing to deserialize, return None.
-                return FSharpOption<CacheItem<TVal>>.None;
+                return Option.None<CacheItem<TVal>>();
             }
             try
             {
-                return new CacheItem<TVal>
+                return Option.Some<CacheItem<TVal>>(new CacheItem<TVal>
                 {
                     Partition = src.Partition,
                     Key = src.Key,
@@ -894,14 +892,14 @@ namespace PommaLabs.KVLite.Core
                     UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcCreation),
                     UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry),
                     Interval = src.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(src.Interval.Value)
-                }.Some();
+                });
             }
             catch (Exception ex)
             {
                 // Something wrong happened during deserialization. Therefore, we act as if there
                 // was no element and we return None.
                 _log.Warn("Something wrong happened during deserialization", ex);
-                return FSharpOption<CacheItem<TVal>>.None;
+                return Option.None<CacheItem<TVal>>();
             }
         }
 
@@ -1005,11 +1003,11 @@ namespace PommaLabs.KVLite.Core
             ///   Returns all property (or field) values, along with their names, so that they can
             ///   be used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
             /// </returns>
-            protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
+            protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
             {
-                yield return GKeyValuePair.Create("Partition", Partition.SafeToString());
-                yield return GKeyValuePair.Create("Key", Key.SafeToString());
-                yield return GKeyValuePair.Create("UtcExpiry", UtcExpiry.SafeToString());
+                yield return KeyValuePair.Create("Partition", Partition.SafeToString());
+                yield return KeyValuePair.Create("Key", Key.SafeToString());
+                yield return KeyValuePair.Create("UtcExpiry", UtcExpiry.SafeToString());
             }
 
             /// <summary>

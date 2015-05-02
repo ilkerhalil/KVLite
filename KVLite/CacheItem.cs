@@ -23,9 +23,9 @@
 
 using System;
 using System.Collections.Generic;
+using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Common.Extensions;
 using Newtonsoft.Json;
-using PommaLabs.KVLite.Utilities;
-using PommaLabs.KVLite.Utilities.Extensions;
 
 namespace PommaLabs.KVLite
 {
@@ -76,7 +76,7 @@ namespace PommaLabs.KVLite
 
         #endregion Public Properties
 
-        #region EquatableObject<CacheItem> Members
+        #region EquatableObject<CacheItem<TVal>> Members
 
         /// <summary>
         ///   Returns all property (or field) values, along with their names, so that they can be
@@ -86,11 +86,11 @@ namespace PommaLabs.KVLite
         ///   Returns all property (or field) values, along with their names, so that they can be
         ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
         /// </returns>
-        protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
+        protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return GKeyValuePair.Create("Partition", Partition.SafeToString());
-            yield return GKeyValuePair.Create("Key", Key.SafeToString());
-            yield return GKeyValuePair.Create("UtcExpiry", UtcExpiry.SafeToString());
+            yield return KeyValuePair.Create("Partition", Partition.SafeToString());
+            yield return KeyValuePair.Create("Key", Key.SafeToString());
+            yield return KeyValuePair.Create("UtcExpiry", UtcExpiry.SafeToString());
         }
 
         /// <summary>
@@ -103,6 +103,6 @@ namespace PommaLabs.KVLite
             yield return Partition;
         }
 
-        #endregion EquatableObject<CacheItem> Members
+        #endregion EquatableObject<CacheItem<TVal>> Members
     }
 }

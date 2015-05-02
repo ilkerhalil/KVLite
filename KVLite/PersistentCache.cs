@@ -26,11 +26,12 @@ using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.Utilities;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using System.IO;
+using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Common.Portability;
 
 namespace PommaLabs.KVLite
 {
@@ -101,7 +102,7 @@ namespace PommaLabs.KVLite
         protected override string GetDataSource(out SQLiteJournalModeEnum journalMode)
         {
             // Map cache path, since it may be an IIS relative path.
-            var mappedPath = Settings.CacheFile.MapPath();
+            var mappedPath = PortableEnvironment.MapPath(Settings.CacheFile);
 
             // If the directory which should contain the cache does not exist, then we create it.
             // SQLite will take care of creating the DB itself.
@@ -123,9 +124,9 @@ namespace PommaLabs.KVLite
         ///   Returns all property (or field) values, along with their names, so that they can be
         ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
         /// </returns>
-        protected override IEnumerable<GKeyValuePair<string, string>> GetFormattingMembers()
+        protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return GKeyValuePair.Create("CacheFile", Settings.CacheFile);
+            yield return KeyValuePair.Create("CacheFile", Settings.CacheFile);
         }
 
         #endregion AbstractCache Members
