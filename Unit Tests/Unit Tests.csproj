@@ -36,7 +36,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;USETHROWER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -46,7 +46,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;USETHROWER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -71,6 +71,10 @@
     </Reference>
     <Reference Include="Finsa.CodeServices.Compression, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Finsa.CodeServices.Compression.1.0.4\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Finsa.CodeServices.Serialization, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.1.0.6\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Testing, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
@@ -130,6 +134,7 @@
     <Compile Include="PersistentCacheTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AbstractCacheTests.cs" />
+    <Compile Include="RandomDataTableGenerator.cs" />
     <Compile Include="VolatileCacheTests.cs" />
     <Compile Include="Web\Http\ApiOutputCacheTests.cs" />
   </ItemGroup>

@@ -29,14 +29,10 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Finsa.CodeServices.Clock;
-using FSharpx;
-using Microsoft.FSharp.Collections;
-using Microsoft.FSharp.Core;
+using Finsa.CodeServices.Common;
 using Ninject;
 using NUnit.Framework;
 using PommaLabs.KVLite;
-using PommaLabs.KVLite.Utilities.Extensions;
-using PommaLabs.KVLite.Utilities.Testing;
 using Task = System.Threading.Tasks.Task;
 
 namespace UnitTests
@@ -406,8 +402,8 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache[Cache.Settings.DefaultPartition, StringItems[i]]);
-                Assert.IsNull(Cache[StringItems[i]]);
+                Assert.IsFalse(Cache[Cache.Settings.DefaultPartition, StringItems[i]].HasValue);
+                Assert.IsFalse(Cache[StringItems[i]].HasValue);
             }
         }
 
@@ -418,8 +414,8 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.Get<object>(Cache.Settings.DefaultPartition, StringItems[i]));
-                Assert.IsNull(Cache.Get<object>(StringItems[i]));
+                Assert.IsFalse(Cache.Get<object>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.Get<object>(StringItems[i]).HasValue);
             }
         }
 
@@ -430,8 +426,8 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.Get<string>(Cache.Settings.DefaultPartition, StringItems[i]));
-                Assert.IsNull(Cache.Get<string>(StringItems[i]));
+                Assert.IsFalse(Cache.Get<string>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.Get<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -442,8 +438,8 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.GetItem<object>(Cache.Settings.DefaultPartition, StringItems[i]));
-                Assert.IsNull(Cache.GetItem<object>(StringItems[i]));
+                Assert.IsFalse(Cache.GetItem<object>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.GetItem<object>(StringItems[i]).HasValue);
             }
         }
 
@@ -454,8 +450,8 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.GetItem<string>(Cache.Settings.DefaultPartition, StringItems[i]));
-                Assert.IsNull(Cache.GetItem<string>(StringItems[i]));
+                Assert.IsFalse(Cache.GetItem<string>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.GetItem<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -464,7 +460,7 @@ namespace UnitTests
         [TestCase(LargeItemCount)]
         public void Get_EmptyCache_Concurrent(int itemCount)
         {
-            var tasks = new List<Task<FSharpOption<string>>>();
+            var tasks = new List<Task<Option<string>>>();
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
@@ -531,7 +527,7 @@ namespace UnitTests
         public void GetMany_RightItems_AfterAddSliding_InvalidTime(int itemCount)
         {
             AddSliding(Cache, itemCount, TimeSpan.FromSeconds(1));
-            Cache.Clock.As<MockClock>().Add(TimeSpan.FromSeconds(2));
+            ((MockClock) Cache.Clock).Add(TimeSpan.FromSeconds(2));
             var items = new HashSet<string>(Cache.GetItems<string>().Select(i => i.Value));
             for (var i = 0; i < itemCount; ++i)
             {
@@ -644,7 +640,7 @@ namespace UnitTests
             {
                 Cache.AddSliding(StringItems[i], StringItems[i], interval);
             }
-            Cache.Clock.As<MockClock>().Add(TimeSpan.FromMinutes(1));
+            ((MockClock) Cache.Clock).Add(TimeSpan.FromMinutes(1));
             var items = Cache.GetItems<string>();
             for (var i = 0; i < itemCount; ++i)
             {
@@ -681,8 +677,8 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.Peek<object>(Cache.Settings.DefaultPartition, StringItems[i]));
-                Assert.IsNull(Cache.Peek<object>(StringItems[i]));
+                Assert.IsFalse(Cache.Peek<object>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.Peek<object>(StringItems[i]).HasValue);
             }
         }
 
@@ -693,8 +689,8 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.Peek<string>(Cache.Settings.DefaultPartition, StringItems[i]));
-                Assert.IsNull(Cache.Peek<string>(StringItems[i]));
+                Assert.IsFalse(Cache.Peek<string>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.Peek<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -705,8 +701,8 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.PeekItem<object>(Cache.Settings.DefaultPartition, StringItems[i]));
-                Assert.IsNull(Cache.PeekItem<object>(StringItems[i]));
+                Assert.IsFalse(Cache.PeekItem<object>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.PeekItem<object>(StringItems[i]).HasValue);
             }
         }
 
@@ -717,8 +713,8 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsNull(Cache.PeekItem<string>(Cache.Settings.DefaultPartition, StringItems[i]));
-                Assert.IsNull(Cache.PeekItem<string>(StringItems[i]));
+                Assert.IsFalse(Cache.PeekItem<string>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.PeekItem<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -727,7 +723,7 @@ namespace UnitTests
         [TestCase(LargeItemCount)]
         public void Peek_EmptyCache_Concurrent(int itemCount)
         {
-            var tasks = new List<Task<FSharpOption<string>>>();
+            var tasks = new List<Task<Option<string>>>();
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
@@ -850,17 +846,6 @@ namespace UnitTests
             Cache.AddStatic("list", l);
             var lc = Cache.Get<SortedList<int, string>>("list").Value;
             Assert.True(l.SequenceEqual(lc));
-        }
-
-        [TestCase(SmallItemCount)]
-        [TestCase(MediumItemCount)]
-        [TestCase(LargeItemCount)]
-        public void Collections_FSharpList(int itemCount)
-        {
-            var fl = FSharpList.Create(Enumerable.Range(1, itemCount).ToArray());
-            Cache.AddStatic("f#_list", fl);
-            var lc = Cache.Get<FSharpList<int>>("f#_list").Value;
-            Assert.True(fl.SequenceEqual(lc));
         }
 
         #endregion BCL Collections

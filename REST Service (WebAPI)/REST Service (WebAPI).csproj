@@ -66,6 +66,10 @@
       <HintPath>..\packages\Finsa.CodeServices.Compression.1.0.4\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Finsa.CodeServices.Serialization, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.1.0.6\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Finsa.CodeServices.Testing, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.6\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
       <Private>True</Private>

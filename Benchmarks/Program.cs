@@ -30,9 +30,9 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
-using Microsoft.FSharp.Core;
+using Finsa.CodeServices.Common;
 using PommaLabs.KVLite;
-using PommaLabs.KVLite.Utilities.Testing;
+using UnitTests;
 
 namespace Benchmarks
 {
@@ -282,7 +282,7 @@ namespace Benchmarks
             foreach (var table in tables)
             {
                 var returnedTable = PersistentCache.DefaultInstance.Get<DataTable>(table.TableName);
-                if (returnedTable == null || returnedTable.Value.TableName != table.TableName)
+                if (returnedTable.Value.TableName != table.TableName)
                 {
                     throw new Exception("Wrong data table read from cache! :(");
                 }
@@ -306,7 +306,7 @@ namespace Benchmarks
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var tasks = new List<Task<FSharpOption<DataTable>>>();
+            var tasks = new List<Task<Option<DataTable>>>();
             foreach (var table in tables)
             {
                 var tmp = table; // Suggested by R#
@@ -315,7 +315,7 @@ namespace Benchmarks
             foreach (var task in tasks)
             {
                 var returnedTable = task.Result;
-                if (returnedTable == null)
+                if (!returnedTable.HasValue)
                 {
                     throw new Exception("Wrong data table read from cache! :(");
                 }
@@ -339,7 +339,7 @@ namespace Benchmarks
             {
                 writeTasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
             }
-            var readTasks = new List<Task<FSharpOption<DataTable>>>();
+            var readTasks = new List<Task<Option<DataTable>>>();
             foreach (var table in tables)
             {
                 DataTable localTable = table;

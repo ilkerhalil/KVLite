@@ -23,18 +23,18 @@
 
 #if !PORTABLE
 
-using PommaLabs.KVLite.Utilities.Diagnostics;
 using System;
 using System.Data;
 using System.Globalization;
 using System.Linq;
+using Finsa.CodeServices.Common.Diagnostics;
 
-namespace PommaLabs.KVLite.Utilities.Testing
+namespace UnitTests
 {
     /// <summary>
     ///   Generates random data tables, starting from a given set of columns.
     /// </summary>
-    internal sealed class RandomDataTableGenerator
+    public sealed class RandomDataTableGenerator
     {
         private readonly string[] _columnNames;
         private readonly Random _random = new Random();
@@ -46,7 +46,7 @@ namespace PommaLabs.KVLite.Utilities.Testing
         public RandomDataTableGenerator(params string[] columnNames)
         {
             Raise<ArgumentNullException>.IfIsNull(columnNames);
-            Raise<ArgumentException>.If(columnNames.Any(String.IsNullOrEmpty));
+            Raise<ArgumentException>.If(columnNames.Any(string.IsNullOrEmpty));
 
             _columnNames = columnNames.Clone() as string[];
         }
