@@ -30,9 +30,9 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters;
+using System.Threading;
 using CodeProject.ObjectPool;
 using Common.Logging;
-using Common.Logging.Simple;
 using Dapper;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
@@ -77,7 +77,7 @@ namespace PommaLabs.KVLite.Core
         ///   "InsertionCountBeforeAutoClean" configuration parameter, then we must reset it and do
         ///   a SOFT cleanup.
         /// </summary>
-        private short _insertionCount;
+        private int _insertionCount;
 
         /// <summary>
         ///   The cache settings.
@@ -109,8 +109,8 @@ namespace PommaLabs.KVLite.Core
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="AbstractCache{TCacheSettings}"/>
-        ///   class with given settings.
+        ///   Initializes a new instance of the <see cref="AbstractCache{TCacheSettings}"/> class
+        ///   with given settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="clock">The clock.</param>
@@ -122,7 +122,7 @@ namespace PommaLabs.KVLite.Core
             Contract.Requires<ArgumentNullException>(settings != null, ErrorMessages.NullSettings);
             _settings = settings;
             _clock = clock ?? new SystemClock();
-            _log = log ?? new NoOpLogger();
+            _log = log ?? LogManager.GetLogger(GetType());
             _compressor = compressor ?? new DeflateCompressor();
             _serializer = serializer ?? new BinarySerializer(new BinarySerializerSettings
             {
@@ -160,16 +160,14 @@ namespace PommaLabs.KVLite.Core
             InitConnectionString();
 
             using (var ctx = _connectionPool.GetObject())
+            using (var trx = ctx.InternalResource.BeginTransaction())
             {
-                using (var trx = ctx.InternalResource.BeginTransaction())
+                if (ctx.InternalResource.ExecuteScalar<long>(SQLiteQueries.IsSchemaReady, trx) == 0)
                 {
-                    if (ctx.InternalResource.ExecuteScalar<long>(SQLiteQueries.IsSchemaReady, trx) == 0)
-                    {
-                        // Creates the CacheItem table and the required indexes.
-                        ctx.InternalResource.Execute(SQLiteQueries.CacheSchema, null, trx);
-                    }
-                    trx.Commit();
+                    // Creates the CacheItem table and the required indexes.
+                    ctx.InternalResource.Execute(SQLiteQueries.CacheSchema, null, trx);
                 }
+                trx.Commit();
             }
 
             // Initial cleanup.
@@ -195,330 +193,6 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        #endregion Public Members
-
-        #region ICache Members
-
-        /// <summary>
-        ///   Gets the clock used by the cache.
-        /// </summary>
-        /// <value>The clock used by the cache.</value>
-        public IClock Clock
-        {
-            get { return _clock; }
-        }
-
-        /// <summary>
-        ///   Gets the compressor used by the cache.
-        /// </summary>
-        /// <value>The compressor used by the cache.</value>
-        public ICompressor Compressor
-        {
-            get { return _compressor; }
-        }
-
-        /// <summary>
-        ///   Gets the log used by the cache.
-        /// </summary>
-        /// <value>The log used by the cache.</value>
-        public ILog Log
-        {
-            get { return _log; }
-        }
-
-        /// <summary>
-        ///   Gets the serializer used by the cache.
-        /// </summary>
-        /// <value>The serializer used by the cache.</value>
-        public ISerializer Serializer
-        {
-            get { return _serializer; }
-        }
-
-        /// <summary>
-        ///   The available settings for the cache.
-        /// </summary>
-        AbstractCacheSettings ICache.Settings
-        {
-            get { return _settings; }
-        }
-
-        /// <summary>
-        ///   The available settings for the cache.
-        /// </summary>
-        public TCacheSettings Settings
-        {
-            get { return _settings; }
-        }
-
-        /// <summary>
-        ///   Gets the value with the specified partition and key.
-        /// </summary>
-        /// <value>The value with the specified partition and key.</value>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>The value with the specified partition and key.</returns>
-        public Option<object> this[string partition, string key]
-        {
-            get { return Get<object>(partition, key); }
-        }
-
-        /// <summary>
-        ///   Gets the value with the specified key and belonging to the default partition.
-        /// </summary>
-        /// <value>The value with the specified key and belonging to the default partition.</value>
-        /// <param name="key">The key.</param>
-        /// <returns>The value with the specified key and belonging to the default partition.</returns>
-        [Pure]
-        public Option<object> this[string key]
-        {
-            get { return Get<object>(Settings.DefaultPartition, key); }
-        }
-
-        /// <summary>
-        ///   Adds a "sliding" value with given partition and key. Value will last as much as
-        ///   specified in given interval and, if accessed before expiry, its lifetime will be
-        ///   extended by the interval itself.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="interval">The interval.</param>
-        public void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval)
-        {
-            AddInternal(partition, key, value, _clock.UtcNow + interval, interval);
-        }
-
-        public void AddSliding<TVal>(string key, TVal value, TimeSpan interval)
-        {
-            AddInternal(Settings.DefaultPartition, key, value, _clock.UtcNow + interval, interval);
-        }
-
-        public void AddStatic<TVal>(string partition, string key, TVal value)
-        {
-            AddInternal(partition, key, value, _clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
-        }
-
-        public void AddStatic<TVal>(string key, TVal value)
-        {
-            AddInternal(Settings.DefaultPartition, key, value, _clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
-        }
-
-        /// <summary>
-        ///   Adds a "timed" value with given partition and key. Value will last until the specified
-        ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="utcExpiry">The UTC expiry.</param>
-        public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry)
-        {
-            AddInternal(partition, key, value, utcExpiry, null);
-        }
-
-        public void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry)
-        {
-            AddInternal(Settings.DefaultPartition, key, value, utcExpiry, null);
-        }
-
-        /// <summary>
-        ///   Clears this instance, that is, it removes all values.
-        /// </summary>
-        public void Clear()
-        {
-            ClearInternal(null);
-        }
-
-        /// <summary>
-        ///   Clears given partition, that is, it removes all its values.
-        /// </summary>
-        /// <param name="partition"></param>
-        public void Clear(string partition)
-        {
-            ClearInternal(partition);
-        }
-
-        /// <summary>
-        ///   Determines whether cache contains the specified partition and key.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>Whether cache contains the specified partition and key.</returns>
-        public bool Contains(string partition, string key)
-        {
-            return ContainsInternal(partition, key);
-        }
-
-        /// <summary>
-        ///   Determines whether cache contains the specified partition and key.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>Whether cache contains the specified partition and key.</returns>
-        public bool Contains(string key)
-        {
-            return ContainsInternal(Settings.DefaultPartition, key);
-        }
-
-        public int Count()
-        {
-            return Convert.ToInt32(CountInternal(null));
-        }
-
-        public int Count(string partition)
-        {
-            return Convert.ToInt32(CountInternal(partition));
-        }
-
-        /// <summary>
-        ///   The number of items in the cache.
-        /// </summary>
-        /// <returns>The number of items in the cache.</returns>
-        public long LongCount()
-        {
-            return CountInternal(null);
-        }
-
-        /// <summary>
-        ///   The number of items in given partition.
-        /// </summary>
-        /// <param name="partition"></param>
-        /// <returns>The number of items in given partition.</returns>
-        public long LongCount(string partition)
-        {
-            return CountInternal(partition);
-        }
-
-        /// <summary>
-        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by corresponding interval.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>The value with specified partition and key.</returns>
-        public Option<TVal> Get<TVal>(string partition, string key)
-        {
-            return GetInternal<TVal>(partition, key);
-        }
-
-        public Option<TVal> Get<TVal>(string key)
-        {
-            return GetInternal<TVal>(Settings.DefaultPartition, key);
-        }
-
-        /// <summary>
-        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by corresponding interval.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>The cache item with specified partition and key.</returns>
-        public Option<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
-        {
-            return GetItemInternal<TVal>(partition, key);
-        }
-
-        public Option<CacheItem<TVal>> GetItem<TVal>(string key)
-        {
-            return GetItemInternal<TVal>(Settings.DefaultPartition, key);
-        }
-
-        /// <summary>
-        ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will
-        ///   be increased by corresponding interval.
-        /// </summary>
-        /// <returns>All cache items.</returns>
-        public CacheItem<TVal>[] GetItems<TVal>()
-        {
-            return GetItemsInternal<TVal>(null);
-        }
-
-        /// <summary>
-        ///   Gets all cache items in given partition. If an item is a "sliding" or "static" value,
-        ///   its lifetime will be increased by corresponding interval.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <returns>All cache items in given partition.</returns>
-        public CacheItem<TVal>[] GetItems<TVal>(string partition)
-        {
-            return GetItemsInternal<TVal>(partition);
-        }
-
-        /// <summary>
-        ///   Gets the value corresponding to given partition and key, without updating expiry date.
-        /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <returns>
-        ///   The value corresponding to given partition and key, without updating expiry date.
-        /// </returns>
-        public Option<TVal> Peek<TVal>(string partition, string key)
-        {
-            return PeekInternal<TVal>(partition, key);
-        }
-
-        public Option<TVal> Peek<TVal>(string key)
-        {
-            return PeekInternal<TVal>(Settings.DefaultPartition, key);
-        }
-
-        /// <summary>
-        ///   Gets the item corresponding to given partition and key, without updating expiry date.
-        /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <returns>
-        ///   The item corresponding to given partition and key, without updating expiry date.
-        /// </returns>
-        public Option<CacheItem<TVal>> PeekItem<TVal>(string partition, string key)
-        {
-            return PeekItemInternal<TVal>(partition, key);
-        }
-
-        public Option<CacheItem<TVal>> PeekItem<TVal>(string key)
-        {
-            return PeekItemInternal<TVal>(Settings.DefaultPartition, key);
-        }
-
-        /// <summary>
-        ///   Gets the all values, without updating expiry dates.
-        /// </summary>
-        /// <returns>All values, without updating expiry dates.</returns>
-        public CacheItem<TVal>[] PeekItems<TVal>()
-        {
-            return PeekItemsInternal<TVal>(null);
-        }
-
-        /// <summary>
-        ///   Gets the all items in given partition, without updating expiry dates.
-        /// </summary>
-        /// <param name="partition"></param>
-        /// <returns>All items in given partition, without updating expiry dates.</returns>
-        public CacheItem<TVal>[] PeekItems<TVal>(string partition)
-        {
-            return PeekItemsInternal<TVal>(partition);
-        }
-
-        /// <summary>
-        ///   Removes the value with given partition and key.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        public void Remove(string partition, string key)
-        {
-            RemoveInternal(partition, key);
-        }
-
-        public void Remove(string key)
-        {
-            RemoveInternal(Settings.DefaultPartition, key);
-        }
-
-        #endregion ICache Members
-
-        #region Public Methods
-
         /// <summary>
         ///   Clears the cache using the specified cache read mode.
         /// </summary>
@@ -543,6 +217,7 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
+        [Pure]
         public int Count(CacheReadMode cacheReadMode)
         {
             return Convert.ToInt32(CountInternal(null, cacheReadMode));
@@ -554,6 +229,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
+        [Pure]
         public int Count(string partition, CacheReadMode cacheReadMode)
         {
             return Convert.ToInt32(CountInternal(partition, cacheReadMode));
@@ -564,6 +240,7 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
+        [Pure]
         public long LongCount(CacheReadMode cacheReadMode)
         {
             return CountInternal(null, cacheReadMode);
@@ -575,6 +252,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
+        [Pure]
         public long LongCount(string partition, CacheReadMode cacheReadMode)
         {
             return CountInternal(partition, cacheReadMode);
@@ -603,7 +281,514 @@ namespace PommaLabs.KVLite.Core
             return TaskRunner.Run(Vacuum);
         }
 
-        #endregion Public Methods
+        #endregion Public Members
+
+        #region ICache Members
+
+        /// <summary>
+        ///   Gets the clock used by the cache.
+        /// </summary>
+        /// <value>The clock used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
+        /// </remarks>
+        public IClock Clock
+        {
+            get { return _clock; }
+        }
+
+        /// <summary>
+        ///   Gets the compressor used by the cache.
+        /// </summary>
+        /// <value>The compressor used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
+        /// </remarks>
+        public ICompressor Compressor
+        {
+            get { return _compressor; }
+        }
+
+        /// <summary>
+        ///   Gets the log used by the cache.
+        /// </summary>
+        /// <value>The log used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to what
+        ///   <see cref="LogManager.GetLogger(System.Type)"/> returns.
+        /// </remarks>
+        public ILog Log
+        {
+            get { return _log; }
+        }
+
+        /// <summary>
+        ///   Gets the serializer used by the cache.
+        /// </summary>
+        /// <value>The serializer used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="BinarySerializer"/>.
+        ///   Therefore, if you do not specify another serializer, make sure that your objects are
+        ///   serializable (in most cases, simply use th <see cref="SerializableAttribute"/>).
+        /// </remarks>
+        public ISerializer Serializer
+        {
+            get { return _serializer; }
+        }
+
+        /// <summary>
+        ///   The available settings for the cache.
+        /// </summary>
+        AbstractCacheSettings ICache.Settings
+        {
+            get { return _settings; }
+        }
+
+        /// <summary>
+        ///   The available settings for the cache.
+        /// </summary>
+        public TCacheSettings Settings
+        {
+            get { return _settings; }
+        }
+
+        /// <summary>
+        ///   Gets the value with the specified partition and key.
+        /// </summary>
+        /// <value>The value with the specified partition and key.</value>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with the specified partition and key.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
+        /// <remarks>
+        ///   This method, differently from other readers (like
+        ///   <see cref="Get{TVal}(string,string)"/> or <see cref="Peek{TVal}(string,string)"/>),
+        ///   does not have a typed return object, because indexers cannot be generic. Therefore, we
+        ///   have to return a simple <see cref="object"/>.
+        /// </remarks>
+        public Option<object> this[string partition, string key]
+        {
+            get { return GetInternal<object>(partition, key); }
+        }
+
+        /// <summary>
+        ///   Gets the value with the default partition and specified key.
+        /// </summary>
+        /// <value>The value with the default partition and specified key.</value>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with the default partition and specified key.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
+        /// <remarks>
+        ///   This method, differently from other readers (like <see cref="Get{TVal}(string)"/> or
+        ///   <see cref="Peek{TVal}(string)"/>), does not have a typed return object, because
+        ///   indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
+        /// </remarks>
+        public Option<object> this[string key]
+        {
+            get { return GetInternal<object>(Settings.DefaultPartition, key); }
+        }
+
+        /// <summary>
+        ///   Adds a "sliding" value with given partition and key. Value will last as much as
+        ///   specified in given interval and, if accessed before expiry, its lifetime will be
+        ///   extended by the interval itself.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="interval">The interval.</param>
+        public void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval)
+        {
+            AddInternal(partition, key, value, _clock.UtcNow + interval, interval);
+        }
+
+        /// <summary>
+        ///   Adds a "sliding" value with given key and default partition. Value will last as much
+        ///   as specified in given interval and, if accessed before expiry, its lifetime will be
+        ///   extended by the interval itself.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="interval">The interval.</param>
+        public void AddSliding<TVal>(string key, TVal value, TimeSpan interval)
+        {
+            AddInternal(Settings.DefaultPartition, key, value, _clock.UtcNow + interval, interval);
+        }
+
+        /// <summary>
+        ///   Adds a "static" value with given partition and key. Value will last as much as
+        ///   specified in <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        public void AddStatic<TVal>(string partition, string key, TVal value)
+        {
+            AddInternal(partition, key, value, _clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
+        }
+
+        /// <summary>
+        ///   Adds a "static" value with given key and default partition. Value will last as much as
+        ///   specified in <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        public void AddStatic<TVal>(string key, TVal value)
+        {
+            AddInternal(Settings.DefaultPartition, key, value, _clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
+        }
+
+        /// <summary>
+        ///   Adds a "timed" value with given partition and key. Value will last until the specified
+        ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
+        public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry)
+        {
+            AddInternal(partition, key, value, utcExpiry, null);
+        }
+
+        /// <summary>
+        ///   Adds a "timed" value with given key and default partition. Value will last until the
+        ///   specified time and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <typeparam name="TVal"></typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
+        public void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry)
+        {
+            AddInternal(Settings.DefaultPartition, key, value, utcExpiry, null);
+        }
+
+        /// <summary>
+        ///   Clears this instance, that is, it removes all values.
+        /// </summary>
+        public void Clear()
+        {
+            ClearInternal(null);
+        }
+
+        /// <summary>
+        ///   Clears given partition, that is, it removes all its values.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        public void Clear(string partition)
+        {
+            ClearInternal(partition);
+        }
+
+        /// <summary>
+        ///   Determines whether cache contains the specified partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>Whether cache contains the specified partition and key.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        public bool Contains(string partition, string key)
+        {
+            return ContainsInternal(partition, key);
+        }
+
+        /// <summary>
+        ///   Determines whether cache contains the specified key in the default partition.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>Whether cache contains the specified key in the default partition.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        public bool Contains(string key)
+        {
+            return ContainsInternal(Settings.DefaultPartition, key);
+        }
+
+        /// <summary>
+        ///   The number of items in the cache.
+        /// </summary>
+        /// <returns>The number of items in the cache.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        public int Count()
+        {
+            return Convert.ToInt32(CountInternal(null));
+        }
+
+        /// <summary>
+        ///   The number of items in given partition.
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <returns>The number of items in given partition.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        public int Count(string partition)
+        {
+            return Convert.ToInt32(CountInternal(partition));
+        }
+
+        /// <summary>
+        ///   The number of items in the cache.
+        /// </summary>
+        /// <returns>The number of items in the cache.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        public long LongCount()
+        {
+            return CountInternal(null);
+        }
+
+        /// <summary>
+        ///   The number of items in given partition.
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <returns>The number of items in given partition.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        public long LongCount(string partition)
+        {
+            return CountInternal(partition);
+        }
+
+        /// <summary>
+        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by the corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with specified partition and key.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        public Option<TVal> Get<TVal>(string partition, string key)
+        {
+            return GetInternal<TVal>(partition, key);
+        }
+
+        /// <summary>
+        ///   Gets the value with default partition and specified key. If it is a "sliding" or
+        ///   "static" value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with default partition and specified key.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        public Option<TVal> Get<TVal>(string key)
+        {
+            return GetInternal<TVal>(Settings.DefaultPartition, key);
+        }
+
+        /// <summary>
+        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The cache item with specified partition and key.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        public Option<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
+        {
+            return GetItemInternal<TVal>(partition, key);
+        }
+
+        /// <summary>
+        ///   Gets the cache item with default partition and specified key. If it is a "sliding" or
+        ///   "static" value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <returns>The cache item with default partition and specified key.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        public Option<CacheItem<TVal>> GetItem<TVal>(string key)
+        {
+            return GetItemInternal<TVal>(Settings.DefaultPartition, key);
+        }
+
+        /// <summary>
+        ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will
+        ///   be increased by corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <returns>All cache items.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        public CacheItem<TVal>[] GetItems<TVal>()
+        {
+            return GetItemsInternal<TVal>(null);
+        }
+
+        /// <summary>
+        ///   Gets all cache items in given partition. If an item is a "sliding" or "static" value,
+        ///   its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <returns>All cache items in given partition.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        public CacheItem<TVal>[] GetItems<TVal>(string partition)
+        {
+            return GetItemsInternal<TVal>(partition);
+        }
+
+        /// <summary>
+        ///   Gets the value corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///   The value corresponding to given partition and key, without updating expiry date.
+        /// </returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        public Option<TVal> Peek<TVal>(string partition, string key)
+        {
+            return PeekInternal<TVal>(partition, key);
+        }
+
+        /// <summary>
+        ///   Gets the value corresponding to default partition and given key, without updating
+        ///   expiry date.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///   The value corresponding to default partition and given key, without updating expiry date.
+        /// </returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        public Option<TVal> Peek<TVal>(string key)
+        {
+            return PeekInternal<TVal>(Settings.DefaultPartition, key);
+        }
+
+        /// <summary>
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///   The item corresponding to given partition and key, without updating expiry date.
+        /// </returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        public Option<CacheItem<TVal>> PeekItem<TVal>(string partition, string key)
+        {
+            return PeekItemInternal<TVal>(partition, key);
+        }
+
+        /// <summary>
+        ///   Gets the item corresponding to default partition and given key, without updating
+        ///   expiry date.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///   The item corresponding to default partition and givne key, without updating expiry date.
+        /// </returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        public Option<CacheItem<TVal>> PeekItem<TVal>(string key)
+        {
+            return PeekItemInternal<TVal>(Settings.DefaultPartition, key);
+        }
+
+        /// <summary>
+        ///   Gets the all values, without updating expiry dates.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <returns>All values, without updating expiry dates.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        public CacheItem<TVal>[] PeekItems<TVal>()
+        {
+            return PeekItemsInternal<TVal>(null);
+        }
+
+        /// <summary>
+        ///   Gets the all items in given partition, without updating expiry dates.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <returns>All items in given partition, without updating expiry dates.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        public CacheItem<TVal>[] PeekItems<TVal>(string partition)
+        {
+            return PeekItemsInternal<TVal>(partition);
+        }
+
+        /// <summary>
+        ///   Removes the value with given partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        public void Remove(string partition, string key)
+        {
+            RemoveInternal(partition, key);
+        }
+
+        /// <summary>
+        ///   Removes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        public void Remove(string key)
+        {
+            RemoveInternal(Settings.DefaultPartition, key);
+        }
+
+        #endregion ICache Members
 
         #region Abstract Methods
 
@@ -626,7 +811,7 @@ namespace PommaLabs.KVLite.Core
 
         #region Private Methods
 
-        private void AddInternal<TVal>(string partition, string key, TVal value, DateTime? utcExpiry, TimeSpan? interval)
+        private void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan? interval)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
             byte[] serializedValue;
@@ -643,6 +828,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                _log.ErrorFormat("Could not serialize given value '{0}'", ex, value.SafeToString());
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
@@ -650,7 +836,7 @@ namespace PommaLabs.KVLite.Core
             p.Add("partition", partition, DbType.String);
             p.Add("key", key, DbType.String);
             p.Add("serializedValue", serializedValue, DbType.Binary, size: serializedValue.Length);
-            p.Add("utcExpiry", utcExpiry.HasValue ? utcExpiry.Value.ToUnixTime() : new long?(), DbType.Int64);
+            p.Add("utcExpiry", utcExpiry.ToUnixTime(), DbType.Int64);
             p.Add("interval", interval.HasValue ? (long) interval.Value.TotalSeconds : new long?(), DbType.Int64);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
@@ -664,9 +850,10 @@ namespace PommaLabs.KVLite.Core
             // we must reset it and do a SOFT cleanup. Following code is not fully thread safe, but
             // it does not matter, because the "InsertionCountBeforeAutoClean" parameter should be
             // just an hint on when to do the cleanup.
-            if (++_insertionCount >= Settings.InsertionCountBeforeAutoClean)
+            var oldInsertionCount = Interlocked.CompareExchange(ref _insertionCount, 0, Settings.InsertionCountBeforeAutoClean);
+            if (oldInsertionCount == Settings.InsertionCountBeforeAutoClean)
             {
-                _insertionCount = 0;
+                // If they were equal, then we need to run the maintenance cleanup.
                 TaskRunner.Run(() => Clear(CacheReadMode.ConsiderExpiryDate));
             }
         }
@@ -711,13 +898,6 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        /// <summary>
-        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by corresponding interval.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>The value with specified partition and key.</returns>
         private Option<TVal> GetInternal<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
@@ -731,13 +911,6 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        /// <summary>
-        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by corresponding interval.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>The cache item with specified partition and key.</returns>
         private Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
@@ -769,14 +942,6 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        /// <summary>
-        ///   Gets the value corresponding to given partition and key, without updating expiry date.
-        /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <returns>
-        ///   The value corresponding to given partition and key, without updating expiry date.
-        /// </returns>
         private Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
@@ -790,14 +955,6 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        /// <summary>
-        ///   Gets the item corresponding to given partition and key, without updating expiry date.
-        /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
-        /// <returns>
-        ///   The item corresponding to given partition and key, without updating expiry date.
-        /// </returns>
         private Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
@@ -829,11 +986,6 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        /// <summary>
-        ///   Removes the value with given partition and key.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
         private void RemoveInternal(string partition, string key)
         {
             var p = new DynamicParameters();
@@ -864,7 +1016,7 @@ namespace PommaLabs.KVLite.Core
             }
             try
             {
-                return Option.Some<TVal>(UnsafeDeserializeValue<TVal>(serializedValue));
+                return Option.Some(UnsafeDeserializeValue<TVal>(serializedValue));
             }
             catch (Exception ex)
             {
@@ -884,7 +1036,7 @@ namespace PommaLabs.KVLite.Core
             }
             try
             {
-                return Option.Some<CacheItem<TVal>>(new CacheItem<TVal>
+                return Option.Some(new CacheItem<TVal>
                 {
                     Partition = src.Partition,
                     Key = src.Key,
@@ -993,16 +1145,12 @@ namespace PommaLabs.KVLite.Core
 
             #endregion Public Properties
 
-            #region EquatableObject<CacheItem> Members
+            #region EquatableObject<DbCacheItem> Members
 
             /// <summary>
             ///   Returns all property (or field) values, along with their names, so that they can
-            ///   be used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
+            ///   be used to produce a meaningful <see cref="M:Finsa.CodeServices.Common.FormattableObject.ToString"/>.
             /// </summary>
-            /// <returns>
-            ///   Returns all property (or field) values, along with their names, so that they can
-            ///   be used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
-            /// </returns>
             protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
             {
                 yield return KeyValuePair.Create("Partition", Partition.SafeToString());
@@ -1013,14 +1161,13 @@ namespace PommaLabs.KVLite.Core
             /// <summary>
             ///   Gets the identifying members.
             /// </summary>
-            /// <returns>The identifying members.</returns>
             protected override IEnumerable<object> GetIdentifyingMembers()
             {
                 yield return Partition;
                 yield return Key;
             }
 
-            #endregion EquatableObject<CacheItem> Members
+            #endregion EquatableObject<DbCacheItem> Members
         }
 
         #endregion Nested type: DbCacheItem

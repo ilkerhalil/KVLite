@@ -41,11 +41,16 @@ namespace PommaLabs.KVLite
     ///   In fact, a cache is, almost by definition, a transient store, used to temporaly store the
     ///   results of time consuming operations. This kind of cache should, therefore, store any kind
     ///   of object for a predetermined amount of time, trying to be extremely efficient while
-    ///   handling entries.
+    ///   handling entries. The cache does its best in order to be a reliable store, but it should
+    ///   not be treated like a database: long story short, your code needs to be aware that values
+    ///   in this cache may disappear as time passes.
     /// 
     ///   In any case, to increase the ease of use, it is not mandatory neither to specify a
     ///   partition, nor to specify an expiration time. In both cases, a default value is used,
-    ///   which can be customized by editing the KVLite configuration file.
+    ///   which can be customized by editing the KVLite configuration file. See, for example, the
+    ///   configuration for the <see cref="PersistentCache"/> (
+    ///   <see cref="PersistentCacheConfiguration.DefaultStaticIntervalInDays"/>) or the one for the
+    ///   <see cref="VolatileCache"/> ( <see cref="VolatileCacheConfiguration.DefaultStaticIntervalInDays"/>).
     /// </summary>
     [ContractClass(typeof(CacheContract))]
     public interface ICache
@@ -54,6 +59,10 @@ namespace PommaLabs.KVLite
         ///   Gets the clock used by the cache.
         /// </summary>
         /// <value>The clock used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
+        /// </remarks>
         [Pure]
         IClock Clock { get; }
 
@@ -61,6 +70,10 @@ namespace PommaLabs.KVLite
         ///   Gets the compressor used by the cache.
         /// </summary>
         /// <value>The compressor used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
+        /// </remarks>
         [Pure]
         ICompressor Compressor { get; }
 
@@ -68,6 +81,11 @@ namespace PommaLabs.KVLite
         ///   Gets the log used by the cache.
         /// </summary>
         /// <value>The log used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to what
+        ///   <see cref="LogManager.GetLogger(System.Type)"/> returns.
+        /// </remarks>
         [Pure]
         ILog Log { get; }
 
@@ -75,6 +93,12 @@ namespace PommaLabs.KVLite
         ///   Gets the serializer used by the cache.
         /// </summary>
         /// <value>The serializer used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="BinarySerializer"/>.
+        ///   Therefore, if you do not specify another serializer, make sure that your objects are
+        ///   serializable (in most cases, simply use th <see cref="SerializableAttribute"/>).
+        /// </remarks>
         [Pure]
         ISerializer Serializer { get; }
 
@@ -92,7 +116,9 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with the specified partition and key.</returns>
-        /// <exception cref="ArgumentNullException">Partition or key are null.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
         /// <remarks>
         ///   This method, differently from other readers (like
         ///   <see cref="Get{TVal}(string,string)"/> or <see cref="Peek{TVal}(string,string)"/>),
@@ -108,7 +134,7 @@ namespace PommaLabs.KVLite
         /// <value>The value with the default partition and specified key.</value>
         /// <param name="key">The key.</param>
         /// <returns>The value with the default partition and specified key.</returns>
-        /// <exception cref="ArgumentNullException">Key is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <remarks>
         ///   This method, differently from other readers (like <see cref="Get{TVal}(string)"/> or
         ///   <see cref="Peek{TVal}(string)"/>), does not have a typed return object, because
@@ -122,20 +148,26 @@ namespace PommaLabs.KVLite
         ///   specified in given interval and, if accessed before expiry, its lifetime will be
         ///   extended by the interval itself.
         /// </summary>
-        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
         void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval);
 
         /// <summary>
-        ///   Adds a "sliding" value with given key. Value will last as much as specified in given
-        ///   interval and, if accessed before expiry, its lifetime will be extended by the interval itself.
+        ///   Adds a "sliding" value with given key and default partition. Value will last as much
+        ///   as specified in given interval and, if accessed before expiry, its lifetime will be
+        ///   extended by the interval itself.
         /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         void AddSliding<TVal>(string key, TVal value, TimeSpan interval);
 
         /// <summary>
@@ -143,38 +175,48 @@ namespace PommaLabs.KVLite
         ///   specified in <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed
         ///   before expiry, its lifetime will be extended by that interval.
         /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
         void AddStatic<TVal>(string partition, string key, TVal value);
 
         /// <summary>
-        ///   Adds a "static" value with given key. Value will last as much as specified in
-        ///   <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed before expiry,
-        ///   its lifetime will be extended by that interval.
+        ///   Adds a "static" value with given key and default partition. Value will last as much as
+        ///   specified in <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
         /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         void AddStatic<TVal>(string key, TVal value);
 
         /// <summary>
         ///   Adds a "timed" value with given partition and key. Value will last until the specified
         ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
-        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
         void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry);
 
         /// <summary>
-        ///   Adds a "timed" value with given key. Value will last until the specified time and, if
-        ///   accessed before expiry, its lifetime will _not_ be extended.
+        ///   Adds a "timed" value with given key and default partition. Value will last until the
+        ///   specified time and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry);
 
         /// <summary>
@@ -185,6 +227,8 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Clears given partition, that is, it removes all its values.
         /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
         void Clear(string partition);
 
         /// <summary>
@@ -194,7 +238,9 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <returns>Whether cache contains the specified partition and key.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        /// <exception cref="ArgumentNullException">Partition or key are null.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
         [Pure]
         bool Contains(string partition, string key);
 
@@ -204,22 +250,24 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <returns>Whether cache contains the specified key in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        /// <exception cref="ArgumentNullException">Key is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         [Pure]
         bool Contains(string key);
 
         /// <summary>
-        ///   The number of elements inside the cache.
+        ///   The number of items in the cache.
         /// </summary>
-        /// <returns>The number of elements inside the cache.</returns>
+        /// <returns>The number of items in the cache.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         [Pure]
         int Count();
 
         /// <summary>
-        ///   The number of elements inside given partition.
+        ///   The number of items in given partition.
         /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <returns>The number of elements inside given partition.</returns>
+        /// <returns>The number of items in given partition.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
         [Pure]
         int Count(string partition);
 
@@ -236,12 +284,13 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <returns>The number of items in given partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
         [Pure]
         long LongCount(string partition);
 
         /// <summary>
         ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by corresponding interval.
+        ///   value, its lifetime will be increased by the corresponding interval.
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
@@ -252,6 +301,9 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
         Option<TVal> Get<TVal>(string partition, string key);
 
         /// <summary>
@@ -266,6 +318,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         Option<TVal> Get<TVal>(string key);
 
         /// <summary>
@@ -281,6 +334,9 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
         Option<CacheItem<TVal>> GetItem<TVal>(string partition, string key);
 
         /// <summary>
@@ -295,6 +351,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         Option<CacheItem<TVal>> GetItem<TVal>(string key);
 
         /// <summary>
@@ -322,6 +379,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
         CacheItem<TVal>[] GetItems<TVal>(string partition);
 
         /// <summary>
@@ -338,6 +396,9 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
         [Pure]
         Option<TVal> Peek<TVal>(string partition, string key);
 
@@ -355,6 +416,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         [Pure]
         Option<TVal> Peek<TVal>(string key);
 
@@ -372,6 +434,9 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
         [Pure]
         Option<CacheItem<TVal>> PeekItem<TVal>(string partition, string key);
 
@@ -389,6 +454,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         [Pure]
         Option<CacheItem<TVal>> PeekItem<TVal>(string key);
 
@@ -416,6 +482,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
         [Pure]
         CacheItem<TVal>[] PeekItems<TVal>(string partition);
 
@@ -424,12 +491,16 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
         void Remove(string partition, string key);
 
         /// <summary>
         ///   Removes the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         void Remove(string key);
     }
 

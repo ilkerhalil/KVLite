@@ -44,6 +44,10 @@ namespace PommaLabs.KVLite.Contracts
         ///   Gets the clock used by the cache.
         /// </summary>
         /// <value>The clock used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
+        /// </remarks>
         public IClock Clock
         {
             get
@@ -57,6 +61,10 @@ namespace PommaLabs.KVLite.Contracts
         ///   Gets the compressor used by the cache.
         /// </summary>
         /// <value>The compressor used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
+        /// </remarks>
         public ICompressor Compressor
         {
             get
@@ -70,6 +78,11 @@ namespace PommaLabs.KVLite.Contracts
         ///   Gets the log used by the cache.
         /// </summary>
         /// <value>The log used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to what
+        ///   <see cref="LogManager.GetLogger(System.Type)"/> returns.
+        /// </remarks>
         public ILog Log
         {
             get
@@ -83,6 +96,12 @@ namespace PommaLabs.KVLite.Contracts
         ///   Gets the serializer used by the cache.
         /// </summary>
         /// <value>The serializer used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="BinarySerializer"/>.
+        ///   Therefore, if you do not specify another serializer, make sure that your objects are
+        ///   serializable (in most cases, simply use th <see cref="SerializableAttribute"/>).
+        /// </remarks>
         public ISerializer Serializer
         {
             get
@@ -95,6 +114,7 @@ namespace PommaLabs.KVLite.Contracts
         /// <summary>
         ///   The available settings for the cache.
         /// </summary>
+        /// <value>The available settings for the cache.</value>
         public AbstractCacheSettings Settings
         {
             get
@@ -104,6 +124,22 @@ namespace PommaLabs.KVLite.Contracts
             }
         }
 
+        /// <summary>
+        ///   Gets the value with the specified partition and key.
+        /// </summary>
+        /// <value>The value with the specified partition and key.</value>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with the specified partition and key.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
+        /// <remarks>
+        ///   This method, differently from other readers (like
+        ///   <see cref="Get{TVal}(string,string)"/> or <see cref="Peek{TVal}(string,string)"/>),
+        ///   does not have a typed return object, because indexers cannot be generic. Therefore, we
+        ///   have to return a simple <see cref="object"/>.
+        /// </remarks>
         Option<object> ICache.this[string partition, string key]
         {
             get
@@ -115,6 +151,18 @@ namespace PommaLabs.KVLite.Contracts
             }
         }
 
+        /// <summary>
+        ///   Gets the value with the default partition and specified key.
+        /// </summary>
+        /// <value>The value with the default partition and specified key.</value>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with the default partition and specified key.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
+        /// <remarks>
+        ///   This method, differently from other readers (like <see cref="Get{TVal}(string)"/> or
+        ///   <see cref="Peek{TVal}(string)"/>), does not have a typed return object, because
+        ///   indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
+        /// </remarks>
         Option<object> ICache.this[string key]
         {
             get
@@ -131,7 +179,7 @@ namespace PommaLabs.KVLite.Contracts
         ///   specified in given interval and, if accessed before expiry, its lifetime will be
         ///   extended by the interval itself.
         /// </summary>
-        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
@@ -144,6 +192,15 @@ namespace PommaLabs.KVLite.Contracts
             // Contract.Ensures(Contains(partition, key));
         }
 
+        /// <summary>
+        ///   Adds a "sliding" value with given key and default partition. Value will last as much
+        ///   as specified in given interval and, if accessed before expiry, its lifetime will be
+        ///   extended by the interval itself.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="interval">The interval.</param>
         public void AddSliding<TVal>(string key, TVal value, TimeSpan interval)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
@@ -152,6 +209,15 @@ namespace PommaLabs.KVLite.Contracts
             // Contract.Ensures(Contains(key));
         }
 
+        /// <summary>
+        ///   Adds a "static" value with given partition and key. Value will last as much as
+        ///   specified in <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         public void AddStatic<TVal>(string partition, string key, TVal value)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -160,6 +226,14 @@ namespace PommaLabs.KVLite.Contracts
             // Contract.Ensures(Contains(partition, key));
         }
 
+        /// <summary>
+        ///   Adds a "static" value with given key and default partition. Value will last as much as
+        ///   specified in <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         public void AddStatic<TVal>(string key, TVal value)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
@@ -171,6 +245,7 @@ namespace PommaLabs.KVLite.Contracts
         ///   Adds a "timed" value with given partition and key. Value will last until the specified
         ///   time and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
@@ -183,6 +258,14 @@ namespace PommaLabs.KVLite.Contracts
             // Contract.Ensures(Contains(partition, key));
         }
 
+        /// <summary>
+        ///   Adds a "timed" value with given key and default partition. Value will last until the
+        ///   specified time and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <typeparam name="TVal"></typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
         public void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
@@ -202,9 +285,10 @@ namespace PommaLabs.KVLite.Contracts
         /// <summary>
         ///   Clears given partition, that is, it removes all its values.
         /// </summary>
-        /// <param name="partition"></param>
+        /// <param name="partition">The partition.</param>
         public void Clear(string partition)
         {
+            Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Ensures(Count(partition) == 0);
             Contract.Ensures(LongCount(partition) == 0);
         }
@@ -215,6 +299,7 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>Whether cache contains the specified partition and key.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         public bool Contains(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -228,19 +313,29 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="key">The key.</param>
         /// <returns>Whether cache contains the specified key in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        /// <exception cref="ArgumentNullException">Key is null.</exception>
         public bool Contains(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             return default(bool);
         }
 
+        /// <summary>
+        ///   The number of items in the cache.
+        /// </summary>
+        /// <returns>The number of items in the cache.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         public int Count()
         {
             Contract.Ensures(Contract.Result<int>() >= 0);
             return default(int);
         }
 
+        /// <summary>
+        ///   The number of items in given partition.
+        /// </summary>
+        /// <param name="partition"></param>
+        /// <returns>The number of items in given partition.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         public int Count(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -252,6 +347,7 @@ namespace PommaLabs.KVLite.Contracts
         ///   The number of items in the cache.
         /// </summary>
         /// <returns>The number of items in the cache.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         public long LongCount()
         {
             Contract.Ensures(Contract.Result<long>() >= 0);
@@ -263,6 +359,7 @@ namespace PommaLabs.KVLite.Contracts
         /// </summary>
         /// <param name="partition"></param>
         /// <returns>The number of items in given partition.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         public long LongCount(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -272,11 +369,17 @@ namespace PommaLabs.KVLite.Contracts
 
         /// <summary>
         ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by corresponding interval.
+        ///   value, its lifetime will be increased by the corresponding interval.
         /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         public Option<TVal> Get<TVal>(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -286,12 +389,17 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by corresponding interval.
+        ///   Gets the value with default partition and specified key. If it is a "sliding" or
+        ///   "static" value, its lifetime will be increased by corresponding interval.
         /// </summary>
-        /// <param name="partition">The partition.</param>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
         /// <param name="key">The key.</param>
-        /// <returns>The value with specified partition and key.</returns>
+        /// <returns>The value with default partition and specified key.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         public Option<TVal> Get<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
@@ -304,9 +412,15 @@ namespace PommaLabs.KVLite.Contracts
         ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
         ///   value, its lifetime will be increased by corresponding interval.
         /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         public Option<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -316,12 +430,17 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by corresponding interval.
+        ///   Gets the cache item with default partition and specified key. If it is a "sliding" or
+        ///   "static" value, its lifetime will be increased by corresponding interval.
         /// </summary>
-        /// <param name="partition">The partition.</param>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
         /// <param name="key">The key.</param>
-        /// <returns>The cache item with specified partition and key.</returns>
+        /// <returns>The cache item with default partition and specified key.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         public Option<CacheItem<TVal>> GetItem<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
@@ -334,7 +453,13 @@ namespace PommaLabs.KVLite.Contracts
         ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will
         ///   be increased by corresponding interval.
         /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         public CacheItem<TVal>[] GetItems<TVal>()
         {
             Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
@@ -347,8 +472,14 @@ namespace PommaLabs.KVLite.Contracts
         ///   Gets all cache items in given partition. If an item is a "sliding" or "static" value,
         ///   its lifetime will be increased by corresponding interval.
         /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <param name="partition">The partition.</param>
         /// <returns>All cache items in given partition.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         public CacheItem<TVal>[] GetItems<TVal>(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -361,11 +492,17 @@ namespace PommaLabs.KVLite.Contracts
         /// <summary>
         ///   Gets the value corresponding to given partition and key, without updating expiry date.
         /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
         /// <returns>
         ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         public Option<TVal> Peek<TVal>(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -375,13 +512,19 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        ///   Gets the value corresponding to given partition and key, without updating expiry date.
+        ///   Gets the value corresponding to default partition and given key, without updating
+        ///   expiry date.
         /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="key">The key.</param>
         /// <returns>
-        ///   The value corresponding to given partition and key, without updating expiry date.
+        ///   The value corresponding to default partition and given key, without updating expiry date.
         /// </returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         public Option<TVal> Peek<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
@@ -393,11 +536,17 @@ namespace PommaLabs.KVLite.Contracts
         /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
         /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         public Option<CacheItem<TVal>> PeekItem<TVal>(string partition, string key)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -407,13 +556,19 @@ namespace PommaLabs.KVLite.Contracts
         }
 
         /// <summary>
-        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        ///   Gets the item corresponding to default partition and given key, without updating
+        ///   expiry date.
         /// </summary>
-        /// <param name="partition"></param>
-        /// <param name="key"></param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="key">The key.</param>
         /// <returns>
-        ///   The item corresponding to given partition and key, without updating expiry date.
+        ///   The item corresponding to default partition and givne key, without updating expiry date.
         /// </returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         public Option<CacheItem<TVal>> PeekItem<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
@@ -425,7 +580,13 @@ namespace PommaLabs.KVLite.Contracts
         /// <summary>
         ///   Gets the all values, without updating expiry dates.
         /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All values, without updating expiry dates.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         public CacheItem<TVal>[] PeekItems<TVal>()
         {
             Contract.Ensures(Contract.Result<CacheItem<TVal>[]>() != null);
@@ -437,8 +598,14 @@ namespace PommaLabs.KVLite.Contracts
         /// <summary>
         ///   Gets the all items in given partition, without updating expiry dates.
         /// </summary>
-        /// <param name="partition"></param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
         /// <returns>All items in given partition, without updating expiry dates.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         public CacheItem<TVal>[] PeekItems<TVal>(string partition)
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
@@ -460,6 +627,10 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Ensures(!Contains(partition, key));
         }
 
+        /// <summary>
+        ///   Removes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
         public void Remove(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
