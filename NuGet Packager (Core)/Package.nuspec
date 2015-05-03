@@ -13,6 +13,7 @@ This package contains the core references for KVLite.
         </description>
         <releaseNotes>
 * KVLite is now IoC friendly.
+* ICache interface is fully typed.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.

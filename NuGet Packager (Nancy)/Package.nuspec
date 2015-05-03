@@ -12,6 +12,7 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         </description>
         <releaseNotes>
 * KVLite is now IoC friendly.
+* ICache interface is fully typed.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Nancy caching bootstrapper.
