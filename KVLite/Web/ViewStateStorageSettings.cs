@@ -81,6 +81,7 @@ namespace PommaLabs.KVLite.Web
                 {
                     _method = (ViewStateStorageMethod) Enum.Parse(typeof(ViewStateStorageMethod), storageMethod.Value, true);
                 }
+                // ReSharper disable once EmptyGeneralCatchClause
                 catch { }
             }
 
@@ -125,11 +126,16 @@ namespace PommaLabs.KVLite.Web
         }
 
         /// <summary>
-        ///   </summary>
+        ///   An empty constructor...
+        /// </summary>
         public ViewStateStorageSettings()
         {
         }
 
+        /// <summary>
+        ///   Gets or sets the persistence handler.
+        /// </summary>
+        /// <value>The persistence handler.</value>
         public string PersistenceHandler { get; set; }
 
         /// <summary>
@@ -151,6 +157,10 @@ namespace PommaLabs.KVLite.Web
             set { _fileage = value; }
         }
 
+        /// <summary>
+        ///   Gets or sets the view state cleanup interval.
+        /// </summary>
+        /// <value>The view state cleanup interval.</value>
         public TimeSpan ViewStateCleanupInterval
         {
             get { return _maxAge; }
@@ -227,6 +237,10 @@ namespace PommaLabs.KVLite.Web
             return settings ?? new ViewStateStorageSettings();
         }
 
+        /// <summary>
+        ///   Clones this instance.
+        /// </summary>
+        /// <returns>A deep copy of this instance.</returns>
         public ViewStateStorageSettings Clone()
         {
             var ret = new ViewStateStorageSettings

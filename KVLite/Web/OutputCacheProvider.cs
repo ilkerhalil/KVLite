@@ -48,9 +48,7 @@ namespace PommaLabs.KVLite.Web
         /// <summary>
         ///   Gets or sets the cache instance currently used by the provider.
         /// </summary>
-        /// <value>
-        ///   The cache instance currently used by the provider.
-        /// </value>
+        /// <value>The cache instance currently used by the provider.</value>
         public static ICache Cache
         {
             get
@@ -66,24 +64,54 @@ namespace PommaLabs.KVLite.Web
             }
         }
 
-        #endregion
+        #endregion Properties
 
+        /// <summary>
+        ///   Returns a reference to the specified entry in the output cache.
+        /// </summary>
+        /// <param name="key">A unique identifier for a cached entry in the output cache.</param>
+        /// <returns>
+        ///   The <paramref name="key"/> value that identifies the specified entry in the cache, or
+        ///   null if the specified entry is not in the cache.
+        /// </returns>
         public override object Get(string key)
         {
             return _cache.Get<object>(OutputCachePartition, key);
         }
 
+        /// <summary>
+        ///   Inserts the specified entry into the output cache.
+        /// </summary>
+        /// <param name="key">A unique identifier for <paramref name="entry"/>.</param>
+        /// <param name="entry">The content to add to the output cache.</param>
+        /// <param name="utcExpiry">The time and date on which the cached entry expires.</param>
+        /// <returns>A reference to the specified provider.</returns>
         public override object Add(string key, object entry, DateTime utcExpiry)
         {
             _cache.AddTimed(OutputCachePartition, key, entry, utcExpiry);
             return entry;
         }
 
+        /// <summary>
+        ///   Inserts the specified entry into the output cache, overwriting the entry if it is
+        ///   already cached.
+        /// </summary>
+        /// <param name="key">A unique identifier for <paramref name="entry"/>.</param>
+        /// <param name="entry">The content to add to the output cache.</param>
+        /// <param name="utcExpiry">
+        ///   The time and date on which the cached <paramref name="entry"/> expires.
+        /// </param>
         public override void Set(string key, object entry, DateTime utcExpiry)
         {
             _cache.AddTimed(OutputCachePartition, key, entry, utcExpiry);
         }
 
+        /// <summary>
+        ///   Removes the specified entry from the output cache.
+        /// </summary>
+        /// <param name="key">
+        ///   The unique identifier for the entry to remove from the output cache.
+        /// </param>
         public override void Remove(string key)
         {
             _cache.Remove(OutputCachePartition, key);

@@ -81,6 +81,9 @@ namespace PommaLabs.KVLite.Web
             ViewStateSettings = new ViewStateStorageSettings();
         }
 
+        /// <summary>
+        /// Overridden by derived classes to deserialize and load persisted state information when a <see cref="T:System.Web.UI.Page" /> object initializes its control hierarchy.
+        /// </summary>
         public override void Load()
         {
             var guid = Page.Request.Form[HiddenFieldName];
@@ -97,6 +100,9 @@ namespace PommaLabs.KVLite.Web
             }
         }
 
+        /// <summary>
+        /// Overridden by derived classes to serialize persisted state information when a <see cref="T:System.Web.UI.Page" /> object is unloaded from memory.
+        /// </summary>
         public override void Save()
         {
             var guid = GetViewStateId();

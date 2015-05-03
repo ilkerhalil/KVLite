@@ -28,23 +28,44 @@ namespace PommaLabs.KVLite.Web
     /// </summary>
     public abstract class BaseStatePersister : PageStatePersister
     {
+        /// <summary>
+        ///   The prefix used to tag a viewstate.
+        /// </summary>
         public const string HiddenFieldName = "__VIEWSTATE_ID";
 
         private ViewStateStorageSettings _settings;
 
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="BaseStatePersister"/> class.
+        /// </summary>
+        /// <param name="page">
+        ///   The <see cref="T:System.Web.UI.Page"/> that the view state persistence mechanism is
+        ///   created for.
+        /// </param>
         protected BaseStatePersister(Page page)
             : base(page)
         {
         }
 
+        /// <summary>
+        ///   Gets or sets the view state settings.
+        /// </summary>
+        /// <value>The view state settings.</value>
         public ViewStateStorageSettings ViewStateSettings
         {
             get { return _settings; }
             set { _settings = value; }
         }
 
+        /// <summary>
+        ///   Clears this viewstate persister.
+        /// </summary>
         public abstract void Clear();
 
+        /// <summary>
+        ///   Gets the view state identifier.
+        /// </summary>
+        /// <returns>The view state identifier.</returns>
         protected virtual string GetViewStateId()
         {
             string ret;
@@ -63,7 +84,7 @@ namespace PommaLabs.KVLite.Web
 
         private static string SanitizeInput(string input)
         {
-            if (String.IsNullOrEmpty(input))
+            if (string.IsNullOrEmpty(input))
             {
                 return input;
             }
