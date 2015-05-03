@@ -91,7 +91,7 @@ namespace PommaLabs.KVLite
             set
             {
                 Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCacheName);
-                Contract.Requires<ArgumentException>(Regex.IsMatch(value, @"^[a-zA-Z0-9_\.]*$"), ErrorMessages.InvalidCacheName);
+                Contract.Requires<ArgumentException>(Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$"), ErrorMessages.InvalidCacheName);
                 _cacheFile = value;
                 OnPropertyChanged();
             }
