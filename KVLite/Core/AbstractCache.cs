@@ -54,6 +54,11 @@ namespace PommaLabs.KVLite.Core
         #region Constants
 
         /// <summary>
+        ///   The initial value for the variable which keeps the auto clean counter.
+        /// </summary>
+        private const int InsertionCountStart = 0;
+
+        /// <summary>
         ///   The page size in bytes.
         /// </summary>
         private const int PageSizeInBytes = 32768;
@@ -77,7 +82,7 @@ namespace PommaLabs.KVLite.Core
         ///   "InsertionCountBeforeAutoClean" configuration parameter, then we must reset it and do
         ///   a SOFT cleanup.
         /// </summary>
-        private int _insertionCount;
+        private int _insertionCount = InsertionCountStart;
 
         /// <summary>
         ///   The cache settings.
@@ -850,7 +855,8 @@ namespace PommaLabs.KVLite.Core
             // we must reset it and do a SOFT cleanup. Following code is not fully thread safe, but
             // it does not matter, because the "InsertionCountBeforeAutoClean" parameter should be
             // just an hint on when to do the cleanup.
-            var oldInsertionCount = Interlocked.CompareExchange(ref _insertionCount, 0, Settings.InsertionCountBeforeAutoClean);
+            _insertionCount++;
+            var oldInsertionCount = Interlocked.CompareExchange(ref _insertionCount, InsertionCountStart, Settings.InsertionCountBeforeAutoClean);
             if (oldInsertionCount == Settings.InsertionCountBeforeAutoClean)
             {
                 // If they were equal, then we need to run the maintenance cleanup.
