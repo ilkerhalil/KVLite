@@ -21,14 +21,23 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using PommaLabs.KVLite;
 
 namespace Examples
 {
     internal static class Program
     {
-        internal static void Main(string[] args)
+        public static void Main(string[] args)
         {
+            // You can start using the default caches immediately! Configure them through the KVLite configuration file.
+            const string partition = "examples";
+            const string key = "hello!";
+            PersistentCache.DefaultInstance.AddTimed(partition, key, 123, DateTime.UtcNow.AddMinutes(5));
+            Console.WriteLine("My persistent value is: " + PersistentCache.DefaultInstance[partition, key].Value);
+
+            // Otherwise, you can customize you own cache...
+
             // Settings that we will use in new volatile caches.
             var volatileCacheSettings = new VolatileCacheSettings
             {
@@ -45,6 +54,16 @@ namespace Examples
                 MaxJournalSizeInMB = 16, // Max size in megabytes for the SQLite journal log.
                 StaticIntervalInDays = 10 // How many days static values will last.
             };
+
+            // We create both a volatile and a persistent cache.
+            var volatileCache = new VolatileCache(volatileCacheSettings);
+            var persistentCache = new PersistentCache(persistentCacheSettings);
+            
+            // Use the new volatile cache!
+            volatileCache.AddStatic(partition, key, Tuple.Create("Volatile!", 123));
+            Console.WriteLine("My volatile value is: " + volatileCache[partition, key].Value);
+
+            Console.Read();
         }
     }
 }

@@ -27,22 +27,24 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Ninject;
 using NUnit.Framework;
 using PommaLabs.KVLite;
+using PommaLabs.KVLite.Core;
 using Task = System.Threading.Tasks.Task;
 
 namespace UnitTests
 {
     [TestFixture]
-    internal abstract class AbstractCacheTests
+    internal abstract class AbstractCacheTests<TCacheSettings> where TCacheSettings : AbstractCacheSettings
     {
         #region Setup/Teardown
 
-        protected ICache Cache;
+        protected AbstractCache<TCacheSettings> Cache;
 
         [SetUp]
         public virtual void SetUp()
@@ -663,11 +665,53 @@ namespace UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_ValidValues()
         {
-            for (var i = 0; i < Cache.Settings.InsertionCountBeforeAutoClean; ++i)
+            for (var i = 0; i < Cache.Settings.InsertionCountBeforeAutoClean - 1; ++i)
             {
                 Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
             }
-            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean, Cache.Count());
+            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count());
+            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
+
+            // Advance the clock, in order to make items not valid.
+            ((MockClock) Cache.Clock).Add(TimeSpan.FromMinutes(15));
+
+            // Add a new item, which should trigger the async cleanup.
+            Cache.AddTimed(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
+            // Wait for the task to complete...
+            Thread.Sleep(1000);
+            Assert.AreEqual(1, Cache.Count());
+            Assert.AreEqual(1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
+        }
+
+        [Test]
+        public void Clean_AfterFixedNumberOfInserts_InvalidValues_Async()
+        {
+            Parallel.For(0, Cache.Settings.InsertionCountBeforeAutoClean, i =>
+            {
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+            });
+            Assert.AreEqual(0, Cache.Count());
+        }
+
+        [Test]
+        public void Clean_AfterFixedNumberOfInserts_ValidValues_Async()
+        {
+            Parallel.For(0, Cache.Settings.InsertionCountBeforeAutoClean - 1, i =>
+            {
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
+            });
+            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count());
+            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
+
+            // Advance the clock, in order to make items not valid.
+            ((MockClock) Cache.Clock).Add(TimeSpan.FromMinutes(15));
+
+            // Add a new item, which should trigger the async cleanup.
+            Cache.AddTimed(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
+            // Wait for the task to complete...
+            Thread.Sleep(1000);
+            Assert.AreEqual(1, Cache.Count());
+            Assert.AreEqual(1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
         }
 
         [TestCase(SmallItemCount)]

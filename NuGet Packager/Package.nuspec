@@ -12,6 +12,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         </description>
         <releaseNotes>
 * KVLite is now IoC friendly.
+* ICache interface is fully typed.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
@@ -25,7 +26,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         <dependencies>
             <dependency id="CodeProject.ObjectPool" version="1.5.0" />
             <dependency id="Dapper" version="1.40" />
-            <dependency id="PommaLabs.KVLite.Core" version="3.0.2" />
+            <dependency id="PommaLabs.KVLite.Core" version="3.0.3" />
             <dependency id="System.Data.SQLite.Core" version="1.0.96.0" />
             <dependency id="Westwind.Utilities.Configuration" version="2.25" />
         </dependencies>
