@@ -190,11 +190,13 @@ namespace PommaLabs.KVLite.Core
         [Pure]
         public long CacheSizeInKB()
         {
-            const long pageSizeInKb = PageSizeInBytes / 1024L;
             // No need for a transaction, since it is just a select.
             using (var ctx = _connectionPool.GetObject())
             {
-                return ctx.InternalResource.ExecuteScalar<long>("PRAGMA page_count;") * pageSizeInKb;
+                var pageCount = ctx.InternalResource.ExecuteScalar<long>("PRAGMA page_count;");
+                var freelistCount = ctx.InternalResource.ExecuteScalar<long>("PRAGMA freelist_count;");
+                var pageSizeInKB = ctx.InternalResource.ExecuteScalar<long>("PRAGMA page_size;");
+                return (pageCount - freelistCount) * (pageSizeInKB / 1024L);
             }
         }
 
