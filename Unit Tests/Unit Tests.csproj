@@ -144,6 +144,7 @@
     <Compile Include="AbstractCacheTests.cs" />
     <Compile Include="RandomDataTableGenerator.cs" />
     <Compile Include="VolatileCacheTests.cs" />
+    <Compile Include="Web\Http\AbstractCacheControllerTests.cs" />
     <Compile Include="Web\Http\ApiOutputCacheTests.cs" />
   </ItemGroup>
   <ItemGroup>

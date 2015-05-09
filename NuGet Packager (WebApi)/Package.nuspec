@@ -25,13 +25,11 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <group targetFramework="net45">
-                <dependency id="LinqToQuerystring.WebApi2" version="1.4.1.14" />
                 <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
                 <dependency id="PommaLabs.KVLite.Core" version="3.0.3" />
                 <dependency id="Strathweb.CacheOutput.WebApi2" version="0.6" />
             </group>
             <group targetFramework="net40">
-                <dependency id="LinqToQuerystring.WebApi" version="1.4.1.14" />
                 <dependency id="Microsoft.AspNet.WebApi.Client" version="4.0.30506.0" />
                 <dependency id="PommaLabs.KVLite.Core" version="3.0.3" />
                 <dependency id="Strathweb.CacheOutput" version="0.5" />

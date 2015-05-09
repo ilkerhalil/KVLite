@@ -1,4 +1,4 @@
-﻿// File name: CacheControllerBase.cs
+﻿// File name: AbstractCacheController.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,30 +21,40 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Web.Http;
 using Finsa.CodeServices.Common;
-using LinqToQuerystring.WebApi;
-
-#if NET45
-
-using WebApi.OutputCache.V2;
-
-#else
-
-using WebAPI.OutputCache;
-
-#endif
 
 namespace PommaLabs.KVLite.Web.Http
 {
     /// <summary>
     ///   Implements some actions to remotely interact with a KVLite cache.
     /// </summary>
-    public abstract class CacheControllerBase : ApiController
+    public abstract class AbstractCacheController : ApiController
     {
-        private static readonly IQueryable<CacheItem<object>> NoItems = new List<CacheItem<object>>().AsQueryable();
+        private readonly ICache _cache;
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="AbstractCacheController"/> class.
+        /// </summary>
+        /// <param name="cache">The cache used by the Web API output cache.</param>
+        protected AbstractCacheController(ICache cache)
+        {
+            Contract.Requires<ArgumentNullException>(cache != null);
+            _cache = cache;
+        }
+
+        /// <summary>
+        ///   Gets the cache exposed by the controller.
+        /// </summary>
+        /// <value>The cache exposed by the controller.</value>
+        public ICache Cache
+        {
+            get { return _cache; }
+        }
 
         /// <summary>
         ///   Returns all _valid_ items stored in the cache. Values are omitted, in order to keep
@@ -56,20 +66,14 @@ namespace PommaLabs.KVLite.Web.Http
 
         [Route("items")]
 #endif
-        [LinqToQueryable]
-        public virtual IQueryable<CacheItem<object>> GetItems()
+        public virtual IEnumerable<CacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
-            var apiOutputCache = GetApiOutputCache();
-            if (apiOutputCache == null)
-            {
-                return NoItems;
-            }
-            var items = apiOutputCache.GetItems<object>();
+            var items = _cache.GetItems<object>();
             foreach (var item in items)
             {
                 item.Value = null; // Removes the value, as stated in the docs.
             }
-            return items.AsQueryable();
+            return QueryCacheItems(items, partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
 
         /// <summary>
@@ -80,11 +84,9 @@ namespace PommaLabs.KVLite.Web.Http
 
         [Route("items/withValues")]
 #endif
-        [LinqToQueryable]
-        public virtual IQueryable<CacheItem<object>> GetItemsWithValues()
+        public virtual IEnumerable<CacheItem<object>> GetItemsWithValues(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
-            var apiOutputCache = GetApiOutputCache();
-            return (apiOutputCache == null) ? NoItems : apiOutputCache.GetItems<object>().AsQueryable();
+            return QueryCacheItems(_cache.GetItems<object>(), partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
 
         /// <summary>
@@ -96,11 +98,7 @@ namespace PommaLabs.KVLite.Web.Http
 #endif
         public virtual void DeleteItems()
         {
-            var apiOutputCache = GetApiOutputCache();
-            if (apiOutputCache != null)
-            {
-                apiOutputCache.Clear();
-            }
+            _cache.Clear();
         }
 
         /// <summary>
@@ -113,20 +111,14 @@ namespace PommaLabs.KVLite.Web.Http
 
         [Route("items/{partition}")]
 #endif
-        [LinqToQueryable]
-        public virtual IQueryable<CacheItem<object>> GetItems(string partition)
+        public virtual IEnumerable<CacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
-            var apiOutputCache = GetApiOutputCache();
-            if (apiOutputCache == null)
-            {
-                return NoItems;
-            }
-            var items = apiOutputCache.GetItems<object>(partition);
+            var items = _cache.GetItems<object>(partition);
             foreach (var item in items)
             {
                 item.Value = null; // Removes the value, as stated in the docs.
             }
-            return items.AsQueryable();
+            return QueryCacheItems(items, partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
 
         /// <summary>
@@ -138,11 +130,9 @@ namespace PommaLabs.KVLite.Web.Http
 
         [Route("items/{partition}/withValues")]
 #endif
-        [LinqToQueryable]
-        public virtual IQueryable<CacheItem<object>> GetItemsWithValues(string partition)
+        public virtual IEnumerable<CacheItem<object>> GetPartitionItemsWithValues(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
-            var apiOutputCache = GetApiOutputCache();
-            return (apiOutputCache == null) ? NoItems : apiOutputCache.GetItems<object>(partition).AsQueryable();
+            return QueryCacheItems(_cache.GetItems<object>(partition), partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
 
         /// <summary>
@@ -152,13 +142,9 @@ namespace PommaLabs.KVLite.Web.Http
 
         [Route("items/{partition}")]
 #endif
-        public virtual void DeleteItems(string partition)
+        public virtual void DeletePartitionItems(string partition)
         {
-            var apiOutputCache = GetApiOutputCache();
-            if (apiOutputCache != null)
-            {
-                apiOutputCache.Clear(partition);
-            }
+            _cache.Clear(partition);
         }
 
         /// <summary>
@@ -171,8 +157,7 @@ namespace PommaLabs.KVLite.Web.Http
 #endif
         public virtual Option<CacheItem<object>> GetItem(string partition, string key)
         {
-            var apiOutputCache = GetApiOutputCache();
-            return (apiOutputCache == null) ? Option.None<CacheItem<object>>() : apiOutputCache.GetItem<object>(partition, key);
+            return _cache.GetItem<object>(partition, key);
         }
 
         /// <summary>
@@ -184,18 +169,35 @@ namespace PommaLabs.KVLite.Web.Http
 #endif
         public virtual void DeleteItem(string partition, string key)
         {
-            var apiOutputCache = GetApiOutputCache();
-            if (apiOutputCache != null)
-            {
-                apiOutputCache.Remove(partition, key);
-            }
+            _cache.Remove(partition, key);
         }
 
-        private ICache GetApiOutputCache()
+        private IEnumerable<CacheItem<object>> QueryCacheItems(IEnumerable<CacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
         {
-            var cacheOutputConfiguration = Configuration.CacheOutputConfiguration();
-            var apiOutputCache = cacheOutputConfiguration.GetCacheOutputProvider(Request) as ApiOutputCache;
-            return (apiOutputCache == null) ? null : apiOutputCache.Cache;
+            if (fromExpiry.HasValue)
+            {
+                fromExpiry = fromExpiry.Value.ToUniversalTime();
+            }
+            if (toExpiry.HasValue)
+            {
+                toExpiry = toExpiry.Value.ToUniversalTime();
+            }
+            if (fromCreation.HasValue)
+            {
+                fromCreation = fromCreation.Value.ToUniversalTime();
+            }
+            if (toCreation.HasValue)
+            {
+                toCreation = toCreation.Value.ToUniversalTime();
+            }
+            return from i in items
+                   where String.IsNullOrWhiteSpace(partitionLike) || i.Partition.Contains(partitionLike)
+                   where String.IsNullOrWhiteSpace(keyLike) || i.Key.Contains(keyLike)
+                   where !fromExpiry.HasValue || i.UtcExpiry.CompareTo(fromExpiry) >= 0
+                   where !toExpiry.HasValue || i.UtcExpiry.CompareTo(toExpiry) <= 0
+                   where !fromCreation.HasValue || i.UtcCreation.CompareTo(fromCreation) >= 0
+                   where !toCreation.HasValue || i.UtcCreation.CompareTo(toCreation) <= 0
+                   select i;
         }
     }
 }

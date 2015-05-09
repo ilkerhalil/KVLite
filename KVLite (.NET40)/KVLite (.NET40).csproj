@@ -124,10 +124,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr3.Runtime">
-      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="CodeProject.ObjectPool, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CodeProject.ObjectPool.1.5.0\lib\net40-client\CodeProject.ObjectPool.dll</HintPath>
       <Private>True</Private>
@@ -166,14 +162,6 @@
     </Reference>
     <Reference Include="Finsa.CodeServices.Testing">
       <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.9\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
-    </Reference>
-    <Reference Include="LinqToQuerystring, Version=0.7.0.8, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\LinqToQuerystring.0.7.0.8\lib\net35\LinqToQuerystring.dll</HintPath>
-    </Reference>
-    <Reference Include="LinqToQuerystring.WebApi">
-      <HintPath>..\packages\LinqToQuerystring.WebApi.1.4.1.14\lib\net40\LinqToQuerystring.WebApi.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Nancy, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nancy.1.2.0\lib\net40\Nancy.dll</HintPath>
@@ -297,11 +285,11 @@
     <Compile Include="..\KVLite\Web\BaseStatePersister.cs">
       <Link>Web\BaseStatePersister.cs</Link>
     </Compile>
+    <Compile Include="..\KVLite\Web\Http\AbstractCacheController.cs">
+      <Link>Web\Http\AbstractCacheController.cs</Link>
+    </Compile>
     <Compile Include="..\KVLite\Web\Http\ApiOutputCache.cs">
       <Link>Web\Http\ApiOutputCache.cs</Link>
-    </Compile>
-    <Compile Include="..\KVLite\Web\Http\CacheControllerBase.cs">
-      <Link>Web\Http\CacheControllerBase.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Web\OutputCacheProvider.cs">
       <Link>Web\OutputCacheProvider.cs</Link>
