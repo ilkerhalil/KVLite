@@ -140,6 +140,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Common.Logging.Core.3.1.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Crc32C.NET">
+      <HintPath>..\packages\Crc32C.NET.1.0.5.0\lib\net20\Crc32C.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.1.42\lib\net40\Dapper.dll</HintPath>
       <Private>True</Private>
@@ -149,11 +153,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Common">
-      <HintPath>..\packages\Finsa.CodeServices.Common.1.0.8\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Common.1.0.9\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Compression">
-      <HintPath>..\packages\Finsa.CodeServices.Compression.1.0.8\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Compression.1.0.9\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization">
@@ -161,8 +165,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Testing">
-      <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.8\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.9\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
     </Reference>
     <Reference Include="LinqToQuerystring, Version=0.7.0.8, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -179,6 +182,10 @@
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Snappy.NET">
+      <HintPath>..\packages\Snappy.NET.1.1.1.8\lib\net20\Snappy.NET.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

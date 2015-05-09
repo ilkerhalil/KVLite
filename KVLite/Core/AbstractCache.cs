@@ -59,7 +59,9 @@ namespace PommaLabs.KVLite.Core
         private const int InsertionCountStart = 0;
 
         /// <summary>
-        ///   The page size in bytes.
+        ///   The default SQLite page size in bytes. Do not change this value unless SQLite changes
+        ///   its defaults. WAL journal does limit the capability to change that value even when the
+        ///   DB is still empty.
         /// </summary>
         private const int PageSizeInBytes = 1024;
 
@@ -128,7 +130,7 @@ namespace PommaLabs.KVLite.Core
             _settings = settings;
             _clock = clock ?? new SystemClock();
             _log = log ?? LogManager.GetLogger(GetType());
-            _compressor = compressor ?? new DeflateCompressor();
+            _compressor = compressor ?? new SnappyCompressor();
             _serializer = serializer ?? new BinarySerializer(new BinarySerializerSettings
             {
                 // In simple mode, the assembly used during deserialization need not match exactly
