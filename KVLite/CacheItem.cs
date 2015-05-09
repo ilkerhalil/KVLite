@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Common.Extensions;
 using Newtonsoft.Json;
@@ -33,7 +34,7 @@ namespace PommaLabs.KVLite
     ///   An item that is stored in the cache.
     /// </summary>
     /// <typeparam name="TVal">The type of the value.</typeparam>
-    [Serializable, JsonObject(MemberSerialization.OptIn)]
+    [Serializable, JsonObject(MemberSerialization.OptIn), DataContract]
     public class CacheItem<TVal> : EquatableObject<CacheItem<TVal>>
     {
         #region Public Properties
@@ -41,38 +42,38 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The partition corresponding to this entry.
         /// </summary>
-        [JsonProperty(Order = 0)]
+        [JsonProperty(Order = 0), DataMember(Order = 0)]
         public string Partition { get; set; }
 
         /// <summary>
         ///   The key corresponding to this entry.
         /// </summary>
-        [JsonProperty(Order = 1)]
+        [JsonProperty(Order = 1), DataMember(Order = 1)]
         public string Key { get; set; }
 
         /// <summary>
         ///   The typed value.
         /// </summary>
-        [JsonProperty(Order = 2)]
+        [JsonProperty(Order = 2), DataMember(Order = 2)]
         public TVal Value { get; set; }
 
         /// <summary>
         ///   When the cache item was created.
         /// </summary>
-        [JsonProperty(Order = 3)]
+        [JsonProperty(Order = 3), DataMember(Order = 3)]
         public DateTime UtcCreation { get; set; }
 
         /// <summary>
         ///   When the cache item will expire.
         /// </summary>
-        [JsonProperty(Order = 4)]
+        [JsonProperty(Order = 4), DataMember(Order = 4)]
         public DateTime UtcExpiry { get; set; }
 
         /// <summary>
-        ///   The refresh interval, if the item is sliding.
+        ///   The refresh interval, used if the item is sliding; if it is not, it equals to <see cref="TimeSpan.Zero"/>.
         /// </summary>
-        [JsonProperty(Order = 5)]
-        public TimeSpan? Interval { get; set; }
+        [JsonProperty(Order = 5), DataMember(Order = 5)]
+        public TimeSpan Interval { get; set; }
 
         #endregion Public Properties
 

@@ -468,7 +468,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="utcExpiry">The UTC expiry.</param>
         public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry)
         {
-            AddInternal(partition, key, value, utcExpiry, null);
+            AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero);
         }
 
         /// <summary>
@@ -481,7 +481,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="utcExpiry">The UTC expiry.</param>
         public void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry)
         {
-            AddInternal(Settings.DefaultPartition, key, value, utcExpiry, null);
+            AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero);
         }
 
         /// <summary>
@@ -818,7 +818,7 @@ namespace PommaLabs.KVLite.Core
 
         #region Private Methods
 
-        private void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan? interval)
+        private void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
             byte[] serializedValue;
@@ -844,7 +844,7 @@ namespace PommaLabs.KVLite.Core
             p.Add("key", key, DbType.String);
             p.Add("serializedValue", serializedValue, DbType.Binary, size: serializedValue.Length);
             p.Add("utcExpiry", utcExpiry.ToUnixTime(), DbType.Int64);
-            p.Add("interval", interval.HasValue ? (long) interval.Value.TotalSeconds : new long?(), DbType.Int64);
+            p.Add("interval", (long) interval.TotalSeconds, DbType.Int64);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
@@ -915,7 +915,8 @@ namespace PommaLabs.KVLite.Core
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return DeserializeValue<TVal>(ctx.InternalResource.ExecuteScalar<byte[]>(SQLiteQueries.GetOne, p));
+                var serializedValue = ctx.InternalResource.ExecuteScalar<byte[]>(SQLiteQueries.GetOne, p);
+                return DeserializeValue<TVal>(serializedValue, partition, key);
             }
         }
 
@@ -959,7 +960,8 @@ namespace PommaLabs.KVLite.Core
 
             using (var ctx = _connectionPool.GetObject())
             {
-                return DeserializeValue<TVal>(ctx.InternalResource.ExecuteScalar<byte[]>(SQLiteQueries.PeekOne, p));
+                var serializedValue = ctx.InternalResource.ExecuteScalar<byte[]>(SQLiteQueries.PeekOne, p);
+                return DeserializeValue<TVal>(serializedValue, partition, key);
             }
         }
 
@@ -1015,7 +1017,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private Option<TVal> DeserializeValue<TVal>(byte[] serializedValue)
+        private Option<TVal> DeserializeValue<TVal>(byte[] serializedValue, string partition, string key)
         {
             if (serializedValue == null)
             {
@@ -1028,9 +1030,10 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
-                // Something wrong happened during deserialization. Therefore, we act as if there
-                // was no value and we return None.
+                // Something wrong happened during deserialization. Therefore, we remove the old
+                // element (in order to avoid future errors) and we return None.
                 _log.Warn("Something wrong happened during deserialization", ex);
+                RemoveInternal(partition, key);
                 return Option.None<TVal>();
             }
         }
@@ -1051,14 +1054,15 @@ namespace PommaLabs.KVLite.Core
                     Value = UnsafeDeserializeValue<TVal>(src.SerializedValue),
                     UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcCreation),
                     UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry),
-                    Interval = src.Interval == null ? new TimeSpan?() : TimeSpan.FromSeconds(src.Interval.Value)
+                    Interval = TimeSpan.FromSeconds(src.Interval)
                 });
             }
             catch (Exception ex)
             {
-                // Something wrong happened during deserialization. Therefore, we act as if there
-                // was no element and we return None.
+                // Something wrong happened during deserialization. Therefore, we remove the old
+                // element (in order to avoid future errors) and we return None.
                 _log.Warn("Something wrong happened during deserialization", ex);
+                RemoveInternal(src.Partition, src.Key);
                 return Option.None<CacheItem<TVal>>();
             }
         }
@@ -1149,7 +1153,7 @@ namespace PommaLabs.KVLite.Core
             public long UtcExpiry { get; set; }
 
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            public long? Interval { get; set; }
+            public long Interval { get; set; }
 
             #endregion Public Properties
 
