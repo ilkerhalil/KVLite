@@ -195,8 +195,8 @@ namespace PommaLabs.KVLite.Core
             {
                 var pageCount = ctx.InternalResource.ExecuteScalar<long>("PRAGMA page_count;");
                 var freelistCount = ctx.InternalResource.ExecuteScalar<long>("PRAGMA freelist_count;");
-                var pageSizeInKB = ctx.InternalResource.ExecuteScalar<long>("PRAGMA page_size;");
-                return (pageCount - freelistCount) * (pageSizeInKB / 1024L);
+                var pageSizeInKB = ctx.InternalResource.ExecuteScalar<long>("PRAGMA page_size;") / 1024L;
+                return (pageCount - freelistCount) * pageSizeInKB;
             }
         }
 
