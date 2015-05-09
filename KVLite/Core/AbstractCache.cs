@@ -61,7 +61,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   The page size in bytes.
         /// </summary>
-        private const int PageSizeInBytes = 32768;
+        private const int PageSizeInBytes = 1024;
 
         #endregion Constants
 
@@ -1074,7 +1074,7 @@ namespace PommaLabs.KVLite.Core
             // Sets PRAGMAs for this new connection.
             var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB * 1024 * 1024;
             var walAutoCheckpointInPages = journalSizeLimitInBytes / PageSizeInBytes / 3;
-            var pragmas = string.Format(SQLiteQueries.SetPragmas, PageSizeInBytes, journalSizeLimitInBytes, walAutoCheckpointInPages);
+            var pragmas = string.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
             connection.Execute(pragmas);
             return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
@@ -1089,20 +1089,20 @@ namespace PommaLabs.KVLite.Core
                 BaseSchemaName = "kvlite",
                 BinaryGUID = true,
                 BrowsableConnectionString = false,
-                /* Number of pages of 32KB */
-                CacheSize = 128,
+                /* Number of pages of 1KB */
+                CacheSize = 8192,
                 DateTimeFormat = SQLiteDateFormats.Ticks,
                 DateTimeKind = DateTimeKind.Utc,
                 DefaultIsolationLevel = IsolationLevel.ReadCommitted,
-                /* Settings ten minutes as timeout should be more than enough... */
-                DefaultTimeout = 600,
+                /* Settings three minutes as timeout should be more than enough... */
+                DefaultTimeout = 180,
                 Enlist = false,
                 FailIfMissing = false,
                 ForeignKeys = false,
                 FullUri = cacheUri,
                 JournalMode = journalMode,
                 LegacyFormat = false,
-                /* Each page is 32KB large - Multiply by 1024*1024/32768 */
+                /* Each page is 1KB large - Multiply by 1024*1024/32768 */
                 MaxPageCount = Settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes,
                 PageSize = PageSizeInBytes,
                 /* We use a custom object pool */
