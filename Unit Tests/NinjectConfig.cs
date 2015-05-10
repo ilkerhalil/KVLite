@@ -38,7 +38,7 @@ namespace UnitTests
         public override void Load()
         {
             Bind<IClock>().To<MockClock>().InSingletonScope();
-            Bind<ICompressor>().To<DeflateCompressor>().InSingletonScope();
+            Bind<ICompressor>().To<SnappyCompressor>().InSingletonScope();
             Bind<ILog>().To<NoOpLogger>().InSingletonScope();
             Bind<ISerializer>().To<BinarySerializer>().InSingletonScope();
             Bind<BinarySerializerSettings>().ToMethod(ctx => new BinarySerializerSettings());
