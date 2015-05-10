@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Web.Http;
+using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 
 namespace PommaLabs.KVLite.Web.Http
@@ -48,9 +49,9 @@ namespace PommaLabs.KVLite.Web.Http
         }
 
         /// <summary>
-        ///   Gets the cache exposed by the controller.
+        ///   Gets the cache used by the controller.
         /// </summary>
-        /// <value>The cache exposed by the controller.</value>
+        /// <value>The cache used by the controller.</value>
         public ICache Cache
         {
             get { return _cache; }
@@ -193,10 +194,10 @@ namespace PommaLabs.KVLite.Web.Http
             return from i in items
                    where String.IsNullOrWhiteSpace(partitionLike) || i.Partition.Contains(partitionLike)
                    where String.IsNullOrWhiteSpace(keyLike) || i.Key.Contains(keyLike)
-                   where !fromExpiry.HasValue || i.UtcExpiry.CompareTo(fromExpiry) >= 0
-                   where !toExpiry.HasValue || i.UtcExpiry.CompareTo(toExpiry) <= 0
-                   where !fromCreation.HasValue || i.UtcCreation.CompareTo(fromCreation) >= 0
-                   where !toCreation.HasValue || i.UtcCreation.CompareTo(toCreation) <= 0
+                   where !fromExpiry.HasValue || i.UtcExpiry.ToUnixTime() >= fromExpiry.Value.ToUnixTime()
+                   where !toExpiry.HasValue || i.UtcExpiry.ToUnixTime() <= toExpiry.Value.ToUnixTime()
+                   where !fromCreation.HasValue || i.UtcCreation.ToUnixTime() >= fromCreation.Value.ToUnixTime()
+                   where !toCreation.HasValue || i.UtcCreation.ToUnixTime() <= toCreation.Value.ToUnixTime()
                    select i;
         }
     }
