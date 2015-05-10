@@ -199,7 +199,7 @@ namespace UnitTests
             Assert.AreEqual(k, info.Key);
             Assert.AreEqual(v, info.Value);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.IsNull(info.Interval);
+            Assert.AreEqual(TimeSpan.Zero, info.Interval);
         }
 
         [Test]
@@ -238,7 +238,7 @@ namespace UnitTests
             Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
             Assert.AreEqual(e.Second, info.UtcExpiry.Second);
 
-            Assert.IsNull(info.Interval);
+            Assert.AreEqual(TimeSpan.Zero, info.Interval);
         }
 
         [Test]
@@ -263,7 +263,7 @@ namespace UnitTests
             Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
             Assert.AreEqual(e.Second, info.UtcExpiry.Second);
 
-            Assert.IsNull(info.Interval);
+            Assert.AreEqual(TimeSpan.Zero, info.Interval);
         }
 
         [TestCase(SmallItemCount)]
