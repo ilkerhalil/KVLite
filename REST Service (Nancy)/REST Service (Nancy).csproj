@@ -54,25 +54,24 @@
       <HintPath>..\packages\Common.Logging.Core.3.1.0\lib\net40\Common.Logging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Clock, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Clock.1.0.7\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
+    <Reference Include="Crc32C.NET">
+      <HintPath>..\packages\Crc32C.NET.1.0.5.0\lib\net20\Crc32C.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="Finsa.CodeServices.Clock">
+      <HintPath>..\packages\Finsa.CodeServices.Clock.1.0.8\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
+    </Reference>
+    <Reference Include="Finsa.CodeServices.Common">
+      <HintPath>..\packages\Finsa.CodeServices.Common.1.0.9\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Common, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Common.1.0.7\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Finsa.CodeServices.Compression">
+      <HintPath>..\packages\Finsa.CodeServices.Compression.1.0.9\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Compression, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Compression.1.0.7\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Finsa.CodeServices.Serialization">
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.1.0.8\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Serialization, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Serialization.1.0.7\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Finsa.CodeServices.Testing, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.7\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Finsa.CodeServices.Testing">
+      <HintPath>..\packages\Finsa.CodeServices.Testing.1.0.9\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Nancy, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -84,6 +83,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Snappy.NET">
+      <HintPath>..\packages\Snappy.NET.1.1.1.8\lib\net45\Snappy.NET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data.DataSetExtensions" />

@@ -188,8 +188,8 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
-            // Contract.Ensures(Contains(partition, key));
+            Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            Contract.Ensures(!Contains(partition, key) || GetItem<TVal>(partition, key).Value.Interval == interval);
         }
 
         /// <summary>
@@ -204,9 +204,8 @@ namespace PommaLabs.KVLite.Contracts
         public void AddSliding<TVal>(string key, TVal value, TimeSpan interval)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
-            Contract.Ensures(Contains(Settings.DefaultPartition, key));
-            // Contract.Ensures(Contains(key));
+            Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || GetItem<TVal>(Settings.DefaultPartition, key).Value.Interval == interval);
         }
 
         /// <summary>
@@ -222,8 +221,8 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
-            // Contract.Ensures(Contains(partition, key));
+            Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || GetItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
         }
 
         /// <summary>
@@ -237,8 +236,8 @@ namespace PommaLabs.KVLite.Contracts
         public void AddStatic<TVal>(string key, TVal value)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
-            // Contract.Ensures(Contains(key));
+            Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || GetItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
         }
 
         /// <summary>
@@ -254,8 +253,8 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
-            // Contract.Ensures(Contains(partition, key));
+            Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || GetItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
         }
 
         /// <summary>
@@ -269,8 +268,8 @@ namespace PommaLabs.KVLite.Contracts
         public void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
-            Contract.Requires<ArgumentException>(value == null || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
-            // Contract.Ensures(Contains(key));
+            Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || GetItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
         }
 
         /// <summary>

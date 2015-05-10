@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.Core</id>
-        <version>3.0.3</version>
+        <version>3.0.4</version>
         <title>KVLite - Core library</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -26,10 +26,10 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <dependency id="Common.Logging" version="3.1.0" />
-            <dependency id="Finsa.CodeServices.Common" version="1.0.7" />
-            <dependency id="Finsa.CodeServices.Clock" version="1.0.7" />
-            <dependency id="Finsa.CodeServices.Compression" version="1.0.7" />
-            <dependency id="Finsa.CodeServices.Serialization" version="1.0.7" />
+            <dependency id="Finsa.CodeServices.Common" version="1.0.9" />
+            <dependency id="Finsa.CodeServices.Clock" version="1.0.8" />
+            <dependency id="Finsa.CodeServices.Compression" version="1.0.9" />
+            <dependency id="Finsa.CodeServices.Serialization" version="1.0.8" />
             <dependency id="Microsoft.Bcl" version="1.1.10" />
             <dependency id="Newtonsoft.Json" version="6.0.8" />
         </dependencies>

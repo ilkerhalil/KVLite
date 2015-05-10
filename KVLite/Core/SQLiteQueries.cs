@@ -36,7 +36,7 @@ namespace PommaLabs.KVLite.Core
             update CacheItem
                set utcExpiry = @utcNow + interval
              where (@partition is null or partition = @partition)
-               and interval is not null
+               and interval != 0
                and utcExpiry > @utcNow; -- Update only valid rows
         ";
 
@@ -45,7 +45,7 @@ namespace PommaLabs.KVLite.Core
                set utcExpiry = @utcNow + interval
              where partition = @partition
                and key = @key
-               and interval is not null
+               and interval != 0
                and utcExpiry > @utcNow; -- Update only valid rows
         ";
 
@@ -60,7 +60,7 @@ namespace PommaLabs.KVLite.Core
                 key TEXT NOT NULL,
                 utcCreation BIGINT NOT NULL,
                 utcExpiry BIGINT NOT NULL,
-                interval BIGINT,
+                interval BIGINT NOT NULL,
                 serializedValue BLOB NOT NULL,
                 CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key)
             );
@@ -123,11 +123,10 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string SetPragmas = MinifyQuery(@"
-            PRAGMA page_size = {0};
             PRAGMA cache_spill = 1;
             PRAGMA count_changes = 0; -- Not required by our queries
-            PRAGMA journal_size_limit = {1}; -- Size in bytes
-            PRAGMA wal_autocheckpoint = {2};
+            PRAGMA journal_size_limit = {0}; -- Size in bytes
+            PRAGMA wal_autocheckpoint = {1};
             PRAGMA temp_store = MEMORY;
         ");
 
@@ -142,9 +141,9 @@ namespace PommaLabs.KVLite.Core
         private static string MinifyQuery(string query)
         {
             // Removes all SQL comments. Multiline excludes '/n' from '.' matches.
-            query = Regex.Replace(query, @"--.*", string.Empty, RegexOptions.Multiline);
+            query = Regex.Replace(query, @"--.*", string.Empty, RegexOptions.Multiline | RegexOptions.Compiled);
             // Removes all multiple blanks.
-            query = Regex.Replace(query, @"\s+", " ");
+            query = Regex.Replace(query, @"\s+", " ", RegexOptions.Compiled);
             // Removes initial and ending blanks.
             return query.Trim();
         }
