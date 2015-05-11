@@ -1034,8 +1034,8 @@ namespace PommaLabs.KVLite.Core
             {
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
-                _log.Warn("Something wrong happened during deserialization", ex);
                 RemoveInternal(partition, key);
+                _log.Warn("Something wrong happened during deserialization", ex);
                 return Option.None<TVal>();
             }
         }
@@ -1063,8 +1063,8 @@ namespace PommaLabs.KVLite.Core
             {
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
-                _log.Warn("Something wrong happened during deserialization", ex);
                 RemoveInternal(src.Partition, src.Key);
+                _log.Warn("Something wrong happened during deserialization", ex);
                 return Option.None<CacheItem<TVal>>();
             }
         }
