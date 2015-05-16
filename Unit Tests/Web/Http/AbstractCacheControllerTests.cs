@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Linq;
 using NUnit.Framework;
 using PommaLabs.KVLite;
@@ -56,6 +57,37 @@ namespace UnitTests.Web.Http
             _controller.Cache.AddStatic("partition", "key", 123);
             _controller.Cache.AddStatic("abc", "def", 123);
             var items = _controller.GetItems(partitionLike, keyLike).ToList();
+            Assert.AreEqual(1, items.Count);
+            Assert.AreEqual("partition", items[0].Partition);
+            Assert.AreEqual("key", items[0].Key);
+            Assert.IsNull(items[0].Value);
+        }
+
+        [TestCase(0, 60, 6)]
+        [TestCase(30, 30, 2)]
+        [TestCase(10, 10, 0)]
+        [TestCase(49, 51, 2)]
+        [TestCase(30, 50, 6)]
+        public void GetItems_LookupByExpiry(int fromExpiry, int toExpiry, int expectedCount)
+        {
+            _controller.Cache.AddTimed("partition1", "key", 123, _controller.Cache.Clock.UtcNow.AddMinutes(30));
+            _controller.Cache.AddTimed("partition2", "key", 123, _controller.Cache.Clock.UtcNow.AddMinutes(40));
+            _controller.Cache.AddTimed("partition3", "key", 123, _controller.Cache.Clock.UtcNow.AddMinutes(50));
+            _controller.Cache.AddSliding("abc1", "def", 123, TimeSpan.FromMinutes(30));
+            _controller.Cache.AddSliding("abc2", "def", 123, TimeSpan.FromMinutes(40));
+            _controller.Cache.AddSliding("abc3", "def", 123, TimeSpan.FromMinutes(50));
+            var items = _controller.GetItems(fromExpiry: _controller.Cache.Clock.UtcNow.AddMinutes(fromExpiry), toExpiry: _controller.Cache.Clock.UtcNow.AddMinutes(toExpiry)).ToList();
+            Assert.AreEqual(expectedCount, items.Count);
+        }
+
+        [TestCase("key")]
+        [TestCase("ke")]
+        [TestCase("k")]
+        public void GetPartitionItems_LookupByKey(string keyLike)
+        {
+            _controller.Cache.AddStatic("partition", "key", 123);
+            _controller.Cache.AddStatic("abc", "def", 123);
+            var items = _controller.GetPartitionItems("partition", keyLike).ToList();
             Assert.AreEqual(1, items.Count);
             Assert.AreEqual("partition", items[0].Partition);
             Assert.AreEqual("key", items[0].Key);

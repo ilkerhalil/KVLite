@@ -130,7 +130,7 @@ namespace PommaLabs.KVLite.Core
             _settings = settings;
             _clock = clock ?? new SystemClock();
             _log = log ?? LogManager.GetLogger(GetType());
-            _compressor = compressor ?? new SnappyCompressor();
+            _compressor = compressor ?? new LZ4Compressor();
             _serializer = serializer ?? new BinarySerializer(new BinarySerializerSettings
             {
                 // In simple mode, the assembly used during deserialization need not match exactly
@@ -1034,8 +1034,8 @@ namespace PommaLabs.KVLite.Core
             {
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
-                _log.Warn("Something wrong happened during deserialization", ex);
                 RemoveInternal(partition, key);
+                _log.Warn("Something wrong happened during deserialization", ex);
                 return Option.None<TVal>();
             }
         }
@@ -1063,8 +1063,8 @@ namespace PommaLabs.KVLite.Core
             {
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
-                _log.Warn("Something wrong happened during deserialization", ex);
                 RemoveInternal(src.Partition, src.Key);
+                _log.Warn("Something wrong happened during deserialization", ex);
                 return Option.None<CacheItem<TVal>>();
             }
         }
