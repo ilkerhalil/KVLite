@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.Nancy</id>
-        <version>3.0.5</version>
+        <version>3.1.1</version>
         <title>KVLite - Nancy caching bootstrapper</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -13,6 +13,7 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <releaseNotes>
 * KVLite is now IoC friendly.
 * ICache interface is fully typed.
+* Using new RecyclableMemoryStream.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Nancy caching bootstrapper.
@@ -25,7 +26,7 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <dependency id="Nancy" version="1.2.0" />
-            <dependency id="PommaLabs.KVLite.Core" version="3.0.5" />
+            <dependency id="PommaLabs.KVLite.Core" version="3.1.1" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>

@@ -189,7 +189,7 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
-            Contract.Ensures(!Contains(partition, key) || GetItem<TVal>(partition, key).Value.Interval == interval);
+            Contract.Ensures(!Contains(partition, key) || PeekItem<TVal>(partition, key).Value.Interval == interval);
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
-            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || GetItem<TVal>(Settings.DefaultPartition, key).Value.Interval == interval);
+            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == interval);
         }
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
-            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || GetItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
+            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
-            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || GetItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
+            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace PommaLabs.KVLite.Contracts
             Contract.Requires<ArgumentNullException>(partition != null, ErrorMessages.NullPartition);
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
-            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || GetItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
+            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
         }
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace PommaLabs.KVLite.Contracts
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
-            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || GetItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
+            Contract.Ensures(!Contains(Settings.DefaultPartition, key) || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
         }
 
         /// <summary>
