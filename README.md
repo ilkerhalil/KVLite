@@ -5,7 +5,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
 ## Summary ##
 
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/362eo5bmrbtjp203)](https://ci.appveyor.com/project/pomma89/kvlite)
-* Current release: `v3.0.5`
+* Current release: `v3.1.1`
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: http://goo.gl/x1fCjT
 * [NuGet](https://www.nuget.org) package(s):
     + [PommaLabs.KVLite](https://www.nuget.org/packages/PommaLabs.KVLite/), includes Core and all native libraries.

@@ -529,7 +529,7 @@ namespace UnitTests
         public void GetMany_RightItems_AfterAddSliding_InvalidTime(int itemCount)
         {
             AddSliding(Cache, itemCount, TimeSpan.FromSeconds(1));
-            ((MockClock) Cache.Clock).Add(TimeSpan.FromSeconds(2));
+            ((MockClock) Cache.Clock).AdvanceSeconds(2);
             var items = new HashSet<string>(Cache.GetItems<string>().Select(i => i.Value));
             for (var i = 0; i < itemCount; ++i)
             {
@@ -642,7 +642,7 @@ namespace UnitTests
             {
                 Cache.AddSliding(StringItems[i], StringItems[i], interval);
             }
-            ((MockClock) Cache.Clock).Add(TimeSpan.FromMinutes(1));
+            ((MockClock) Cache.Clock).AdvanceMinutes(1);
             var items = Cache.GetItems<string>();
             for (var i = 0; i < itemCount; ++i)
             {
@@ -673,7 +673,7 @@ namespace UnitTests
             Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
 
             // Advance the clock, in order to make items not valid.
-            ((MockClock) Cache.Clock).Add(TimeSpan.FromMinutes(15));
+            ((MockClock) Cache.Clock).AdvanceMinutes(15);
 
             // Add a new item, which should trigger the async cleanup.
             Cache.AddTimed(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
@@ -704,7 +704,7 @@ namespace UnitTests
             Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
 
             // Advance the clock, in order to make items not valid.
-            ((MockClock) Cache.Clock).Add(TimeSpan.FromMinutes(15));
+            ((MockClock) Cache.Clock).AdvanceMinutes(15);
 
             // Add a new item, which should trigger the async cleanup.
             Cache.AddTimed(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
