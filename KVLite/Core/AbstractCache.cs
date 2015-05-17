@@ -27,7 +27,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters;
 using System.Threading;
@@ -37,6 +36,7 @@ using Dapper;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Common.Extensions;
+using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using Task = System.Threading.Tasks.Task;
@@ -64,6 +64,16 @@ namespace PommaLabs.KVLite.Core
         ///   DB is still empty.
         /// </summary>
         private const int PageSizeInBytes = 1024;
+
+        /// <summary>
+        ///   The string used to tag streams coming from <see cref="RecyclableMemoryStreamManager.Instance"/>.
+        /// </summary>
+        private const string StreamTag = "KVLite";
+
+        /// <summary>
+        ///   The initial capacity of the streams retrieved from <see cref="RecyclableMemoryStreamManager.Instance"/>. 
+        /// </summary>
+        private const int InitialStreamCapacity = 1024;
 
         #endregion Constants
 
@@ -826,7 +836,7 @@ namespace PommaLabs.KVLite.Core
             byte[] serializedValue;
             try
             {
-                using (var memoryStream = new MemoryStream(1024))
+                using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(StreamTag, InitialStreamCapacity))
                 {
                     using (var compressionStream = _compressor.CreateCompressionStream(memoryStream))
                     {
@@ -1012,7 +1022,7 @@ namespace PommaLabs.KVLite.Core
 
         private TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
         {
-            using (var memoryStream = new MemoryStream(serializedValue))
+            using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(StreamTag, serializedValue, 0, serializedValue.Length))
             using (var decompressionStream = _compressor.CreateDecompressionStream(memoryStream))
             {
                 return _serializer.DeserializeFromStream<TVal>(decompressionStream);
