@@ -28,43 +28,15 @@ using PommaLabs.KVLite.Core;
 namespace PommaLabs.KVLite.Web
 {
     /// <summary>
-    ///   A custom output cache provider based on KVLite.
+    ///   A custom output cache provider based on KVLite. Specifically, it uses the instance defined
+    ///   by the property <see cref="PersistentCache.DefaultInstance"/>.
     /// </summary>
-    public sealed class OutputCacheProvider : System.Web.Caching.OutputCacheProvider
+    public sealed class PersistentOutputCacheProvider : System.Web.Caching.OutputCacheProvider
     {
-        #region Fields
-
         /// <summary>
         ///   The partition used by output cache provider items.
         /// </summary>
-        private const string OutputCachePartition = "KVLite.Web.OutputCache";
-
-        private static ICache _cache = PersistentCache.DefaultInstance;
-
-        #endregion Fields
-
-        #region Properties
-
-        /// <summary>
-        ///   Gets or sets the cache instance currently used by the provider.
-        /// </summary>
-        /// <value>The cache instance currently used by the provider.</value>
-        public static ICache Cache
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<ICache>() != null);
-                return _cache;
-            }
-            set
-            {
-                Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullCache);
-                Contract.Ensures(ReferenceEquals(Cache, value));
-                _cache = value;
-            }
-        }
-
-        #endregion Properties
+        private const string OutputCachePartition = "KVLite.Web.PersistentOutputCache";
 
         /// <summary>
         ///   Returns a reference to the specified entry in the output cache.
@@ -76,7 +48,8 @@ namespace PommaLabs.KVLite.Web
         /// </returns>
         public override object Get(string key)
         {
-            return _cache.Get<object>(OutputCachePartition, key);
+            var item = PersistentCache.DefaultInstance.Get<object>(OutputCachePartition, key);
+            return item.HasValue ? item.Value : null;
         }
 
         /// <summary>
@@ -88,7 +61,7 @@ namespace PommaLabs.KVLite.Web
         /// <returns>A reference to the specified provider.</returns>
         public override object Add(string key, object entry, DateTime utcExpiry)
         {
-            _cache.AddTimed(OutputCachePartition, key, entry, utcExpiry);
+            PersistentCache.DefaultInstance.AddTimed(OutputCachePartition, key, entry, utcExpiry);
             return entry;
         }
 
@@ -103,7 +76,7 @@ namespace PommaLabs.KVLite.Web
         /// </param>
         public override void Set(string key, object entry, DateTime utcExpiry)
         {
-            _cache.AddTimed(OutputCachePartition, key, entry, utcExpiry);
+            PersistentCache.DefaultInstance.AddTimed(OutputCachePartition, key, entry, utcExpiry);
         }
 
         /// <summary>
@@ -114,7 +87,7 @@ namespace PommaLabs.KVLite.Web
         /// </param>
         public override void Remove(string key)
         {
-            _cache.Remove(OutputCachePartition, key);
+            PersistentCache.DefaultInstance.Remove(OutputCachePartition, key);
         }
     }
 }
