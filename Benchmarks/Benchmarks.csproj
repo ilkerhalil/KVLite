@@ -38,8 +38,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Finsa.CodeServices.Common, Version=1.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Common.1.14\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Common, Version=1.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Common.1.15\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

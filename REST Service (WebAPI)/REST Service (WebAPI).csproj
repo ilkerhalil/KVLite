@@ -57,24 +57,24 @@
     <Reference Include="Crc32C.NET">
       <HintPath>..\packages\Crc32C.NET.1.0.5.0\lib\net20\Crc32C.NET.dll</HintPath>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Clock, Version=1.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Clock.1.14\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Clock, Version=1.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Clock.1.15\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Common, Version=1.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Common.1.14\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Common, Version=1.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Common.1.15\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Compression, Version=1.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Compression.1.14\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Compression, Version=1.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Compression.1.15\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Serialization, Version=1.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Serialization.1.14\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Serialization, Version=1.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.1.15\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Testing, Version=1.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Testing.1.14\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Testing, Version=1.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Testing.1.15\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.WebApi.HelpPage.AnyHost, Version=0.9.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -96,9 +96,8 @@
     <Reference Include="Microsoft.Owin.Host.SystemWeb">
       <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ninject">
@@ -132,6 +131,10 @@
     </Reference>
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Polenter.SharpSerializer, Version=2.20.0.0, Culture=neutral, PublicKeyToken=8f4f20011571ee5f, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpSerializer.2.20\lib\net20\Polenter.SharpSerializer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Snappy.NET">
       <HintPath>..\packages\Snappy.NET.1.1.1.8\lib\net45\Snappy.NET.dll</HintPath>
