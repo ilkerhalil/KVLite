@@ -112,20 +112,20 @@ namespace UnitTests
         {
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             Cache.Clear();
             Assert.AreEqual(0, Cache.Count());
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             var volatileCache = (VolatileCache) Cache;
             volatileCache.Clear(CacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(0, Cache.Count());
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             volatileCache.Clear(CacheReadMode.IgnoreExpiryDate);
             Assert.AreEqual(0, Cache.Count());
@@ -136,14 +136,14 @@ namespace UnitTests
         {
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.AddMinutes(10));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.AddMinutes(10));
             }
             Cache.Clear();
             Assert.AreEqual(0, Cache.Count());
 
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.AddMinutes(10));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.AddMinutes(10));
             }
             var volatileCache = (VolatileCache) Cache;
             volatileCache.Clear(CacheReadMode.ConsiderExpiryDate);
@@ -163,16 +163,16 @@ namespace UnitTests
             const string key = "key";
             var another = new VolatileCache(new VolatileCacheSettings { CacheName = "another" }, Kernel.Get<IClock>());
 
-            Cache.AddStatic(key, 1);
-            another.AddStatic(key, 2);
-            Assert.True(Cache.Contains(key));
-            Assert.True(another.Contains(key));
+            Cache.AddStaticToDefaultPartition(key, 1);
+            another.AddStaticToDefaultPartition(key, 2);
+            Assert.True(Cache.DefaultPartitionContains(key));
+            Assert.True(another.DefaultPartitionContains(key));
             Assert.AreEqual(1, ((VolatileCache) Cache)[key].Value);
             Assert.AreEqual(2, another[key].Value);
 
-            another.AddStatic(key + key, 3);
-            Assert.False(Cache.Contains(key + key));
-            Assert.True(another.Contains(key + key));
+            another.AddStaticToDefaultPartition(key + key, 3);
+            Assert.False(Cache.DefaultPartitionContains(key + key));
+            Assert.True(another.DefaultPartitionContains(key + key));
             Assert.AreEqual(3, another[key + key].Value);
         }
 

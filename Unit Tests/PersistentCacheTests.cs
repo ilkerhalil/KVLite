@@ -107,20 +107,20 @@ namespace UnitTests
         {
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             Cache.Clear();
             Assert.AreEqual(0, Cache.Count());
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             var persistentCache = (PersistentCache) Cache;
             persistentCache.Clear(CacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(0, Cache.Count());
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             persistentCache.Clear(CacheReadMode.IgnoreExpiryDate);
             Assert.AreEqual(0, Cache.Count());
@@ -131,14 +131,14 @@ namespace UnitTests
         {
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.AddMinutes(10));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.AddMinutes(10));
             }
             Cache.Clear();
             Assert.AreEqual(0, Cache.Count());
 
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.AddMinutes(10));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.AddMinutes(10));
             }
             var persistentCache = (PersistentCache) Cache;
             persistentCache.Clear(CacheReadMode.ConsiderExpiryDate);

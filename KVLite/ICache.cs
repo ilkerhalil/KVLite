@@ -136,8 +136,8 @@ namespace PommaLabs.KVLite
         /// <returns>The value with the default partition and specified key.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <remarks>
-        ///   This method, differently from other readers (like <see cref="Get{TVal}(string)"/> or
-        ///   <see cref="Peek{TVal}(string)"/>), does not have a typed return object, because
+        ///   This method, differently from other readers (like <see cref="GetFromDefaultPartition{TVal}(string)"/> or
+        ///   <see cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return object, because
         ///   indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
         /// </remarks>
         [Pure]
@@ -168,7 +168,7 @@ namespace PommaLabs.KVLite
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        void AddSliding<TVal>(string key, TVal value, TimeSpan interval);
+        void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval);
 
         /// <summary>
         ///   Adds a "static" value with given partition and key. Value will last as much as
@@ -193,7 +193,7 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        void AddStatic<TVal>(string key, TVal value);
+        void AddStaticToDefaultPartition<TVal>(string key, TVal value);
 
         /// <summary>
         ///   Adds a "timed" value with given partition and key. Value will last until the specified
@@ -217,7 +217,7 @@ namespace PommaLabs.KVLite
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry);
+        void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry);
 
         /// <summary>
         ///   Clears this instance, that is, it removes all values.
@@ -252,7 +252,7 @@ namespace PommaLabs.KVLite
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         [Pure]
-        bool Contains(string key);
+        bool DefaultPartitionContains(string key);
 
         /// <summary>
         ///   The number of items in the cache.
@@ -319,7 +319,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        Option<TVal> Get<TVal>(string key);
+        Option<TVal> GetFromDefaultPartition<TVal>(string key);
 
         /// <summary>
         ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
@@ -352,7 +352,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        Option<CacheItem<TVal>> GetItem<TVal>(string key);
+        Option<CacheItem<TVal>> GetItemFromDefaultPartition<TVal>(string key);
 
         /// <summary>
         ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will
@@ -418,7 +418,7 @@ namespace PommaLabs.KVLite
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         [Pure]
-        Option<TVal> Peek<TVal>(string key);
+        Option<TVal> PeekIntoDefaultPartition<TVal>(string key);
 
         /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
@@ -456,7 +456,7 @@ namespace PommaLabs.KVLite
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         [Pure]
-        Option<CacheItem<TVal>> PeekItem<TVal>(string key);
+        Option<CacheItem<TVal>> PeekItemIntoDefaultPartition<TVal>(string key);
 
         /// <summary>
         ///   Gets the all values, without updating expiry dates.
@@ -501,7 +501,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="key">The key.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        void Remove(string key);
+        void RemoveFromDefaultPartition(string key);
     }
 
     /// <summary>

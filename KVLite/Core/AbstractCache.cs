@@ -404,8 +404,8 @@ namespace PommaLabs.KVLite.Core
         /// <returns>The value with the default partition and specified key.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <remarks>
-        ///   This method, differently from other readers (like <see cref="Get{TVal}(string)"/> or
-        ///   <see cref="Peek{TVal}(string)"/>), does not have a typed return object, because
+        ///   This method, differently from other readers (like <see cref="GetFromDefaultPartition{TVal}(string)"/> or
+        ///   <see cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return object, because
         ///   indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
         /// </remarks>
         public Option<object> this[string key]
@@ -437,7 +437,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
-        public void AddSliding<TVal>(string key, TVal value, TimeSpan interval)
+        public void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval)
         {
             AddInternal(Settings.DefaultPartition, key, value, _clock.UtcNow + interval, interval);
         }
@@ -464,7 +464,7 @@ namespace PommaLabs.KVLite.Core
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        public void AddStatic<TVal>(string key, TVal value)
+        public void AddStaticToDefaultPartition<TVal>(string key, TVal value)
         {
             AddInternal(Settings.DefaultPartition, key, value, _clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
         }
@@ -491,7 +491,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        public void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry)
+        public void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry)
         {
             AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero);
         }
@@ -531,7 +531,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <returns>Whether cache contains the specified key in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        public bool Contains(string key)
+        public bool DefaultPartitionContains(string key)
         {
             return ContainsInternal(Settings.DefaultPartition, key);
         }
@@ -608,7 +608,7 @@ namespace PommaLabs.KVLite.Core
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public Option<TVal> Get<TVal>(string key)
+        public Option<TVal> GetFromDefaultPartition<TVal>(string key)
         {
             return GetInternal<TVal>(Settings.DefaultPartition, key);
         }
@@ -643,7 +643,7 @@ namespace PommaLabs.KVLite.Core
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public Option<CacheItem<TVal>> GetItem<TVal>(string key)
+        public Option<CacheItem<TVal>> GetItemFromDefaultPartition<TVal>(string key)
         {
             return GetItemInternal<TVal>(Settings.DefaultPartition, key);
         }
@@ -714,7 +714,7 @@ namespace PommaLabs.KVLite.Core
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public Option<TVal> Peek<TVal>(string key)
+        public Option<TVal> PeekIntoDefaultPartition<TVal>(string key)
         {
             return PeekInternal<TVal>(Settings.DefaultPartition, key);
         }
@@ -752,7 +752,7 @@ namespace PommaLabs.KVLite.Core
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public Option<CacheItem<TVal>> PeekItem<TVal>(string key)
+        public Option<CacheItem<TVal>> PeekItemIntoDefaultPartition<TVal>(string key)
         {
             return PeekItemInternal<TVal>(Settings.DefaultPartition, key);
         }
@@ -802,7 +802,7 @@ namespace PommaLabs.KVLite.Core
         ///   Removes the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
-        public void Remove(string key)
+        public void RemoveFromDefaultPartition(string key)
         {
             RemoveInternal(Settings.DefaultPartition, key);
         }

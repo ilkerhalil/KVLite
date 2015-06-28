@@ -159,8 +159,8 @@ namespace PommaLabs.KVLite.Contracts
         /// <returns>The value with the default partition and specified key.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <remarks>
-        ///   This method, differently from other readers (like <see cref="Get{TVal}(string)"/> or
-        ///   <see cref="Peek{TVal}(string)"/>), does not have a typed return object, because
+        ///   This method, differently from other readers (like <see cref="GetFromDefaultPartition{TVal}(string)"/> or
+        ///   <see cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return object, because
         ///   indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
         /// </remarks>
         Option<object> ICache.this[string key]
@@ -169,7 +169,7 @@ namespace PommaLabs.KVLite.Contracts
             {
                 Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
                 Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<Option<object>>().HasValue);
-                Contract.Ensures(Contains(key) == Contract.Result<Option<object>>().HasValue);
+                Contract.Ensures(DefaultPartitionContains(key) == Contract.Result<Option<object>>().HasValue);
                 return default(Option<object>);
             }
         }
@@ -201,7 +201,7 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
-        public void AddSliding<TVal>(string key, TVal value, TimeSpan interval)
+        public void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
@@ -233,7 +233,7 @@ namespace PommaLabs.KVLite.Contracts
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        public void AddStatic<TVal>(string key, TVal value)
+        public void AddStaticToDefaultPartition<TVal>(string key, TVal value)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
@@ -265,7 +265,7 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        public void AddTimed<TVal>(string key, TVal value, DateTime utcExpiry)
+        public void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Requires<ArgumentException>(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
@@ -312,7 +312,7 @@ namespace PommaLabs.KVLite.Contracts
         /// <param name="key">The key.</param>
         /// <returns>Whether cache contains the specified key in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        public bool Contains(string key)
+        public bool DefaultPartitionContains(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             return default(bool);
@@ -399,11 +399,11 @@ namespace PommaLabs.KVLite.Contracts
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public Option<TVal> Get<TVal>(string key)
+        public Option<TVal> GetFromDefaultPartition<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<Option<TVal>>().HasValue);
-            Contract.Ensures(Contains(key) == Contract.Result<Option<TVal>>().HasValue);
+            Contract.Ensures(DefaultPartitionContains(key) == Contract.Result<Option<TVal>>().HasValue);
             return default(Option<TVal>);
         }
 
@@ -440,11 +440,11 @@ namespace PommaLabs.KVLite.Contracts
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public Option<CacheItem<TVal>> GetItem<TVal>(string key)
+        public Option<CacheItem<TVal>> GetItemFromDefaultPartition<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<Option<CacheItem<TVal>>>().HasValue);
-            Contract.Ensures(Contains(key) == Contract.Result<Option<CacheItem<TVal>>>().HasValue);
+            Contract.Ensures(DefaultPartitionContains(key) == Contract.Result<Option<CacheItem<TVal>>>().HasValue);
             return default(Option<CacheItem<TVal>>);
         }
 
@@ -524,11 +524,11 @@ namespace PommaLabs.KVLite.Contracts
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public Option<TVal> Peek<TVal>(string key)
+        public Option<TVal> PeekIntoDefaultPartition<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<Option<TVal>>().HasValue);
-            Contract.Ensures(Contains(key) == Contract.Result<Option<TVal>>().HasValue);
+            Contract.Ensures(DefaultPartitionContains(key) == Contract.Result<Option<TVal>>().HasValue);
             return default(Option<TVal>);
         }
 
@@ -568,11 +568,11 @@ namespace PommaLabs.KVLite.Contracts
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public Option<CacheItem<TVal>> PeekItem<TVal>(string key)
+        public Option<CacheItem<TVal>> PeekItemIntoDefaultPartition<TVal>(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Ensures(Contains(Settings.DefaultPartition, key) == Contract.Result<Option<CacheItem<TVal>>>().HasValue);
-            Contract.Ensures(Contains(key) == Contract.Result<Option<CacheItem<TVal>>>().HasValue);
+            Contract.Ensures(DefaultPartitionContains(key) == Contract.Result<Option<CacheItem<TVal>>>().HasValue);
             return default(Option<CacheItem<TVal>>);
         }
 
@@ -630,11 +630,11 @@ namespace PommaLabs.KVLite.Contracts
         ///   Removes the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
-        public void Remove(string key)
+        public void RemoveFromDefaultPartition(string key)
         {
             Contract.Requires<ArgumentNullException>(key != null, ErrorMessages.NullKey);
             Contract.Ensures(!Contains(Settings.DefaultPartition, key));
-            Contract.Ensures(!Contains(key));
+            Contract.Ensures(!DefaultPartitionContains(key));
         }
 
         #endregion ICache Members
