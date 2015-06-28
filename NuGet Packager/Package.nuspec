@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite</id>
-        <version>3.1.0</version>
+        <version>4.0.0</version>
         <title>KVLite - Key-value store built on SQLite</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -11,9 +11,7 @@
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
         </description>
         <releaseNotes>
-* KVLite is now IoC friendly.
-* ICache interface is fully typed.
-* Using new RecyclableMemoryStream.
+* Fixes issues #1 and #2 (see project page on BitBucket).
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
@@ -27,8 +25,8 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         <dependencies>
             <dependency id="CodeProject.ObjectPool" version="1.6.0" />
             <dependency id="Dapper" version="1.42" />
-            <dependency id="PommaLabs.KVLite.Core" version="3.1.1" />
-            <dependency id="System.Data.SQLite.Core" version="1.0.96.0" />
+            <dependency id="PommaLabs.KVLite.Core" version="4.0.1" />
+            <dependency id="System.Data.SQLite.Core" version="1.0.97.0" />
             <dependency id="Westwind.Utilities.Configuration" version="2.25" />
         </dependencies>
         <references></references>
