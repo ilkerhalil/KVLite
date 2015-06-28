@@ -44,7 +44,7 @@ namespace UnitTests
     {
         #region Setup/Teardown
 
-        protected AbstractCache<TCacheSettings> Cache;
+        protected AbstractSQLiteCache<TCacheSettings> Cache;
 
         [SetUp]
         public virtual void SetUp()
@@ -84,7 +84,7 @@ namespace UnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void AddSliding_NullKey()
         {
-            Cache.AddSliding(null, StringItems[1], TimeSpan.FromSeconds(10));
+            Cache.AddSlidingToDefaultPartition(null, StringItems[1], TimeSpan.FromSeconds(10));
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace UnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void AddStatic_NullKey()
         {
-            Cache.AddStatic(null, StringItems[1]);
+            Cache.AddStaticToDefaultPartition(null, StringItems[1]);
         }
 
         [Test]
@@ -149,7 +149,7 @@ namespace UnitTests
         [Test]
         public void AddStatic_NullValue()
         {
-            Cache.AddStatic(StringItems[0], (object) null);
+            Cache.AddStaticToDefaultPartition(StringItems[0], (object) null);
         }
 
         [Test]
@@ -193,8 +193,8 @@ namespace UnitTests
         {
             var k = StringItems[1];
             var v = new byte[20000];
-            Cache.AddTimed(k, v, Cache.Clock.UtcNow.AddMinutes(10));
-            var info = Cache.GetItem<byte[]>(k).Value;
+            Cache.AddTimedToDefaultPartition(k, v, Cache.Clock.UtcNow.AddMinutes(10));
+            var info = Cache.GetItemFromDefaultPartition<byte[]>(k).Value;
             Assert.IsNotNull(info);
             Assert.AreEqual(k, info.Key);
             Assert.AreEqual(v, info.Value);
@@ -206,7 +206,7 @@ namespace UnitTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void AddTimed_NullKey()
         {
-            Cache.AddTimed(null, StringItems[1], Cache.Clock.UtcNow);
+            Cache.AddTimedToDefaultPartition(null, StringItems[1], Cache.Clock.UtcNow);
         }
 
         [Test]
@@ -273,13 +273,13 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
-                Assert.True(Cache.Contains(StringItems[i]));
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                Assert.True(Cache.DefaultPartitionContains(StringItems[i]));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
-                Assert.True(Cache.Contains(StringItems[i]));
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                Assert.True(Cache.DefaultPartitionContains(StringItems[i]));
             }
         }
 
@@ -290,13 +290,13 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
-                Assert.True(Cache.Contains(StringItems[i]));
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                Assert.True(Cache.DefaultPartitionContains(StringItems[i]));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
-                Assert.True(Cache.Contains(StringItems[i]));
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
+                Assert.True(Cache.DefaultPartitionContains(StringItems[i]));
             }
             var items = Cache.GetItems<string>();
             for (var i = 0; i < itemCount; ++i)
@@ -317,8 +317,8 @@ namespace UnitTests
                 var l = i;
                 var task = Task.Factory.StartNew(() =>
                 {
-                    Cache.AddTimed(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
-                    Cache.Contains(StringItems[l]);
+                    Cache.AddTimedToDefaultPartition(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                    Cache.DefaultPartitionContains(StringItems[l]);
                 });
                 tasks.Add(task);
             }
@@ -327,8 +327,8 @@ namespace UnitTests
                 var l = i;
                 var task = Task.Factory.StartNew(() =>
                 {
-                    Cache.AddTimed(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
-                    Cache.Contains(StringItems[l]);
+                    Cache.AddTimedToDefaultPartition(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                    Cache.DefaultPartitionContains(StringItems[l]);
                 });
                 tasks.Add(task);
             }
@@ -341,10 +341,10 @@ namespace UnitTests
         [Test]
         public void AddTimed_TwoValues_SameKey()
         {
-            Cache.AddTimed(StringItems[0], StringItems[1], Cache.Clock.UtcNow.AddMinutes(10));
-            Assert.AreEqual(StringItems[1], Cache.Get<string>(StringItems[0]).Value);
-            Cache.AddTimed(StringItems[0], StringItems[2], Cache.Clock.UtcNow.AddMinutes(10));
-            Assert.AreEqual(StringItems[2], Cache.Get<string>(StringItems[0]).Value);
+            Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[1], Cache.Clock.UtcNow.AddMinutes(10));
+            Assert.AreEqual(StringItems[1], Cache.GetFromDefaultPartition<string>(StringItems[0]).Value);
+            Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[2], Cache.Clock.UtcNow.AddMinutes(10));
+            Assert.AreEqual(StringItems[2], Cache.GetFromDefaultPartition<string>(StringItems[0]).Value);
         }
 
         [Test]
@@ -417,7 +417,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache.Get<object>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
-                Assert.IsFalse(Cache.Get<object>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.GetFromDefaultPartition<object>(StringItems[i]).HasValue);
             }
         }
 
@@ -429,7 +429,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache.Get<string>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
-                Assert.IsFalse(Cache.Get<string>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.GetFromDefaultPartition<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -441,7 +441,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache.GetItem<object>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
-                Assert.IsFalse(Cache.GetItem<object>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.GetItemFromDefaultPartition<object>(StringItems[i]).HasValue);
             }
         }
 
@@ -453,7 +453,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache.GetItem<string>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
-                Assert.IsFalse(Cache.GetItem<string>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.GetItemFromDefaultPartition<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -466,7 +466,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
-                var task = Task.Run(() => Cache.Get<string>(StringItems[l]));
+                var task = Task.Run(() => Cache.GetFromDefaultPartition<string>(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i)
@@ -482,11 +482,11 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                var item = Cache.Get<string>(StringItems[i]);
+                var item = Cache.GetFromDefaultPartition<string>(StringItems[i]);
                 Assert.AreEqual(StringItems[i], item.Value);
             }
         }
@@ -498,11 +498,11 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsFalse(Cache.Get<string>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.GetFromDefaultPartition<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -510,8 +510,8 @@ namespace UnitTests
         public void Get_LargeDataTable()
         {
             var dt = new RandomDataTableGenerator("A123", "Test", "Pi", "<3", "Pu").GenerateDataTable(LargeItemCount);
-            Cache.AddStatic(dt.TableName, dt);
-            var storedDt = Cache.Get<DataTable>(dt.TableName).Value;
+            Cache.AddStaticToDefaultPartition(dt.TableName, dt);
+            var storedDt = Cache.GetFromDefaultPartition<DataTable>(dt.TableName).Value;
             Assert.AreEqual(dt.Rows.Count, storedDt.Rows.Count);
             for (var i = 0; i < dt.Rows.Count; ++i)
             {
@@ -622,11 +622,11 @@ namespace UnitTests
             var interval = TimeSpan.FromMinutes(10);
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddSliding(StringItems[i], StringItems[i], interval);
+                Cache.AddSlidingToDefaultPartition(StringItems[i], StringItems[i], interval);
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                var item = Cache.GetItem<string>(StringItems[i]).Value;
+                var item = Cache.GetItemFromDefaultPartition<string>(StringItems[i]).Value;
                 Assert.IsNotNull(item);
                 Assert.AreEqual(item.UtcExpiry.ToUnixTime(), (Cache.Clock.UtcNow + interval).ToUnixTime());
             }
@@ -640,7 +640,7 @@ namespace UnitTests
             var interval = TimeSpan.FromMinutes(10);
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddSliding(StringItems[i], StringItems[i], interval);
+                Cache.AddSlidingToDefaultPartition(StringItems[i], StringItems[i], interval);
             }
             ((MockClock) Cache.Clock).AdvanceMinutes(1);
             var items = Cache.GetItems<string>();
@@ -657,7 +657,7 @@ namespace UnitTests
         {
             for (var i = 0; i < Cache.Settings.InsertionCountBeforeAutoClean; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             Assert.AreEqual(0, Cache.Count());
         }
@@ -667,7 +667,7 @@ namespace UnitTests
         {
             for (var i = 0; i < Cache.Settings.InsertionCountBeforeAutoClean - 1; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
             }
             Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count());
             Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
@@ -676,7 +676,7 @@ namespace UnitTests
             ((MockClock) Cache.Clock).AdvanceMinutes(15);
 
             // Add a new item, which should trigger the async cleanup.
-            Cache.AddTimed(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
+            Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
             // Wait for the task to complete...
             Thread.Sleep(1000);
             Assert.AreEqual(1, Cache.Count());
@@ -688,7 +688,7 @@ namespace UnitTests
         {
             Parallel.For(0, Cache.Settings.InsertionCountBeforeAutoClean, i =>
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             });
             Assert.AreEqual(0, Cache.Count());
         }
@@ -698,7 +698,7 @@ namespace UnitTests
         {
             Parallel.For(0, Cache.Settings.InsertionCountBeforeAutoClean - 1, i =>
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
             });
             Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count());
             Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
@@ -707,7 +707,7 @@ namespace UnitTests
             ((MockClock) Cache.Clock).AdvanceMinutes(15);
 
             // Add a new item, which should trigger the async cleanup.
-            Cache.AddTimed(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
+            Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
             // Wait for the task to complete...
             Thread.Sleep(1000);
             Assert.AreEqual(1, Cache.Count());
@@ -722,7 +722,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache.Peek<object>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
-                Assert.IsFalse(Cache.Peek<object>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.PeekIntoDefaultPartition<object>(StringItems[i]).HasValue);
             }
         }
 
@@ -734,7 +734,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache.Peek<string>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
-                Assert.IsFalse(Cache.Peek<string>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.PeekIntoDefaultPartition<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -746,7 +746,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache.PeekItem<object>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
-                Assert.IsFalse(Cache.PeekItem<object>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.PeekItemIntoDefaultPartition<object>(StringItems[i]).HasValue);
             }
         }
 
@@ -758,7 +758,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache.PeekItem<string>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
-                Assert.IsFalse(Cache.PeekItem<string>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.PeekItemIntoDefaultPartition<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -771,7 +771,7 @@ namespace UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
-                var task = Task.Run(() => Cache.Peek<string>(StringItems[l]));
+                var task = Task.Run(() => Cache.PeekIntoDefaultPartition<string>(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i)
@@ -788,13 +788,13 @@ namespace UnitTests
             var expiryDate = Cache.Clock.UtcNow.AddMinutes(10);
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], expiryDate);
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], expiryDate);
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                var value = Cache.Peek<string>(StringItems[i]);
+                var value = Cache.PeekIntoDefaultPartition<string>(StringItems[i]);
                 Assert.AreEqual(StringItems[i], value.Value);
-                var item = Cache.PeekItem<string>(StringItems[i]).Value;
+                var item = Cache.PeekItemIntoDefaultPartition<string>(StringItems[i]).Value;
                 Assert.AreEqual(expiryDate.Date, item.UtcExpiry.Date);
                 Assert.AreEqual(expiryDate.Hour, item.UtcExpiry.Hour);
                 Assert.AreEqual(expiryDate.Minute, item.UtcExpiry.Minute);
@@ -809,11 +809,11 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsFalse(Cache.Peek<string>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.PeekIntoDefaultPartition<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -823,14 +823,14 @@ namespace UnitTests
         [ExpectedException(typeof(ArgumentException))]
         public void AddStatic_NotSerializableValue()
         {
-            Cache.AddStatic(StringItems[0], new NotSerializableClass());
+            Cache.AddStaticToDefaultPartition(StringItems[0], new NotSerializableClass());
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void AddStatic_DataContractValue()
         {
-            Cache.AddStatic(StringItems[0], new DataContractClass());
+            Cache.AddStaticToDefaultPartition(StringItems[0], new DataContractClass());
         }
 
         #endregion Serialization
@@ -843,8 +843,8 @@ namespace UnitTests
         public void Collections_Dictionary(int itemCount)
         {
             var l = Enumerable.Range(1, itemCount).ToDictionary(i => i, i => i.ToString(CultureInfo.InvariantCulture));
-            Cache.AddStatic("dict", l);
-            var lc = Cache.Get<Dictionary<int, string>>("dict").Value;
+            Cache.AddStaticToDefaultPartition("dict", l);
+            var lc = Cache.GetFromDefaultPartition<Dictionary<int, string>>("dict").Value;
             Assert.True(l.SequenceEqual(lc));
         }
 
@@ -854,8 +854,8 @@ namespace UnitTests
         public void Collections_List(int itemCount)
         {
             var l = new List<int>(Enumerable.Range(1, itemCount));
-            Cache.AddStatic("list", l);
-            var lc = Cache.Get<List<int>>("list").Value;
+            Cache.AddStaticToDefaultPartition("list", l);
+            var lc = Cache.GetFromDefaultPartition<List<int>>("list").Value;
             Assert.True(l.SequenceEqual(lc));
         }
 
@@ -865,8 +865,8 @@ namespace UnitTests
         public void Collections_HashSet(int itemCount)
         {
             var l = new HashSet<int>(Enumerable.Range(1, itemCount));
-            Cache.AddStatic("set", l);
-            var lc = Cache.Get<HashSet<int>>("set").Value;
+            Cache.AddStaticToDefaultPartition("set", l);
+            var lc = Cache.GetFromDefaultPartition<HashSet<int>>("set").Value;
             Assert.True(l.SequenceEqual(lc));
         }
 
@@ -876,8 +876,8 @@ namespace UnitTests
         public void Collections_SortedSet(int itemCount)
         {
             var l = new SortedSet<int>(Enumerable.Range(1, itemCount));
-            Cache.AddStatic("set", l);
-            var lc = Cache.Get<SortedSet<int>>("set").Value;
+            Cache.AddStaticToDefaultPartition("set", l);
+            var lc = Cache.GetFromDefaultPartition<SortedSet<int>>("set").Value;
             Assert.True(l.SequenceEqual(lc));
         }
 
@@ -887,8 +887,8 @@ namespace UnitTests
         public void Collections_SortedList(int itemCount)
         {
             var l = new SortedList<int, string>(Enumerable.Range(1, itemCount).ToDictionary(i => i, i => i.ToString(CultureInfo.InvariantCulture)));
-            Cache.AddStatic("list", l);
-            var lc = Cache.Get<SortedList<int, string>>("list").Value;
+            Cache.AddStaticToDefaultPartition("list", l);
+            var lc = Cache.GetFromDefaultPartition<SortedList<int, string>>("list").Value;
             Assert.True(l.SequenceEqual(lc));
         }
 
@@ -900,7 +900,7 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                instance.AddSliding(StringItems[i], StringItems[i], interval);
+                instance.AddSlidingToDefaultPartition(StringItems[i], StringItems[i], interval);
             }
         }
 
@@ -908,7 +908,7 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                instance.AddStatic(StringItems[i], StringItems[i]);
+                instance.AddStaticToDefaultPartition(StringItems[i], StringItems[i]);
             }
         }
 
@@ -916,7 +916,7 @@ namespace UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                instance.AddTimed(StringItems[i], StringItems[i], utcTime);
+                instance.AddTimedToDefaultPartition(StringItems[i], StringItems[i], utcTime);
             }
         }
 

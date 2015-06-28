@@ -23,11 +23,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Web.Http;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Common.Diagnostics;
 
 namespace PommaLabs.KVLite.Web.Http
 {
@@ -44,7 +44,9 @@ namespace PommaLabs.KVLite.Web.Http
         /// <param name="cache">The cache used by the Web API output cache.</param>
         protected AbstractCacheController(ICache cache)
         {
-            Contract.Requires<ArgumentNullException>(cache != null);
+            // Preconditions
+            Raise<ArgumentNullException>.IfIsNull(cache);
+
             _cache = cache;
         }
 

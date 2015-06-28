@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager (Nancy)", "N
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager (WebApi)", "NuGet Packager (WebApi)\NuGet Packager (WebApi).csproj", "{5973B3A7-1F9A-49C8-BBD4-DE4CAEA1DC8B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet Packagers", "NuGet Packagers", "{A4471ECD-23FA-4D4E-B343-E2478BCABAE2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -158,5 +160,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
+		{BC783C22-1518-4F7A-944A-8E095C9B5930} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
+		{7CDA6E66-C207-4378-B476-77B50B0DC756} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
+		{5973B3A7-1F9A-49C8-BBD4-DE4CAEA1DC8B} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
 	EndGlobalSection
 EndGlobal

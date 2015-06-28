@@ -24,7 +24,9 @@
 using System;
 using System.IO;
 using Nancy;
-using Finsa.CodeServices.Serialization.Extensions;
+using Finsa.CodeServices.Serialization;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace PommaLabs.KVLite.Nancy
 {
@@ -57,9 +59,19 @@ namespace PommaLabs.KVLite.Nancy
 
         #region Internal Methods
 
+        private static readonly JsonSerializer RequestSerializer = new JsonSerializer();
+
         internal static string GetRequestFingerprint(this NancyContext context, Finsa.CodeServices.Serialization.ISerializer serializer)
         {
-            return new { path = context.Request.Path, body = context.ReadAllBody() }.ToMD5String(serializer);
+            var requestSummary = new { path = context.Request.Path, body = context.ReadAllBody() };
+            var requestJson = RequestSerializer.SerializeToBytes(requestSummary);
+            var requestHash = MD5.Create().ComputeHash(requestJson, 0, requestJson.Length);
+            var fingerprint = new StringBuilder();
+            foreach (var b in requestHash)
+            {
+                fingerprint.Append(b.ToString("X2"));
+            }
+            return fingerprint.ToString();
         }
 
         /// <summary>

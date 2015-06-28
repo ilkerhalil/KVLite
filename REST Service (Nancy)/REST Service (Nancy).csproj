@@ -21,7 +21,7 @@
     <IISExpressUseClassicPipelineMode />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <NuGetPackageImportStamp>e00ee7ab</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>cff9c56d</NuGetPackageImportStamp>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -57,24 +57,24 @@
     <Reference Include="Crc32C.NET">
       <HintPath>..\packages\Crc32C.NET.1.0.5.0\lib\net20\Crc32C.NET.dll</HintPath>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Clock, Version=1.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Clock.1.14\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Clock, Version=1.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Clock.1.15\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Common, Version=1.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Common.1.14\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Common, Version=1.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Common.1.15\lib\net40-client\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Compression, Version=1.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Compression.1.14\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Compression, Version=1.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Compression.1.15\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Serialization, Version=1.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Serialization.1.14\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Serialization, Version=1.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.1.15\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Testing, Version=1.14.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Testing.1.14\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Testing, Version=1.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Testing.1.15\lib\net40\Finsa.CodeServices.Testing.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LZ4, Version=1.0.5.93, Culture=neutral, PublicKeyToken=fd2bda0a70c5a705, processorArchitecture=MSIL">
@@ -89,17 +89,22 @@
     <Reference Include="Nancy.Hosting.Aspnet">
       <HintPath>..\packages\Nancy.Hosting.Aspnet.1.2.0\lib\net40\Nancy.Hosting.Aspnet.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Polenter.SharpSerializer, Version=2.20.0.0, Culture=neutral, PublicKeyToken=8f4f20011571ee5f, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpSerializer.2.20\lib\net20\Polenter.SharpSerializer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Snappy.NET">
       <HintPath>..\packages\Snappy.NET.1.1.1.8\lib\net45\Snappy.NET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data.SQLite, Version=1.0.96.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.96.0\lib\net45\System.Data.SQLite.dll</HintPath>
+    <Reference Include="System.Data.SQLite, Version=1.0.97.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.97.0\lib\net45\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Web" />
@@ -173,9 +178,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.96.0\build\net45\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.96.0\build\net45\System.Data.SQLite.Core.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.97.0\build\net45\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.97.0\build\net45\System.Data.SQLite.Core.targets'))" />
   </Target>
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.96.0\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.96.0\build\net45\System.Data.SQLite.Core.targets')" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.97.0\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.97.0\build\net45\System.Data.SQLite.Core.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

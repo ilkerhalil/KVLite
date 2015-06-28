@@ -22,7 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using Finsa.CodeServices.Common.Diagnostics;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
@@ -84,12 +86,17 @@ namespace PommaLabs.KVLite
         {
             get
             {
-                Contract.Ensures(!String.IsNullOrWhiteSpace(Contract.Result<string>()));
-                return _cacheFile;
+                var result = _cacheFile;
+
+                // Postconditions
+                Debug.Assert(!String.IsNullOrWhiteSpace(result));
+                return result;
             }
             set
             {
-                Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCachePath);
+                // Preconditions
+                Raise<ArgumentException>.If(String.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCachePath);
+                
                 _cacheFile = value;
                 OnPropertyChanged();
             }

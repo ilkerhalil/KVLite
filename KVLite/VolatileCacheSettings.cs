@@ -22,8 +22,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
+using Finsa.CodeServices.Common.Diagnostics;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
@@ -38,7 +40,7 @@ namespace PommaLabs.KVLite
 
         private static readonly VolatileCacheSettings CachedDefault = new VolatileCacheSettings();
 
-        private string _cacheFile = VolatileCacheConfiguration.Instance.DefaultCacheName;
+        private string _cacheName = VolatileCacheConfiguration.Instance.DefaultCacheName;
 
         #endregion Fields
 
@@ -85,14 +87,19 @@ namespace PommaLabs.KVLite
         {
             get
             {
-                Contract.Ensures(!string.IsNullOrWhiteSpace(Contract.Result<string>()));
-                return _cacheFile;
+                var result = _cacheName;
+
+                // Postconditions
+                Debug.Assert(!String.IsNullOrWhiteSpace(result));
+                return result;
             }
             set
             {
-                Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCacheName);
-                Contract.Requires<ArgumentException>(Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$"), ErrorMessages.InvalidCacheName);
-                _cacheFile = value;
+                // Preconditions
+                Raise<ArgumentException>.If(String.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCacheName);
+                Raise<ArgumentException>.IfNot(Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$"), ErrorMessages.InvalidCacheName);
+                
+                _cacheName = value;
                 OnPropertyChanged();
             }
         }

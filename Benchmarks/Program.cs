@@ -132,7 +132,7 @@ namespace Benchmarks
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            PersistentCache.DefaultInstance.AddStatic("TABLE_LIST", tables);
+            PersistentCache.DefaultInstance.AddStaticToDefaultPartition("TABLE_LIST", tables);
             stopwatch.Stop();
 
             Debug.Assert(PersistentCache.DefaultInstance.Count() == 1);
@@ -152,7 +152,7 @@ namespace Benchmarks
             stopwatch.Start();
             foreach (var table in tables)
             {
-                PersistentCache.DefaultInstance.AddStatic(table.TableName, table);
+                PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table);
             }
             stopwatch.Stop();
 
@@ -173,7 +173,7 @@ namespace Benchmarks
             stopwatch.Start();
             foreach (var table in tables)
             {
-                VolatileCache.DefaultInstance.AddStatic(table.TableName, table);
+                VolatileCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table);
             }
             stopwatch.Stop();
 
@@ -195,7 +195,7 @@ namespace Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+                tasks.Add(PersistentCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
             }
             foreach (var task in tasks)
             {
@@ -221,7 +221,7 @@ namespace Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(VolatileCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+                tasks.Add(VolatileCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
             }
             foreach (var task in tasks)
             {
@@ -247,11 +247,11 @@ namespace Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+                tasks.Add(PersistentCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
             }
             foreach (var table in tables)
             {
-                tasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+                tasks.Add(PersistentCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
             }
             foreach (var task in tasks)
             {
@@ -274,14 +274,14 @@ namespace Benchmarks
 
             foreach (var table in tables)
             {
-                PersistentCache.DefaultInstance.AddStatic(table.TableName, table);
+                PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table);
             }
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             foreach (var table in tables)
             {
-                var returnedTable = PersistentCache.DefaultInstance.Get<DataTable>(table.TableName);
+                var returnedTable = PersistentCache.DefaultInstance.GetFromDefaultPartition<DataTable>(table.TableName);
                 if (returnedTable.Value.TableName != table.TableName)
                 {
                     throw new Exception("Wrong data table read from cache! :(");
@@ -301,7 +301,7 @@ namespace Benchmarks
 
             foreach (var table in tables)
             {
-                PersistentCache.DefaultInstance.AddStatic(table.TableName, table);
+                PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table);
             }
 
             var stopwatch = new Stopwatch();
@@ -310,7 +310,7 @@ namespace Benchmarks
             foreach (var table in tables)
             {
                 var tmp = table; // Suggested by R#
-                tasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get<DataTable>(tmp.TableName)));
+                tasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.GetFromDefaultPartition<DataTable>(tmp.TableName)));
             }
             foreach (var task in tasks)
             {
@@ -337,13 +337,13 @@ namespace Benchmarks
             var writeTasks = new List<Task>();
             foreach (var table in tables)
             {
-                writeTasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+                writeTasks.Add(PersistentCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
             }
             var readTasks = new List<Task<Option<DataTable>>>();
             foreach (var table in tables)
             {
                 DataTable localTable = table;
-                readTasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get<DataTable>(localTable.TableName)));
+                readTasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.GetFromDefaultPartition<DataTable>(localTable.TableName)));
             }
             foreach (var task in writeTasks)
             {
@@ -370,14 +370,14 @@ namespace Benchmarks
 
             foreach (var table in tables)
             {
-                PersistentCache.DefaultInstance.AddTimed(table.TableName, table, DateTime.UtcNow.AddHours(1));
+                PersistentCache.DefaultInstance.AddTimedToDefaultPartition(table.TableName, table, DateTime.UtcNow.AddHours(1));
             }
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             foreach (var table in tables)
             {
-                PersistentCache.DefaultInstance.Remove(table.TableName);
+                PersistentCache.DefaultInstance.RemoveFromDefaultPartition(table.TableName);
             }
             stopwatch.Stop();
 
@@ -396,7 +396,7 @@ namespace Benchmarks
 
             foreach (var table in tables)
             {
-                PersistentCache.DefaultInstance.AddTimed(table.TableName, table, DateTime.UtcNow.AddHours(1));
+                PersistentCache.DefaultInstance.AddTimedToDefaultPartition(table.TableName, table, DateTime.UtcNow.AddHours(1));
             }
 
             var stopwatch = new Stopwatch();
@@ -404,7 +404,7 @@ namespace Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(PersistentCache.DefaultInstance.RemoveAsync(table.TableName));
+                tasks.Add(PersistentCache.DefaultInstance.RemoveFromDefaultPartitionAsync(table.TableName));
             }
             foreach (var task in tasks)
             {
