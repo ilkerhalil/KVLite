@@ -28,7 +28,6 @@ using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
-using PommaLabs.KVLite.Contracts;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
@@ -52,7 +51,6 @@ namespace PommaLabs.KVLite
     ///   <see cref="PersistentCacheConfiguration.DefaultStaticIntervalInDays"/>) or the one for the
     ///   <see cref="VolatileCache"/> ( <see cref="VolatileCacheConfiguration.DefaultStaticIntervalInDays"/>).
     /// </summary>
-    [ContractClass(typeof(CacheContract))]
     public interface ICache
     {
         /// <summary>

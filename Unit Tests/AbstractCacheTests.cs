@@ -44,7 +44,7 @@ namespace UnitTests
     {
         #region Setup/Teardown
 
-        protected AbstractCache<TCacheSettings> Cache;
+        protected AbstractSQLiteCache<TCacheSettings> Cache;
 
         [SetUp]
         public virtual void SetUp()

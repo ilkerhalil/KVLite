@@ -23,8 +23,10 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using Finsa.CodeServices.Common.Diagnostics;
 using PommaLabs.KVLite.Annotations;
 
 namespace PommaLabs.KVLite.Core
@@ -56,12 +58,17 @@ namespace PommaLabs.KVLite.Core
         {
             get
             {
-                Contract.Ensures(!String.IsNullOrWhiteSpace(Contract.Result<string>()));
-                return _defaultPartition;
+                var result = _defaultPartition;
+
+                // Postconditions
+                Debug.Assert(!String.IsNullOrWhiteSpace(result));
+                return result;
             }
             set
             {
-                Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(value));
+                // Preconditions
+                Raise<ArgumentException>.If(String.IsNullOrWhiteSpace(value));
+
                 _defaultPartition = value;
                 OnPropertyChanged();
             }
@@ -74,12 +81,17 @@ namespace PommaLabs.KVLite.Core
         {
             get
             {
-                Contract.Ensures(Contract.Result<int>() > 0);
-                return _staticIntervalInDays;
+                var result = _staticIntervalInDays;
+
+                // Postconditions
+                Debug.Assert(result > 0);
+                return result;
             }
             set
             {
-                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+                // Preconditions
+                Raise<ArgumentOutOfRangeException>.If(value <= 0);
+
                 _staticIntervalInDays = value;
                 StaticInterval = TimeSpan.FromDays(value);
                 OnPropertyChanged();
@@ -93,12 +105,17 @@ namespace PommaLabs.KVLite.Core
         {
             get
             {
-                Contract.Ensures(Contract.Result<int>() > 0);
-                return _insertionCountBeforeCleanup;
+                var result = _insertionCountBeforeCleanup;
+
+                // Postconditions
+                Debug.Assert(result > 0);
+                return result;
             }
             set
             {
-                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+                // Preconditions
+                Raise<ArgumentOutOfRangeException>.If(value <= 0);
+
                 _insertionCountBeforeCleanup = value;
                 OnPropertyChanged();
             }
@@ -111,12 +128,17 @@ namespace PommaLabs.KVLite.Core
         {
             get
             {
-                Contract.Ensures(Contract.Result<int>() > 0);
-                return _maxCacheSizeInMB;
+                var result = _maxCacheSizeInMB;
+
+                // Postconditions
+                Debug.Assert(result > 0);
+                return result;
             }
             set
             {
-                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+                // Preconditions
+                Raise<ArgumentOutOfRangeException>.If(value <= 0);
+
                 _maxCacheSizeInMB = value;
                 OnPropertyChanged();
             }
@@ -129,12 +151,17 @@ namespace PommaLabs.KVLite.Core
         {
             get
             {
-                Contract.Ensures(Contract.Result<int>() > 0);
-                return _maxJournalSizeInMB;
+                var result = _maxJournalSizeInMB;
+
+                // Postconditions
+                Debug.Assert(result > 0);
+                return result;
             }
             set
             {
-                Contract.Requires<ArgumentOutOfRangeException>(value > 0);
+                // Preconditions
+                Raise<ArgumentOutOfRangeException>.If(value <= 0);
+
                 _maxJournalSizeInMB = value;
                 OnPropertyChanged();
             }
