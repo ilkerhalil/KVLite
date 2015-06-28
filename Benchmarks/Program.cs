@@ -195,7 +195,7 @@ namespace Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+                tasks.Add(PersistentCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
             }
             foreach (var task in tasks)
             {
@@ -221,7 +221,7 @@ namespace Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(VolatileCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+                tasks.Add(VolatileCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
             }
             foreach (var task in tasks)
             {
@@ -247,11 +247,11 @@ namespace Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+                tasks.Add(PersistentCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
             }
             foreach (var table in tables)
             {
-                tasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+                tasks.Add(PersistentCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
             }
             foreach (var task in tasks)
             {
@@ -337,7 +337,7 @@ namespace Benchmarks
             var writeTasks = new List<Task>();
             foreach (var table in tables)
             {
-                writeTasks.Add(PersistentCache.DefaultInstance.AddStaticAsync(table.TableName, table));
+                writeTasks.Add(PersistentCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
             }
             var readTasks = new List<Task<Option<DataTable>>>();
             foreach (var table in tables)
@@ -404,7 +404,7 @@ namespace Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(PersistentCache.DefaultInstance.RemoveAsync(table.TableName));
+                tasks.Add(PersistentCache.DefaultInstance.RemoveFromDefaultPartitionAsync(table.TableName));
             }
             foreach (var task in tasks)
             {

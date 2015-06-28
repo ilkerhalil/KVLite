@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using PommaLabs.KVLite.Core;
 
@@ -46,9 +46,12 @@ namespace PommaLabs.KVLite
         /// <returns>The insertion task.</returns>
         public static Task AddSlidingAsync(this ICache cache, string partition, string key, object value, TimeSpan interval)
         {
-            Contract.Ensures(Contract.Result<Task>() != null);
-            Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskRunner.Run(() => cache.AddSliding(partition, key, value, interval));
+            var result = TaskRunner.Run(() => cache.AddSliding(partition, key, value, interval));
+
+            // Postconditions
+            Debug.Assert(result != null);
+            Debug.Assert(result.Status != TaskStatus.Created);
+            return result;
         }
 
         /// <summary>
@@ -60,11 +63,14 @@ namespace PommaLabs.KVLite
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
         /// <returns>The insertion task.</returns>
-        public static Task AddSlidingAsync(this ICache cache, string key, object value, TimeSpan interval)
+        public static Task AddSlidingToDefaultPartitionAsync(this ICache cache, string key, object value, TimeSpan interval)
         {
-            Contract.Ensures(Contract.Result<Task>() != null);
-            Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskRunner.Run(() => cache.AddSliding(cache.Settings.DefaultPartition, key, value, interval));
+            var result = TaskRunner.Run(() => cache.AddSliding(cache.Settings.DefaultPartition, key, value, interval));
+
+            // Postconditions
+            Debug.Assert(result != null);
+            Debug.Assert(result.Status != TaskStatus.Created);
+            return result;
         }
 
         /// <summary>
@@ -79,9 +85,12 @@ namespace PommaLabs.KVLite
         /// <returns>The insertion task.</returns>
         public static Task AddStaticAsync(this ICache cache, string partition, string key, object value)
         {
-            Contract.Ensures(Contract.Result<Task>() != null);
-            Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskRunner.Run(() => cache.AddSliding(partition, key, value, cache.Settings.StaticInterval));
+            var result = TaskRunner.Run(() => cache.AddSliding(partition, key, value, cache.Settings.StaticInterval));
+
+            // Postconditions
+            Debug.Assert(result != null);
+            Debug.Assert(result.Status != TaskStatus.Created);
+            return result;
         }
 
         /// <summary>
@@ -93,11 +102,14 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <returns>The insertion task.</returns>
-        public static Task AddStaticAsync(this ICache cache, string key, object value)
+        public static Task AddStaticToDefaultPartitionAsync(this ICache cache, string key, object value)
         {
-            Contract.Ensures(Contract.Result<Task>() != null);
-            Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskRunner.Run(() => cache.AddSliding(cache.Settings.DefaultPartition, key, value, cache.Settings.StaticInterval));
+            var result = TaskRunner.Run(() => cache.AddSliding(cache.Settings.DefaultPartition, key, value, cache.Settings.StaticInterval));
+
+            // Postconditions
+            Debug.Assert(result != null);
+            Debug.Assert(result.Status != TaskStatus.Created);
+            return result;
         }
 
         /// <summary>
@@ -112,9 +124,12 @@ namespace PommaLabs.KVLite
         /// <returns>The insertion task.</returns>
         public static Task AddTimedAsync(this ICache cache, string partition, string key, object value, DateTime utcExpiry)
         {
-            Contract.Ensures(Contract.Result<Task>() != null);
-            Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskRunner.Run(() => cache.AddTimed(partition, key, value, utcExpiry));
+            var result = TaskRunner.Run(() => cache.AddTimed(partition, key, value, utcExpiry));
+
+            // Postconditions
+            Debug.Assert(result != null);
+            Debug.Assert(result.Status != TaskStatus.Created);
+            return result;
         }
 
         /// <summary>
@@ -126,11 +141,14 @@ namespace PommaLabs.KVLite
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
         /// <returns>The insertion task.</returns>
-        public static Task AddTimedAsync(this ICache cache, string key, object value, DateTime utcExpiry)
+        public static Task AddTimedToDefaultPartitionAsync(this ICache cache, string key, object value, DateTime utcExpiry)
         {
-            Contract.Ensures(Contract.Result<Task>() != null);
-            Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskRunner.Run(() => cache.AddTimed(cache.Settings.DefaultPartition, key, value, utcExpiry));
+            var result = TaskRunner.Run(() => cache.AddTimed(cache.Settings.DefaultPartition, key, value, utcExpiry));
+
+            // Postconditions
+            Debug.Assert(result != null);
+            Debug.Assert(result.Status != TaskStatus.Created);
+            return result;
         }
 
         /// <summary>
@@ -142,9 +160,12 @@ namespace PommaLabs.KVLite
         /// <returns>The removal task.</returns>
         public static Task RemoveAsync(this ICache cache, string partition, string key)
         {
-            Contract.Ensures(Contract.Result<Task>() != null);
-            Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskRunner.Run(() => cache.Remove(partition, key));
+            var result = TaskRunner.Run(() => cache.Remove(partition, key));
+
+            // Postconditions
+            Debug.Assert(result != null);
+            Debug.Assert(result.Status != TaskStatus.Created);
+            return result;
         }
 
         /// <summary>
@@ -153,11 +174,14 @@ namespace PommaLabs.KVLite
         /// <param name="cache">The cache.</param>
         /// <param name="key">The key.</param>
         /// <returns>The removal task.</returns>
-        public static Task RemoveAsync(this ICache cache, string key)
+        public static Task RemoveFromDefaultPartitionAsync(this ICache cache, string key)
         {
-            Contract.Ensures(Contract.Result<Task>() != null);
-            Contract.Ensures(Contract.Result<Task>().Status != TaskStatus.Created);
-            return TaskRunner.Run(() => cache.Remove(cache.Settings.DefaultPartition, key));
+            var result = TaskRunner.Run(() => cache.Remove(cache.Settings.DefaultPartition, key));
+
+            // Postconditions
+            Debug.Assert(result != null);
+            Debug.Assert(result.Status != TaskStatus.Created);
+            return result;
         }
     }
 }
