@@ -22,9 +22,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Web;
 using System.Web.UI;
+using Finsa.CodeServices.Common.Diagnostics;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite.Web
@@ -57,14 +58,21 @@ namespace PommaLabs.KVLite.Web
         {
             get
             {
-                Contract.Ensures(Contract.Result<ICache>() != null);
-                return _cache;
+                var result = _cache;
+
+                // Postconditions
+                Debug.Assert(result != null);
+                return result;
             }
             set
             {
-                Contract.Requires<ArgumentNullException>(value != null, ErrorMessages.NullCache);
-                Contract.Ensures(ReferenceEquals(Cache, value));
+                // Preconditions
+                Raise<ArgumentNullException>.IfIsNull(value, ErrorMessages.NullCache);
+
                 _cache = value;
+
+                // Postconditions
+                Debug.Assert(ReferenceEquals(Cache, value));
             }
         }
 
@@ -82,7 +90,8 @@ namespace PommaLabs.KVLite.Web
         }
 
         /// <summary>
-        /// Overridden by derived classes to deserialize and load persisted state information when a <see cref="T:System.Web.UI.Page" /> object initializes its control hierarchy.
+        ///   Overridden by derived classes to deserialize and load persisted state information when
+        ///   a <see cref="T:System.Web.UI.Page"/> object initializes its control hierarchy.
         /// </summary>
         public override void Load()
         {
@@ -101,7 +110,8 @@ namespace PommaLabs.KVLite.Web
         }
 
         /// <summary>
-        /// Overridden by derived classes to serialize persisted state information when a <see cref="T:System.Web.UI.Page" /> object is unloaded from memory.
+        ///   Overridden by derived classes to serialize persisted state information when a
+        ///   <see cref="T:System.Web.UI.Page"/> object is unloaded from memory.
         /// </summary>
         public override void Save()
         {
