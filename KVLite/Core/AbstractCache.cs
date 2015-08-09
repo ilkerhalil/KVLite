@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 using Common.Logging;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.Diagnostics;
+using PommaLabs.Thrower;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 

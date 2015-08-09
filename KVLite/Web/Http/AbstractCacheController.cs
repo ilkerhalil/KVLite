@@ -27,7 +27,7 @@ using System.Linq;
 using System.Web.Http;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.Diagnostics;
+using PommaLabs.Thrower;
 
 namespace PommaLabs.KVLite.Web.Http
 {

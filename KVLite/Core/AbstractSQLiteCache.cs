@@ -35,7 +35,7 @@ using Common.Logging;
 using Dapper;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.Diagnostics;
+using PommaLabs.Thrower;
 using Finsa.CodeServices.Common.Extensions;
 using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
 using Finsa.CodeServices.Compression;

@@ -26,7 +26,7 @@ A simple, timed and persistent key-value store based on SQLite. This package add
             <group targetFramework="net45">
                 <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
                 <dependency id="PommaLabs.KVLite.Core" version="4.0.1" />
-                <dependency id="Strathweb.CacheOutput.WebApi2" version="0.6" />
+                <dependency id="Strathweb.CacheOutput.WebApi2" version="0.9.0" />
             </group>
             <group targetFramework="net40">
                 <dependency id="Microsoft.AspNet.WebApi.Client" version="4.0.30506.0" />

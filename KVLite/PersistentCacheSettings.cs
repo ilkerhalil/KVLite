@@ -24,7 +24,7 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using Finsa.CodeServices.Common.Diagnostics;
+using PommaLabs.Thrower;
 using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite

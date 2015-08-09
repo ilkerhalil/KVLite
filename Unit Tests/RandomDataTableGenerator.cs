@@ -27,7 +27,7 @@ using System;
 using System.Data;
 using System.Globalization;
 using System.Linq;
-using Finsa.CodeServices.Common.Diagnostics;
+using PommaLabs.Thrower;
 
 namespace UnitTests
 {
