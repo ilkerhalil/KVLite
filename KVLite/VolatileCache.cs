@@ -101,7 +101,7 @@ namespace PommaLabs.KVLite
         protected override string GetDataSource(out SQLiteJournalModeEnum journalMode)
         {
             journalMode = SQLiteJournalModeEnum.Memory;
-            return String.Format("file:{0}?mode=memory&cache=shared", Settings.CacheName);
+            return string.Format("file:{0}?mode=memory&cache=shared", Settings.CacheName);
         }
 
         /// <summary>

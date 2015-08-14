@@ -74,7 +74,7 @@ namespace UnitTests
             try
             {
                 // ReSharper disable once ObjectCreationAsStatement
-                new PersistentCache(new PersistentCacheSettings { CacheFile = String.Empty }, Kernel.Get<IClock>());
+                new PersistentCache(new PersistentCacheSettings { CacheFile = string.Empty }, Kernel.Get<IClock>());
             }
             catch (Exception ex)
             {

@@ -243,6 +243,9 @@
     <Compile Include="Core\AbstractCacheSettings.cs" />
     <Compile Include="Core\ErrorMessages.cs" />
     <Compile Include="ICache.cs" />
+    <Compile Include="MemoryCache.cs" />
+    <Compile Include="MemoryCacheConfiguration.cs" />
+    <Compile Include="MemoryCacheSettings.cs" />
     <Compile Include="Nancy\CachingBootstrapper.cs" />
     <Compile Include="Nancy\ContextExtensions.cs" />
     <Compile Include="PersistentCache.cs" />

@@ -31,7 +31,7 @@ namespace PommaLabs.KVLite
     ///   Configuration class for the <see cref="VolatileCache"/>. Default values are set inside
     ///   the configuration file itself.
     /// </summary>
-    [CLSCompliant(false)]
+    [Serializable, CLSCompliant(false)]
     public sealed class VolatileCacheConfiguration : AppConfiguration
     {
         #region Static instance

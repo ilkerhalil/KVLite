@@ -31,12 +31,10 @@ namespace PommaLabs.KVLite
     ///   Configuration class for the <see cref="PersistentCache"/>. Default values are set inside
     ///   the configuration file itself.
     /// </summary>
-    [CLSCompliant(false)]
+    [Serializable, CLSCompliant(false)]
     public sealed class PersistentCacheConfiguration : AppConfiguration
     {
         #region Static instance
-
-        private static readonly PersistentCacheConfiguration CachedInstance;
 
         static PersistentCacheConfiguration()
         {
@@ -48,8 +46,8 @@ namespace PommaLabs.KVLite
                 // the "bin" directory, because every change would make the application restart.
                 configurationFile = "~/" + configurationFile;
             }
-            CachedInstance = new PersistentCacheConfiguration();
-            CachedInstance.Initialize(new ConfigurationFileConfigurationProvider<PersistentCacheConfiguration>
+            Instance = new PersistentCacheConfiguration();
+            Instance.Initialize(new ConfigurationFileConfigurationProvider<PersistentCacheConfiguration>
             {
                 ConfigurationFile = PortableEnvironment.MapPath(configurationFile),
                 ConfigurationSection = "persistentCache"
@@ -60,10 +58,7 @@ namespace PommaLabs.KVLite
         ///   Gets the static configuration instance.
         /// </summary>
         /// <value>The static configuration instance.</value>
-        public static PersistentCacheConfiguration Instance
-        {
-            get { return CachedInstance; }
-        }
+        public static PersistentCacheConfiguration Instance { get; }
 
         #endregion Static instance
 

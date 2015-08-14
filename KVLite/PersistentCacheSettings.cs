@@ -37,8 +37,6 @@ namespace PommaLabs.KVLite
     {
         #region Fields
 
-        private static readonly PersistentCacheSettings CachedDefault = new PersistentCacheSettings();
-
         private string _cacheFile = PersistentCacheConfiguration.Instance.DefaultCacheFile;
 
         #endregion Fields
@@ -66,14 +64,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <value>The default settings for <see cref="PersistentCache"/>.</value>
         [Pure]
-        public static PersistentCacheSettings Default
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<PersistentCacheSettings>() != null);
-                return CachedDefault;
-            }
-        }
+        public static PersistentCacheSettings Default { get; } = new PersistentCacheSettings();
 
         #endregion Properties
 
@@ -89,13 +80,13 @@ namespace PommaLabs.KVLite
                 var result = _cacheFile;
 
                 // Postconditions
-                Debug.Assert(!String.IsNullOrWhiteSpace(result));
+                Debug.Assert(!string.IsNullOrWhiteSpace(result));
                 return result;
             }
             set
             {
                 // Preconditions
-                Raise<ArgumentException>.If(String.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCachePath);
+                Raise<ArgumentException>.If(string.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCachePath);
                 
                 _cacheFile = value;
                 OnPropertyChanged();
@@ -106,10 +97,7 @@ namespace PommaLabs.KVLite
         ///   Gets the cache URI; used for logging.
         /// </summary>
         /// <value>The cache URI.</value>
-        public override string CacheUri
-        {
-            get { return CacheFile; }
-        }
+        public override string CacheUri => CacheFile;
 
         #endregion Settings
     }

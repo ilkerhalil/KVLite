@@ -38,8 +38,6 @@ namespace PommaLabs.KVLite
     {
         #region Fields
 
-        private static readonly VolatileCacheSettings CachedDefault = new VolatileCacheSettings();
-
         private string _cacheName = VolatileCacheConfiguration.Instance.DefaultCacheName;
 
         #endregion Fields
@@ -67,14 +65,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <value>The default settings for <see cref="VolatileCache"/>.</value>
         [Pure]
-        public static VolatileCacheSettings Default
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<VolatileCacheSettings>() != null);
-                return CachedDefault;
-            }
-        }
+        public static VolatileCacheSettings Default { get; } = new VolatileCacheSettings();
 
         #endregion Properties
 
@@ -90,13 +81,13 @@ namespace PommaLabs.KVLite
                 var result = _cacheName;
 
                 // Postconditions
-                Debug.Assert(!String.IsNullOrWhiteSpace(result));
+                Debug.Assert(!string.IsNullOrWhiteSpace(result));
                 return result;
             }
             set
             {
                 // Preconditions
-                Raise<ArgumentException>.If(String.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCacheName);
+                Raise<ArgumentException>.If(string.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCacheName);
                 Raise<ArgumentException>.IfNot(Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$"), ErrorMessages.InvalidCacheName);
                 
                 _cacheName = value;
@@ -108,10 +99,7 @@ namespace PommaLabs.KVLite
         ///   Gets the cache URI; used for logging.
         /// </summary>
         /// <value>The cache URI.</value>
-        public override string CacheUri
-        {
-            get { return CacheName; }
-        }
+        public override string CacheUri => CacheName;
 
         #endregion Settings
     }

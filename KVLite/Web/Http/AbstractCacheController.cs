@@ -194,8 +194,8 @@ namespace PommaLabs.KVLite.Web.Http
                 toCreation = toCreation.Value.ToUniversalTime();
             }
             return from i in items
-                   where String.IsNullOrWhiteSpace(partitionLike) || i.Partition.Contains(partitionLike)
-                   where String.IsNullOrWhiteSpace(keyLike) || i.Key.Contains(keyLike)
+                   where string.IsNullOrWhiteSpace(partitionLike) || i.Partition.Contains(partitionLike)
+                   where string.IsNullOrWhiteSpace(keyLike) || i.Key.Contains(keyLike)
                    where !fromExpiry.HasValue || i.UtcExpiry.ToUnixTime() >= fromExpiry.Value.ToUnixTime()
                    where !toExpiry.HasValue || i.UtcExpiry.ToUnixTime() <= toExpiry.Value.ToUnixTime()
                    where !fromCreation.HasValue || i.UtcCreation.ToUnixTime() >= fromCreation.Value.ToUnixTime()

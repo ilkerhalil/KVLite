@@ -61,13 +61,13 @@ namespace PommaLabs.KVLite.Core
                 var result = _defaultPartition;
 
                 // Postconditions
-                Debug.Assert(!String.IsNullOrWhiteSpace(result));
+                Debug.Assert(!string.IsNullOrWhiteSpace(result));
                 return result;
             }
             set
             {
                 // Preconditions
-                Raise<ArgumentException>.If(String.IsNullOrWhiteSpace(value));
+                Raise<ArgumentException>.If(string.IsNullOrWhiteSpace(value));
 
                 _defaultPartition = value;
                 OnPropertyChanged();

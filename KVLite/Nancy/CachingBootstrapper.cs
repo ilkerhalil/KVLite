@@ -74,14 +74,7 @@ namespace PommaLabs.KVLite.Nancy
         ///   Gets the cache instance currently used by the bootstrapper.
         /// </summary>
         /// <value>The cache instance currently used by the bootstrapper.</value>
-        public ICache Cache
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<ICache>() != null);
-                return _cache;
-            }
-        }
+        public ICache Cache { get; }
 
         #endregion Properties
 
