@@ -10,11 +10,17 @@ using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using System.Runtime.CompilerServices;
+using System.ComponentModel;
+using SystemMemoryCache = System.Runtime.Caching.MemoryCache;
+using SystemCacheItem = System.Runtime.Caching.CacheItem;
+using SystemCacheItemPolicy = System.Runtime.Caching.CacheItemPolicy;
 
 namespace PommaLabs.KVLite
 {
     class MemoryCache : AbstractCache<MemoryCacheSettings>
     {
+        SystemMemoryCache _store;
+
         public override IClock Clock
         {
             get
@@ -57,12 +63,33 @@ namespace PommaLabs.KVLite
 
         protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval)
         {
-            
+            var policy = (interval == TimeSpan.Zero)
+                ? new SystemCacheItemPolicy { AbsoluteExpiration = utcExpiry }
+                : new SystemCacheItemPolicy { SlidingExpiration = interval };
+
+            _store.Add(SerializeCacheKey(partition, key), value, policy);
         }
 
         protected override void ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
-            throw new NotImplementedException();
+            // We need to make a snapshot of the keys, since the cache might be used by other processes.
+            // Therefore, we start projecting all keys.
+            var keys = _store.Select(x => x.Key);
+
+            // Then, if a partition has been specified, we select only those keys that belong to that partition.
+            if (partition != null)
+            {
+                keys = keys.Where(k => DeserializeCacheKey(k).Partition == partition);
+            }
+
+            // Now we take the snapshot of the keys.
+            var keysArray = keys.ToArray();
+            
+            // At last, we can remove them safely from the store itself.
+            foreach (var key in keys)
+            {
+                _store.Remove(key);
+            }            
         }
 
         protected override bool ContainsInternal(string partition, string key)
@@ -115,12 +142,41 @@ namespace PommaLabs.KVLite
             throw new NotImplementedException();
         }
 
+        private struct CacheKey
+        {
+            public string Partition { get; set; }
+
+            public string Key { get; set; }
+        }
+
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        private static string BuildCacheKey(string partition, string key)
+        private string SerializeCacheKey(string partition, string key)
         {
-            return $"<p>{partition}</p><k>{key}</k>";
+            return Serializer.SerializeToString(new CacheKey
+            {
+                Partition = partition,
+                Key = key
+            });
+        }
+
+#if NET45
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        private CacheKey DeserializeCacheKey(string cacheKey)
+        {
+            return Serializer.DeserializeFromString<CacheKey>(cacheKey);
+        }
+
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(Settings.CacheName):
+                    _store = new SystemMemoryCache(Settings.CacheName);
+                    break;
+            }
         }
     }
 }
