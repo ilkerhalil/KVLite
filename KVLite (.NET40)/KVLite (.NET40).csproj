@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;USETHROWER</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;USETHROWER NET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -74,7 +74,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;USETHROWER</DefineConstants>
+    <DefineConstants>TRACE;USETHROWER NET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -259,6 +259,15 @@
     </Compile>
     <Compile Include="..\KVLite\Core\ErrorMessages.cs">
       <Link>Core\ErrorMessages.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\MemoryCache.cs">
+      <Link>MemoryCache.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\MemoryCacheConfiguration.cs">
+      <Link>MemoryCacheConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\MemoryCacheSettings.cs">
+      <Link>MemoryCacheSettings.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\PersistentCacheConfiguration.cs">
       <Link>PersistentCacheConfiguration.cs</Link>

@@ -9,6 +9,7 @@ using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
+using System.Runtime.CompilerServices;
 
 namespace PommaLabs.KVLite
 {
@@ -56,7 +57,7 @@ namespace PommaLabs.KVLite
 
         protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval)
         {
-            throw new NotImplementedException();
+            
         }
 
         protected override void ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
@@ -114,6 +115,9 @@ namespace PommaLabs.KVLite
             throw new NotImplementedException();
         }
 
+#if NET45
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static string BuildCacheKey(string partition, string key)
         {
             return $"<p>{partition}</p><k>{key}</k>";
