@@ -36,7 +36,7 @@ namespace PommaLabs.KVLite
     {
         #region Static instance
 
-        private static readonly VolatileCacheConfiguration CachedInstance;
+        static readonly VolatileCacheConfiguration CachedInstance;
 
         static VolatileCacheConfiguration()
         {

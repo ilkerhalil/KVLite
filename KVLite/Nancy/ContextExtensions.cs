@@ -59,7 +59,7 @@ namespace PommaLabs.KVLite.Nancy
 
         #region Internal Methods
 
-        private static readonly JsonSerializer RequestSerializer = new JsonSerializer();
+        static readonly JsonSerializer RequestSerializer = new JsonSerializer();
 
         internal static string GetRequestFingerprint(this NancyContext context, Finsa.CodeServices.Serialization.ISerializer serializer)
         {

@@ -39,11 +39,11 @@ namespace PommaLabs.KVLite.Core
     {
         #region Fields
 
-        private string _defaultPartition;
-        private int _insertionCountBeforeCleanup;
-        private int _maxCacheSizeInMB;
-        private int _maxJournalSizeInMB;
-        private int _staticIntervalInDays;
+        string _defaultPartition;
+        int _insertionCountBeforeCleanup;
+        int _maxCacheSizeInMB;
+        int _maxJournalSizeInMB;
+        int _staticIntervalInDays;
 
         internal TimeSpan StaticInterval;
 

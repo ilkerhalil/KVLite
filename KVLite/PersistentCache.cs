@@ -45,7 +45,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The default cache instance.
         /// </summary>
-        private static readonly PersistentCache CachedDefaultInstance;
+        static readonly PersistentCache CachedDefaultInstance;
 
         /// <summary>
         ///   Gets the default instance for this cache kind. Default instance is configured using

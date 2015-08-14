@@ -38,7 +38,7 @@ namespace PommaLabs.KVLite
     {
         #region Fields
 
-        private string _cacheName = VolatileCacheConfiguration.Instance.DefaultCacheName;
+        string _cacheName = VolatileCacheConfiguration.Instance.DefaultCacheName;
 
         #endregion Fields
 

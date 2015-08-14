@@ -37,7 +37,7 @@ namespace PommaLabs.KVLite
     {
         #region Fields
 
-        private string _cacheFile = PersistentCacheConfiguration.Instance.DefaultCacheFile;
+        string _cacheFile = PersistentCacheConfiguration.Instance.DefaultCacheFile;
 
         #endregion Fields
 

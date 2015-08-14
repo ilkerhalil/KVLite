@@ -40,11 +40,11 @@ namespace PommaLabs.KVLite.Web
         /// <summary>
         ///   The partition used by ViewState items.
         /// </summary>
-        private const string ViewStatePartition = "KVLite.Web.ViewStates";
+        const string ViewStatePartition = "KVLite.Web.ViewStates";
 
-        private static ICache _cache = PersistentCache.DefaultInstance;
+        static ICache _cache = PersistentCache.DefaultInstance;
 
-        private static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(HttpContext.Current.Session.Timeout + 1);
+        static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(HttpContext.Current.Session.Timeout + 1);
 
         #endregion Fields
 
@@ -128,12 +128,12 @@ namespace PommaLabs.KVLite.Web
             _cache.Clear();
         }
 
-        private static object GetViewState(string guid)
+        static object GetViewState(string guid)
         {
             return _cache.Get<object>(ViewStatePartition, HiddenFieldName + guid).Value;
         }
 
-        private void SetViewState(string guid)
+        void SetViewState(string guid)
         {
             object state = new Pair(ControlState, ViewState);
             _cache.AddSlidingAsync(ViewStatePartition, HiddenFieldName + guid, state, CacheInterval);

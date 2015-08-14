@@ -32,7 +32,7 @@ namespace PommaLabs.KVLite.Core
     {
         #region Private Queries
 
-        private const string UpdateManyItems = @"
+        const string UpdateManyItems = @"
             update CacheItem
                set utcExpiry = @utcNow + interval
              where (@partition is null or partition = @partition)
@@ -40,7 +40,7 @@ namespace PommaLabs.KVLite.Core
                and utcExpiry > @utcNow; -- Update only valid rows
         ";
 
-        private const string UpdateOneItem = @"
+        const string UpdateOneItem = @"
             update CacheItem
                set utcExpiry = @utcNow + interval
              where partition = @partition
@@ -138,7 +138,7 @@ namespace PommaLabs.KVLite.Core
 
         #region Private Methods
 
-        private static string MinifyQuery(string query)
+        static string MinifyQuery(string query)
         {
             // Removes all SQL comments. Multiline excludes '/n' from '.' matches.
             query = Regex.Replace(query, @"--.*", string.Empty, RegexOptions.Multiline | RegexOptions.Compiled);

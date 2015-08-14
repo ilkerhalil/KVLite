@@ -19,7 +19,7 @@ namespace PommaLabs.KVLite
     {
         #region Fields
 
-        private string _cacheName = MemoryCacheConfiguration.Instance.DefaultCacheName;
+        string _cacheName = MemoryCacheConfiguration.Instance.DefaultCacheName;
 
         #endregion Fields
 

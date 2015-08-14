@@ -36,7 +36,7 @@ namespace PommaLabs.KVLite.Web.Http
     /// </summary>
     public abstract class AbstractCacheController : ApiController
     {
-        private readonly ICache _cache;
+        readonly ICache _cache;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="AbstractCacheController"/> class.
@@ -175,7 +175,7 @@ namespace PommaLabs.KVLite.Web.Http
             _cache.Remove(partition, key);
         }
 
-        private IEnumerable<CacheItem<object>> QueryCacheItems(IEnumerable<CacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
+        IEnumerable<CacheItem<object>> QueryCacheItems(IEnumerable<CacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
         {
             if (fromExpiry.HasValue)
             {

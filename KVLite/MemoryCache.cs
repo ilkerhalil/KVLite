@@ -142,7 +142,7 @@ namespace PommaLabs.KVLite
             throw new NotImplementedException();
         }
 
-        private struct CacheKey
+        struct CacheKey
         {
             public string Partition { get; set; }
 
@@ -152,7 +152,7 @@ namespace PommaLabs.KVLite
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        private string SerializeCacheKey(string partition, string key)
+        string SerializeCacheKey(string partition, string key)
         {
             return Serializer.SerializeToString(new CacheKey
             {
@@ -164,12 +164,12 @@ namespace PommaLabs.KVLite
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        private CacheKey DeserializeCacheKey(string cacheKey)
+        CacheKey DeserializeCacheKey(string cacheKey)
         {
             return Serializer.DeserializeFromString<CacheKey>(cacheKey);
         }
 
-        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
