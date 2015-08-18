@@ -49,12 +49,9 @@ namespace PommaLabs.KVLite
         /// </summary>
         public MemoryCacheConfiguration()
         {
-            DefaultCacheName = "MemoryCache";
-            //DefaultPartition = "KVLite.DefaultPartition";
-            //DefaultStaticIntervalInDays = 30;
-            //DefaultInsertionCountBeforeAutoClean = 64;
-            //DefaultMaxCacheSizeInMB = 256;
-            //DefaultMaxJournalSizeInMB = 32;
+            DefaultCacheName = nameof(MemoryCache);
+            DefaultPartition = "KVLite.DefaultPartition";
+            DefaultStaticIntervalInDays = 30;
         }
 
         /// <summary>
@@ -63,5 +60,18 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <value>The default name of the cache.</value>
         public string DefaultCacheName { get; set; }
+
+        /// <summary>
+        ///   Gets or sets the default partition, used when none is specified.
+        /// </summary>
+        /// <value>The default partition, used when none is specified.</value>
+        public string DefaultPartition { get; set; }
+
+        /// <summary>
+        ///   Gets or sets the default static interval in days, that is, the default interval for
+        ///   "static" items.
+        /// </summary>
+        /// <value>The default static interval in days.</value>
+        public int DefaultStaticIntervalInDays { get; set; }
     }
 }

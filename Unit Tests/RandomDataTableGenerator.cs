@@ -29,7 +29,7 @@ using System.Globalization;
 using System.Linq;
 using PommaLabs.Thrower;
 
-namespace UnitTests
+namespace PommaLabs.KVLite.UnitTests
 {
     /// <summary>
     ///   Generates random data tables, starting from a given set of columns.

@@ -108,6 +108,12 @@ namespace PommaLabs.KVLite
         AbstractCacheSettings Settings { get; }
 
         /// <summary>
+        ///   True if the Peek methods are implemented, false otherwise.
+        /// </summary>
+        [Pure]
+        bool CanPeek { get; }
+
+        /// <summary>
         ///   Gets the value with the specified partition and key.
         /// </summary>
         /// <value>The value with the specified partition and key.</value>

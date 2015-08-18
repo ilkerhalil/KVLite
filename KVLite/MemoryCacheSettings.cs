@@ -23,6 +23,19 @@ namespace PommaLabs.KVLite
 
         #endregion Fields
 
+        #region Construction
+
+        /// <summary>
+        ///   Sets default values read from <see cref="MemoryCacheConfiguration"/>.
+        /// </summary>
+        public MemoryCacheSettings()
+        {
+            DefaultPartition = MemoryCacheConfiguration.Instance.DefaultPartition;
+            StaticIntervalInDays = MemoryCacheConfiguration.Instance.DefaultStaticIntervalInDays;
+        }
+
+        #endregion Construction
+
         #region Properties
 
         /// <summary>

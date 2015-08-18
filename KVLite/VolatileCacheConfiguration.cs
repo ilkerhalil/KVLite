@@ -36,8 +36,6 @@ namespace PommaLabs.KVLite
     {
         #region Static instance
 
-        static readonly VolatileCacheConfiguration CachedInstance;
-
         static VolatileCacheConfiguration()
         {
             var configurationFile = "KVLite.config";
@@ -48,8 +46,8 @@ namespace PommaLabs.KVLite
                 // the "bin" directory, because every change would make the application restart.
                 configurationFile = "~/" + configurationFile;
             }
-            CachedInstance = new VolatileCacheConfiguration();
-            CachedInstance.Initialize(new ConfigurationFileConfigurationProvider<VolatileCacheConfiguration>
+            Instance = new VolatileCacheConfiguration();
+            Instance.Initialize(new ConfigurationFileConfigurationProvider<VolatileCacheConfiguration>
             {
                 ConfigurationFile = PortableEnvironment.MapPath(configurationFile),
                 ConfigurationSection = "volatileCache"
@@ -60,10 +58,7 @@ namespace PommaLabs.KVLite
         ///   Gets the static configuration instance.
         /// </summary>
         /// <value>The static configuration instance.</value>
-        public static VolatileCacheConfiguration Instance
-        {
-            get { return CachedInstance; }
-        }
+        public static VolatileCacheConfiguration Instance { get; }
 
         #endregion Static instance
 
@@ -73,7 +68,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         public VolatileCacheConfiguration()
         {
-            DefaultCacheName = "VolatileCache";
+            DefaultCacheName = nameof(VolatileCache);
             DefaultPartition = "KVLite.DefaultPartition";
             DefaultStaticIntervalInDays = 30;
             DefaultInsertionCountBeforeAutoClean = 64;

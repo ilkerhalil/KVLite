@@ -150,6 +150,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MemoryCacheTests.cs" />
     <Compile Include="NinjectConfig.cs" />
     <Compile Include="PersistentCacheTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

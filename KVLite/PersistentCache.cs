@@ -43,28 +43,15 @@ namespace PommaLabs.KVLite
         #region Default Instance
 
         /// <summary>
-        ///   The default cache instance.
-        /// </summary>
-        static readonly PersistentCache CachedDefaultInstance;
-
-        /// <summary>
         ///   Gets the default instance for this cache kind. Default instance is configured using
         ///   default application settings.
         /// </summary>
         [Pure]
-        public static PersistentCache DefaultInstance
-        {
-            get { return CachedDefaultInstance; }
-        }
+        public static PersistentCache DefaultInstance { get; } = new PersistentCache(new PersistentCacheSettings());
 
         #endregion Default Instance
 
         #region Construction
-
-        static PersistentCache()
-        {
-            CachedDefaultInstance = new PersistentCache(new PersistentCacheSettings());
-        }
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.

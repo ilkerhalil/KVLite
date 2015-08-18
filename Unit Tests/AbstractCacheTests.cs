@@ -36,6 +36,7 @@ using NUnit.Framework;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Core;
 using Task = System.Threading.Tasks.Task;
+using PommaLabs.KVLite.UnitTests;
 
 namespace UnitTests
 {

@@ -353,6 +353,11 @@ namespace PommaLabs.KVLite.Core
             get { return _settings; }
         }
 
+        /// <summary>
+        ///   True if the Peek methods are implemented, false otherwise.
+        /// </summary>
+        public override bool CanPeek => true;
+
         #endregion ICache Members
 
         #region Abstract Methods
