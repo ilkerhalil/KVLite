@@ -73,6 +73,9 @@ namespace Benchmarks
                 StoreEachDataTable_Volatile(tables, i);
 
                 FullyCleanCache();
+                StoreEachDataTable_Memory(tables, i);
+
+                FullyCleanCache();
                 RetrieveEachDataTable(tables, i);
 
                 FullyCleanCache();
@@ -80,6 +83,9 @@ namespace Benchmarks
 
                 FullyCleanCache();
                 StoreEachDataTableAsync_Volatile(tables, i);
+
+                FullyCleanCache();
+                StoreEachDataTableAsync_Memory(tables, i);
 
                 FullyCleanCache();
                 RetrieveEachDataTableAsync(tables, i);
@@ -124,6 +130,7 @@ namespace Benchmarks
             Console.WriteLine(@"Fully cleaning cache...");
             PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            MemoryCache.DefaultInstance.Clear();
             Console.WriteLine(@"Cache cleaned!");
         }
 
@@ -260,6 +267,32 @@ namespace Benchmarks
             Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
+        static void StoreEachDataTableAsync_Memory(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"[Memory] Storing each data table asynchronously, iteration {0}...", iteration);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var tasks = new List<Task>();
+            foreach (var table in tables)
+            {
+                tasks.Add(MemoryCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
+            }
+            foreach (var task in tasks)
+            {
+                task.Wait();
+            }
+            stopwatch.Stop();
+
+            Debug.Assert(MemoryCache.DefaultInstance.Count() == tables.Count);
+            Debug.Assert(MemoryCache.DefaultInstance.LongCount() == tables.LongCount());
+
+            Console.WriteLine(@"[Memory] Data tables stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"[Memory] Current cache size: {0} MB", MemoryCache.DefaultInstance.CacheSizeInKB() / 1024L);
+            Console.WriteLine(@"[Memory] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
+        }
+
         static void StoreEachDataTableTwoTimesAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
@@ -305,7 +338,7 @@ namespace Benchmarks
             foreach (var table in tables)
             {
                 var returnedTable = PersistentCache.DefaultInstance.GetFromDefaultPartition<DataTable>(table.TableName);
-                if (returnedTable.HasValue)
+                if (!returnedTable.HasValue)
                 {
                     throw new Exception("Wrong data table read from cache! :(");
                 }
