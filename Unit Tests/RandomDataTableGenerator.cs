@@ -36,8 +36,8 @@ namespace UnitTests
     /// </summary>
     public sealed class RandomDataTableGenerator
     {
-        private readonly string[] _columnNames;
-        private readonly Random _random = new Random();
+        readonly string[] _columnNames;
+        readonly Random _random = new Random();
 
         /// <summary>
         ///   Initializes the generator with a given set of columns.

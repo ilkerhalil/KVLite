@@ -70,9 +70,9 @@
       <Project>{f056179d-90b8-4aba-9ab4-1026e5941fb7}</Project>
       <Name>KVLite</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Unit Tests\Unit Tests.csproj">
+    <ProjectReference Include="..\Unit Tests\KVLite.UnitTests.csproj">
       <Project>{b41547f3-a41c-439a-98da-f478b2d360c1}</Project>
-      <Name>Unit Tests</Name>
+      <Name>KVLite.UnitTests</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

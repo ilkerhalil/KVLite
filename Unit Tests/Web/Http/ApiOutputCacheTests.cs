@@ -31,7 +31,7 @@ namespace UnitTests.Web.Http
     [TestFixture]
     sealed class ApiOutputCacheTests
     {
-        private ApiOutputCache _outputCache;
+        ApiOutputCache _outputCache;
 
         [SetUp]
         public void SetUp()

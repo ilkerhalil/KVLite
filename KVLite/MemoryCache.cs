@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Common.Logging;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
@@ -142,6 +140,18 @@ namespace PommaLabs.KVLite
             throw new NotImplementedException();
         }
 
+        void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(Settings.CacheName):
+                    _store = new SystemMemoryCache(Settings.CacheName);
+                    break;
+            }
+        }
+
+        #region Cache key handling
+
         struct CacheKey
         {
             public string Partition { get; set; }
@@ -152,31 +162,17 @@ namespace PommaLabs.KVLite
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        string SerializeCacheKey(string partition, string key)
+        string SerializeCacheKey(string partition, string key) => Serializer.SerializeToString(new CacheKey
         {
-            return Serializer.SerializeToString(new CacheKey
-            {
-                Partition = partition,
-                Key = key
-            });
-        }
+            Partition = partition,
+            Key = key
+        });
 
 #if NET45
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        CacheKey DeserializeCacheKey(string cacheKey)
-        {
-            return Serializer.DeserializeFromString<CacheKey>(cacheKey);
-        }
+        CacheKey DeserializeCacheKey(string cacheKey) => Serializer.DeserializeFromString<CacheKey>(cacheKey);
 
-        void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(Settings.CacheName):
-                    _store = new SystemMemoryCache(Settings.CacheName);
-                    break;
-            }
-        }
+        #endregion
     }
 }

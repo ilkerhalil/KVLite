@@ -63,13 +63,13 @@ namespace UnitTests
 
         #region Constants
 
-        private const int LargeItemCount = 1000;
+        const int LargeItemCount = 1000;
 
-        private const int MediumItemCount = 100;
+        const int MediumItemCount = 100;
 
-        private const int SmallItemCount = 10;
+        const int SmallItemCount = 10;
 
-        private const int MinItem = 10000;
+        const int MinItem = 10000;
 
         protected readonly List<string> StringItems = Enumerable
             .Range(MinItem, LargeItemCount)
@@ -896,7 +896,7 @@ namespace UnitTests
 
         #region Private Methods
 
-        private void AddSliding(ICache instance, int itemCount, TimeSpan interval)
+        void AddSliding(ICache instance, int itemCount, TimeSpan interval)
         {
             for (var i = 0; i < itemCount; ++i)
             {
@@ -904,7 +904,7 @@ namespace UnitTests
             }
         }
 
-        private void AddStatic(ICache instance, int itemCount)
+        void AddStatic(ICache instance, int itemCount)
         {
             for (var i = 0; i < itemCount; ++i)
             {
@@ -912,7 +912,7 @@ namespace UnitTests
             }
         }
 
-        private void AddTimed(ICache instance, int itemCount, DateTime utcTime)
+        void AddTimed(ICache instance, int itemCount, DateTime utcTime)
         {
             for (var i = 0; i < itemCount; ++i)
             {

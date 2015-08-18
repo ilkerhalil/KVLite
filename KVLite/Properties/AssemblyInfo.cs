@@ -59,4 +59,4 @@ using System.Runtime.InteropServices;
 
 // To allow simpler unit testing.
 [assembly: InternalsVisibleTo("Benchmarks")]
-[assembly: InternalsVisibleTo("UnitTests")]
+[assembly: InternalsVisibleTo("PommaLabs.KVLite.UnitTests")]
