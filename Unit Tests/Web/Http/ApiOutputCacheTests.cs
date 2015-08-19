@@ -23,10 +23,9 @@
 
 using Finsa.CodeServices.Clock;
 using NUnit.Framework;
-using PommaLabs.KVLite;
 using PommaLabs.KVLite.Web.Http;
 
-namespace UnitTests.Web.Http
+namespace PommaLabs.KVLite.UnitTests.Web.Http
 {
     [TestFixture]
     sealed class ApiOutputCacheTests

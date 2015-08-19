@@ -1,22 +1,50 @@
-﻿using Common.Logging;
+﻿// File name: MemoryCache.cs
+// 
+// Author(s): Alessio Parma <alessio.parma@gmail.com>
+// 
+// The MIT License (MIT)
+// 
+// Copyright (c) 2014-2015 Alessio Parma <alessio.parma@gmail.com>
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+using Common.Logging;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
+using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using SystemCacheItemPolicy = System.Runtime.Caching.CacheItemPolicy;
 using SystemMemoryCache = System.Runtime.Caching.MemoryCache;
 
 namespace PommaLabs.KVLite
 {
-    public sealed class MemoryCache : AbstractCache<MemoryCacheSettings>
+    /// <summary>
+    ///   An in-memory cache based on the .NET <see cref="SystemMemoryCache"/>.
+    /// </summary>
+    public sealed class MemoryCache : AbstractCache<MemoryCacheSettings>, IDisposable
     {
         #region Default Instance
 
@@ -31,7 +59,16 @@ namespace PommaLabs.KVLite
 
         #region Construction
 
+        /// <summary>
+        ///   The system memory cache used as backend.
+        /// </summary>
         SystemMemoryCache _store;
+
+        /// <summary>
+        ///   Whether this cache has been disposed or not. When a cache has been disposed, no more
+        ///   operations are allowed on it.
+        /// </summary>
+        bool _disposed;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.
@@ -58,14 +95,90 @@ namespace PommaLabs.KVLite
 
         #endregion Construction
 
+        #region FormattableObject members
+
+        /// <summary>
+        ///   Returns all property (or field) values, along with their names, so that they can be
+        ///   used to produce a meaningful <see cref="M:Finsa.CodeServices.Common.FormattableObject.ToString"/>.
+        /// </summary>
+        protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
+        {
+            yield return KeyValuePair.Create("SysteMemoryCacheName", _store.Name);
+        }
+
+        #endregion FormattableObject members
+
+        #region IDisposable members
+
+        /// <summary>
+        ///   Performs application-defined tasks associated with freeing, releasing, or resetting
+        ///   unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                // Nothing to do, object has been disposed.
+                return;
+            }
+
+            if (_store != null)
+            {
+                _store.Dispose();
+                _store = null;
+            }
+
+            _disposed = true;
+        }
+        #endregion IDisposable members
+
+        #region ICache members
+
+        /// <summary>
+        /// Gets the clock used by the cache.
+        /// </summary>
+        /// <value>The clock used by the cache.</value>
+        /// <remarks>
+        ///   Since <see cref="SystemMemoryCache"/> does not allow clock customisation, then this property defaults to <see cref="T:Finsa.CodeServices.Clock.SystemClock" />.
+        /// </remarks>
         public override IClock Clock { get; } = new SystemClock();
 
+        /// <summary>
+        /// Gets the compressor used by the cache.
+        /// </summary>
+        /// <value>The compressor used by the cache.</value>
+        /// <remarks>
+        /// Since compression is not used inside this kind of cache, then this property defaults to <see cref="NoOpCompressor"/>.
+        /// </remarks>
         public override ICompressor Compressor { get; } = new NoOpCompressor();
 
+        /// <summary>
+        /// Gets the log used by the cache.
+        /// </summary>
+        /// <value>The log used by the cache.</value>
+        /// <remarks>
+        /// This property belongs to the services which can be injected using the cache
+        /// constructor. If not specified, it defaults to what
+        /// <see cref="M:Common.Logging.LogManager.GetLogger(System.Type)" /> returns.
+        /// </remarks>
         public override ILog Log { get; }
 
+        /// <summary>
+        /// Gets the serializer used by the cache.
+        /// </summary>
+        /// <value>The serializer used by the cache.</value>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>.
+        ///   Therefore, if you do not specify another serializer, make sure that your objects are
+        ///   serializable (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as public properties).
+        /// </remarks>
         public override ISerializer Serializer { get; }
 
+        /// <summary>
+        /// The available settings for the cache.
+        /// </summary>
+        /// <value>The available settings for the cache.</value>
         public override MemoryCacheSettings Settings { get; }
 
         /// <summary>
@@ -75,6 +188,9 @@ namespace PommaLabs.KVLite
 
         protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval)
         {
+            // Preconditions
+            Raise<InvalidOperationException>.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
+
             var policy = (interval == TimeSpan.Zero)
                 ? new SystemCacheItemPolicy { AbsoluteExpiration = utcExpiry }
                 : new SystemCacheItemPolicy { SlidingExpiration = interval };
@@ -84,6 +200,9 @@ namespace PommaLabs.KVLite
 
         protected override void ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
+            // Preconditions
+            Raise<InvalidOperationException>.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
+
             // We need to make a snapshot of the keys, since the cache might be used by other
             // processes. Therefore, we start projecting all keys.
             var keys = _store.Select(x => x.Key);
@@ -107,12 +226,18 @@ namespace PommaLabs.KVLite
 
         protected override bool ContainsInternal(string partition, string key)
         {
+            // Preconditions
+            Raise<InvalidOperationException>.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
+
             var maybeCacheKey = SerializeToCacheKey(partition, key);
             return _store.Contains(maybeCacheKey);
         }
 
         protected override long CountInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate)
         {
+            // Preconditions
+            Raise<InvalidOperationException>.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
+
             // If partition has not been specified, then we use the GetCount method provided
             // directly by the MemoryCache.
             if (partition == null)
@@ -125,13 +250,11 @@ namespace PommaLabs.KVLite
             return _store.Count(x => DeserializeFromCacheKey(x.Key).Partition == partition);
         }
 
-        protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
-        {
-            throw new NotImplementedException();
-        }
-
         protected override Option<TVal> GetInternal<TVal>(string partition, string key)
         {
+            // Preconditions
+            Raise<InvalidOperationException>.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
+
             var maybeCacheKey = SerializeToCacheKey(partition, key);
             var maybeValue = _store.Get(maybeCacheKey);
 
@@ -147,6 +270,9 @@ namespace PommaLabs.KVLite
 
         protected override Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
+            // Preconditions
+            Raise<InvalidOperationException>.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
+
             var maybeCacheKey = SerializeToCacheKey(partition, key);
             var maybeCacheItem = _store.GetCacheItem(maybeCacheKey);
 
@@ -168,6 +294,9 @@ namespace PommaLabs.KVLite
 
         protected override CacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
         {
+            // Preconditions
+            Raise<InvalidOperationException>.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
+
             // Pick only the items with the right type.
             var q = _store.Where(x => x.Value is TVal).Select(x => new
             {
@@ -181,8 +310,8 @@ namespace PommaLabs.KVLite
                 q = q.Where(x => x.CacheKey.Partition == partition);
             }
 
-            // Project the items to proper KVLite cache items. Many properties available in
-            // the KVLite cache items cannot be filled due to missing information.
+            // Project the items to proper KVLite cache items. Many properties available in the
+            // KVLite cache items cannot be filled due to missing information.
             return q.Select(x => new CacheItem<TVal>
             {
                 Partition = x.CacheKey.Partition,
@@ -208,9 +337,14 @@ namespace PommaLabs.KVLite
 
         protected override void RemoveInternal(string partition, string key)
         {
+            // Preconditions
+            Raise<InvalidOperationException>.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
+
             var maybeCacheKey = SerializeToCacheKey(partition, key);
             _store.Remove(maybeCacheKey);
         }
+
+        #endregion ICache members
 
         void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -224,29 +358,64 @@ namespace PommaLabs.KVLite
 
         void InitSystemMemoryCache()
         {
-            _store = new SystemMemoryCache(Settings.CacheName);
+            // Preconditions
+            Raise<InvalidOperationException>.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
+
+            // If a memory cache was already instanced, and it was not the default, the dispose it
+            // after applying the new initialization.
+            if (_store != null && _store != SystemMemoryCache.Default)
+            {
+                _store.Dispose();
+            }
+
+            if (Settings.CacheName == MemoryCacheConfiguration.Instance.DefaultCacheName)
+            {
+                // If the default cache name is used, then refer to the Default memory cache. It is
+                // the safest and most efficient way to use that kind of cache.
+                _store = SystemMemoryCache.Default;
+                return;
+            }
+
+            // Otherwise, if a name has been specified, then we need to apply a proper
+            // configuration. This way is more dangerous, because it is not easy to choose the right
+            // moment to dispose the memory cache.
+            _store = new SystemMemoryCache(Settings.CacheName, new NameValueCollection
+            {
+                { "CacheMemoryLimitMegabytes", Settings.MaxCacheSizeInMB.ToString() }
+            });
         }
 
         #region Cache size estimation
 
-        public double CacheSizeInKB()
+        /// <summary>
+        ///   Returns current cache size in kilobytes.
+        /// </summary>
+        /// <returns>Current cache size in kilobytes.</returns>
+        [Pure]
+        public long CacheSizeInKB()
         {
+            // Preconditions
+            Raise<InvalidOperationException>.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
+
             var serializer = new BinarySerializer();
             var cacheItems = _store.ToArray();
             using (var stream = serializer.SerializeToStream(cacheItems))
             {
-                return stream.Length / 1024.0;
+                return stream.Length / 1024L;
             }
         }
 
-        #endregion
+        #endregion Cache size estimation
 
         #region Cache key handling
 
+        [Serializable, DataContract]
         struct CacheKey
         {
+            [DataMember(Name = "p", Order = 0, EmitDefaultValue = false)]
             public string Partition { get; set; }
 
+            [DataMember(Name = "k", Order = 1, EmitDefaultValue = false)]
             public string Key { get; set; }
         }
 

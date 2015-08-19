@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Serialization;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,127 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         #endregion Setup/Teardown
+
+        #region Partition/Key serialization
+
+        [Test]
+        public void PartitionKeySerialization_BinarySerializer()
+        {
+            Cache = new MemoryCache(new MemoryCacheSettings(), serializer: new BinarySerializer());
+
+            Cache.AddStatic(StringItems[0], StringItems[1], StringItems[2]);
+            var item = Cache.GetItem<string>(StringItems[0], StringItems[1]);
+
+            Assert.IsNotNull(item);
+            Assert.AreEqual(StringItems[0], item.Value.Partition);
+            Assert.AreEqual(StringItems[1], item.Value.Key);
+            Assert.AreEqual(StringItems[2], item.Value.Value);
+        }
+
+        [Test]
+        public void PartitionKeySerialization_BsonSerializer()
+        {
+            Cache = new MemoryCache(new MemoryCacheSettings(), serializer: new BsonSerializer());
+
+            Cache.AddStatic(StringItems[0], StringItems[1], StringItems[2]);
+            var item = Cache.GetItem<string>(StringItems[0], StringItems[1]);
+
+            Assert.IsNotNull(item);
+            Assert.AreEqual(StringItems[0], item.Value.Partition);
+            Assert.AreEqual(StringItems[1], item.Value.Key);
+            Assert.AreEqual(StringItems[2], item.Value.Value);
+        }
+
+        [Test]
+        public void PartitionKeySerialization_JsonSerializer()
+        {
+            Cache = new MemoryCache(new MemoryCacheSettings(), serializer: new JsonSerializer());
+
+            Cache.AddStatic(StringItems[0], StringItems[1], StringItems[2]);
+            var item = Cache.GetItem<string>(StringItems[0], StringItems[1]);
+
+            Assert.IsNotNull(item);
+            Assert.AreEqual(StringItems[0], item.Value.Partition);
+            Assert.AreEqual(StringItems[1], item.Value.Key);
+            Assert.AreEqual(StringItems[2], item.Value.Value);
+        }
+
+        [Test]
+        public void PartitionKeySerialization_XmlSerializer()
+        {
+            Cache = new MemoryCache(new MemoryCacheSettings(), serializer: new XmlSerializer());
+
+            Cache.AddStatic(StringItems[0], StringItems[1], StringItems[2]);
+            var item = Cache.GetItem<string>(StringItems[0], StringItems[1]);
+
+            Assert.IsNotNull(item);
+            Assert.AreEqual(StringItems[0], item.Value.Partition);
+            Assert.AreEqual(StringItems[1], item.Value.Key);
+            Assert.AreEqual(StringItems[2], item.Value.Value);
+        }
+
+        [Test]
+        public void PartitionKeySerialization_YamlSerializer()
+        {
+            Cache = new MemoryCache(new MemoryCacheSettings(), serializer: new YamlSerializer());
+
+            Cache.AddStatic(StringItems[0], StringItems[1], StringItems[2]);
+            var item = Cache.GetItem<string>(StringItems[0], StringItems[1]);
+
+            Assert.IsNotNull(item);
+            Assert.AreEqual(StringItems[0], item.Value.Partition);
+            Assert.AreEqual(StringItems[1], item.Value.Key);
+            Assert.AreEqual(StringItems[2], item.Value.Value);
+        }
+
+        #endregion Partition/Key serialization
+
+        #region SystemMemoryCache disposal
+
+        [Test]
+        public void Dispose_DefaultSystemMemoryCache()
+        {
+            Cache.Dispose();
+        }
+
+        [Test]
+        public void Dispose_DefaultSystemMemoryCache_TwoTimes()
+        {
+            Cache.Dispose();
+            Cache.Dispose();
+        }
+
+        [Test, ExpectedException(typeof(InvalidOperationException))]
+        public void Dispose_DefaultSystemMemoryCache_InvalidOperationAfterDispose()
+        {
+            Cache.Dispose();
+            Cache.Count();
+        }
+
+        [Test]
+        public void Dispose_CustomSystemMemoryCache()
+        {
+            Cache = new MemoryCache(new MemoryCacheSettings { CacheName = "PINO" });
+            Cache.Dispose();
+        }
+
+        [Test]
+        public void Dispose_CustomSystemMemoryCache_TwoTimes()
+        {
+            Cache = new MemoryCache(new MemoryCacheSettings { CacheName = "PINO" });
+            Cache.Dispose();
+            Cache.Dispose();
+        }
+
+        [Test, ExpectedException(typeof(InvalidOperationException))]
+        public void Dispose_CustomSystemMemoryCache_InvalidOperationAfterDispose()
+        {
+            Cache = new MemoryCache(new MemoryCacheSettings { CacheName = "PINO" });
+            Cache.Dispose();
+            Cache.Count();
+        }
+
+        #endregion SystemMemoryCache disposal
 
         [TestCase(SmallItemCount)]
         [TestCase(MediumItemCount)]

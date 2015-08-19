@@ -23,11 +23,11 @@
 
 #if !PORTABLE
 
+using PommaLabs.Thrower;
 using System;
 using System.Data;
 using System.Globalization;
 using System.Linq;
-using PommaLabs.Thrower;
 
 namespace PommaLabs.KVLite.UnitTests
 {

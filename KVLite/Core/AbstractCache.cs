@@ -78,9 +78,9 @@ namespace PommaLabs.KVLite.Core
         /// <value>The serializer used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="BinarySerializer"/>.
+        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>.
         ///   Therefore, if you do not specify another serializer, make sure that your objects are
-        ///   serializable (in most cases, simply use th <see cref="SerializableAttribute"/>).
+        ///   serializable (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as public properties).
         /// </remarks>
         public abstract ISerializer Serializer { get; }
 

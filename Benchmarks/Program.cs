@@ -25,14 +25,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Finsa.CodeServices.Common;
 using PommaLabs.KVLite;
-using UnitTests;
 using PommaLabs.KVLite.UnitTests;
 using Finsa.CodeServices.Serialization;
 

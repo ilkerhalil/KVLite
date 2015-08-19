@@ -21,6 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Common;
+using Ninject;
+using NUnit.Framework;
+using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -29,19 +34,12 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Common;
-using Ninject;
-using NUnit.Framework;
-using PommaLabs.KVLite;
-using PommaLabs.KVLite.Core;
 using Task = System.Threading.Tasks.Task;
-using PommaLabs.KVLite.UnitTests;
 
-namespace UnitTests
+namespace PommaLabs.KVLite.UnitTests
 {
     [TestFixture]
-    internal abstract class AbstractCacheTests<TCacheSettings> where TCacheSettings : AbstractCacheSettings
+    abstract class AbstractCacheTests<TCacheSettings> where TCacheSettings : AbstractCacheSettings
     {
         #region Setup/Teardown
 
@@ -821,14 +819,14 @@ namespace UnitTests
         #region Serialization
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
+        //[ExpectedException(typeof(ArgumentException))] <-- Not thrown anymore with JsonSerializer
         public void AddStatic_NotSerializableValue()
         {
             Cache.AddStaticToDefaultPartition(StringItems[0], new NotSerializableClass());
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
+        //[ExpectedException(typeof(ArgumentException))] <-- Not thrown anymore with JsonSerializer
         public void AddStatic_DataContractValue()
         {
             Cache.AddStaticToDefaultPartition(StringItems[0], new DataContractClass());

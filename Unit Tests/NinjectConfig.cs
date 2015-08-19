@@ -28,20 +28,20 @@ using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using Ninject.Modules;
 
-namespace UnitTests
+namespace PommaLabs.KVLite.UnitTests
 {
     /// <summary>
     ///   Bindings for KVLite.
     /// </summary>
-    internal sealed class NinjectConfig : NinjectModule
+    sealed class NinjectConfig : NinjectModule
     {
         public override void Load()
         {
             Bind<IClock>().To<MockClock>().InSingletonScope();
             Bind<ICompressor>().To<SnappyCompressor>().InSingletonScope();
             Bind<ILog>().To<NoOpLogger>().InSingletonScope();
-            Bind<ISerializer>().To<BinarySerializer>().InSingletonScope();
-            Bind<BinarySerializerSettings>().ToMethod(ctx => new BinarySerializerSettings());
+            Bind<ISerializer>().To<JsonSerializer>().InSingletonScope();
+            Bind<JsonSerializerSettings>().ToMethod(ctx => new JsonSerializerSettings());
         }
     }
 }

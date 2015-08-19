@@ -39,8 +39,8 @@ namespace RestService.WebApi
             Bind<ICompressor>().To<DeflateCompressor>().InSingletonScope();
             Bind<ILog>().To<NoOpLogger>().InSingletonScope();
             Bind<ICache>().To<PersistentCache>().InSingletonScope();
-            Bind<ISerializer>().To<BinarySerializer>().InSingletonScope();
-            Bind<BinarySerializerSettings>().ToMethod(ctx => new BinarySerializerSettings());
+            Bind<ISerializer>().To<JsonSerializer>().InSingletonScope();
+            Bind<JsonSerializerSettings>().ToMethod(ctx => new JsonSerializerSettings());
         }
     }
 }
