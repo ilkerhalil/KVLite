@@ -114,6 +114,10 @@ namespace PommaLabs.KVLite
         ///   Performs application-defined tasks associated with freeing, releasing, or resetting
         ///   unmanaged resources.
         /// </summary>
+        /// <remarks>
+        ///   When called on a cache using <see cref="SystemMemoryCache.Default"/> as store,
+        ///   this method does nothing. In fact, it is not safe to dispose the default memory cache instance.
+        /// </remarks>
         public void Dispose()
         {
             if (_disposed)
@@ -122,7 +126,7 @@ namespace PommaLabs.KVLite
                 return;
             }
 
-            if (_store != null)
+            if (_store != null && _store != SystemMemoryCache.Default)
             {
                 _store.Dispose();
                 _store = null;
@@ -135,48 +139,51 @@ namespace PommaLabs.KVLite
         #region ICache members
 
         /// <summary>
-        /// Gets the clock used by the cache.
+        ///   Gets the clock used by the cache.
         /// </summary>
         /// <value>The clock used by the cache.</value>
         /// <remarks>
-        ///   Since <see cref="SystemMemoryCache"/> does not allow clock customisation, then this property defaults to <see cref="T:Finsa.CodeServices.Clock.SystemClock" />.
+        ///   Since <see cref="SystemMemoryCache"/> does not allow clock customisation, then this
+        ///   property defaults to <see cref="T:Finsa.CodeServices.Clock.SystemClock"/>.
         /// </remarks>
         public override IClock Clock { get; } = new SystemClock();
 
         /// <summary>
-        /// Gets the compressor used by the cache.
+        ///   Gets the compressor used by the cache.
         /// </summary>
         /// <value>The compressor used by the cache.</value>
         /// <remarks>
-        /// Since compression is not used inside this kind of cache, then this property defaults to <see cref="NoOpCompressor"/>.
+        ///   Since compression is not used inside this kind of cache, then this property defaults
+        ///   to <see cref="NoOpCompressor"/>.
         /// </remarks>
         public override ICompressor Compressor { get; } = new NoOpCompressor();
 
         /// <summary>
-        /// Gets the log used by the cache.
+        ///   Gets the log used by the cache.
         /// </summary>
         /// <value>The log used by the cache.</value>
         /// <remarks>
-        /// This property belongs to the services which can be injected using the cache
-        /// constructor. If not specified, it defaults to what
-        /// <see cref="M:Common.Logging.LogManager.GetLogger(System.Type)" /> returns.
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to what
+        ///   <see cref="M:Common.Logging.LogManager.GetLogger(System.Type)"/> returns.
         /// </remarks>
         public override ILog Log { get; }
 
         /// <summary>
-        /// Gets the serializer used by the cache.
+        ///   Gets the serializer used by the cache.
         /// </summary>
         /// <value>The serializer used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>.
-        ///   Therefore, if you do not specify another serializer, make sure that your objects are
-        ///   serializable (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as public properties).
+        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>. Therefore,
+        ///   if you do not specify another serializer, make sure that your objects are serializable
+        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields
+        ///   as public properties).
         /// </remarks>
         public override ISerializer Serializer { get; }
 
         /// <summary>
-        /// The available settings for the cache.
+        ///   The available settings for the cache.
         /// </summary>
         /// <value>The available settings for the cache.</value>
         public override MemoryCacheSettings Settings { get; }

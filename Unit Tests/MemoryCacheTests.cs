@@ -61,8 +61,19 @@ namespace PommaLabs.KVLite.UnitTests
         [TearDown]
         public void TearDown()
         {
-            Cache.Clear();
-            Cache = null;
+            try
+            {
+                Cache?.Clear();
+            }
+#pragma warning disable CC0004 // Catch block cannot be empty
+            catch
+            {
+            }
+#pragma warning restore CC0004 // Catch block cannot be empty
+            finally
+            {
+                Cache = null;
+            }
         }
 
         #endregion Setup/Teardown
@@ -146,19 +157,22 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void Dispose_DefaultSystemMemoryCache()
         {
+            Cache = new MemoryCache(new MemoryCacheSettings());
             Cache.Dispose();
         }
 
         [Test]
         public void Dispose_DefaultSystemMemoryCache_TwoTimes()
         {
+            Cache = new MemoryCache(new MemoryCacheSettings());
             Cache.Dispose();
             Cache.Dispose();
         }
 
         [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void Dispose_DefaultSystemMemoryCache_InvalidOperationAfterDispose()
+        public void Dispose_DefaultSystemMemoryCache_CanWorkAfterDispose()
         {
+            Cache = new MemoryCache(new MemoryCacheSettings());
             Cache.Dispose();
             Cache.Count();
         }
