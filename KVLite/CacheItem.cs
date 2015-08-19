@@ -89,9 +89,9 @@ namespace PommaLabs.KVLite
         /// </returns>
         protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return KeyValuePair.Create("Partition", Partition.SafeToString());
-            yield return KeyValuePair.Create("Key", Key.SafeToString());
-            yield return KeyValuePair.Create("UtcExpiry", UtcExpiry.SafeToString());
+            yield return KeyValuePair.Create(nameof(Partition), Partition.SafeToString());
+            yield return KeyValuePair.Create(nameof(Key), Key.SafeToString());
+            yield return KeyValuePair.Create(nameof(UtcExpiry), UtcExpiry.SafeToString());
         }
 
         /// <summary>

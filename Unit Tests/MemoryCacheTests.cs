@@ -42,14 +42,14 @@ namespace PommaLabs.KVLite.UnitTests
 
         const int MinItem = 10000;
 
-        protected readonly List<string> StringItems = Enumerable
+        readonly List<string> StringItems = Enumerable
             .Range(MinItem, LargeItemCount)
             .Select(x => x.ToString(CultureInfo.InvariantCulture))
             .ToList();
 
         #region Setup/Teardown
 
-        protected MemoryCache Cache;
+        MemoryCache Cache;
 
         [SetUp]
         public void SetUp()

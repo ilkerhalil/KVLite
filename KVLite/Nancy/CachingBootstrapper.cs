@@ -98,7 +98,7 @@ namespace PommaLabs.KVLite.Nancy
         /// <returns>Response or null.</returns>
         Response CheckCache(NancyContext context)
         {
-            var cacheKey = context.GetRequestFingerprint(_cache.Serializer);
+            var cacheKey = context.GetRequestFingerprint();
             var cachedSummary = _cache.Get<ResponseSummary>(ResponseCachePartition, cacheKey);
             return cachedSummary.HasValue ? cachedSummary.Value.ToResponse() : null;
         }
@@ -136,7 +136,7 @@ namespace PommaLabs.KVLite.Nancy
 
             try
             {
-                var cacheKey = context.GetRequestFingerprint(_cache.Serializer);
+                var cacheKey = context.GetRequestFingerprint();
                 var cachedSummary = new ResponseSummary(responseToBeCached);
                 _cache.AddTimedAsync(ResponseCachePartition, cacheKey, cachedSummary, _cache.Clock.UtcNow.AddSeconds(cacheSeconds));
                 context.Response = cachedSummary.ToResponse();

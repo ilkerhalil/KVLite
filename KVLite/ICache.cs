@@ -269,6 +269,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The number of items in given partition.
         /// </summary>
+        /// <param name="partition">The partition.</param>
         /// <returns>The number of items in given partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
@@ -286,6 +287,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The number of items in given partition.
         /// </summary>
+        /// <param name="partition">The partition.</param>
         /// <returns>The number of items in given partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>

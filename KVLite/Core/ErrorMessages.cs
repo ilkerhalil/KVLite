@@ -23,7 +23,7 @@
 
 namespace PommaLabs.KVLite.Core
 {
-    internal static class ErrorMessages
+    static class ErrorMessages
     {
         public const string InvalidCacheName = "In-memory cache name can only contain alphanumeric characters, dots and underscores.";
 

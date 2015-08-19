@@ -69,7 +69,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   The string used to tag streams coming from <see cref="RecyclableMemoryStreamManager.Instance"/>.
         /// </summary>
-        const string StreamTag = "KVLite";
+        const string StreamTag = nameof(KVLite);
 
         /// <summary>
         ///   The initial capacity of the streams retrieved from <see cref="RecyclableMemoryStreamManager.Instance"/>.
@@ -403,11 +403,11 @@ namespace PommaLabs.KVLite.Core
             }
 
             var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-            p.Add("key", key, DbType.String);
-            p.Add("serializedValue", serializedValue, DbType.Binary, size: serializedValue.Length);
-            p.Add("utcExpiry", utcExpiry.ToUnixTime(), DbType.Int64);
-            p.Add("interval", (long) interval.TotalSeconds, DbType.Int64);
+            p.Add(nameof(partition), partition, DbType.String);
+            p.Add(nameof(key), key, DbType.String);
+            p.Add(nameof(serializedValue), serializedValue, DbType.Binary, size: serializedValue.Length);
+            p.Add(nameof(utcExpiry), utcExpiry.ToUnixTime(), DbType.Int64);
+            p.Add(nameof(interval), (long) interval.TotalSeconds, DbType.Int64);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
@@ -432,7 +432,7 @@ namespace PommaLabs.KVLite.Core
         protected sealed override void ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
             var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
+            p.Add(nameof(partition), partition, DbType.String);
             p.Add("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
@@ -445,8 +445,8 @@ namespace PommaLabs.KVLite.Core
         protected sealed override bool ContainsInternal(string partition, string key)
         {
             var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-            p.Add("key", key, DbType.String);
+            p.Add(nameof(partition), partition, DbType.String);
+            p.Add(nameof(key), key, DbType.String);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
@@ -458,7 +458,7 @@ namespace PommaLabs.KVLite.Core
         protected sealed override long CountInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate)
         {
             var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
+            p.Add(nameof(partition), partition, DbType.String);
             p.Add("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
@@ -472,8 +472,8 @@ namespace PommaLabs.KVLite.Core
         protected sealed override Option<TVal> GetInternal<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-            p.Add("key", key, DbType.String);
+            p.Add(nameof(partition), partition, DbType.String);
+            p.Add(nameof(key), key, DbType.String);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
@@ -486,8 +486,8 @@ namespace PommaLabs.KVLite.Core
         protected sealed override Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-            p.Add("key", key, DbType.String);
+            p.Add(nameof(partition), partition, DbType.String);
+            p.Add(nameof(key), key, DbType.String);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
@@ -500,7 +500,7 @@ namespace PommaLabs.KVLite.Core
         protected sealed override CacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
         {
             var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
+            p.Add(nameof(partition), partition, DbType.String);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
@@ -517,8 +517,8 @@ namespace PommaLabs.KVLite.Core
         protected sealed override Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-            p.Add("key", key, DbType.String);
+            p.Add(nameof(partition), partition, DbType.String);
+            p.Add(nameof(key), key, DbType.String);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
@@ -531,8 +531,8 @@ namespace PommaLabs.KVLite.Core
         protected sealed override Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-            p.Add("key", key, DbType.String);
+            p.Add(nameof(partition), partition, DbType.String);
+            p.Add(nameof(key), key, DbType.String);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
@@ -545,7 +545,7 @@ namespace PommaLabs.KVLite.Core
         protected sealed override CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
         {
             var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
+            p.Add(nameof(partition), partition, DbType.String);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
 
             using (var ctx = _connectionPool.GetObject())
@@ -562,8 +562,8 @@ namespace PommaLabs.KVLite.Core
         protected sealed override void RemoveInternal(string partition, string key)
         {
             var p = new DynamicParameters();
-            p.Add("partition", partition, DbType.String);
-            p.Add("key", key, DbType.String);
+            p.Add(nameof(partition), partition, DbType.String);
+            p.Add(nameof(key), key, DbType.String);
 
             using (var ctx = _connectionPool.GetObject())
             {
@@ -728,9 +728,9 @@ namespace PommaLabs.KVLite.Core
             /// </summary>
             protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
             {
-                yield return KeyValuePair.Create("Partition", Partition.SafeToString());
-                yield return KeyValuePair.Create("Key", Key.SafeToString());
-                yield return KeyValuePair.Create("UtcExpiry", UtcExpiry.SafeToString());
+                yield return KeyValuePair.Create(nameof(Partition), Partition.SafeToString());
+                yield return KeyValuePair.Create(nameof(Key), Key.SafeToString());
+                yield return KeyValuePair.Create(nameof(UtcExpiry), UtcExpiry.SafeToString());
             }
 
             /// <summary>

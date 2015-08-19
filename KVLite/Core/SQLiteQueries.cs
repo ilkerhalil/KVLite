@@ -28,7 +28,7 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   All queries used inside the <see cref="PersistentCache"/> class.
     /// </summary>
-    internal static class SQLiteQueries
+    static class SQLiteQueries
     {
         #region Private Queries
 

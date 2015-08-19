@@ -30,7 +30,7 @@ using System.Threading;
 
 namespace PommaLabs.KVLite.Core
 {
-    internal static class TaskRunner
+    static class TaskRunner
     {
         public static Task Run(Action action)
         {
