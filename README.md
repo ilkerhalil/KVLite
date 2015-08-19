@@ -13,3 +13,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
     + [PommaLabs.KVLite (Core)](https://www.nuget.org/packages/PommaLabs.KVLite.Core/), all managed APIs.
     + [PommaLabs.KVLite (Web API Output Cache Provider)](https://www.nuget.org/packages/PommaLabs.KVLite.WebApi/)
     + [PommaLabs.KVLite (Nancy Caching Bootstrapper)](https://www.nuget.org/packages/PommaLabs.KVLite.Nancy/)
+
+## About this repository and the maintainer ##
+
+Everything done on this repository is freely offered on the terms of the project license. You are free to do everything you want with the code and its related files, as long as you respect the license and use common sense while doing it :-)
