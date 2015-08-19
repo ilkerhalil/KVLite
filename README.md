@@ -1,4 +1,5 @@
-# PommaLabs.KVLite #
+KVLite - Key-value store built on SQLite
+========================================
 
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store. KVLite also implements a caching bootstrapper for NancyFX, which can be configured to be either persistent or volatile.
 
