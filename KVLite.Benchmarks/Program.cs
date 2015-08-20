@@ -28,11 +28,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Finsa.CodeServices.Common;
-using PommaLabs.KVLite;
 using PommaLabs.KVLite.UnitTests;
 using Finsa.CodeServices.Serialization;
 
-namespace Benchmarks
+namespace PommaLabs.KVLite.Benchmarks
 {
     public static class Program
     {

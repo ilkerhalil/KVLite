@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager", "NuGet Packager\NuGet Packager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.UnitTests", "KVLite.Unit Tests\KVLite.UnitTests.csproj", "{B41547F3-A41C-439A-98DA-F478B2D360C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.UnitTests", "KVLite.UnitTests\KVLite.UnitTests.csproj", "{B41547F3-A41C-439A-98DA-F478B2D360C1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4A3E1022-C52E-4C73-AE31-BFF7294F8CED}"
 	ProjectSection(SolutionItems) = preProject
