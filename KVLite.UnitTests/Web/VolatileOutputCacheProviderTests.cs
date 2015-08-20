@@ -1,4 +1,4 @@
-﻿// File name: TaskRunner.cs
+﻿// File name: VolatileOutputCacheProviderTests.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,24 +21,22 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Threading.Tasks;
+using NUnit.Framework;
+using PommaLabs.KVLite.Web;
 
-#if !NET45
-using System.Threading;
-#endif
-
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.KVLite.UnitTests.Web
 {
-    static class TaskRunner
+    [TestFixture]
+    sealed class VolatileOutputCacheProviderTests
     {
-        public static Task Run(Action action)
+        /// <summary>
+        ///   Verifies issue #1.
+        /// </summary>
+        [Test]
+        public void Get_ShouldReturnNullIfItemIsMissing()
         {
-#if NET45
-            return Task.Run(action);
-#else
-            return Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
-#endif
+            var provider = new VolatileOutputCacheProvider();
+            Assert.IsNull(provider.Get("X"));
         }
     }
 }

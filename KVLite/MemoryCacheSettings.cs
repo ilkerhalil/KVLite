@@ -1,4 +1,4 @@
-﻿// File name: VolatileCacheSettings.cs
+﻿// File name: MemoryCacheSettings.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,39 +21,37 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Core;
+using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
-using PommaLabs.Thrower;
-using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
     /// <summary>
-    ///   Settings used by <see cref="VolatileCache"/>.
+    ///   Settings used by <see cref="MemoryCache"/>.
     /// </summary>
     [Serializable]
-    public sealed class VolatileCacheSettings : AbstractCacheSettings
+    public sealed class MemoryCacheSettings : AbstractCacheSettings
     {
         #region Fields
 
-        string _cacheName = VolatileCacheConfiguration.Instance.DefaultCacheName;
+        string _cacheName = MemoryCacheConfiguration.Instance.DefaultCacheName;
 
         #endregion Fields
 
         #region Construction
 
         /// <summary>
-        ///   Sets default values read from <see cref="VolatileCacheSettings"/>.
+        ///   Sets default values read from <see cref="MemoryCacheConfiguration"/>.
         /// </summary>
-        public VolatileCacheSettings()
+        public MemoryCacheSettings()
         {
-            DefaultPartition = VolatileCacheConfiguration.Instance.DefaultPartition;
-            StaticIntervalInDays = VolatileCacheConfiguration.Instance.DefaultStaticIntervalInDays;
-            InsertionCountBeforeAutoClean = VolatileCacheConfiguration.Instance.DefaultInsertionCountBeforeAutoClean;
-            MaxCacheSizeInMB = VolatileCacheConfiguration.Instance.DefaultMaxCacheSizeInMB;
-            MaxJournalSizeInMB = VolatileCacheConfiguration.Instance.DefaultMaxJournalSizeInMB;
+            DefaultPartition = MemoryCacheConfiguration.Instance.DefaultPartition;
+            StaticIntervalInDays = MemoryCacheConfiguration.Instance.DefaultStaticIntervalInDays;
+            MaxCacheSizeInMB = MemoryCacheConfiguration.Instance.DefaultMaxCacheSizeInMB;
         }
 
         #endregion Construction
@@ -61,18 +59,18 @@ namespace PommaLabs.KVLite
         #region Properties
 
         /// <summary>
-        ///   Gets the default settings for <see cref="VolatileCache"/>.
+        ///   Gets the default settings for <see cref="MemoryCache"/>.
         /// </summary>
-        /// <value>The default settings for <see cref="VolatileCache"/>.</value>
+        /// <value>The default settings for <see cref="MemoryCache"/>.</value>
         [Pure]
-        public static VolatileCacheSettings Default { get; } = new VolatileCacheSettings();
+        public static MemoryCacheSettings Default { get; } = new MemoryCacheSettings();
 
         #endregion Properties
 
         #region Settings
 
         /// <summary>
-        ///   The name of the in-memory SQLite DB used as the backend for the cache.
+        ///   The name of the in-memory store used as the backend for the cache.
         /// </summary>
         public string CacheName
         {
@@ -89,7 +87,7 @@ namespace PommaLabs.KVLite
                 // Preconditions
                 Raise<ArgumentException>.If(string.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCacheName);
                 Raise<ArgumentException>.IfNot(Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$"), ErrorMessages.InvalidCacheName);
-                
+
                 _cacheName = value;
                 OnPropertyChanged();
             }

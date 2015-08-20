@@ -29,14 +29,14 @@ namespace PommaLabs.KVLite.Web
     /// </summary>
     public sealed class ViewStateStorageSettings : ICloneable
     {
-        private ViewStateStorageBehavior _behavior;
-        private bool _compressed;
-        private string _connectionString = "data source=127.0.0.1;Trusted_Connection=yes";
-        private ViewStateStorageMethod _method;
-        private string _storagePath = "~/Viewstate";
-        private string _tableName = "app_ViewState";
-        private double _fileage = 3;
-        private TimeSpan _maxAge = TimeSpan.Zero;
+        ViewStateStorageBehavior _behavior;
+        bool _compressed;
+        string _connectionString = "data source=127.0.0.1;Trusted_Connection=yes";
+        ViewStateStorageMethod _method;
+        string _storagePath = "~/Viewstate";
+        string _tableName = "app_ViewState";
+        double _fileage = 3;
+        TimeSpan _maxAge = TimeSpan.Zero;
 
         /// <summary>
         ///   Initializes a new instance of Flesk.Accelerator.ViewState.ViewStateStorageSettings

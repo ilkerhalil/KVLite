@@ -27,7 +27,7 @@ using System.Linq;
 using System.Web.Http;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.Diagnostics;
+using PommaLabs.Thrower;
 
 namespace PommaLabs.KVLite.Web.Http
 {
@@ -36,7 +36,7 @@ namespace PommaLabs.KVLite.Web.Http
     /// </summary>
     public abstract class AbstractCacheController : ApiController
     {
-        private readonly ICache _cache;
+        readonly ICache _cache;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="AbstractCacheController"/> class.
@@ -175,7 +175,7 @@ namespace PommaLabs.KVLite.Web.Http
             _cache.Remove(partition, key);
         }
 
-        private IEnumerable<CacheItem<object>> QueryCacheItems(IEnumerable<CacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
+        IEnumerable<CacheItem<object>> QueryCacheItems(IEnumerable<CacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
         {
             if (fromExpiry.HasValue)
             {
@@ -194,8 +194,8 @@ namespace PommaLabs.KVLite.Web.Http
                 toCreation = toCreation.Value.ToUniversalTime();
             }
             return from i in items
-                   where String.IsNullOrWhiteSpace(partitionLike) || i.Partition.Contains(partitionLike)
-                   where String.IsNullOrWhiteSpace(keyLike) || i.Key.Contains(keyLike)
+                   where string.IsNullOrWhiteSpace(partitionLike) || i.Partition.Contains(partitionLike)
+                   where string.IsNullOrWhiteSpace(keyLike) || i.Key.Contains(keyLike)
                    where !fromExpiry.HasValue || i.UtcExpiry.ToUnixTime() >= fromExpiry.Value.ToUnixTime()
                    where !toExpiry.HasValue || i.UtcExpiry.ToUnixTime() <= toExpiry.Value.ToUnixTime()
                    where !fromCreation.HasValue || i.UtcCreation.ToUnixTime() >= fromCreation.Value.ToUnixTime()

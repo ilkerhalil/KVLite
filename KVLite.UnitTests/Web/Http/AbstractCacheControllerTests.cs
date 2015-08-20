@@ -21,18 +21,17 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using NUnit.Framework;
+using PommaLabs.KVLite.Web.Http;
 using System;
 using System.Linq;
-using NUnit.Framework;
-using PommaLabs.KVLite;
-using PommaLabs.KVLite.Web.Http;
 
-namespace UnitTests.Web.Http
+namespace PommaLabs.KVLite.UnitTests.Web.Http
 {
     [TestFixture]
     internal sealed class AbstractCacheControllerTests
     {
-        private CacheController _controller;
+        CacheController _controller;
 
         [SetUp]
         public void SetUp()
@@ -94,7 +93,7 @@ namespace UnitTests.Web.Http
             Assert.IsNull(items[0].Value);
         }
 
-        private sealed class CacheController : AbstractCacheController
+        sealed class CacheController : AbstractCacheController
         {
             public CacheController(ICache cache) : base(cache)
             {

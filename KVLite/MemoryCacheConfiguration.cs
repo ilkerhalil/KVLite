@@ -1,4 +1,4 @@
-﻿// File name: VolatileCacheSettings.cs
+﻿// File name: MemoryCacheConfiguration.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,22 +21,22 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
 using Finsa.CodeServices.Common.Portability;
+using System;
 using Westwind.Utilities.Configuration;
 
 namespace PommaLabs.KVLite
 {
     /// <summary>
-    ///   Configuration class for the <see cref="VolatileCache"/>. Default values are set inside
-    ///   the configuration file itself.
+    ///   Configuration class for the <see cref="MemoryCache"/>. Default values are set inside the
+    ///   configuration file itself.
     /// </summary>
     [Serializable, CLSCompliant(false)]
-    public sealed class VolatileCacheConfiguration : AppConfiguration
+    public sealed class MemoryCacheConfiguration : AppConfiguration
     {
         #region Static instance
 
-        static VolatileCacheConfiguration()
+        static MemoryCacheConfiguration()
         {
             var configurationFile = "KVLite.config";
             if (PortableEnvironment.AppIsRunningOnAspNet)
@@ -46,11 +46,11 @@ namespace PommaLabs.KVLite
                 // the "bin" directory, because every change would make the application restart.
                 configurationFile = "~/" + configurationFile;
             }
-            Instance = new VolatileCacheConfiguration();
-            Instance.Initialize(new ConfigurationFileConfigurationProvider<VolatileCacheConfiguration>
+            Instance = new MemoryCacheConfiguration();
+            Instance.Initialize(new ConfigurationFileConfigurationProvider<MemoryCacheConfiguration>
             {
                 ConfigurationFile = PortableEnvironment.MapPath(configurationFile),
-                ConfigurationSection = "volatileCache"
+                ConfigurationSection = "memoryCache"
             });
         }
 
@@ -58,22 +58,20 @@ namespace PommaLabs.KVLite
         ///   Gets the static configuration instance.
         /// </summary>
         /// <value>The static configuration instance.</value>
-        public static VolatileCacheConfiguration Instance { get; }
+        public static MemoryCacheConfiguration Instance { get; }
 
         #endregion Static instance
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="VolatileCacheConfiguration"/> class and
+        ///   Initializes a new instance of the <see cref="MemoryCacheConfiguration"/> class and
         ///   sets the default values for each configuration entry.
         /// </summary>
-        public VolatileCacheConfiguration()
+        public MemoryCacheConfiguration()
         {
-            DefaultCacheName = nameof(VolatileCache);
+            DefaultCacheName = nameof(MemoryCache);
             DefaultPartition = "KVLite.DefaultPartition";
             DefaultStaticIntervalInDays = 30;
-            DefaultInsertionCountBeforeAutoClean = 64;
             DefaultMaxCacheSizeInMB = 256;
-            DefaultMaxJournalSizeInMB = 32;
         }
 
         /// <summary>
@@ -97,21 +95,9 @@ namespace PommaLabs.KVLite
         public int DefaultStaticIntervalInDays { get; set; }
 
         /// <summary>
-        ///   Gets or sets the default insertion count before automatic clean.
-        /// </summary>
-        /// <value>The default insertion count before automatic clean.</value>
-        public int DefaultInsertionCountBeforeAutoClean { get; set; }
-
-        /// <summary>
         ///   Gets or sets the default maximum cache size in MB.
         /// </summary>
         /// <value>The default maximum cache size in MB.</value>
         public int DefaultMaxCacheSizeInMB { get; set; }
-
-        /// <summary>
-        ///   Gets or sets the default maximum journal size in MB.
-        /// </summary>
-        /// <value>The default maximum journal size in MB.</value>
-        public int DefaultMaxJournalSizeInMB { get; set; }
     }
 }

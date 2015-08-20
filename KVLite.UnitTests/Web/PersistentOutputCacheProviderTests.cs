@@ -1,4 +1,4 @@
-﻿// File name: ApiOutputCacheTests.cs
+﻿// File name: PersistentOutputCacheProviderTests.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,36 +21,22 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Finsa.CodeServices.Clock;
 using NUnit.Framework;
-using PommaLabs.KVLite;
-using PommaLabs.KVLite.Web.Http;
+using PommaLabs.KVLite.Web;
 
-namespace UnitTests.Web.Http
+namespace PommaLabs.KVLite.UnitTests.Web
 {
     [TestFixture]
-    sealed class ApiOutputCacheTests
+    sealed class PersistentOutputCacheProviderTests
     {
-        private ApiOutputCache _outputCache;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _outputCache = new ApiOutputCache(new PersistentCache(new PersistentCacheSettings(), new MockClock()));
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _outputCache = null;
-        }
-
+        /// <summary>
+        ///   Verifies issue #1.
+        /// </summary>
         [Test]
-        public void Add_One_Valid()
+        public void Get_ShouldReturnNullIfItemIsMissing()
         {
-            _outputCache.Add("a", "b", _outputCache.Cache.Clock.Now.AddMinutes(10));
-            Assert.AreEqual("b", _outputCache.Get("a"));
-            Assert.AreEqual("b", _outputCache.Get<string>("a"));
+            var provider = new PersistentOutputCacheProvider();
+            Assert.IsNull(provider.Get("X"));
         }
     }
 }

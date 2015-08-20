@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.WebApi</id>
-        <version>4.0.1</version>
+        <version>4.1.1</version>
         <title>KVLite - Web API output cache provider</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -11,7 +11,9 @@
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Web API output cache provider.
         </description>
         <releaseNotes>
-* Fixes issues #1 and #2 (see project page on BitBucket).
+* Added a cache based on .NET MemoryCache.
+* Updated System.Data.SQLite.
+* Added "CanPeek" property on ICache, so that each implementation can declare whether it supports peeking or not.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Web API output cache provider.
@@ -25,12 +27,12 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <dependencies>
             <group targetFramework="net45">
                 <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-                <dependency id="PommaLabs.KVLite.Core" version="4.0.1" />
-                <dependency id="Strathweb.CacheOutput.WebApi2" version="0.6" />
+                <dependency id="PommaLabs.KVLite.Core" version="4.1.1" />
+                <dependency id="Strathweb.CacheOutput.WebApi2" version="0.9.0" />
             </group>
             <group targetFramework="net40">
                 <dependency id="Microsoft.AspNet.WebApi.Client" version="4.0.30506.0" />
-                <dependency id="PommaLabs.KVLite.Core" version="4.0.1" />
+                <dependency id="PommaLabs.KVLite.Core" version="4.1.1" />
                 <dependency id="Strathweb.CacheOutput" version="0.5" />
             </group>
         </dependencies>

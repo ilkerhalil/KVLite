@@ -21,18 +21,17 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
 using Finsa.CodeServices.Clock;
 using Ninject;
 using NUnit.Framework;
-using PommaLabs.KVLite;
 using PommaLabs.KVLite.Core;
+using System;
 
-namespace UnitTests
+namespace PommaLabs.KVLite.UnitTests
 {
-    internal sealed class PersistentCacheTests : AbstractCacheTests<PersistentCacheSettings>
+    sealed class PersistentCacheTests : AbstractCacheTests<PersistentCacheSettings>
     {
-        private const string BlankPath = "   ";
+        const string BlankPath = "   ";
 
         #region Setup/Teardown
 
@@ -74,7 +73,7 @@ namespace UnitTests
             try
             {
                 // ReSharper disable once ObjectCreationAsStatement
-                new PersistentCache(new PersistentCacheSettings { CacheFile = String.Empty }, Kernel.Get<IClock>());
+                new PersistentCache(new PersistentCacheSettings { CacheFile = string.Empty }, Kernel.Get<IClock>());
             }
             catch (Exception ex)
             {

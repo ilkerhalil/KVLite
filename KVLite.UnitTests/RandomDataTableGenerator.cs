@@ -23,21 +23,21 @@
 
 #if !PORTABLE
 
+using PommaLabs.Thrower;
 using System;
 using System.Data;
 using System.Globalization;
 using System.Linq;
-using Finsa.CodeServices.Common.Diagnostics;
 
-namespace UnitTests
+namespace PommaLabs.KVLite.UnitTests
 {
     /// <summary>
     ///   Generates random data tables, starting from a given set of columns.
     /// </summary>
     public sealed class RandomDataTableGenerator
     {
-        private readonly string[] _columnNames;
-        private readonly Random _random = new Random();
+        readonly string[] _columnNames;
+        readonly Random _random = new Random();
 
         /// <summary>
         ///   Initializes the generator with a given set of columns.

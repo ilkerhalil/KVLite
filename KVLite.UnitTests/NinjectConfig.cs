@@ -1,4 +1,4 @@
-﻿// File name: TaskRunner.cs
+﻿// File name: NinjectConfig.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,24 +21,27 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Threading.Tasks;
+using Common.Logging;
+using Common.Logging.Simple;
+using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Compression;
+using Finsa.CodeServices.Serialization;
+using Ninject.Modules;
 
-#if !NET45
-using System.Threading;
-#endif
-
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.KVLite.UnitTests
 {
-    static class TaskRunner
+    /// <summary>
+    ///   Bindings for KVLite.
+    /// </summary>
+    sealed class NinjectConfig : NinjectModule
     {
-        public static Task Run(Action action)
+        public override void Load()
         {
-#if NET45
-            return Task.Run(action);
-#else
-            return Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
-#endif
+            Bind<IClock>().To<MockClock>().InSingletonScope();
+            Bind<ICompressor>().To<SnappyCompressor>().InSingletonScope();
+            Bind<ILog>().To<NoOpLogger>().InSingletonScope();
+            Bind<ISerializer>().To<JsonSerializer>().InSingletonScope();
+            Bind<JsonSerializerSettings>().ToMethod(ctx => new JsonSerializerSettings());
         }
     }
 }

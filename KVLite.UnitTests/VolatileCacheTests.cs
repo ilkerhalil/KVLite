@@ -21,16 +21,15 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
 using Finsa.CodeServices.Clock;
 using Ninject;
 using NUnit.Framework;
-using PommaLabs.KVLite;
 using PommaLabs.KVLite.Core;
+using System;
 
-namespace UnitTests
+namespace PommaLabs.KVLite.UnitTests
 {
-    internal sealed class VolatileCacheTests : AbstractCacheTests<VolatileCacheSettings>
+    sealed class VolatileCacheTests : AbstractCacheTests<VolatileCacheSettings>
     {
         #region Setup/Teardown
 

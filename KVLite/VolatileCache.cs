@@ -42,28 +42,15 @@ namespace PommaLabs.KVLite
         #region Default Instance
 
         /// <summary>
-        ///   The default cache instance.
-        /// </summary>
-        private static readonly VolatileCache CachedDefaultInstance;
-
-        /// <summary>
         ///   Gets the default instance for this cache kind. Default instance is configured using
         ///   default application settings.
         /// </summary>
         [Pure]
-        public static VolatileCache DefaultInstance
-        {
-            get { return CachedDefaultInstance; }
-        }
+        public static VolatileCache DefaultInstance { get; } = new VolatileCache(new VolatileCacheSettings());
 
         #endregion Default Instance
 
         #region Construction
-
-        static VolatileCache()
-        {
-            CachedDefaultInstance = new VolatileCache(new VolatileCacheSettings());
-        }
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="VolatileCache"/> class with given settings.
@@ -101,7 +88,7 @@ namespace PommaLabs.KVLite
         protected override string GetDataSource(out SQLiteJournalModeEnum journalMode)
         {
             journalMode = SQLiteJournalModeEnum.Memory;
-            return String.Format("file:{0}?mode=memory&cache=shared", Settings.CacheName);
+            return string.Format("file:{0}?mode=memory&cache=shared", Settings.CacheName);
         }
 
         /// <summary>

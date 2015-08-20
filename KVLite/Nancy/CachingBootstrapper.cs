@@ -44,9 +44,9 @@ namespace PommaLabs.KVLite.Nancy
         /// <summary>
         ///   The partition used by Nancy response cache items.
         /// </summary>
-        private const string ResponseCachePartition = "KVLite.Nancy.ResponseCache";
+        const string ResponseCachePartition = "KVLite.Nancy.ResponseCache";
 
-        private readonly ICache _cache;
+        readonly ICache _cache;
 
         #endregion Fields
 
@@ -74,14 +74,7 @@ namespace PommaLabs.KVLite.Nancy
         ///   Gets the cache instance currently used by the bootstrapper.
         /// </summary>
         /// <value>The cache instance currently used by the bootstrapper.</value>
-        public ICache Cache
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<ICache>() != null);
-                return _cache;
-            }
-        }
+        public ICache Cache { get; }
 
         #endregion Properties
 
@@ -103,9 +96,9 @@ namespace PommaLabs.KVLite.Nancy
         /// </summary>
         /// <param name="context">Current context.</param>
         /// <returns>Response or null.</returns>
-        private Response CheckCache(NancyContext context)
+        Response CheckCache(NancyContext context)
         {
-            var cacheKey = context.GetRequestFingerprint(_cache.Serializer);
+            var cacheKey = context.GetRequestFingerprint();
             var cachedSummary = _cache.Get<ResponseSummary>(ResponseCachePartition, cacheKey);
             return cachedSummary.HasValue ? cachedSummary.Value.ToResponse() : null;
         }
@@ -115,7 +108,7 @@ namespace PommaLabs.KVLite.Nancy
         ///   response in a KVLite cache.
         /// </summary>
         /// <param name="context">Current context.</param>
-        private void SetCache(NancyContext context)
+        void SetCache(NancyContext context)
         {
             if (context.Response.StatusCode != HttpStatusCode.OK)
             {
@@ -143,7 +136,7 @@ namespace PommaLabs.KVLite.Nancy
 
             try
             {
-                var cacheKey = context.GetRequestFingerprint(_cache.Serializer);
+                var cacheKey = context.GetRequestFingerprint();
                 var cachedSummary = new ResponseSummary(responseToBeCached);
                 _cache.AddTimedAsync(ResponseCachePartition, cacheKey, cachedSummary, _cache.Clock.UtcNow.AddSeconds(cacheSeconds));
                 context.Response = cachedSummary.ToResponse();
@@ -158,12 +151,12 @@ namespace PommaLabs.KVLite.Nancy
         }
 
         [Serializable]
-        private sealed class ResponseSummary
+        sealed class ResponseSummary
         {
-            private readonly string _contentType;
-            private readonly IDictionary<string, string> _headers;
-            private readonly HttpStatusCode _statusCode;
-            private readonly byte[] _contents;
+            readonly string _contentType;
+            readonly IDictionary<string, string> _headers;
+            readonly HttpStatusCode _statusCode;
+            readonly byte[] _contents;
 
             public ResponseSummary(Response response)
             {

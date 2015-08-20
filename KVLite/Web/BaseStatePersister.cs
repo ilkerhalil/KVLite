@@ -33,7 +33,7 @@ namespace PommaLabs.KVLite.Web
         /// </summary>
         public const string HiddenFieldName = "__VIEWSTATE_ID";
 
-        private ViewStateStorageSettings _settings;
+        ViewStateStorageSettings _settings;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="BaseStatePersister"/> class.
@@ -82,7 +82,7 @@ namespace PommaLabs.KVLite.Web
             return ret;
         }
 
-        private static string SanitizeInput(string input)
+        static string SanitizeInput(string input)
         {
             if (string.IsNullOrEmpty(input))
             {

@@ -22,20 +22,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Common.Logging;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.Diagnostics;
+using PommaLabs.Thrower;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 
 namespace PommaLabs.KVLite.Core
 {
+    /// <summary>
+    ///   Abstract class which should make it easier to implement a new kind of cache.
+    /// </summary>
+    /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     public abstract class AbstractCache<TCacheSettings> : FormattableObject, ICache<TCacheSettings>
         where TCacheSettings : AbstractCacheSettings
     {
@@ -78,9 +78,9 @@ namespace PommaLabs.KVLite.Core
         /// <value>The serializer used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="BinarySerializer"/>.
+        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>.
         ///   Therefore, if you do not specify another serializer, make sure that your objects are
-        ///   serializable (in most cases, simply use th <see cref="SerializableAttribute"/>).
+        ///   serializable (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as public properties).
         /// </remarks>
         public abstract ISerializer Serializer { get; }
 
@@ -89,6 +89,11 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <value>The available settings for the cache.</value>
         public abstract TCacheSettings Settings { get; }
+
+        /// <summary>
+        ///   True if the Peek methods are implemented, false otherwise.
+        /// </summary>
+        public abstract bool CanPeek { get; }
 
         protected abstract void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval);
 
@@ -205,7 +210,7 @@ namespace PommaLabs.KVLite.Core
             AddInternal(partition, key, value, Clock.UtcNow + interval, interval);
 
             // Postconditions
-            Debug.Assert(!Contains(partition, key) || PeekItem<TVal>(partition, key).Value.Interval == interval);
+            Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == interval);
         }
 
         /// <summary>
@@ -226,7 +231,7 @@ namespace PommaLabs.KVLite.Core
             AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + interval, interval);
 
             // Postconditions
-            Debug.Assert(!Contains(Settings.DefaultPartition, key) || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == interval);
+            Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == interval);
         }
 
         /// <summary>
@@ -248,7 +253,7 @@ namespace PommaLabs.KVLite.Core
             AddInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
 
             // Postconditions
-            Debug.Assert(!Contains(Settings.DefaultPartition, key) || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
+            Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
         }
 
         /// <summary>
@@ -268,7 +273,7 @@ namespace PommaLabs.KVLite.Core
             AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
 
             // Postconditions
-            Debug.Assert(!Contains(Settings.DefaultPartition, key) || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
+            Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
         }
 
         /// <summary>
@@ -290,7 +295,7 @@ namespace PommaLabs.KVLite.Core
             AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero);
 
             // Postconditions
-            Debug.Assert(!Contains(Settings.DefaultPartition, key) || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
+            Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
         }
 
         /// <summary>
@@ -310,7 +315,7 @@ namespace PommaLabs.KVLite.Core
             AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero);
 
             // Postconditions
-            Debug.Assert(!Contains(Settings.DefaultPartition, key) || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
+            Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
         }
 
         /// <summary>

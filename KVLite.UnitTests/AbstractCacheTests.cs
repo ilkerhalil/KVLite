@@ -21,6 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Common;
+using Ninject;
+using NUnit.Framework;
+using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -29,18 +34,12 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Common;
-using Ninject;
-using NUnit.Framework;
-using PommaLabs.KVLite;
-using PommaLabs.KVLite.Core;
 using Task = System.Threading.Tasks.Task;
 
-namespace UnitTests
+namespace PommaLabs.KVLite.UnitTests
 {
     [TestFixture]
-    internal abstract class AbstractCacheTests<TCacheSettings> where TCacheSettings : AbstractCacheSettings
+    abstract class AbstractCacheTests<TCacheSettings> where TCacheSettings : AbstractCacheSettings
     {
         #region Setup/Teardown
 
@@ -63,13 +62,13 @@ namespace UnitTests
 
         #region Constants
 
-        private const int LargeItemCount = 1000;
+        const int LargeItemCount = 1000;
 
-        private const int MediumItemCount = 100;
+        const int MediumItemCount = 100;
 
-        private const int SmallItemCount = 10;
+        const int SmallItemCount = 10;
 
-        private const int MinItem = 10000;
+        const int MinItem = 10000;
 
         protected readonly List<string> StringItems = Enumerable
             .Range(MinItem, LargeItemCount)
@@ -820,14 +819,14 @@ namespace UnitTests
         #region Serialization
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
+        //[ExpectedException(typeof(ArgumentException))] <-- Not thrown anymore with JsonSerializer
         public void AddStatic_NotSerializableValue()
         {
             Cache.AddStaticToDefaultPartition(StringItems[0], new NotSerializableClass());
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
+        //[ExpectedException(typeof(ArgumentException))] <-- Not thrown anymore with JsonSerializer
         public void AddStatic_DataContractValue()
         {
             Cache.AddStaticToDefaultPartition(StringItems[0], new DataContractClass());
@@ -896,7 +895,7 @@ namespace UnitTests
 
         #region Private Methods
 
-        private void AddSliding(ICache instance, int itemCount, TimeSpan interval)
+        void AddSliding(ICache instance, int itemCount, TimeSpan interval)
         {
             for (var i = 0; i < itemCount; ++i)
             {
@@ -904,7 +903,7 @@ namespace UnitTests
             }
         }
 
-        private void AddStatic(ICache instance, int itemCount)
+        void AddStatic(ICache instance, int itemCount)
         {
             for (var i = 0; i < itemCount; ++i)
             {
@@ -912,7 +911,7 @@ namespace UnitTests
             }
         }
 
-        private void AddTimed(ICache instance, int itemCount, DateTime utcTime)
+        void AddTimed(ICache instance, int itemCount, DateTime utcTime)
         {
             for (var i = 0; i < itemCount; ++i)
             {

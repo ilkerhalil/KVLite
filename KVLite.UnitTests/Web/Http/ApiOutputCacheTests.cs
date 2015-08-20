@@ -1,4 +1,4 @@
-﻿// File name: NinjectConfig.cs
+﻿// File name: ApiOutputCacheTests.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,27 +21,35 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Common.Logging;
-using Common.Logging.Simple;
 using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Compression;
-using Finsa.CodeServices.Serialization;
-using Ninject.Modules;
+using NUnit.Framework;
+using PommaLabs.KVLite.Web.Http;
 
-namespace UnitTests
+namespace PommaLabs.KVLite.UnitTests.Web.Http
 {
-    /// <summary>
-    ///   Bindings for KVLite.
-    /// </summary>
-    internal sealed class NinjectConfig : NinjectModule
+    [TestFixture]
+    sealed class ApiOutputCacheTests
     {
-        public override void Load()
+        ApiOutputCache _outputCache;
+
+        [SetUp]
+        public void SetUp()
         {
-            Bind<IClock>().To<MockClock>().InSingletonScope();
-            Bind<ICompressor>().To<SnappyCompressor>().InSingletonScope();
-            Bind<ILog>().To<NoOpLogger>().InSingletonScope();
-            Bind<ISerializer>().To<BinarySerializer>().InSingletonScope();
-            Bind<BinarySerializerSettings>().ToMethod(ctx => new BinarySerializerSettings());
+            _outputCache = new ApiOutputCache(new PersistentCache(new PersistentCacheSettings(), new MockClock()));
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _outputCache = null;
+        }
+
+        [Test]
+        public void Add_One_Valid()
+        {
+            _outputCache.Add("a", "b", _outputCache.Cache.Clock.Now.AddMinutes(10));
+            Assert.AreEqual("b", _outputCache.Get("a"));
+            Assert.AreEqual("b", _outputCache.Get<string>("a"));
         }
     }
 }

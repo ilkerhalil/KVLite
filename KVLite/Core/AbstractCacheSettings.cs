@@ -26,7 +26,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
-using Finsa.CodeServices.Common.Diagnostics;
+using PommaLabs.Thrower;
 using PommaLabs.KVLite.Annotations;
 
 namespace PommaLabs.KVLite.Core
@@ -39,11 +39,11 @@ namespace PommaLabs.KVLite.Core
     {
         #region Fields
 
-        private string _defaultPartition;
-        private int _insertionCountBeforeCleanup;
-        private int _maxCacheSizeInMB;
-        private int _maxJournalSizeInMB;
-        private int _staticIntervalInDays;
+        string _defaultPartition;
+        int _insertionCountBeforeCleanup;
+        int _maxCacheSizeInMB;
+        int _maxJournalSizeInMB;
+        int _staticIntervalInDays;
 
         internal TimeSpan StaticInterval;
 
@@ -61,13 +61,13 @@ namespace PommaLabs.KVLite.Core
                 var result = _defaultPartition;
 
                 // Postconditions
-                Debug.Assert(!String.IsNullOrWhiteSpace(result));
+                Debug.Assert(!string.IsNullOrWhiteSpace(result));
                 return result;
             }
             set
             {
                 // Preconditions
-                Raise<ArgumentException>.If(String.IsNullOrWhiteSpace(value));
+                Raise<ArgumentException>.If(string.IsNullOrWhiteSpace(value));
 
                 _defaultPartition = value;
                 OnPropertyChanged();

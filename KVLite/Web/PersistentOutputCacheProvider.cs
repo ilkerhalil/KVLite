@@ -34,7 +34,7 @@ namespace PommaLabs.KVLite.Web
         /// <summary>
         ///   The partition used by output cache provider items.
         /// </summary>
-        private const string OutputCachePartition = "KVLite.Web.PersistentOutputCache";
+        const string OutputCachePartition = "KVLite.Web.PersistentOutputCache";
 
         /// <summary>
         ///   Returns a reference to the specified entry in the output cache.

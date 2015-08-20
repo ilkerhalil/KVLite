@@ -25,26 +25,23 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Finsa.CodeServices.Common;
-using PommaLabs.KVLite;
-using UnitTests;
+using PommaLabs.KVLite.UnitTests;
+using Finsa.CodeServices.Serialization;
 
-namespace Benchmarks
+namespace PommaLabs.KVLite.Benchmarks
 {
     public static class Program
     {
-        private const int RowCount = 1000;
-        private const int IterationCount = 5;
-        private const int RandomDataTablesCount = 1000;
+        const int RowCount = 1000;
+        const int IterationCount = 5;
+        const int RandomDataTablesCount = 1000;
 
-        private static readonly string[] ColumnNames = { "A", "B", "C", "D", "E" };
+        static readonly string[] ColumnNames = { "A", "B", "C", "D", "E" };
 
-        private static double _tableListSize;
+        static double _tableListSize;
 
         public static void Main()
         {
@@ -71,6 +68,9 @@ namespace Benchmarks
                 StoreEachDataTable_Volatile(tables, i);
 
                 FullyCleanCache();
+                StoreEachDataTable_Memory(tables, i);
+
+                FullyCleanCache();
                 RetrieveEachDataTable(tables, i);
 
                 FullyCleanCache();
@@ -78,6 +78,9 @@ namespace Benchmarks
 
                 FullyCleanCache();
                 StoreEachDataTableAsync_Volatile(tables, i);
+
+                FullyCleanCache();
+                StoreEachDataTableAsync_Memory(tables, i);
 
                 FullyCleanCache();
                 RetrieveEachDataTableAsync(tables, i);
@@ -105,7 +108,7 @@ namespace Benchmarks
             Console.Read();
         }
 
-        private static IList<DataTable> GenerateRandomDataTables()
+        static IList<DataTable> GenerateRandomDataTables()
         {
             var gen = new RandomDataTableGenerator(ColumnNames);
             var list = new List<DataTable>();
@@ -116,16 +119,17 @@ namespace Benchmarks
             return list;
         }
 
-        private static void FullyCleanCache()
+        static void FullyCleanCache()
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Fully cleaning cache...");
             PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            MemoryCache.DefaultInstance.Clear();
             Console.WriteLine(@"Cache cleaned!");
         }
 
-        private static void StoreDataTableList(ICollection<DataTable> tables, int iteration)
+        static void StoreDataTableList(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Storing data table list, iteration {0}...", iteration);
@@ -143,7 +147,7 @@ namespace Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        private static void StoreEachDataTable(ICollection<DataTable> tables, int iteration)
+        static void StoreEachDataTable(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Storing each data table, iteration {0}...", iteration);
@@ -164,7 +168,7 @@ namespace Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        private static void StoreEachDataTable_Volatile(ICollection<DataTable> tables, int iteration)
+        static void StoreEachDataTable_Volatile(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"[Volatile] Storing each data table, iteration {0}...", iteration);
@@ -185,7 +189,28 @@ namespace Benchmarks
             Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        private static void StoreEachDataTableAsync(ICollection<DataTable> tables, int iteration)
+        static void StoreEachDataTable_Memory(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"[Memory] Storing each data table, iteration {0}...", iteration);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            foreach (var table in tables)
+            {
+                MemoryCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table);
+            }
+            stopwatch.Stop();
+
+            Debug.Assert(MemoryCache.DefaultInstance.Count() == tables.Count);
+            Debug.Assert(MemoryCache.DefaultInstance.LongCount() == tables.LongCount());
+
+            Console.WriteLine(@"[Memory] Data tables stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"[Memory] Current cache size: {0} MB", MemoryCache.DefaultInstance.CacheSizeInKB() / 1024L);
+            Console.WriteLine(@"[Memory] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
+        }
+
+        static void StoreEachDataTableAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Storing each data table asynchronously, iteration {0}...", iteration);
@@ -211,7 +236,7 @@ namespace Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        private static void StoreEachDataTableAsync_Volatile(ICollection<DataTable> tables, int iteration)
+        static void StoreEachDataTableAsync_Volatile(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"[Volatile] Storing each data table asynchronously, iteration {0}...", iteration);
@@ -237,7 +262,33 @@ namespace Benchmarks
             Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        private static void StoreEachDataTableTwoTimesAsync(ICollection<DataTable> tables, int iteration)
+        static void StoreEachDataTableAsync_Memory(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"[Memory] Storing each data table asynchronously, iteration {0}...", iteration);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var tasks = new List<Task>();
+            foreach (var table in tables)
+            {
+                tasks.Add(MemoryCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
+            }
+            foreach (var task in tasks)
+            {
+                task.Wait();
+            }
+            stopwatch.Stop();
+
+            Debug.Assert(MemoryCache.DefaultInstance.Count() == tables.Count);
+            Debug.Assert(MemoryCache.DefaultInstance.LongCount() == tables.LongCount());
+
+            Console.WriteLine(@"[Memory] Data tables stored in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"[Memory] Current cache size: {0} MB", MemoryCache.DefaultInstance.CacheSizeInKB() / 1024L);
+            Console.WriteLine(@"[Memory] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
+        }
+
+        static void StoreEachDataTableTwoTimesAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Storing each data table (two times, asynchronously), iteration {0}...", iteration);
@@ -267,7 +318,7 @@ namespace Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
         }
 
-        private static void RetrieveEachDataTable(ICollection<DataTable> tables, int iteration)
+        static void RetrieveEachDataTable(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Retrieving each data table, iteration {0}...", iteration);
@@ -282,7 +333,7 @@ namespace Benchmarks
             foreach (var table in tables)
             {
                 var returnedTable = PersistentCache.DefaultInstance.GetFromDefaultPartition<DataTable>(table.TableName);
-                if (returnedTable.Value.TableName != table.TableName)
+                if (!returnedTable.HasValue)
                 {
                     throw new Exception("Wrong data table read from cache! :(");
                 }
@@ -294,7 +345,7 @@ namespace Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        private static void RetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
+        static void RetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Retrieving each data table asynchronously, iteration {0}...", iteration);
@@ -327,7 +378,7 @@ namespace Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        private static void StoreAndRetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
+        static void StoreAndRetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Storing and retrieving each data table asynchronously, iteration {0}...", iteration);
@@ -363,7 +414,7 @@ namespace Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
         }
 
-        private static void RemoveEachDataTable(ICollection<DataTable> tables, int iteration)
+        static void RemoveEachDataTable(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Removing each data table, iteration {0}...", iteration);
@@ -389,7 +440,7 @@ namespace Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        private static void RemoveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
+        static void RemoveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Removing each data table asynchronously, iteration {0}...", iteration);
@@ -420,16 +471,12 @@ namespace Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        private static double GetObjectSizeInMB(object obj)
+        static double GetObjectSizeInMB(object obj)
         {
-            double size;
-            using (var s = new MemoryStream())
+            using (var s = new BinarySerializer().SerializeToStream(obj))
             {
-                var formatter = new BinaryFormatter { TypeFormat = FormatterTypeStyle.TypesWhenNeeded };
-                formatter.Serialize(s, obj);
-                size = s.Length;
+                return s.Length / (1024.0 * 1024.0);
             }
-            return size / (1024.0 * 1024.0);
         }
     }
 }

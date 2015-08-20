@@ -108,6 +108,12 @@ namespace PommaLabs.KVLite
         AbstractCacheSettings Settings { get; }
 
         /// <summary>
+        ///   True if the Peek methods are implemented, false otherwise.
+        /// </summary>
+        [Pure]
+        bool CanPeek { get; }
+
+        /// <summary>
         ///   Gets the value with the specified partition and key.
         /// </summary>
         /// <value>The value with the specified partition and key.</value>
@@ -263,6 +269,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The number of items in given partition.
         /// </summary>
+        /// <param name="partition">The partition.</param>
         /// <returns>The number of items in given partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
@@ -280,6 +287,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The number of items in given partition.
         /// </summary>
+        /// <param name="partition">The partition.</param>
         /// <returns>The number of items in given partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
