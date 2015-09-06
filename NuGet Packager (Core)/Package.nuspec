@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.Core</id>
-        <version>4.1.1</version>
+        <version>4.2.1</version>
         <title>KVLite - Core library</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -12,9 +12,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
 This package contains the core references for KVLite.
         </description>
         <releaseNotes>
-* Added a cache based on .NET MemoryCache.
-* Updated System.Data.SQLite.
-* Added "CanPeek" property on ICache, so that each implementation can declare whether it supports peeking or not.
+* Corrected a few typo.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.

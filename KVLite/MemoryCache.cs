@@ -103,7 +103,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return KeyValuePair.Create("SysteMemoryCacheName", _store.Name);
+            yield return KeyValuePair.Create("SystemMemoryCacheName", _store.Name);
         }
 
         #endregion FormattableObject members
