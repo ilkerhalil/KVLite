@@ -164,6 +164,7 @@
     <Compile Include="VolatileCacheTests.cs" />
     <Compile Include="Web\Http\AbstractCacheControllerTests.cs" />
     <Compile Include="Web\Http\ApiOutputCacheTests.cs" />
+    <Compile Include="Web\MemoryOutputCacheProviderTests.cs" />
     <Compile Include="Web\VolatileOutputCacheProviderTests.cs" />
     <Compile Include="Web\PersistentOutputCacheProviderTests.cs" />
   </ItemGroup>
