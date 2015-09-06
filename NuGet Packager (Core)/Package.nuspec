@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.Core</id>
-        <version>4.2.1</version>
+        <version>4.2.2</version>
         <title>KVLite - Core library</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -12,7 +12,9 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
 This package contains the core references for KVLite.
         </description>
         <releaseNotes>
-* Corrected a few typo.
+* Added a cache based on .NET MemoryCache.
+* Updated System.Data.SQLite.
+* Added "CanPeek" property on ICache, so that each implementation can declare whether it supports peeking or not.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
@@ -25,10 +27,10 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <dependency id="Common.Logging" version="3.2.0" />
-            <dependency id="Finsa.CodeServices.Common" version="2.2" />
-            <dependency id="Finsa.CodeServices.Clock" version="2.2" />
-            <dependency id="Finsa.CodeServices.Compression" version="2.2" />
-            <dependency id="Finsa.CodeServices.Serialization" version="2.2" />
+            <dependency id="Finsa.CodeServices.Common" version="2.4.0" />
+            <dependency id="Finsa.CodeServices.Clock" version="2.4.0" />
+            <dependency id="Finsa.CodeServices.Compression" version="2.4.0" />
+            <dependency id="Finsa.CodeServices.Serialization" version="2.4.0" />
             <dependency id="Microsoft.Bcl" version="1.1.10" />
             <dependency id="Newtonsoft.Json" version="7.0.1" />
         </dependencies>
