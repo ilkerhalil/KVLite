@@ -26,6 +26,14 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
+            <group>
+                <dependency id="Common.Logging" version="[3.0.0, 4.0.0)" />
+                <dependency id="Finsa.CodeServices.Clock" version="2.5.0" />
+                <dependency id="Finsa.CodeServices.Common" version="2.5.0" />
+                <dependency id="Finsa.CodeServices.Compression" version="2.5.0" />
+                <dependency id="Finsa.CodeServices.Serialization" version="2.5.0" />
+                <dependency id="Newtonsoft.Json" version="[7.0.1, 8.0.0)" />
+            </group>
             <group targetFramework="net45">
                 <dependency id="Common.Logging" version="[3.0.0, 4.0.0)" />
                 <dependency id="Finsa.CodeServices.Clock" version="2.5.0" />
