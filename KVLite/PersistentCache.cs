@@ -32,6 +32,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Common.Portability;
+using System;
 
 namespace PommaLabs.KVLite
 {
@@ -52,6 +53,16 @@ namespace PommaLabs.KVLite
         #endregion Default Instance
 
         #region Construction
+
+        static PersistentCache()
+        {
+            // Makes SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
+            var nativePath = PortableEnvironment.MapPath(PortableEnvironment.AppIsRunningOnAspNet ? "~/bin/KVLite/" : "KVLite/");
+            Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
+            
+            // Logs the path where SQLite has been set.
+            LogManager.GetLogger<PersistentCache>().Info($"SQLite native libraries will be loaded from {nativePath}");
+        }
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.

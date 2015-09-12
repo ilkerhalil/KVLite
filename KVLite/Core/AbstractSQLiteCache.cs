@@ -21,6 +21,16 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using CodeProject.ObjectPool;
+using Common.Logging;
+using Dapper;
+using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Common.Extensions;
+using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
+using Finsa.CodeServices.Compression;
+using Finsa.CodeServices.Serialization;
+using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,17 +39,6 @@ using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.Serialization.Formatters;
-using System.Threading;
-using CodeProject.ObjectPool;
-using Common.Logging;
-using Dapper;
-using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Common;
-using PommaLabs.Thrower;
-using Finsa.CodeServices.Common.Extensions;
-using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
-using Finsa.CodeServices.Compression;
-using Finsa.CodeServices.Serialization;
 using Task = System.Threading.Tasks.Task;
 
 namespace PommaLabs.KVLite.Core
@@ -139,7 +138,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             Raise<ArgumentNullException>.IfIsNull(settings, ErrorMessages.NullSettings);
-            
+
             _settings = settings;
             _clock = clock ?? new SystemClock();
             _log = log ?? LogManager.GetLogger(GetType());
@@ -315,9 +314,10 @@ namespace PommaLabs.KVLite.Core
         /// <value>The serializer used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>.
-        ///   Therefore, if you do not specify another serializer, make sure that your objects are
-        ///   serializable (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as public properties).
+        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>. Therefore,
+        ///   if you do not specify another serializer, make sure that your objects are serializable
+        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields
+        ///   as public properties).
         /// </remarks>
         public sealed override ISerializer Serializer => _serializer;
 
@@ -393,11 +393,10 @@ namespace PommaLabs.KVLite.Core
             // we must reset it and do a SOFT cleanup. Following code is not fully thread safe, but
             // it does not matter, because the "InsertionCountBeforeAutoClean" parameter should be
             // just an hint on when to do the cleanup.
-            _insertionCount++;
-            var oldInsertionCount = Interlocked.CompareExchange(ref _insertionCount, InsertionCountStart, Settings.InsertionCountBeforeAutoClean);
-            if (oldInsertionCount == Settings.InsertionCountBeforeAutoClean)
+            if (++_insertionCount >= Settings.InsertionCountBeforeAutoClean)
             {
-                // If they were equal, then we need to run the maintenance cleanup.
+                // If they were equal, then we need to run the maintenance cleanup. The insertion
+                // counter is automatically reset by the Clear method.
                 Clear(CacheReadMode.ConsiderExpiryDate);
             }
         }
@@ -413,6 +412,9 @@ namespace PommaLabs.KVLite.Core
             {
                 ctx.InternalResource.Execute(SQLiteQueries.Clear, p);
             }
+
+            // Reset the insertion counter, because a manual clean has been performed.
+            _insertionCount = 0;
         }
 
         protected sealed override bool ContainsInternal(string partition, string key)
