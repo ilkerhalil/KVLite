@@ -223,9 +223,9 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KVLite\KVLite.csproj">
+    <ProjectReference Include="..\KVLite\KVLite.NET45.csproj">
       <Project>{f056179d-90b8-4aba-9ab4-1026e5941fb7}</Project>
-      <Name>KVLite</Name>
+      <Name>KVLite.NET45</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

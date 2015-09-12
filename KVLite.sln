@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager", "NuGet Packager\NuGet Packager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.UnitTests", "KVLite.UnitTests\KVLite.UnitTests.csproj", "{B41547F3-A41C-439A-98DA-F478B2D360C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.UnitTests.NET45", "KVLite.UnitTests\KVLite.UnitTests.NET45.csproj", "{B41547F3-A41C-439A-98DA-F478B2D360C1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4A3E1022-C52E-4C73-AE31-BFF7294F8CED}"
 	ProjectSection(SolutionItems) = preProject
@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite", "KVLite\KVLite.csproj", "{F056179D-90B8-4ABA-9AB4-1026E5941FB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NET45", "KVLite\KVLite.NET45.csproj", "{F056179D-90B8-4ABA-9AB4-1026E5941FB7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Benchmarks", "KVLite.Benchmarks\KVLite.Benchmarks.csproj", "{B082811A-E830-4CB0-8D7F-5FB31B001052}"
 EndProject
@@ -45,9 +45,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REST Service (Nancy)", "RES
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REST Service (WebAPI)", "REST Service (WebAPI)\REST Service (WebAPI).csproj", "{00CCC8C6-1415-4F6B-B830-1CBBB7F87CCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{B5A6DAE9-7620-47A8-8D00-4CEB00117717}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples", "Examples\KVLite.Examples.csproj", "{B5A6DAE9-7620-47A8-8D00-4CEB00117717}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite (.NET40)", "KVLite (.NET40)\KVLite (.NET40).csproj", "{56BF1CF1-3DA9-482F-8AC4-F200E741ECA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NET40", "KVLite (.NET40)\KVLite.NET40.csproj", "{56BF1CF1-3DA9-482F-8AC4-F200E741ECA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager (Core)", "NuGet Packager (Core)\NuGet Packager (Core).csproj", "{BC783C22-1518-4F7A-944A-8E095C9B5930}"
 	ProjectSection(ProjectDependencies) = postProject

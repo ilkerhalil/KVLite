@@ -91,13 +91,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KVLite\KVLite.csproj">
+    <ProjectReference Include="..\KVLite\KVLite.NET45.csproj">
       <Project>{f056179d-90b8-4aba-9ab4-1026e5941fb7}</Project>
-      <Name>KVLite</Name>
+      <Name>KVLite.NET45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\KVLite.UnitTests\KVLite.UnitTests.csproj">
+    <ProjectReference Include="..\KVLite.UnitTests\KVLite.UnitTests.NET45.csproj">
       <Project>{b41547f3-a41c-439a-98da-f478b2d360c1}</Project>
-      <Name>KVLite.UnitTests</Name>
+      <Name>KVLite.UnitTests.NET45</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
