@@ -223,10 +223,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
         [Pure]
-        public int Count(CacheReadMode cacheReadMode)
-        {
-            return Convert.ToInt32(CountInternal(null, cacheReadMode));
-        }
+        public int Count(CacheReadMode cacheReadMode) => Convert.ToInt32(CountInternal(null, cacheReadMode));
 
         /// <summary>
         ///   The number of items in the cache for given partition.
@@ -235,10 +232,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
         [Pure]
-        public int Count(string partition, CacheReadMode cacheReadMode)
-        {
-            return Convert.ToInt32(CountInternal(partition, cacheReadMode));
-        }
+        public int Count(string partition, CacheReadMode cacheReadMode) => Convert.ToInt32(CountInternal(partition, cacheReadMode));
 
         /// <summary>
         ///   The number of items in the cache.
@@ -246,10 +240,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
         [Pure]
-        public long LongCount(CacheReadMode cacheReadMode)
-        {
-            return CountInternal(null, cacheReadMode);
-        }
+        public long LongCount(CacheReadMode cacheReadMode) => CountInternal(null, cacheReadMode);
 
         /// <summary>
         ///   The number of items in the cache for given partition.
@@ -258,10 +249,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
         [Pure]
-        public long LongCount(string partition, CacheReadMode cacheReadMode)
-        {
-            return CountInternal(partition, cacheReadMode);
-        }
+        public long LongCount(string partition, CacheReadMode cacheReadMode) => CountInternal(partition, cacheReadMode);
 
         /// <summary>
         ///   Runs VACUUM on the underlying SQLite database.
@@ -269,6 +257,9 @@ namespace PommaLabs.KVLite.Core
         public void Vacuum()
         {
             _log.InfoFormat("Vacuuming the SQLite DB '{0}'...", Settings.CacheUri);
+
+            // Perform a cleanup before vacuuming.
+            Clear(CacheReadMode.ConsiderExpiryDate);
 
             // Vacuum cannot be run within a transaction.
             using (var ctx = _connectionPool.GetObject())
@@ -281,10 +272,7 @@ namespace PommaLabs.KVLite.Core
         ///   Runs VACUUM on the underlying SQLite database.
         /// </summary>
         /// <returns>The operation task.</returns>
-        public Task VacuumAsync()
-        {
-            return TaskRunner.Run(Vacuum);
-        }
+        public Task VacuumAsync() => TaskRunner.Run(Vacuum);
 
         #endregion Public Members
 
@@ -298,10 +286,7 @@ namespace PommaLabs.KVLite.Core
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
         /// </remarks>
-        public sealed override IClock Clock
-        {
-            get { return _clock; }
-        }
+        public sealed override IClock Clock => _clock;
 
         /// <summary>
         ///   Gets the compressor used by the cache.
@@ -311,10 +296,7 @@ namespace PommaLabs.KVLite.Core
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
         /// </remarks>
-        public sealed override ICompressor Compressor
-        {
-            get { return _compressor; }
-        }
+        public sealed override ICompressor Compressor => _compressor;
 
         /// <summary>
         ///   Gets the log used by the cache.
@@ -325,10 +307,7 @@ namespace PommaLabs.KVLite.Core
         ///   constructor. If not specified, it defaults to what
         ///   <see cref="LogManager.GetLogger(System.Type)"/> returns.
         /// </remarks>
-        public sealed override ILog Log
-        {
-            get { return _log; }
-        }
+        public sealed override ILog Log => _log;
 
         /// <summary>
         ///   Gets the serializer used by the cache.
@@ -340,18 +319,12 @@ namespace PommaLabs.KVLite.Core
         ///   Therefore, if you do not specify another serializer, make sure that your objects are
         ///   serializable (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as public properties).
         /// </remarks>
-        public sealed override ISerializer Serializer
-        {
-            get { return _serializer; }
-        }
+        public sealed override ISerializer Serializer => _serializer;
 
         /// <summary>
         ///   The available settings for the cache.
         /// </summary>
-        public sealed override TCacheSettings Settings
-        {
-            get { return _settings; }
-        }
+        public sealed override TCacheSettings Settings => _settings;
 
         /// <summary>
         ///   True if the Peek methods are implemented, false otherwise.
@@ -425,7 +398,7 @@ namespace PommaLabs.KVLite.Core
             if (oldInsertionCount == Settings.InsertionCountBeforeAutoClean)
             {
                 // If they were equal, then we need to run the maintenance cleanup.
-                TaskRunner.Run(() => Clear(CacheReadMode.ConsiderExpiryDate));
+                Clear(CacheReadMode.ConsiderExpiryDate);
             }
         }
 
