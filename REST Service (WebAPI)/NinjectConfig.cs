@@ -31,7 +31,7 @@ using PommaLabs.KVLite;
 
 namespace RestService.WebApi
 {
-    internal sealed class NinjectConfig : NinjectModule
+    sealed class NinjectConfig : NinjectModule
     {
         public override void Load()
         {

@@ -1,6 +1,4 @@
-﻿using System.Web;
-using System.Web.Http;
-using Finsa.WebApi.HelpPage.AnyHost;
+﻿using Finsa.CodeServices.Common.Portability;
 using Microsoft.Owin;
 using Ninject;
 using Ninject.Web.Common.OwinHost;
@@ -9,9 +7,10 @@ using Owin;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Web.Http;
 using RestService.WebApi;
+using Swashbuckle.Application;
+using System.Web.Http;
 
 [assembly: OwinStartup(typeof(Startup))]
-
 namespace RestService.WebApi
 {
     public sealed class Startup
@@ -23,17 +22,20 @@ namespace RestService.WebApi
             ConfigureWebApi(app, config);
         }
 
-        private static StandardKernel CreateKernel()
-        {
-            return new StandardKernel(new NinjectConfig());
-        }
+        static StandardKernel CreateKernel() => new StandardKernel(new NinjectConfig());
 
-        private static void ConfigureWebApi(IAppBuilder app, HttpConfiguration config)
+        static void ConfigureWebApi(IAppBuilder app, HttpConfiguration config)
         {
             // REQUIRED TO ENABLE HELP PAGES :)
-            config.MapHttpAttributeRoutes(new HelpDirectRouteProvider());
-            var xmlDocPath = HttpContext.Current.Server.MapPath(@"~/App_Data/HelpPages/WebServiceHelp.xml");
-            config.SetDocumentationProvider(new XmlDocumentationProvider(xmlDocPath));
+            config.MapHttpAttributeRoutes();
+            config.EnableSwagger(c =>
+            {
+                c.SingleApiVersion("v1", "KVLite.WebApiCaching");
+                c.IncludeXmlComments(PortableEnvironment.MapPath(@"~/App_Data/HelpPages/WebServiceHelp.xml"));
+            }).EnableSwaggerUi(c =>
+            {
+                c.DocExpansion(DocExpansion.None);
+            });
 
             // Enables KVLite based output caching.
             ApiOutputCache.RegisterAsCacheOutputProvider(config, CreateKernel().Get<ICache>());

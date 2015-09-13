@@ -11,7 +11,6 @@
 // the License.
 
 using System.Web.Http;
-using Finsa.WebApi.HelpPage.AnyHost;
 
 namespace RestService.WebApi.Controllers
 {
@@ -20,14 +19,12 @@ namespace RestService.WebApi.Controllers
     /// </summary>
     /// <remarks>Adjust routing prefix according to your own needs.</remarks>
     [RoutePrefix("")]
-    public sealed class HelpController : HelpControllerBase
+    public sealed class HelpController : ApiController
     {
         /// <summary>
         ///   Override here default info.
         /// </summary>
-        public HelpController()
-        {
-            Info.MyServiceName = "wsExample";
-        }
+        [Route("")]
+        public IHttpActionResult Get() => Redirect("swagger");
     }
 }

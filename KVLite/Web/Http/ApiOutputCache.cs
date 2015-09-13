@@ -21,6 +21,9 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Common;
+using PommaLabs.KVLite.Core;
+using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,13 +31,13 @@ using System.Linq;
 using System.Web.Http;
 using WebApi.OutputCache.Core.Cache;
 
-#if NET45
+#if NET40
 
-using WebApi.OutputCache.V2;
+using WebAPI.OutputCache;
 
 #else
 
-using WebAPI.OutputCache;
+using WebApi.OutputCache.V2;
 
 #endif
 
@@ -50,9 +53,7 @@ namespace PommaLabs.KVLite.Web.Http
         /// <summary>
         ///   The partition used by Web API output cache provider items.
         /// </summary>
-        const string ResponseCachePartition = "KVLite.Web.Http.ApiOutputCache";
-
-        readonly ICache _cache;
+        public const string ResponseCachePartition = "KVLite.Web.Http.ApiOutputCache";
 
         #endregion Fields
 
@@ -61,13 +62,11 @@ namespace PommaLabs.KVLite.Web.Http
         /// <summary>
         ///   Initializes a new instance of the <see cref="ApiOutputCache"/> class.
         /// </summary>
-        /// <param name="cache">
-        ///   The cache that will be used as entry container. If <paramref name="cache"/> is null,
-        ///   then <see cref="PersistentCache.DefaultInstance"/> will be used instead.
-        /// </param>
-        public ApiOutputCache(ICache cache = null)
+        /// <param name="cache">The cache that will be used as entry container.</param>
+        public ApiOutputCache(ICache cache)
         {
-            _cache = cache ?? PersistentCache.DefaultInstance;
+            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Cache = cache;
         }
 
         #endregion Construction
@@ -78,10 +77,7 @@ namespace PommaLabs.KVLite.Web.Http
         ///   Gets the underlying cache.
         /// </summary>
         /// <value>The underlying cache.</value>
-        public ICache Cache
-        {
-            get { return _cache; }
-        }
+        public ICache Cache { get; }
 
         /// <summary>
         ///   Registers this class as the default API output cache provider.
@@ -99,45 +95,30 @@ namespace PommaLabs.KVLite.Web.Http
 
 #pragma warning disable 1591
 
-        public IEnumerable<string> AllKeys
-        {
-            get { return _cache.GetItems<object>(ResponseCachePartition).Select(i => i.Key); }
-        }
+        public IEnumerable<string> AllKeys => Cache.GetItems<object>(ResponseCachePartition).Select(i => i.Key);
 
         public void RemoveStartsWith(string key)
         {
-            var items = _cache.GetItems<object>(ResponseCachePartition);
-            foreach (var i in items.Where(item => item.Key.StartsWith(key)))
+            var items = Cache.GetItems<object>(ResponseCachePartition);
+            foreach (var i in items.Where(item => item.Key.StartsWith(key, StringComparison.Ordinal)))
             {
                 Debug.Assert(i.Partition == ResponseCachePartition);
-                _cache.Remove(ResponseCachePartition, i.Key);
+                Cache.Remove(ResponseCachePartition, i.Key);
             }
         }
 
-        public T Get<T>(string key) where T : class
-        {
-            return _cache.Get<T>(ResponseCachePartition, key).Value;
-        }
+        public T Get<T>(string key) where T : class => Cache.Get<T>(ResponseCachePartition, key).ValueOrDefault();
 
-        public object Get(string key)
-        {
-            return _cache.Get<object>(ResponseCachePartition, key).Value;
-        }
+        public object Get(string key) => Cache.Get<object>(ResponseCachePartition, key).ValueOrDefault();
 
-        public void Remove(string key)
-        {
-            _cache.Remove(ResponseCachePartition, key);
-        }
+        public void Remove(string key) => Cache.Remove(ResponseCachePartition, key);
 
-        public bool Contains(string key)
-        {
-            return _cache.Contains(ResponseCachePartition, key);
-        }
+        public bool Contains(string key) => Cache.Contains(ResponseCachePartition, key);
 
         public void Add(string key, object o, DateTimeOffset expiration, string dependsOnKey = null)
         {
             // KVLite does not support dependency handling; therefore, we ignore the dependsOnKey parameter.
-            _cache.AddTimed(ResponseCachePartition, key, o, expiration.UtcDateTime);
+            Cache.AddTimed(ResponseCachePartition, key, o, expiration.UtcDateTime);
         }
 
 #pragma warning restore 1591

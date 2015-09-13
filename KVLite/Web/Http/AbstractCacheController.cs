@@ -21,13 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Common;
+using PommaLabs.KVLite.Core;
+using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Common;
-using PommaLabs.Thrower;
 
 namespace PommaLabs.KVLite.Web.Http
 {
@@ -36,42 +37,45 @@ namespace PommaLabs.KVLite.Web.Http
     /// </summary>
     public abstract class AbstractCacheController : ApiController
     {
-        readonly ICache _cache;
-
         /// <summary>
         ///   Initializes a new instance of the <see cref="AbstractCacheController"/> class.
         /// </summary>
         /// <param name="cache">The cache used by the Web API output cache.</param>
         protected AbstractCacheController(ICache cache)
         {
-            // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(cache);
-
-            _cache = cache;
+            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Cache = cache;
         }
 
         /// <summary>
         ///   Gets the cache used by the controller.
         /// </summary>
         /// <value>The cache used by the controller.</value>
-        public ICache Cache
-        {
-            get { return _cache; }
-        }
+        public ICache Cache { get; }
 
         /// <summary>
-        ///   Returns all _valid_ items stored in the cache. Values are omitted, in order to keep
-        ///   the response small.
+        ///   Returns all _valid_ items stored in the cache which follow given search criteria.
+        ///   Values are omitted, in order to keep the response small.
         /// </summary>
-        /// <returns>All _valid_ items stored in the cache.</returns>
+        /// <param name="partitionLike">
+        ///   Optional, a substring that should be contained in the partition of the items.
+        /// </param>
+        /// <param name="keyLike">
+        ///   Optional, a substring that should be contained in the key of the items.
+        /// </param>
+        /// <param name="fromExpiry">Optional, the minimum expiry date items should have.</param>
+        /// <param name="toExpiry">Optional, the maximum expiry date items should have.</param>
+        /// <param name="fromCreation">Optional, the minimum creation date items should have.</param>
+        /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
+        /// <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
         /// <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
-#if NET45
+#if !NET40
 
         [Route("items")]
 #endif
         public virtual IEnumerable<CacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
-            var items = _cache.GetItems<object>();
+            var items = Cache.GetItems<object>();
             foreach (var item in items)
             {
                 item.Value = null; // Removes the value, as stated in the docs.
@@ -80,43 +84,64 @@ namespace PommaLabs.KVLite.Web.Http
         }
 
         /// <summary>
-        ///   Returns all _valid_ items stored in the cache. Values are included in the response.
+        ///   Returns all _valid_ items stored in the cache which follow given search criteria.
+        ///   Values are included in the response.
         /// </summary>
-        /// <returns>All _valid_ items stored in the cache.</returns>
-#if NET45
+        /// <param name="partitionLike">
+        ///   Optional, a substring that should be contained in the partition of the items.
+        /// </param>
+        /// <param name="keyLike">
+        ///   Optional, a substring that should be contained in the key of the items.
+        /// </param>
+        /// <param name="fromExpiry">Optional, the minimum expiry date items should have.</param>
+        /// <param name="toExpiry">Optional, the maximum expiry date items should have.</param>
+        /// <param name="fromCreation">Optional, the minimum creation date items should have.</param>
+        /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
+        /// <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
+#if !NET40
 
         [Route("items/withValues")]
 #endif
         public virtual IEnumerable<CacheItem<object>> GetItemsWithValues(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
-            return QueryCacheItems(_cache.GetItems<object>(), partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
+            return QueryCacheItems(Cache.GetItems<object>(), partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
 
         /// <summary>
         ///   Deletes all items stored in the cache.
         /// </summary>
-#if NET45
+#if !NET40
 
         [Route("items")]
 #endif
         public virtual void DeleteItems()
         {
-            _cache.Clear();
+            Cache.Clear();
         }
 
         /// <summary>
-        ///   Returns all _valid_ items stored in the cache for given partition. Values are omitted,
-        ///   in order to keep the response small.
+        ///   Returns all _valid_ items stored in the cache for given partition which follow given
+        ///   search criteria. Values are omitted, in order to keep the response small.
         /// </summary>
-        /// <returns>All _valid_ items stored in the cache for given partition.</returns>
+        /// <param name="partition">The partition.</param>
+        /// <param name="keyLike">
+        ///   Optional, a substring that should be contained in the key of the items.
+        /// </param>
+        /// <param name="fromExpiry">Optional, the minimum expiry date items should have.</param>
+        /// <param name="toExpiry">Optional, the maximum expiry date items should have.</param>
+        /// <param name="fromCreation">Optional, the minimum creation date items should have.</param>
+        /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
+        /// <returns>
+        ///   All _valid_ items stored in the cache for given partition which follow given search criteria.
+        /// </returns>
         /// <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
-#if NET45
+#if !NET40
 
         [Route("items/{partition}")]
 #endif
         public virtual IEnumerable<CacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
-            var items = _cache.GetItems<object>(partition);
+            var items = Cache.GetItems<object>(partition);
             foreach (var item in items)
             {
                 item.Value = null; // Removes the value, as stated in the docs.
@@ -125,57 +150,78 @@ namespace PommaLabs.KVLite.Web.Http
         }
 
         /// <summary>
-        ///   Returns all _valid_ items stored in the cache for given partition. Values are included
-        ///   in the response.
+        ///   Returns all _valid_ items stored in the cache for given partition which follow given
+        ///   search criteria. Values are included in the response.
         /// </summary>
-        /// <returns>All _valid_ items stored in the cache for given partition.</returns>
-#if NET45
+        /// <param name="partition">The partition.</param>
+        /// <param name="keyLike">
+        ///   Optional, a substring that should be contained in the key of the items.
+        /// </param>
+        /// <param name="fromExpiry">Optional, the minimum expiry date items should have.</param>
+        /// <param name="toExpiry">Optional, the maximum expiry date items should have.</param>
+        /// <param name="fromCreation">Optional, the minimum creation date items should have.</param>
+        /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
+        /// <returns>
+        ///   All _valid_ items stored in the cache for given partition which follow given search criteria.
+        /// </returns>
+#if !NET40
 
         [Route("items/{partition}/withValues")]
 #endif
         public virtual IEnumerable<CacheItem<object>> GetPartitionItemsWithValues(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
-            return QueryCacheItems(_cache.GetItems<object>(partition), partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
+            return QueryCacheItems(Cache.GetItems<object>(partition), partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
 
         /// <summary>
         ///   Deletes all items stored in the cache with given partition.
         /// </summary>
-#if NET45
+        /// <param name="partition">The partition.</param>
+#if !NET40
 
         [Route("items/{partition}")]
 #endif
-        public virtual void DeletePartitionItems(string partition)
-        {
-            _cache.Clear(partition);
-        }
+        public virtual void DeletePartitionItems(string partition) => Cache.Clear(partition);
 
         /// <summary>
-        ///   Returns a _valid_ items stored in the cache for given partition and key.
+        ///   Returns a _valid_ item stored in the cache for given partition and key.
         /// </summary>
-        /// <returns>A _valid_ items stored in the cache for given partition and key.</returns>
-#if NET45
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>A _valid_ item stored in the cache for given partition and key.</returns>
+#if !NET40
 
         [Route("items/{partition}/{key}")]
 #endif
-        public virtual Option<CacheItem<object>> GetItem(string partition, string key)
-        {
-            return _cache.GetItem<object>(partition, key);
-        }
+        public virtual Option<CacheItem<object>> GetItem(string partition, string key) => Cache.GetItem<object>(partition, key);
 
         /// <summary>
-        ///   Deletes an items stored in the cache with given partition and key.
+        ///   Deletes an item stored in the cache with given partition and key.
         /// </summary>
-#if NET45
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+#if !NET40
 
         [Route("items/{partition}/{key}")]
 #endif
-        public virtual void DeleteItem(string partition, string key)
-        {
-            _cache.Remove(partition, key);
-        }
+        public virtual void DeleteItem(string partition, string key) => Cache.Remove(partition, key);
 
-        IEnumerable<CacheItem<object>> QueryCacheItems(IEnumerable<CacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
+        /// <summary>
+        ///   Common method used for querying items.
+        /// </summary>
+        /// <param name="items">The items on which the query should be performed.</param>
+        /// <param name="partitionLike">
+        ///   Optional, a substring that should be contained in the partition of the items.
+        /// </param>
+        /// <param name="keyLike">
+        ///   Optional, a substring that should be contained in the key of the items.
+        /// </param>
+        /// <param name="fromExpiry">Optional, the minimum expiry date items should have.</param>
+        /// <param name="toExpiry">Optional, the maximum expiry date items should have.</param>
+        /// <param name="fromCreation">Optional, the minimum creation date items should have.</param>
+        /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
+        /// <returns>The items extracted by the query.</returns>
+        static IEnumerable<CacheItem<object>> QueryCacheItems(IEnumerable<CacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
         {
             if (fromExpiry.HasValue)
             {
