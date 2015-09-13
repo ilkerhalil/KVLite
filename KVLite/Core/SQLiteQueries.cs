@@ -169,7 +169,7 @@ namespace PommaLabs.KVLite.Core
                 .Append(query)
                 .Replace("{CacheVariablesPartition}", "'KVLite.CacheVariables'")
                 .Replace("{InsertionCountVariable}", "'insertion_count'")
-                .Replace("{CacheVariablesIntervalInSeconds}", "360000") // 100 hour                
+                .Replace("{CacheVariablesIntervalInSeconds}", "3600000") // 1000 hours                
                 .ToString();
 
             // Removes initial and ending blanks.
