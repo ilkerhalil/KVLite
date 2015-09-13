@@ -309,14 +309,17 @@
     <Compile Include="..\KVLite\VolatileCacheSettings.cs">
       <Link>VolatileCacheSettings.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Web\BaseStatePersister.cs">
-      <Link>Web\BaseStatePersister.cs</Link>
+    <Compile Include="..\KVLite\Web\AbstractPageStatePersister.cs">
+      <Link>Web\AbstractPageStatePersister.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Web\Http\AbstractCacheController.cs">
       <Link>Web\Http\AbstractCacheController.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Web\Http\ApiOutputCache.cs">
       <Link>Web\Http\ApiOutputCache.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Web\MemoryOutputCacheProvider.cs">
+      <Link>Web\MemoryOutputCacheProvider.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Web\PersistentOutputCacheProvider.cs">
       <Link>Web\PersistentOutputCacheProvider.cs</Link>
@@ -329,6 +332,9 @@
     </Compile>
     <Compile Include="..\KVLite\Web\VolatileOutputCacheProvider.cs">
       <Link>Web\VolatileOutputCacheProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Web\WebCaches.cs">
+      <Link>Web\WebCaches.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

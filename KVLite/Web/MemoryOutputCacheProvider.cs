@@ -1,4 +1,4 @@
-﻿// File name: OutputCacheProvider.cs
+﻿// File name: MemoryOutputCacheProvider.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,15 +21,17 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Common;
 using System;
+using System.Web.Caching;
 
 namespace PommaLabs.KVLite.Web
 {
     /// <summary>
     ///   A custom output cache provider based on KVLite. Specifically, it uses the instance defined
-    ///   by the property <see cref="MemoryCache.DefaultInstance"/>.
+    ///   by the property <see cref="WebCaches.Memory"/>.
     /// </summary>
-    public sealed class MemoryOutputCacheProvider : System.Web.Caching.OutputCacheProvider
+    public sealed class MemoryOutputCacheProvider : OutputCacheProvider
     {
         /// <summary>
         ///   The partition used by output cache provider items.
@@ -44,11 +46,7 @@ namespace PommaLabs.KVLite.Web
         ///   The <paramref name="key"/> value that identifies the specified entry in the cache, or
         ///   null if the specified entry is not in the cache.
         /// </returns>
-        public override object Get(string key)
-        {
-            var item = MemoryCache.DefaultInstance.Get<object>(OutputCachePartition, key);
-            return item.HasValue ? item.Value : null;
-        }
+        public override object Get(string key) => WebCaches.Memory.Get<object>(OutputCachePartition, key).ValueOrDefault();
 
         /// <summary>
         ///   Inserts the specified entry into the output cache.
@@ -59,7 +57,7 @@ namespace PommaLabs.KVLite.Web
         /// <returns>A reference to the specified provider.</returns>
         public override object Add(string key, object entry, DateTime utcExpiry)
         {
-            MemoryCache.DefaultInstance.AddTimed(OutputCachePartition, key, entry, utcExpiry);
+            WebCaches.Memory.AddTimed(OutputCachePartition, key, entry, utcExpiry);
             return entry;
         }
 
@@ -74,7 +72,7 @@ namespace PommaLabs.KVLite.Web
         /// </param>
         public override void Set(string key, object entry, DateTime utcExpiry)
         {
-            MemoryCache.DefaultInstance.AddTimed(OutputCachePartition, key, entry, utcExpiry);
+            WebCaches.Memory.AddTimed(OutputCachePartition, key, entry, utcExpiry);
         }
 
         /// <summary>
@@ -85,7 +83,7 @@ namespace PommaLabs.KVLite.Web
         /// </param>
         public override void Remove(string key)
         {
-            MemoryCache.DefaultInstance.Remove(OutputCachePartition, key);
+            WebCaches.Memory.Remove(OutputCachePartition, key);
         }
     }
 }

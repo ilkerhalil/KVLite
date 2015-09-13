@@ -19,6 +19,7 @@
 
 using System;
 using System.Text;
+using System.Web;
 using System.Web.UI;
 
 namespace PommaLabs.KVLite.Web
@@ -26,36 +27,32 @@ namespace PommaLabs.KVLite.Web
     /// <summary>
     ///   Base class for a custom viewstate persister.
     /// </summary>
-    public abstract class BaseStatePersister : PageStatePersister
+    public abstract class AbstractPageStatePersister : PageStatePersister
     {
         /// <summary>
         ///   The prefix used to tag a viewstate.
         /// </summary>
         public const string HiddenFieldName = "__VIEWSTATE_ID";
 
-        ViewStateStorageSettings _settings;
+        /// <summary>
+        ///   The partition used by ViewState items.
+        /// </summary>
+        protected const string ViewStatePartition = "KVLite.Web.ViewStates";
+
+        protected static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(HttpContext.Current.Session.Timeout + 1);
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="BaseStatePersister"/> class.
+        ///   Initializes a new instance of the <see cref="AbstractPageStatePersister"/> class.
         /// </summary>
         /// <param name="page">
         ///   The <see cref="T:System.Web.UI.Page"/> that the view state persistence mechanism is
         ///   created for.
         /// </param>
-        protected BaseStatePersister(Page page)
+        protected AbstractPageStatePersister(Page page)
             : base(page)
         {
         }
-
-        /// <summary>
-        ///   Gets or sets the view state settings.
-        /// </summary>
-        /// <value>The view state settings.</value>
-        public ViewStateStorageSettings ViewStateSettings
-        {
-            get { return _settings; }
-            set { _settings = value; }
-        }
+        public ViewStateStorageSettings ViewStateSettings { get; set; }
 
         /// <summary>
         ///   Clears this viewstate persister.
@@ -70,7 +67,7 @@ namespace PommaLabs.KVLite.Web
         {
             string ret;
 
-            if (Page.IsPostBack && _settings.RequestBehavior == ViewStateStorageBehavior.FirstLoad)
+            if (Page.IsPostBack && ViewStateSettings.RequestBehavior == ViewStateStorageBehavior.FirstLoad)
             {
                 ret = SanitizeInput(Page.Request.Form[HiddenFieldName]);
             }

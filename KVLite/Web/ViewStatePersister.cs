@@ -21,30 +21,24 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Serialization;
+using PommaLabs.KVLite.Core;
+using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
 using System.Web;
 using System.Web.UI;
-using PommaLabs.Thrower;
-using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite.Web
 {
     /// <summary>
     ///   This class is an example of a BaseStatePersister implementation.
     /// </summary>
-    public sealed class ViewStatePersister : BaseStatePersister
+    public sealed class ViewStatePersister : AbstractPageStatePersister
     {
         #region Fields
 
-        /// <summary>
-        ///   The partition used by ViewState items.
-        /// </summary>
-        const string ViewStatePartition = "KVLite.Web.ViewStates";
-
-        static ICache _cache = PersistentCache.DefaultInstance;
-
-        static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(HttpContext.Current.Session.Timeout + 1);
+        static ICache _cache = new PersistentCache(new PersistentCacheSettings(), serializer: new BinarySerializer());
 
         #endregion Fields
 
@@ -67,7 +61,7 @@ namespace PommaLabs.KVLite.Web
             set
             {
                 // Preconditions
-                Raise<ArgumentNullException>.IfIsNull(value, ErrorMessages.NullCache);
+                RaiseArgumentNullException.IfIsNull(value, nameof(value), ErrorMessages.NullCache);
 
                 _cache = value;
 
@@ -123,20 +117,14 @@ namespace PommaLabs.KVLite.Web
         /// <summary>
         ///   Clears this persister instance.
         /// </summary>
-        public override void Clear()
-        {
-            _cache.Clear();
-        }
+        public override void Clear() => _cache.Clear();
 
-        static object GetViewState(string guid)
-        {
-            return _cache.Get<object>(ViewStatePartition, HiddenFieldName + guid).Value;
-        }
+        static object GetViewState(string guid) => _cache.Get<object>(ViewStatePartition, HiddenFieldName + guid).Value;
 
         void SetViewState(string guid)
         {
             object state = new Pair(ControlState, ViewState);
-            _cache.AddSlidingAsync(ViewStatePartition, HiddenFieldName + guid, state, CacheInterval);
+            _cache.AddSliding(ViewStatePartition, HiddenFieldName + guid, state, CacheInterval);
         }
     }
 }
