@@ -17,6 +17,9 @@
  *                                                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+using Finsa.CodeServices.Common;
+using PommaLabs.KVLite.Core;
+using PommaLabs.Thrower;
 using System;
 using System.Text;
 using System.Web;
@@ -27,8 +30,10 @@ namespace PommaLabs.KVLite.Web
     /// <summary>
     ///   Base class for a custom viewstate persister.
     /// </summary>
-    public abstract class AbstractPageStatePersister : PageStatePersister
+    public abstract class AbstractViewStatePersister : PageStatePersister
     {
+        #region Constants
+
         /// <summary>
         ///   The prefix used to tag a viewstate.
         /// </summary>
@@ -37,27 +42,79 @@ namespace PommaLabs.KVLite.Web
         /// <summary>
         ///   The partition used by ViewState items.
         /// </summary>
-        protected const string ViewStatePartition = "KVLite.Web.ViewStates";
-
-        protected static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(HttpContext.Current.Session.Timeout + 1);
+        public const string ViewStatePartition = "KVLite.Web.ViewStates";
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="AbstractPageStatePersister"/> class.
+        ///   The cache interval is computed from the session timeout plus one minute.
+        /// </summary>
+        static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(HttpContext.Current.Session.Timeout + 1);
+
+        #endregion Constants
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="AbstractViewStatePersister"/> class.
         /// </summary>
         /// <param name="page">
         ///   The <see cref="T:System.Web.UI.Page"/> that the view state persistence mechanism is
         ///   created for.
         /// </param>
-        protected AbstractPageStatePersister(Page page)
+        /// <param name="cache">The cache where the page view state will be stored.</param>
+        protected AbstractViewStatePersister(Page page, ICache cache)
             : base(page)
         {
+            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Cache = cache;
         }
-        public ViewStateStorageSettings ViewStateSettings { get; set; }
+
+        #region Properties
 
         /// <summary>
-        ///   Clears this viewstate persister.
+        ///   The settings used while storing the view state.
         /// </summary>
-        public abstract void Clear();
+        public ViewStateStorageSettings ViewStateSettings { get; set; } = new ViewStateStorageSettings();
+
+        /// <summary>
+        ///   The cache where the view state will be stored.
+        /// </summary>
+        public ICache Cache { get; }
+
+        #endregion Properties
+
+        /// <summary>
+        ///   Clears this persister instance.
+        /// </summary>
+        public void Clear() => Cache.Clear();
+        
+        /// <summary>
+        ///   Overridden by derived classes to deserialize and load persisted state information when
+        ///   a <see cref="T:System.Web.UI.Page"/> object initializes its control hierarchy.
+        /// </summary>
+        public override void Load()
+        {
+            var guid = Page.Request.Form[HiddenFieldName];
+
+            // using the unique id, fetch the serialized viewstate data, possibly from an internal method
+            var state = GetViewState(guid);
+
+            // the state object is a System.Web.UI.Pair, because we must set the ControlState as well
+            var pair = state as Pair;
+            if (pair != null)
+            {
+                ControlState = pair.First;
+                ViewState = pair.Second;
+            }
+        }
+
+        /// <summary>
+        ///   Overridden by derived classes to serialize persisted state information when a
+        ///   <see cref="T:System.Web.UI.Page"/> object is unloaded from memory.
+        /// </summary>
+        public override void Save()
+        {
+            var guid = GetViewStateId();
+            Page.ClientScript.RegisterHiddenField(HiddenFieldName, guid);
+            SetViewState(guid);
+        }
 
         /// <summary>
         ///   Gets the view state identifier.
@@ -92,6 +149,14 @@ namespace PommaLabs.KVLite.Web
             ret.Replace("/", "");
             ret.Replace("'", "");
             return ret.ToString();
+        }
+
+        object GetViewState(string guid) => Cache.Get<object>(ViewStatePartition, HiddenFieldName + guid).ValueOrDefault();
+
+        void SetViewState(string guid)
+        {
+            object state = new Pair(ControlState, ViewState);
+            Cache.AddSliding(ViewStatePartition, HiddenFieldName + guid, state, CacheInterval);
         }
     }
 }

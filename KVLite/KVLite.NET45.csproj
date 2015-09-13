@@ -262,12 +262,14 @@
     <Compile Include="Core\SQLiteQueries.cs" />
     <Compile Include="VolatileCache.cs" />
     <Compile Include="VolatileCacheSettings.cs" />
-    <Compile Include="Web\AbstractPageStatePersister.cs" />
+    <Compile Include="Web\AbstractViewStatePersister.cs" />
     <Compile Include="Web\Http\ApiOutputCache.cs" />
     <Compile Include="Web\Http\AbstractCacheController.cs" />
     <Compile Include="Web\MemoryOutputCacheProvider.cs" />
+    <Compile Include="Web\VolatileViewStatePersister.cs" />
+    <Compile Include="Web\MemoryViewStatePersister.cs" />
     <Compile Include="Web\VolatileOutputCacheProvider.cs" />
-    <Compile Include="Web\ViewStatePersister.cs" />
+    <Compile Include="Web\PersistentViewStatePersister.cs" />
     <Compile Include="Web\PersistentOutputCacheProvider.cs" />
     <Compile Include="Web\ViewStateStorageSettings.cs" />
     <Compile Include="Web\WebCaches.cs" />

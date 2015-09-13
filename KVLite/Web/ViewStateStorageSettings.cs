@@ -50,7 +50,7 @@ namespace PommaLabs.KVLite.Web
                 return;
             }
 
-            var handlerName = node.Attributes["PersistenceHandler"];
+            var handlerName = node.Attributes[nameof(PersistenceHandler)];
             if (handlerName != null)
             {
                 PersistenceHandler = handlerName.Value;
@@ -62,13 +62,13 @@ namespace PommaLabs.KVLite.Web
                 _storagePath = storagePath.Value;
             }
 
-            var connString = node.Attributes["ConnectionString"];
+            var connString = node.Attributes[nameof(ConnectionString)];
             if (connString != null)
             {
                 _connectionString = connString.Value;
             }
 
-            var tableName = node.Attributes["TableName"];
+            var tableName = node.Attributes[nameof(TableName)];
             if (tableName != null)
             {
                 _tableName = tableName.Value;
@@ -85,13 +85,13 @@ namespace PommaLabs.KVLite.Web
                 catch { }
             }
 
-            var compressed = node.Attributes["Compressed"];
+            var compressed = node.Attributes[nameof(Compressed)];
             if (compressed != null)
             {
                 _compressed = (string.Compare(compressed.Value, bool.TrueString, StringComparison.OrdinalIgnoreCase) == 0);
             }
 
-            var behavior = node.Attributes["RequestBehavior"];
+            var behavior = node.Attributes[nameof(RequestBehavior)];
             if (behavior != null)
             {
                 try
@@ -102,7 +102,7 @@ namespace PommaLabs.KVLite.Web
                 catch { }
             }
 
-            var viewstatefilesMaxAge = node.Attributes["ViewStateFilesMaxAge"];
+            var viewstatefilesMaxAge = node.Attributes[nameof(ViewStateFilesMaxAge)];
             if (viewstatefilesMaxAge != null)
             {
                 try
@@ -113,7 +113,7 @@ namespace PommaLabs.KVLite.Web
                 catch { }
             }
 
-            var viewstateCleanupInterval = node.Attributes["ViewStateCleanupInterval"];
+            var viewstateCleanupInterval = node.Attributes[nameof(ViewStateCleanupInterval)];
             if (viewstateCleanupInterval != null)
             {
                 try

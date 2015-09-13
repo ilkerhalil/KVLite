@@ -309,8 +309,8 @@
     <Compile Include="..\KVLite\VolatileCacheSettings.cs">
       <Link>VolatileCacheSettings.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Web\AbstractPageStatePersister.cs">
-      <Link>Web\AbstractPageStatePersister.cs</Link>
+    <Compile Include="..\KVLite\Web\AbstractViewStatePersister.cs">
+      <Link>Web\AbstractViewStatePersister.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Web\Http\AbstractCacheController.cs">
       <Link>Web\Http\AbstractCacheController.cs</Link>
@@ -321,17 +321,23 @@
     <Compile Include="..\KVLite\Web\MemoryOutputCacheProvider.cs">
       <Link>Web\MemoryOutputCacheProvider.cs</Link>
     </Compile>
+    <Compile Include="..\KVLite\Web\MemoryViewStatePersister.cs">
+      <Link>Web\MemoryViewStatePersister.cs</Link>
+    </Compile>
     <Compile Include="..\KVLite\Web\PersistentOutputCacheProvider.cs">
       <Link>Web\PersistentOutputCacheProvider.cs</Link>
     </Compile>
-    <Compile Include="..\KVLite\Web\ViewStatePersister.cs">
-      <Link>Web\ViewStatePersister.cs</Link>
+    <Compile Include="..\KVLite\Web\PersistentViewStatePersister.cs">
+      <Link>Web\PersistentViewStatePersister.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Web\ViewStateStorageSettings.cs">
       <Link>Web\ViewStateStorageSettings.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Web\VolatileOutputCacheProvider.cs">
       <Link>Web\VolatileOutputCacheProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\KVLite\Web\VolatileViewStatePersister.cs">
+      <Link>Web\VolatileViewStatePersister.cs</Link>
     </Compile>
     <Compile Include="..\KVLite\Web\WebCaches.cs">
       <Link>Web\WebCaches.cs</Link>
