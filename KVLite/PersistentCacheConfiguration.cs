@@ -71,9 +71,9 @@ namespace PommaLabs.KVLite
             DefaultCacheFile = "PersistentCache.sqlite";
             DefaultPartition = "KVLite.DefaultPartition";
             DefaultStaticIntervalInDays = 30;
-            DefaultInsertionCountBeforeAutoClean = 64;
+            DefaultInsertionCountBeforeAutoClean = 256;
             DefaultMaxCacheSizeInMB = 1024;
-            DefaultMaxJournalSizeInMB = 32;
+            DefaultMaxJournalSizeInMB = 64;
         }
 
         /// <summary>

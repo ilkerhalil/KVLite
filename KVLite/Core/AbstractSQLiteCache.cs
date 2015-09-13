@@ -54,11 +54,6 @@ namespace PommaLabs.KVLite.Core
         #region Constants
 
         /// <summary>
-        ///   The initial value for the variable which keeps the auto clean counter.
-        /// </summary>
-        const int InsertionCountStart = 0;
-
-        /// <summary>
         ///   The default SQLite page size in bytes. Do not change this value unless SQLite changes
         ///   its defaults. WAL journal does limit the capability to change that value even when the
         ///   DB is still empty.
@@ -88,13 +83,6 @@ namespace PommaLabs.KVLite.Core
         ///   The connection string used to connect to the SQLite database.
         /// </summary>
         string _connectionString;
-
-        /// <summary>
-        ///   This value is increased for each ADD operation; after this value reaches the
-        ///   "InsertionCountBeforeAutoClean" configuration parameter, then we must reset it and do
-        ///   a SOFT cleanup.
-        /// </summary>
-        int _insertionCount = InsertionCountStart;
 
         /// <summary>
         ///   The cache settings.
@@ -255,7 +243,7 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         public void Vacuum()
         {
-            _log.InfoFormat("Vacuuming the SQLite DB '{0}'...", Settings.CacheUri);
+            _log.Info($"Vacuuming the SQLite DB '{Settings.CacheUri}'...");
 
             // Perform a cleanup before vacuuming.
             Clear(CacheReadMode.ConsiderExpiryDate);
@@ -267,11 +255,27 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+#if !NET40
+
         /// <summary>
-        ///   Runs VACUUM on the underlying SQLite database.
+        ///   Asynchronously runs VACUUM on the underlying SQLite database.
         /// </summary>
         /// <returns>The operation task.</returns>
-        public Task VacuumAsync() => TaskRunner.Run(Vacuum);
+        public async Task VacuumAsync()
+        {
+            _log.Info($"Vacuuming the SQLite DB '{Settings.CacheUri}'...");
+
+            // Perform a cleanup before vacuuming.
+            Clear(CacheReadMode.ConsiderExpiryDate);
+
+            // Vacuum cannot be run within a transaction.
+            using (var ctx = _connectionPool.GetObject())
+            {
+                await ctx.InternalResource.ExecuteAsync(SQLiteQueries.Vacuum);
+            }
+        }
+
+#endif
 
         #endregion Public Members
 
@@ -382,10 +386,12 @@ namespace PommaLabs.KVLite.Core
             p.Add(nameof(utcExpiry), utcExpiry.ToUnixTime(), DbType.Int64);
             p.Add(nameof(interval), (long) interval.TotalSeconds, DbType.Int64);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
+            p.Add("maxInsertionCount", Settings.InsertionCountBeforeAutoClean, DbType.Int32);
 
+            int insertionCount;
             using (var ctx = _connectionPool.GetObject())
             {
-                ctx.InternalResource.Execute(SQLiteQueries.Add, p);
+                insertionCount = ctx.InternalResource.ExecuteScalar<int>(SQLiteQueries.Add, p);
             }
 
             // Insertion has concluded successfully, therefore we increment the operation counter.
@@ -393,7 +399,7 @@ namespace PommaLabs.KVLite.Core
             // we must reset it and do a SOFT cleanup. Following code is not fully thread safe, but
             // it does not matter, because the "InsertionCountBeforeAutoClean" parameter should be
             // just an hint on when to do the cleanup.
-            if (++_insertionCount >= Settings.InsertionCountBeforeAutoClean)
+            if (insertionCount >= Settings.InsertionCountBeforeAutoClean)
             {
                 // If they were equal, then we need to run the maintenance cleanup. The insertion
                 // counter is automatically reset by the Clear method.
@@ -412,9 +418,6 @@ namespace PommaLabs.KVLite.Core
             {
                 ctx.InternalResource.Execute(SQLiteQueries.Clear, p);
             }
-
-            // Reset the insertion counter, because a manual clean has been performed.
-            _insertionCount = 0;
         }
 
         protected sealed override bool ContainsInternal(string partition, string key)

@@ -71,8 +71,8 @@ namespace PommaLabs.KVLite
             DefaultCacheName = nameof(VolatileCache);
             DefaultPartition = "KVLite.DefaultPartition";
             DefaultStaticIntervalInDays = 30;
-            DefaultInsertionCountBeforeAutoClean = 64;
-            DefaultMaxCacheSizeInMB = 256;
+            DefaultInsertionCountBeforeAutoClean = 128;
+            DefaultMaxCacheSizeInMB = 512;
             DefaultMaxJournalSizeInMB = 32;
         }
 
