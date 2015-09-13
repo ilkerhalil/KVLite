@@ -1,4 +1,4 @@
-// Copyright 2015 Finsa S.p.A. <finsa@finsa.it>
+// Copyright 2015-2025 Finsa S.p.A. <finsa@finsa.it>
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License. You may obtain a copy of the License at:
@@ -22,9 +22,14 @@ namespace RestService.WebApi.Controllers
     public sealed class HelpController : ApiController
     {
         /// <summary>
-        ///   Override here default info.
+        ///   Redirects to Swagger help pages.
         /// </summary>
         [Route("")]
-        public IHttpActionResult Get() => Redirect("swagger");
+        public IHttpActionResult Get()
+        {
+            var uri = Request.RequestUri.ToString();
+            var uriWithoutQuery = uri.Substring(0, uri.Length - Request.RequestUri.Query.Length);
+            return Redirect(uriWithoutQuery + "swagger");
+        }
     }
 }

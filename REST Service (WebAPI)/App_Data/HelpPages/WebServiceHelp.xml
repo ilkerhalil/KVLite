@@ -119,7 +119,7 @@
         </member>
         <member name="M:RestService.WebApi.Controllers.HelpController.Get">
             <summary>
-              Override here default info.
+              Redirect to Swagger help pages.
             </summary>
         </member>
     </members>
