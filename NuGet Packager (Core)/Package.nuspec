@@ -15,6 +15,7 @@ This package contains the core references for KVLite.
 * Embedded SQLite in the main NuGet package.
 * Fixed a small issue in the automatic cleanup.
 * Vacuum runs Clear before applying the vacuuming.
+* KVLite.Web branch has received some fixes and now should be more customizable.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.

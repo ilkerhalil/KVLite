@@ -309,6 +309,9 @@
     <Compile Include="..\KVLite\VolatileCacheSettings.cs">
       <Link>VolatileCacheSettings.cs</Link>
     </Compile>
+    <Compile Include="..\KVLite\Web\AbstractOutputCacheProvider.cs">
+      <Link>Web\AbstractOutputCacheProvider.cs</Link>
+    </Compile>
     <Compile Include="..\KVLite\Web\AbstractViewStatePersister.cs">
       <Link>Web\AbstractViewStatePersister.cs</Link>
     </Compile>

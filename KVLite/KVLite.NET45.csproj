@@ -262,6 +262,7 @@
     <Compile Include="Core\SQLiteQueries.cs" />
     <Compile Include="VolatileCache.cs" />
     <Compile Include="VolatileCacheSettings.cs" />
+    <Compile Include="Web\AbstractOutputCacheProvider.cs" />
     <Compile Include="Web\AbstractViewStatePersister.cs" />
     <Compile Include="Web\Http\ApiOutputCache.cs" />
     <Compile Include="Web\Http\AbstractCacheController.cs" />

@@ -21,69 +21,29 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Finsa.CodeServices.Common;
-using System;
-using System.Web.Caching;
-
 namespace PommaLabs.KVLite.Web
 {
     /// <summary>
-    ///   A custom output cache provider based on KVLite. Specifically, it uses the instance defined
+    ///   A custom output cache provider based on KVLite. By default, it uses the instance defined
     ///   by the property <see cref="WebCaches.Volatile"/>.
     /// </summary>
-    public sealed class VolatileOutputCacheProvider : OutputCacheProvider
+    public sealed class VolatileOutputCacheProvider : AbstractOutputCacheProvider
     {
         /// <summary>
-        ///   The partition used by output cache provider items.
+        ///   Initializes the provider using the default cache, that is, <see cref="WebCaches.Volatile"/>.
         /// </summary>
-        public const string OutputCachePartition = "KVLite.Web.VolatileOutputCache";
-
-        /// <summary>
-        ///   Returns a reference to the specified entry in the output cache.
-        /// </summary>
-        /// <param name="key">A unique identifier for a cached entry in the output cache.</param>
-        /// <returns>
-        ///   The <paramref name="key"/> value that identifies the specified entry in the cache, or
-        ///   null if the specified entry is not in the cache.
-        /// </returns>
-        public override object Get(string key) => WebCaches.Volatile.Get<object>(OutputCachePartition, key).ValueOrDefault();
-
-        /// <summary>
-        ///   Inserts the specified entry into the output cache.
-        /// </summary>
-        /// <param name="key">A unique identifier for <paramref name="entry"/>.</param>
-        /// <param name="entry">The content to add to the output cache.</param>
-        /// <param name="utcExpiry">The time and date on which the cached entry expires.</param>
-        /// <returns>A reference to the specified provider.</returns>
-        public override object Add(string key, object entry, DateTime utcExpiry)
+        public VolatileOutputCacheProvider()
+            : base(WebCaches.Volatile)
         {
-            WebCaches.Volatile.AddTimed(OutputCachePartition, key, entry, utcExpiry);
-            return entry;
         }
 
         /// <summary>
-        ///   Inserts the specified entry into the output cache, overwriting the entry if it is
-        ///   already cached.
+        ///   Initializes the provider using the specified cache.
         /// </summary>
-        /// <param name="key">A unique identifier for <paramref name="entry"/>.</param>
-        /// <param name="entry">The content to add to the output cache.</param>
-        /// <param name="utcExpiry">
-        ///   The time and date on which the cached <paramref name="entry"/> expires.
-        /// </param>
-        public override void Set(string key, object entry, DateTime utcExpiry)
+        /// <param name="cache">The cache that will be used by the provider.</param>
+        public VolatileOutputCacheProvider(VolatileCache cache)
+            : base(cache)
         {
-            WebCaches.Volatile.AddTimed(OutputCachePartition, key, entry, utcExpiry);
-        }
-
-        /// <summary>
-        ///   Removes the specified entry from the output cache.
-        /// </summary>
-        /// <param name="key">
-        ///   The unique identifier for the entry to remove from the output cache.
-        /// </param>
-        public override void Remove(string key)
-        {
-            WebCaches.Volatile.Remove(OutputCachePartition, key);
         }
     }
 }
