@@ -53,16 +53,6 @@ namespace PommaLabs.KVLite
 
         #region Construction
 
-        static VolatileCache()
-        {
-            // Makes SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
-            var nativePath = PortableEnvironment.MapPath(PortableEnvironment.AppIsRunningOnAspNet ? "~/bin/KVLite/" : "KVLite/");
-            Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
-
-            // Logs the path where SQLite has been set.
-            LogManager.GetLogger<VolatileCache>().Info($"SQLite native libraries will be loaded from {nativePath}");
-        }
-
         /// <summary>
         ///   Initializes a new instance of the <see cref="VolatileCache"/> class with given settings.
         /// </summary>

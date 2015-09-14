@@ -28,6 +28,7 @@ using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Common.Extensions;
 using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
+using Finsa.CodeServices.Common.Portability;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.Thrower;
@@ -112,6 +113,16 @@ namespace PommaLabs.KVLite.Core
         #endregion Fields
 
         #region Construction
+
+        static AbstractSQLiteCache()
+        {
+            // Makes SQLite work... (loading dll from e.g. KVLite/x64/SQLite.Interop.dll)
+            var nativePath = PortableEnvironment.MapPath(PortableEnvironment.AppIsRunningOnAspNet ? "~/bin/KVLite/" : "KVLite/");
+            Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", nativePath);
+
+            // Logs the path where SQLite has been set.
+            LogManager.GetLogger<PersistentCache>().Info($"SQLite native libraries will be loaded from {nativePath}");
+        }
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="AbstractSQLiteCache{TCacheSettings}"/>
@@ -384,7 +395,7 @@ namespace PommaLabs.KVLite.Core
             p.Add(nameof(key), key, DbType.String);
             p.Add(nameof(serializedValue), serializedValue, DbType.Binary, size: serializedValue.Length);
             p.Add(nameof(utcExpiry), utcExpiry.ToUnixTime(), DbType.Int64);
-            p.Add(nameof(interval), (long) interval.TotalSeconds, DbType.Int64);
+            p.Add(nameof(interval), (long)interval.TotalSeconds, DbType.Int64);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
             p.Add("maxInsertionCount", Settings.InsertionCountBeforeAutoClean, DbType.Int32);
 
