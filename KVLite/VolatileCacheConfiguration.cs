@@ -36,7 +36,13 @@ namespace PommaLabs.KVLite
     {
         #region Static instance
 
-        static VolatileCacheConfiguration()
+        /// <summary>
+        ///   Gets the static configuration instance.
+        /// </summary>
+        /// <value>The static configuration instance.</value>
+        public static VolatileCacheConfiguration Instance { get; } = InitializeInstance();
+
+        static VolatileCacheConfiguration InitializeInstance()
         {
             var configurationFile = "KVLite.config";
             if (PortableEnvironment.AppIsRunningOnAspNet)
@@ -46,19 +52,16 @@ namespace PommaLabs.KVLite
                 // the "bin" directory, because every change would make the application restart.
                 configurationFile = "~/" + configurationFile;
             }
-            Instance = new VolatileCacheConfiguration();
-            Instance.Initialize(new ConfigurationFileConfigurationProvider<VolatileCacheConfiguration>
+
+            var instance = new VolatileCacheConfiguration();
+            instance.Initialize(new ConfigurationFileConfigurationProvider<VolatileCacheConfiguration>
             {
                 ConfigurationFile = PortableEnvironment.MapPath(configurationFile),
                 ConfigurationSection = "volatileCache"
             });
-        }
 
-        /// <summary>
-        ///   Gets the static configuration instance.
-        /// </summary>
-        /// <value>The static configuration instance.</value>
-        public static VolatileCacheConfiguration Instance { get; }
+            return instance;
+        }
 
         #endregion Static instance
 
