@@ -48,23 +48,23 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging, Version=3.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Common.Logging.3.0.0\lib\net40\Common.Logging.dll</HintPath>
+    <Reference Include="Common.Logging, Version=3.3.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.3.0\lib\net40\Common.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Common.Logging.Core, Version=3.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Common.Logging.Core.3.0.0\lib\net40\Common.Logging.Core.dll</HintPath>
+    <Reference Include="Common.Logging.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.3.0\lib\net40\Common.Logging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Crc32C.NET">
       <HintPath>..\packages\Crc32C.NET.1.0.5.0\lib\net20\Crc32C.NET.dll</HintPath>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Clock, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Clock.2.5.0\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Clock, Version=2.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Clock.2.6.0\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Common, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Common.2.5.0\lib\net45\Finsa.CodeServices.Common.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Common, Version=2.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsa.CodeServices.Common.2.6.0\lib\net45\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Compression, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
