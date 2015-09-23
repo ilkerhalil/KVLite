@@ -247,6 +247,7 @@
     <Compile Include="Core\AbstractCache.cs" />
     <Compile Include="Core\AbstractCacheSettings.cs" />
     <Compile Include="Core\ErrorMessages.cs" />
+    <Compile Include="IAsyncCache.cs" />
     <Compile Include="ICache.cs" />
     <Compile Include="MemoryCache.cs" />
     <Compile Include="MemoryCacheConfiguration.cs" />
