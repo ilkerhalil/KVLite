@@ -151,8 +151,7 @@ namespace PommaLabs.KVLite.Core
                 NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
                 PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
                 ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-                TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple,
-                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All
+                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None
             });
 
             _settings.PropertyChanged += Settings_PropertyChanged;
