@@ -257,6 +257,9 @@
     <Compile Include="..\KVLite\Core\ErrorMessages.cs">
       <Link>Core\ErrorMessages.cs</Link>
     </Compile>
+    <Compile Include="..\KVLite\IAsyncCache.cs">
+      <Link>IAsyncCache.cs</Link>
+    </Compile>
     <Compile Include="..\KVLite\MemoryCache.cs">
       <Link>MemoryCache.cs</Link>
     </Compile>

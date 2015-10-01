@@ -49,7 +49,7 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     [Serializable]
-    public abstract class AbstractSQLiteCache<TCacheSettings> : AbstractCache<TCacheSettings>
+    public abstract class AbstractSQLiteCache<TCacheSettings> : AbstractCache<TCacheSettings>, IAsyncCache<TCacheSettings> 
         where TCacheSettings : AbstractCacheSettings
     {
         #region Constants
