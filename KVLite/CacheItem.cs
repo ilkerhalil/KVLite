@@ -25,7 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.Extensions;
 using Newtonsoft.Json;
 
 namespace PommaLabs.KVLite
