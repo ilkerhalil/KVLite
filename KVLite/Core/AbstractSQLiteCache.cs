@@ -26,7 +26,6 @@ using Common.Logging;
 using Dapper;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.Extensions;
 using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
 using Finsa.CodeServices.Common.Portability;
 using Finsa.CodeServices.Compression;
@@ -49,7 +48,7 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     [Serializable]
-    public abstract class AbstractSQLiteCache<TCacheSettings> : AbstractCache<TCacheSettings>
+    public abstract class AbstractSQLiteCache<TCacheSettings> : AbstractCache<TCacheSettings>, IAsyncCache<TCacheSettings> 
         where TCacheSettings : AbstractCacheSettings
     {
         #region Constants
@@ -151,8 +150,7 @@ namespace PommaLabs.KVLite.Core
                 NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
                 PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
                 ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-                TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple,
-                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All
+                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None
             });
 
             _settings.PropertyChanged += Settings_PropertyChanged;
@@ -395,7 +393,7 @@ namespace PommaLabs.KVLite.Core
             p.Add(nameof(key), key, DbType.String);
             p.Add(nameof(serializedValue), serializedValue, DbType.Binary, size: serializedValue.Length);
             p.Add(nameof(utcExpiry), utcExpiry.ToUnixTime(), DbType.Int64);
-            p.Add(nameof(interval), (long)interval.TotalSeconds, DbType.Int64);
+            p.Add(nameof(interval), (long) interval.TotalSeconds, DbType.Int64);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
             p.Add("maxInsertionCount", Settings.InsertionCountBeforeAutoClean, DbType.Int32);
 

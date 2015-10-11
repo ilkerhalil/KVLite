@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.Nancy</id>
-        <version>4.4.3</version>
+        <version>4.5.0</version>
         <title>KVLite - Nancy caching bootstrapper</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -11,10 +11,7 @@
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Nancy caching bootstrapper.
         </description>
         <releaseNotes>
-* Embedded SQLite in the main NuGet package.
-* Fixed a small issue in the automatic cleanup.
-* Vacuum runs Clear before applying the vacuuming.
-* KVLite.Web branch has received some fixes and now should be more customizable.
+* Nancy caching bootstrapper has been put in a separate assembly.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Nancy caching bootstrapper.
@@ -26,13 +23,14 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="Nancy" version="1.2.0" />
-            <dependency id="PommaLabs.KVLite.Core" version="4.4.3" />
+            <dependency id="Nancy" version="1.3.0" />
+            <dependency id="PommaLabs.KVLite.Core" version="[4.5.0, 5.0.0)" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
         <tags>kvlite nancy nancyfx response output cache caching bootstrapper</tags>
     </metadata>
     <files>
+        <file src="lib\" target="lib" />
     </files>
 </package>

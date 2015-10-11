@@ -36,7 +36,13 @@ namespace PommaLabs.KVLite
     {
         #region Static instance
 
-        static MemoryCacheConfiguration()
+        /// <summary>
+        ///   Gets the static configuration instance.
+        /// </summary>
+        /// <value>The static configuration instance.</value>
+        public static MemoryCacheConfiguration Instance { get; } = InitializeInstance();
+
+        static MemoryCacheConfiguration InitializeInstance()
         {
             var configurationFile = "KVLite.config";
             if (PortableEnvironment.AppIsRunningOnAspNet)
@@ -46,19 +52,16 @@ namespace PommaLabs.KVLite
                 // the "bin" directory, because every change would make the application restart.
                 configurationFile = "~/" + configurationFile;
             }
-            Instance = new MemoryCacheConfiguration();
-            Instance.Initialize(new ConfigurationFileConfigurationProvider<MemoryCacheConfiguration>
+
+            var instance = new MemoryCacheConfiguration();
+            instance.Initialize(new ConfigurationFileConfigurationProvider<MemoryCacheConfiguration>
             {
                 ConfigurationFile = PortableEnvironment.MapPath(configurationFile),
                 ConfigurationSection = "memoryCache"
             });
-        }
 
-        /// <summary>
-        ///   Gets the static configuration instance.
-        /// </summary>
-        /// <value>The static configuration instance.</value>
-        public static MemoryCacheConfiguration Instance { get; }
+            return instance;
+        }
 
         #endregion Static instance
 

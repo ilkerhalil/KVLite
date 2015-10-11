@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.WebApi</id>
-        <version>4.4.3</version>
+        <version>4.5.0</version>
         <title>KVLite - Web API output cache provider</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -11,10 +11,7 @@
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Web API output cache provider.
         </description>
         <releaseNotes>
-* Embedded SQLite in the main NuGet package.
-* Fixed a small issue in the automatic cleanup.
-* Vacuum runs Clear before applying the vacuuming.
-* KVLite.Web branch has received some fixes and now should be more customizable.
+* Nancy caching bootstrapper has been put in a separate assembly.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Web API output cache provider.
@@ -27,18 +24,18 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <group>
-                <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-                <dependency id="PommaLabs.KVLite.Core" version="4.4.3" />
+                <dependency id="Microsoft.AspNet.WebApi.Client" version="[5.2.3, 6.0.0)" />
+                <dependency id="PommaLabs.KVLite.Core" version="[4.5.0, 5.0.0)" />
                 <dependency id="Strathweb.CacheOutput.WebApi2" version="0.9.0" />
             </group>
             <group targetFramework="net45">
-                <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-                <dependency id="PommaLabs.KVLite.Core" version="4.4.3" />
+                <dependency id="Microsoft.AspNet.WebApi.Client" version="[5.2.3, 6.0.0)" />
+                <dependency id="PommaLabs.KVLite.Core" version="[4.5.0, 5.0.0)" />
                 <dependency id="Strathweb.CacheOutput.WebApi2" version="0.9.0" />
             </group>
             <group targetFramework="net40">
-                <dependency id="Microsoft.AspNet.WebApi.Client" version="4.0.30506.0" />
-                <dependency id="PommaLabs.KVLite.Core" version="4.4.3" />
+                <dependency id="Microsoft.AspNet.WebApi.Client" version="[4.0.30506.0, 5.0.0)" />
+                <dependency id="PommaLabs.KVLite.Core" version="[4.5.0, 5.0.0)" />
                 <dependency id="Strathweb.CacheOutput" version="0.5" />
             </group>
         </dependencies>
