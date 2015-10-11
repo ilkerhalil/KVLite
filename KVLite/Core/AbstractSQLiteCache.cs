@@ -393,7 +393,7 @@ namespace PommaLabs.KVLite.Core
             p.Add(nameof(key), key, DbType.String);
             p.Add(nameof(serializedValue), serializedValue, DbType.Binary, size: serializedValue.Length);
             p.Add(nameof(utcExpiry), utcExpiry.ToUnixTime(), DbType.Int64);
-            p.Add(nameof(interval), (long)interval.TotalSeconds, DbType.Int64);
+            p.Add(nameof(interval), (long) interval.TotalSeconds, DbType.Int64);
             p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
             p.Add("maxInsertionCount", Settings.InsertionCountBeforeAutoClean, DbType.Int32);
 

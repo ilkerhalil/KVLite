@@ -11,10 +11,7 @@
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
         </description>
         <releaseNotes>
-* Embedded SQLite in the main NuGet package.
-* Fixed a small issue in the automatic cleanup.
-* Vacuum runs Clear before applying the vacuuming.
-* KVLite.Web branch has received some fixes and now should be more customizable.
+* Nancy caching bootstrapper has been put in a separate assembly.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
@@ -26,10 +23,10 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <copyright>Copyright (c) 2014-2015 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="CodeProject.ObjectPool" version="1.8.0" />
+            <dependency id="CodeProject.ObjectPool" version="[1.9.0, 2.0.0)" />
             <dependency id="Dapper" version="1.42" />
-            <dependency id="PommaLabs.KVLite.Core" version="4.4.4" />
-            <dependency id="Thrower" version="1.3.0" />
+            <dependency id="PommaLabs.KVLite.Core" version="[4.4.4, 5.0.0)" />
+            <dependency id="Thrower" version="[2.0.1, 3.0.0)" />
             <dependency id="Westwind.Utilities.Configuration" version="2.25" />
         </dependencies>
         <references></references>
