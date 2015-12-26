@@ -38,8 +38,6 @@ using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Runtime.Serialization.Formatters;
-using Task = System.Threading.Tasks.Task;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -48,7 +46,7 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     [Serializable]
-    public abstract class AbstractSQLiteCache<TCacheSettings> : AbstractCache<TCacheSettings>, IAsyncCache<TCacheSettings> 
+    public abstract class AbstractSQLiteCache<TCacheSettings> : AbstractCache<TCacheSettings> 
         where TCacheSettings : AbstractCacheSettings
     {
         #region Constants
@@ -255,36 +253,16 @@ namespace PommaLabs.KVLite.Core
             _log.Info($"Vacuuming the SQLite DB '{Settings.CacheUri}'...");
 
             // Perform a cleanup before vacuuming.
-            Clear(CacheReadMode.ConsiderExpiryDate);
+            ClearInternal(null, CacheReadMode.ConsiderExpiryDate);
 
             // Vacuum cannot be run within a transaction.
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                ctx.InternalResource.Execute(SQLiteQueries.Vacuum);
+                cmd.CommandText = SQLiteQueries.Vacuum;
+                cmd.ExecuteNonQuery();
             }
         }
-
-#if !NET40
-
-        /// <summary>
-        ///   Asynchronously runs VACUUM on the underlying SQLite database.
-        /// </summary>
-        /// <returns>The operation task.</returns>
-        public async Task VacuumAsync()
-        {
-            _log.Info($"Vacuuming the SQLite DB '{Settings.CacheUri}'...");
-
-            // Perform a cleanup before vacuuming.
-            Clear(CacheReadMode.ConsiderExpiryDate);
-
-            // Vacuum cannot be run within a transaction.
-            using (var ctx = _connectionPool.GetObject())
-            {
-                await ctx.InternalResource.ExecuteAsync(SQLiteQueries.Vacuum);
-            }
-        }
-
-#endif
 
         #endregion Public Members
 
@@ -388,19 +366,22 @@ namespace PommaLabs.KVLite.Core
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
-            var p = new DynamicParameters();
-            p.Add(nameof(partition), partition, DbType.String);
-            p.Add(nameof(key), key, DbType.String);
-            p.Add(nameof(serializedValue), serializedValue, DbType.Binary, size: serializedValue.Length);
-            p.Add(nameof(utcExpiry), utcExpiry.ToUnixTime(), DbType.Int64);
-            p.Add(nameof(interval), (long) interval.TotalSeconds, DbType.Int64);
-            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
-            p.Add("maxInsertionCount", Settings.InsertionCountBeforeAutoClean, DbType.Int32);
-
-            int insertionCount;
+            long insertionCount;
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                insertionCount = ctx.InternalResource.ExecuteScalar<int>(SQLiteQueries.Add, p);
+                cmd.CommandText = SQLiteQueries.Add;
+                cmd.Parameters.AddRange(new[] 
+                {
+                    new SQLiteParameter(nameof(partition), partition),
+                    new SQLiteParameter(nameof(key), key),
+                    new SQLiteParameter(nameof(serializedValue), serializedValue),
+                    new SQLiteParameter(nameof(utcExpiry), utcExpiry.ToUnixTime()),
+                    new SQLiteParameter(nameof(interval), (long) interval.TotalSeconds),
+                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime()),
+                    new SQLiteParameter("maxInsertionCount", Settings.InsertionCountBeforeAutoClean)
+                });
+                insertionCount = (long) cmd.ExecuteScalar();
             }
 
             // Insertion has concluded successfully, therefore we increment the operation counter.
@@ -412,20 +393,23 @@ namespace PommaLabs.KVLite.Core
             {
                 // If they were equal, then we need to run the maintenance cleanup. The insertion
                 // counter is automatically reset by the Clear method.
-                Clear(CacheReadMode.ConsiderExpiryDate);
+                ClearInternal(null, CacheReadMode.ConsiderExpiryDate);
             }
         }
 
         protected sealed override void ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
-            var p = new DynamicParameters();
-            p.Add(nameof(partition), partition, DbType.String);
-            p.Add("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
-            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
-
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                ctx.InternalResource.Execute(SQLiteQueries.Clear, p);
+                cmd.CommandText = SQLiteQueries.Clear;
+                cmd.Parameters.AddRange(new[]
+                {
+                    new SQLiteParameter(nameof(partition), partition),
+                    new SQLiteParameter("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate)),
+                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())                    
+                });
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -458,16 +442,21 @@ namespace PommaLabs.KVLite.Core
 
         protected sealed override Option<TVal> GetInternal<TVal>(string partition, string key)
         {
-            var p = new DynamicParameters();
-            p.Add(nameof(partition), partition, DbType.String);
-            p.Add(nameof(key), key, DbType.String);
-            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
-
+            byte[] serializedValue;
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                var serializedValue = ctx.InternalResource.ExecuteScalar<byte[]>(SQLiteQueries.GetOne, p);
-                return DeserializeValue<TVal>(serializedValue, partition, key);
+                cmd.CommandText = SQLiteQueries.GetOne;
+                cmd.Parameters.AddRange(new[]
+                {
+                    new SQLiteParameter(nameof(partition), partition),
+                    new SQLiteParameter(nameof(key), key),
+                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                });
+                serializedValue = (byte[]) cmd.ExecuteScalar();
             }
+
+            return DeserializeValue<TVal>(serializedValue, partition, key);
         }
 
         protected sealed override Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)

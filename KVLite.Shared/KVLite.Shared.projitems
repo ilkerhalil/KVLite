@@ -18,7 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\SQLiteQueries.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\TaskRunner.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IAsyncCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ICache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryCacheConfiguration.cs" />
