@@ -109,7 +109,7 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string PeekManyItems = MinifyQuery(@"
-            select *
+            select partition, key, utcCreation, utcExpiry, interval, serializedValue
               from CacheItem
              where (@partition is null or partition = @partition)
                and partition != {CacheVariablesPartition} -- Ignore cache variables
@@ -117,7 +117,7 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string PeekOneItem = MinifyQuery(@"
-            select *
+            select partition, key, utcCreation, utcExpiry, interval, serializedValue
               from CacheItem
              where partition = @partition
                and key = @key

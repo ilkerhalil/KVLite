@@ -23,6 +23,7 @@
 
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Common.Threading.Tasks;
 using Ninject;
 using NUnit.Framework;
 using PommaLabs.KVLite.Core;
@@ -113,14 +114,17 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
-        public void AddSlidingAsync_RightInfo()
+        public void AddSliding_TwoTimes_RightInfo()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v1 = StringItems[2];
             var v2 = StringItems[3];
             var i = TimeSpan.FromMinutes(10);
-            Cache.AddSlidingAsync(p, k, Tuple.Create(v1, v2), i).Wait();
+
+            Cache.AddSliding(p, k, Tuple.Create(v1, v2), i);
+            Cache.AddSliding(p, k, Tuple.Create(v1, v2), i);
+
             var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
             Assert.IsNotNull(info);
             Assert.AreEqual(p, info.Partition);
@@ -170,13 +174,16 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
-        public void AddStaticAsync_RightInfo()
+        public void AddStatic_TwoTimes_RightInfo()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v1 = StringItems[2];
             var v2 = StringItems[3];
-            Cache.AddStaticAsync(p, k, Tuple.Create(v1, v2)).Wait();
+
+            Cache.AddStatic(p, k, Tuple.Create(v1, v2));
+            Cache.AddStatic(p, k, Tuple.Create(v1, v2));
+
             var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
             Assert.IsNotNull(info);
             Assert.AreEqual(p, info.Partition);
@@ -248,7 +255,10 @@ namespace PommaLabs.KVLite.UnitTests
             var v1 = StringItems[2];
             var v2 = StringItems[3];
             var e = Cache.Clock.UtcNow.AddMinutes(10);
-            Cache.AddTimedAsync(p, k, Tuple.Create(v1, v2), e).Wait();
+
+            Cache.AddTimed(p, k, Tuple.Create(v1, v2), e);
+            Cache.AddTimed(p, k, Tuple.Create(v1, v2), e);
+
             var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
             Assert.IsNotNull(info);
             Assert.AreEqual(p, info.Partition);
@@ -465,7 +475,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
-                var task = TaskRunner.Run(() => Cache.GetFromDefaultPartition<string>(StringItems[l]));
+                var task = TaskHelper.Run(() => Cache.GetFromDefaultPartition<string>(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i)
@@ -770,7 +780,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
-                var task = TaskRunner.Run(() => Cache.PeekIntoDefaultPartition<string>(StringItems[l]));
+                var task = TaskHelper.Run(() => Cache.PeekIntoDefaultPartition<string>(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i)

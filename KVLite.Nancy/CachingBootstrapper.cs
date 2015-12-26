@@ -137,7 +137,7 @@ namespace PommaLabs.KVLite.Nancy
             {
                 var cacheKey = context.GetRequestFingerprint();
                 var cachedSummary = new ResponseSummary(responseToBeCached);
-                _cache.AddTimedAsync(ResponseCachePartition, cacheKey, cachedSummary, _cache.Clock.UtcNow.AddSeconds(cacheSeconds));
+                _cache.AddTimed(ResponseCachePartition, cacheKey, cachedSummary, _cache.Clock.UtcNow.AddSeconds(cacheSeconds));
                 context.Response = cachedSummary.ToResponse();
             }
             catch (Exception ex)

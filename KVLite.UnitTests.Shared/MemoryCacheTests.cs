@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Common.Threading.Tasks;
 using Finsa.CodeServices.Serialization;
 using NUnit.Framework;
 using PommaLabs.KVLite.Core;
@@ -403,7 +404,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
-                var task = TaskRunner.Run(() => Cache.GetFromDefaultPartition<string>(StringItems[l]));
+                var task = TaskHelper.Run(() => Cache.GetFromDefaultPartition<string>(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i)

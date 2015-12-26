@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using Finsa.CodeServices.Common;
 using PommaLabs.KVLite.UnitTests;
 using Finsa.CodeServices.Serialization;
+using Finsa.CodeServices.Common.Threading.Tasks;
 
 namespace PommaLabs.KVLite.Benchmarks
 {
@@ -220,7 +221,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(PersistentCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
+                tasks.Add(TaskHelper.Run(() => PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
             }
             foreach (var task in tasks)
             {
@@ -246,7 +247,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(VolatileCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
+                tasks.Add(TaskHelper.Run(() => VolatileCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
             }
             foreach (var task in tasks)
             {
@@ -272,7 +273,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(MemoryCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
+                tasks.Add(TaskHelper.Run(() => MemoryCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
             }
             foreach (var task in tasks)
             {
@@ -298,11 +299,11 @@ namespace PommaLabs.KVLite.Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(PersistentCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
+                tasks.Add(TaskHelper.Run(() => PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
             }
             foreach (var table in tables)
             {
-                tasks.Add(PersistentCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
+                tasks.Add(TaskHelper.Run(() => PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
             }
             foreach (var task in tasks)
             {
@@ -388,7 +389,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var writeTasks = new List<Task>();
             foreach (var table in tables)
             {
-                writeTasks.Add(PersistentCache.DefaultInstance.AddStaticToDefaultPartitionAsync(table.TableName, table));
+                writeTasks.Add(TaskHelper.Run(() => PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
             }
             var readTasks = new List<Task<Option<DataTable>>>();
             foreach (var table in tables)
@@ -455,7 +456,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(PersistentCache.DefaultInstance.RemoveFromDefaultPartitionAsync(table.TableName));
+                tasks.Add(TaskHelper.Run(() => PersistentCache.DefaultInstance.RemoveFromDefaultPartition(table.TableName)));
             }
             foreach (var task in tasks)
             {

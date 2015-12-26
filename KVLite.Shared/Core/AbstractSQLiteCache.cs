@@ -23,7 +23,6 @@
 
 using CodeProject.ObjectPool;
 using Common.Logging;
-using Dapper;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
@@ -158,17 +157,21 @@ namespace PommaLabs.KVLite.Core
 
             using (var ctx = _connectionPool.GetObject())
             using (var trx = ctx.InternalResource.BeginTransaction())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                if (ctx.InternalResource.ExecuteScalar<long>(SQLiteQueries.IsSchemaReady, trx) == 0)
+                cmd.CommandText = SQLiteQueries.IsSchemaReady;
+                cmd.Transaction = trx;
+                if ((long) cmd.ExecuteScalar() == 0L)
                 {
                     // Creates the CacheItem table and the required indexes.
-                    ctx.InternalResource.Execute(SQLiteQueries.CacheSchema, null, trx);
+                    cmd.CommandText = SQLiteQueries.CacheSchema;
+                    cmd.ExecuteNonQuery();
                 }
                 trx.Commit();
             }
 
             // Initial cleanup.
-            Clear(CacheReadMode.ConsiderExpiryDate);
+            ClearInternal(null, CacheReadMode.ConsiderExpiryDate);
         }
 
         #endregion Construction
@@ -184,10 +187,17 @@ namespace PommaLabs.KVLite.Core
         {
             // No need for a transaction, since it is just a select.
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                var pageCount = ctx.InternalResource.ExecuteScalar<long>("PRAGMA page_count;");
-                var freelistCount = ctx.InternalResource.ExecuteScalar<long>("PRAGMA freelist_count;");
-                var pageSizeInKB = ctx.InternalResource.ExecuteScalar<long>("PRAGMA page_size;") / 1024L;
+                cmd.CommandText = "PRAGMA page_count;";
+                var pageCount = (long) cmd.ExecuteScalar();
+
+                cmd.CommandText = "PRAGMA freelist_count;";
+                var freelistCount = (long) cmd.ExecuteScalar();
+
+                cmd.CommandText = "PRAGMA page_size;";
+                var pageSizeInKB = (long) cmd.ExecuteScalar() / 1024L;
+
                 return (pageCount - freelistCount) * pageSizeInKB;
             }
         }
@@ -415,28 +425,34 @@ namespace PommaLabs.KVLite.Core
 
         protected sealed override bool ContainsInternal(string partition, string key)
         {
-            var p = new DynamicParameters();
-            p.Add(nameof(partition), partition, DbType.String);
-            p.Add(nameof(key), key, DbType.String);
-            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
-
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                return ctx.InternalResource.ExecuteScalar<int>(SQLiteQueries.Contains, p) > 0;
+                cmd.CommandText = SQLiteQueries.Contains;
+                cmd.Parameters.AddRange(new[]
+                {
+                    new SQLiteParameter(nameof(partition), partition),
+                    new SQLiteParameter(nameof(key), key),
+                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                });
+                return (long) cmd.ExecuteScalar() > 0L;
             }
         }
 
         protected sealed override long CountInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate)
         {
-            var p = new DynamicParameters();
-            p.Add(nameof(partition), partition, DbType.String);
-            p.Add("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate), DbType.Boolean);
-            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
-
             // No need for a transaction, since it is just a select.
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                return ctx.InternalResource.ExecuteScalar<long>(SQLiteQueries.Count, p);
+                cmd.CommandText = SQLiteQueries.Count;
+                cmd.Parameters.AddRange(new[]
+                {
+                    new SQLiteParameter(nameof(partition), partition),
+                    new SQLiteParameter("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate)),
+                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                });
+                return (long) cmd.ExecuteScalar();
             }
         }
 
@@ -461,28 +477,35 @@ namespace PommaLabs.KVLite.Core
 
         protected sealed override Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
-            var p = new DynamicParameters();
-            p.Add(nameof(partition), partition, DbType.String);
-            p.Add(nameof(key), key, DbType.String);
-            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
-
+            DbCacheItem tmpItem;
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                var tmp = ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.GetOneItem, p, buffered: false).FirstOrDefault();
-                return DeserializeCacheItem<TVal>(tmp);
+                cmd.CommandText = SQLiteQueries.GetOneItem;
+                cmd.Parameters.AddRange(new[]
+                {
+                    new SQLiteParameter(nameof(partition), partition),
+                    new SQLiteParameter(nameof(key), key),
+                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                });
+                tmpItem = MapDataReader(cmd.ExecuteReader()).FirstOrDefault();            
             }
+
+            return DeserializeCacheItem<TVal>(tmpItem);
         }
 
         protected sealed override CacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
         {
-            var p = new DynamicParameters();
-            p.Add(nameof(partition), partition, DbType.String);
-            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
-
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                return ctx.InternalResource
-                    .Query<DbCacheItem>(SQLiteQueries.GetManyItems, p, buffered: false)
+                cmd.CommandText = SQLiteQueries.GetManyItems;
+                cmd.Parameters.AddRange(new[]
+                {
+                    new SQLiteParameter(nameof(partition), partition),
+                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                });
+                return MapDataReader(cmd.ExecuteReader())
                     .Select(DeserializeCacheItem<TVal>)
                     .Where(i => i.HasValue)
                     .Select(i => i.Value)
@@ -492,42 +515,54 @@ namespace PommaLabs.KVLite.Core
 
         protected sealed override Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
-            var p = new DynamicParameters();
-            p.Add(nameof(partition), partition, DbType.String);
-            p.Add(nameof(key), key, DbType.String);
-            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
-
+            byte[] serializedValue;
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                var serializedValue = ctx.InternalResource.ExecuteScalar<byte[]>(SQLiteQueries.PeekOne, p);
-                return DeserializeValue<TVal>(serializedValue, partition, key);
+                cmd.CommandText = SQLiteQueries.PeekOne;
+                cmd.Parameters.AddRange(new[]
+                {
+                    new SQLiteParameter(nameof(partition), partition),
+                    new SQLiteParameter(nameof(key), key),
+                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                });
+                serializedValue = (byte[]) cmd.ExecuteScalar();
             }
+
+            return DeserializeValue<TVal>(serializedValue, partition, key);
         }
 
         protected sealed override Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
-            var p = new DynamicParameters();
-            p.Add(nameof(partition), partition, DbType.String);
-            p.Add(nameof(key), key, DbType.String);
-            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
-
+            DbCacheItem tmpItem;
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                var tmp = ctx.InternalResource.Query<DbCacheItem>(SQLiteQueries.PeekOneItem, p, buffered: false).FirstOrDefault();
-                return DeserializeCacheItem<TVal>(tmp);
+                cmd.CommandText = SQLiteQueries.PeekOneItem;
+                cmd.Parameters.AddRange(new[]
+                {
+                    new SQLiteParameter(nameof(partition), partition),
+                    new SQLiteParameter(nameof(key), key),
+                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                });
+                tmpItem = MapDataReader(cmd.ExecuteReader()).FirstOrDefault();            
             }
+
+            return DeserializeCacheItem<TVal>(tmpItem);
         }
 
         protected sealed override CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
         {
-            var p = new DynamicParameters();
-            p.Add(nameof(partition), partition, DbType.String);
-            p.Add("utcNow", _clock.UtcNow.ToUnixTime(), DbType.Int64);
-
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                return ctx.InternalResource
-                    .Query<DbCacheItem>(SQLiteQueries.PeekManyItems, p, buffered: false)
+                cmd.CommandText = SQLiteQueries.PeekManyItems;
+                cmd.Parameters.AddRange(new[]
+                {
+                    new SQLiteParameter(nameof(partition), partition),
+                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                });
+                return MapDataReader(cmd.ExecuteReader())
                     .Select(DeserializeCacheItem<TVal>)
                     .Where(i => i.HasValue)
                     .Select(i => i.Value)
@@ -537,13 +572,16 @@ namespace PommaLabs.KVLite.Core
 
         protected sealed override void RemoveInternal(string partition, string key)
         {
-            var p = new DynamicParameters();
-            p.Add(nameof(partition), partition, DbType.String);
-            p.Add(nameof(key), key, DbType.String);
-
             using (var ctx = _connectionPool.GetObject())
+            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                ctx.InternalResource.Execute(SQLiteQueries.Remove, p);
+                cmd.CommandText = SQLiteQueries.Remove;
+                cmd.Parameters.AddRange(new[]
+                {
+                    new SQLiteParameter(nameof(partition), partition),
+                    new SQLiteParameter(nameof(key), key)
+                });
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -606,15 +644,55 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+        IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
+        {
+            var values = new object[6];
+            while (dataReader.Read())
+            {
+                dataReader.GetValues(values);
+                yield return new DbCacheItem
+                {
+                    Partition = (string) values[0],
+                    Key = (string) values[1],
+                    UtcCreation = (long) values[2],
+                    UtcExpiry = (long) values[3],
+                    Interval = (long) values[4],
+                    SerializedValue = (byte[]) values[5]
+                };
+
+                continue;
+
+                var serializedValueLength = (int) dataReader.GetBytes(5, 0, null, 0, 0);
+                var serializedValue = new byte[serializedValueLength];
+                dataReader.GetBytes(5, 0, serializedValue, 0, serializedValueLength);
+
+                yield return new DbCacheItem
+                {
+                    Partition = dataReader.GetString(0),
+                    Key = dataReader.GetString(1),
+                    UtcCreation = dataReader.GetInt64(2),
+                    UtcExpiry = dataReader.GetInt64(3),
+                    Interval = dataReader.GetInt64(4),
+                    SerializedValue = serializedValue
+                };
+            }
+        }
+
         PooledObjectWrapper<SQLiteConnection> CreatePooledConnection()
         {
+            // Create and open the connection.
             var connection = new SQLiteConnection(_connectionString);
             connection.Open();
+            
             // Sets PRAGMAs for this new connection.
-            var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB * 1024 * 1024;
-            var walAutoCheckpointInPages = journalSizeLimitInBytes / PageSizeInBytes / 3;
-            var pragmas = string.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
-            connection.Execute(pragmas);
+            using (var cmd = connection.CreateCommand())
+            {
+                var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB * 1024 * 1024;
+                var walAutoCheckpointInPages = journalSizeLimitInBytes / PageSizeInBytes / 3;
+                cmd.CommandText = string.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
+                cmd.ExecuteNonQuery();
+            }
+
             return new PooledObjectWrapper<SQLiteConnection>(connection);
         }
 
