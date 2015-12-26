@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager", "NuGet Packager\NuGet Packager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet", "NuGet Packager\KVLite.NuGet.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.UnitTests.NET45", "KVLite.UnitTests\KVLite.UnitTests.NET45.csproj", "{B41547F3-A41C-439A-98DA-F478B2D360C1}"
 EndProject
@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NET45", "KVLite\KVLite.NET45.csproj", "{F056179D-90B8-4ABA-9AB4-1026E5941FB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Benchmarks", "KVLite.Benchmarks\KVLite.Benchmarks.csproj", "{B082811A-E830-4CB0-8D7F-5FB31B001052}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Benchmarks.NET45", "KVLite.Benchmarks\KVLite.Benchmarks.NET45.csproj", "{B082811A-E830-4CB0-8D7F-5FB31B001052}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Logo", "Project Logo", "{FDFAC957-0093-481B-82B5-465777E8160B}"
 	ProjectSection(SolutionItems) = preProject
@@ -45,24 +45,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REST Service (Nancy)", "RES
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REST Service (WebAPI)", "REST Service (WebAPI)\REST Service (WebAPI).csproj", "{00CCC8C6-1415-4F6B-B830-1CBBB7F87CCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples", "Examples\KVLite.Examples.csproj", "{B5A6DAE9-7620-47A8-8D00-4CEB00117717}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.NET45", "Examples\KVLite.Examples.NET45.csproj", "{B5A6DAE9-7620-47A8-8D00-4CEB00117717}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NET40", "KVLite (.NET40)\KVLite.NET40.csproj", "{56BF1CF1-3DA9-482F-8AC4-F200E741ECA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager (Core)", "NuGet Packager (Core)\NuGet Packager (Core).csproj", "{BC783C22-1518-4F7A-944A-8E095C9B5930}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet.Core", "NuGet Packager (Core)\KVLite.NuGet.Core.csproj", "{BC783C22-1518-4F7A-944A-8E095C9B5930}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F056179D-90B8-4ABA-9AB4-1026E5941FB7} = {F056179D-90B8-4ABA-9AB4-1026E5941FB7}
 		{56BF1CF1-3DA9-482F-8AC4-F200E741ECA1} = {56BF1CF1-3DA9-482F-8AC4-F200E741ECA1}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Nancy.NuGetPackager", "KVLite.Nancy.NuGetPackager\KVLite.Nancy.NuGetPackager.csproj", "{7CDA6E66-C207-4378-B476-77B50B0DC756}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet.Nancy", "KVLite.Nancy.NuGetPackager\KVLite.NuGet.Nancy.csproj", "{7CDA6E66-C207-4378-B476-77B50B0DC756}"
 	ProjectSection(ProjectDependencies) = postProject
 		{64145A81-F369-4863-B02B-D4C14ADB883E} = {64145A81-F369-4863-B02B-D4C14ADB883E}
 		{6F8516A0-5E50-44B2-AA8F-A3AB285F513E} = {6F8516A0-5E50-44B2-AA8F-A3AB285F513E}
 		{442146BE-4713-4D3F-BE9D-635FD50D70BB} = {442146BE-4713-4D3F-BE9D-635FD50D70BB}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet Packager (WebApi)", "NuGet Packager (WebApi)\NuGet Packager (WebApi).csproj", "{5973B3A7-1F9A-49C8-BBD4-DE4CAEA1DC8B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet.WebApi", "NuGet Packager (WebApi)\KVLite.NuGet.WebApi.csproj", "{5973B3A7-1F9A-49C8-BBD4-DE4CAEA1DC8B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet Packagers", "NuGet Packagers", "{A4471ECD-23FA-4D4E-B343-E2478BCABAE2}"
 EndProject
