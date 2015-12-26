@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>0fc92c9c-b90c-4d2f-9ee7-2f3c4b06fdd2</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AsyncCacheExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CacheItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CacheReadMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\AbstractCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\AbstractCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\AbstractSQLiteCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\SQLiteQueries.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\TaskRunner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IAsyncCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ICache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MemoryCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MemoryCacheConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MemoryCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PersistentCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PersistentCacheConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PersistentCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VolatileCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\AbstractOutputCacheProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\AbstractViewStatePersister.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\MemoryOutputCacheProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\MemoryViewStatePersister.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\PersistentOutputCacheProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\PersistentViewStatePersister.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\ViewStateStorageSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\VolatileOutputCacheProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\VolatileViewStatePersister.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\WebCaches.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)doxyfile.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)KVLite.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

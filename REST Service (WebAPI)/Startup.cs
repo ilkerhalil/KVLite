@@ -5,7 +5,7 @@ using Ninject.Web.Common.OwinHost;
 using Ninject.Web.WebApi.OwinHost;
 using Owin;
 using PommaLabs.KVLite;
-using PommaLabs.KVLite.Web.Http;
+using PommaLabs.KVLite.WebApi;
 using RestService.WebApi;
 using Swashbuckle.Application;
 using System.Web.Http;

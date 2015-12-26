@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>50e7c4c0-0723-41aa-bd2d-0b31ca2cc67d</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>PommaLabs.KVLite.UnitTests</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractCacheTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MemoryCacheTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NinjectConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PersistentCacheTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RandomDataTableGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebApi\AbstractCacheControllerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebApi\ApiOutputCacheTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\Web\MemoryOutputCacheProviderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\Web\PersistentOutputCacheProviderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Web\Web\VolatileOutputCacheProviderTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)KVLite\x64\SQLite.Interop.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)KVLite\x86\SQLite.Interop.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>
