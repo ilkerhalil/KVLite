@@ -173,8 +173,8 @@ namespace PommaLabs.KVLite.UnitTests
             Cache.Dispose();
         }
 
-        [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void Dispose_DefaultSystemMemoryCache_CanWorkAfterDispose()
+        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        public void Dispose_DefaultSystemMemoryCache_CannotWorkAfterDispose()
         {
             Cache = new MemoryCache(new MemoryCacheSettings());
             Cache.Dispose();
@@ -196,8 +196,8 @@ namespace PommaLabs.KVLite.UnitTests
             Cache.Dispose();
         }
 
-        [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void Dispose_CustomSystemMemoryCache_InvalidOperationAfterDispose()
+        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        public void Dispose_CustomSystemMemoryCache_ObjectDisposedExceptionAfterDispose()
         {
             Cache = new MemoryCache(new MemoryCacheSettings { CacheName = "PINO" });
             Cache.Dispose();
