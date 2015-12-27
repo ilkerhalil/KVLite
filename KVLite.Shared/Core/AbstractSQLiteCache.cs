@@ -137,7 +137,7 @@ namespace PommaLabs.KVLite.Core
             _settings = settings;
             _clock = clock ?? new SystemClock();
             _log = log ?? LogManager.GetLogger(GetType());
-            _compressor = compressor ?? new LZ4Compressor();
+            _compressor = compressor ?? new SnappyCompressor();
             _serializer = serializer ?? new JsonSerializer(new JsonSerializerSettings
             {
                 DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,

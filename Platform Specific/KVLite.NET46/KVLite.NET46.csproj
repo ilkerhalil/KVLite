@@ -56,8 +56,8 @@
       <HintPath>..\..\packages\Finsa.CodeServices.Compression.3.0.11\lib\net46\Finsa.CodeServices.Compression.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Compression.LZ4, Version=3.0.11.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Finsa.CodeServices.Compression.LZ4.3.0.11\lib\net46\Finsa.CodeServices.Compression.LZ4.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Compression.Snappy, Version=3.0.11.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Finsa.CodeServices.Compression.Snappy.3.0.11\lib\net46\Finsa.CodeServices.Compression.Snappy.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization, Version=3.0.11.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
@@ -66,10 +66,6 @@
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization.Json, Version=3.0.11.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Finsa.CodeServices.Serialization.Json.3.0.11\lib\net46\Finsa.CodeServices.Serialization.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="LZ4, Version=1.0.9.93, Culture=neutral, PublicKeyToken=62e1b5ec1eec9bdd, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\lz4net.1.0.9.93\lib\net4-client\LZ4.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

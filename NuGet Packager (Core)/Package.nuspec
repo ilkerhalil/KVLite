@@ -28,7 +28,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
             <dependency id="Finsa.CodeServices.Clock" version="[3.0.3, 4.0.0)" />
             <dependency id="Finsa.CodeServices.Common" version="[3.0.3, 4.0.0)" />
             <dependency id="Finsa.CodeServices.Compression" version="[3.0.3, 4.0.0)" />
-            <dependency id="Finsa.CodeServices.Compression.LZ4" version="[3.0.3, 4.0.0)" />
+            <dependency id="Finsa.CodeServices.Compression.Snappy" version="[3.0.3, 4.0.0)" />
             <dependency id="Finsa.CodeServices.Serialization" version="[3.0.3, 4.0.0)" />
             <dependency id="Finsa.CodeServices.Serialization.Json" version="[3.0.3, 4.0.0)" />
             <dependency id="Newtonsoft.Json" version="[7.0.1, 8.0.0)" />

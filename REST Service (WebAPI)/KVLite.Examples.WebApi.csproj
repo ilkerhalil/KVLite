@@ -68,20 +68,12 @@
       <HintPath>..\packages\Finsa.CodeServices.Compression.3.0.11\lib\net45\Finsa.CodeServices.Compression.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Compression.LZ4, Version=3.0.11.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Compression.LZ4.3.0.11\lib\net45\Finsa.CodeServices.Compression.LZ4.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Finsa.CodeServices.Serialization, Version=3.0.11.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
       <HintPath>..\packages\Finsa.CodeServices.Serialization.3.0.11\lib\net45\Finsa.CodeServices.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization.Json, Version=3.0.11.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
       <HintPath>..\packages\Finsa.CodeServices.Serialization.Json.3.0.11\lib\net45\Finsa.CodeServices.Serialization.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="LZ4, Version=1.0.9.93, Culture=neutral, PublicKeyToken=62e1b5ec1eec9bdd, processorArchitecture=MSIL">
-      <HintPath>..\packages\lz4net.1.0.9.93\lib\net4-client\LZ4.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
