@@ -294,7 +294,7 @@ namespace PommaLabs.KVLite.Core
         /// <value>The compressor used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="LZ4Compressor"/>.
+        ///   constructor. If not specified, it defaults to <see cref="SnappyCompressor"/>.
         /// </remarks>
         public sealed override ICompressor Compressor => _compressor;
 

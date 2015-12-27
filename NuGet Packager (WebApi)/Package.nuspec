@@ -49,5 +49,6 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <tags>kvlite webapi web api response output cache provider controller</tags>
     </metadata>
     <files>
+        <file src="lib\" target="lib" />
     </files>
 </package>
