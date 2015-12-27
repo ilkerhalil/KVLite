@@ -488,7 +488,10 @@ namespace PommaLabs.KVLite.Core
                     new SQLiteParameter(nameof(key), key),
                     new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
                 });
-                tmpItem = MapDataReader(cmd.ExecuteReader()).FirstOrDefault();            
+                using (var reader = cmd.ExecuteReader())
+                {
+                    tmpItem = MapDataReader(reader).FirstOrDefault();
+                }             
             }
 
             return DeserializeCacheItem<TVal>(tmpItem);
@@ -505,11 +508,14 @@ namespace PommaLabs.KVLite.Core
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
                 });
-                return MapDataReader(cmd.ExecuteReader())
-                    .Select(DeserializeCacheItem<TVal>)
-                    .Where(i => i.HasValue)
-                    .Select(i => i.Value)
-                    .ToArray();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    return MapDataReader(reader)
+                        .Select(DeserializeCacheItem<TVal>)
+                        .Where(i => i.HasValue)
+                        .Select(i => i.Value)
+                        .ToArray();
+                }                
             }
         }
 
@@ -545,7 +551,10 @@ namespace PommaLabs.KVLite.Core
                     new SQLiteParameter(nameof(key), key),
                     new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
                 });
-                tmpItem = MapDataReader(cmd.ExecuteReader()).FirstOrDefault();            
+                using (var reader = cmd.ExecuteReader())
+                {
+                    tmpItem = MapDataReader(reader).FirstOrDefault();
+                }
             }
 
             return DeserializeCacheItem<TVal>(tmpItem);
@@ -562,11 +571,14 @@ namespace PommaLabs.KVLite.Core
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
                 });
-                return MapDataReader(cmd.ExecuteReader())
-                    .Select(DeserializeCacheItem<TVal>)
-                    .Where(i => i.HasValue)
-                    .Select(i => i.Value)
-                    .ToArray();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    return MapDataReader(reader)
+                        .Select(DeserializeCacheItem<TVal>)
+                        .Where(i => i.HasValue)
+                        .Select(i => i.Value)
+                        .ToArray();
+                }
             }
         }
 
@@ -644,7 +656,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
+        static IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
         {
             var values = new object[6];
             while (dataReader.Read())
@@ -658,22 +670,6 @@ namespace PommaLabs.KVLite.Core
                     UtcExpiry = (long) values[3],
                     Interval = (long) values[4],
                     SerializedValue = (byte[]) values[5]
-                };
-
-                continue;
-
-                var serializedValueLength = (int) dataReader.GetBytes(5, 0, null, 0, 0);
-                var serializedValue = new byte[serializedValueLength];
-                dataReader.GetBytes(5, 0, serializedValue, 0, serializedValueLength);
-
-                yield return new DbCacheItem
-                {
-                    Partition = dataReader.GetString(0),
-                    Key = dataReader.GetString(1),
-                    UtcCreation = dataReader.GetInt64(2),
-                    UtcExpiry = dataReader.GetInt64(3),
-                    Interval = dataReader.GetInt64(4),
-                    SerializedValue = serializedValue
                 };
             }
         }
