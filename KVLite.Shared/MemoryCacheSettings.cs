@@ -85,8 +85,8 @@ namespace PommaLabs.KVLite
             set
             {
                 // Preconditions
-                Raise<ArgumentException>.If(string.IsNullOrWhiteSpace(value), ErrorMessages.NullOrEmptyCacheName);
-                Raise<ArgumentException>.IfNot(Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$"), ErrorMessages.InvalidCacheName);
+                RaiseArgumentException.IfStringIsNullOrWhiteSpace(value, nameof(CacheName), ErrorMessages.NullOrEmptyCacheName);
+                RaiseArgumentException.IfNot(Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$"), ErrorMessages.InvalidCacheName, nameof(CacheName));
 
                 _cacheName = value;
                 OnPropertyChanged();

@@ -91,16 +91,35 @@ namespace PommaLabs.KVLite.Core
         public abstract TCacheSettings Settings { get; }
 
         /// <summary>
-        ///   True if the Peek methods are implemented, false otherwise.
+        ///   True if the Peek methods are implemented, f-alse otherwise.
         /// </summary>
         public abstract bool CanPeek { get; }
 
         protected abstract void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval);
 
+        /// <summary>
+        ///   Clears this instance or a partition, if specified.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <param name="cacheReadMode">The cache read mode.</param>
         protected abstract void ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate);
 
+        /// <summary>
+        ///   Determines whether cache contains the specified partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>Whether cache contains the specified partition and key.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected abstract bool ContainsInternal(string partition, string key);
 
+        /// <summary>
+        ///   The number of items in the cache or in a partition, if specified.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <param name="cacheReadMode">The cache read mode.</param>
+        /// <returns>The number of items in the cache.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected abstract long CountInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate);
 
         protected abstract Option<TVal> GetInternal<TVal>(string partition, string key);
@@ -125,10 +144,7 @@ namespace PommaLabs.KVLite.Core
         ///   The available settings for the cache.
         /// </summary>
         /// <value>The available settings for the cache.</value>
-        AbstractCacheSettings ICache.Settings
-        {
-            get { return Settings; }
-        }
+        AbstractCacheSettings ICache.Settings => Settings;
 
         /// <summary>
         ///   Gets the value with the specified partition and key.
@@ -151,8 +167,8 @@ namespace PommaLabs.KVLite.Core
             get
             {
                 // Preconditions
-                Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
-                Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+                RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+                RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
                 var result = GetInternal<object>(partition, key);
 
@@ -179,7 +195,7 @@ namespace PommaLabs.KVLite.Core
             get
             {
                 // Preconditions
-                Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+                RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
                 var result = GetInternal<object>(Settings.DefaultPartition, key);
 
@@ -203,9 +219,9 @@ namespace PommaLabs.KVLite.Core
         public void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
-            Raise<ArgumentException>.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
 
             AddInternal(partition, key, value, Clock.UtcNow + interval, interval);
 
@@ -225,8 +241,8 @@ namespace PommaLabs.KVLite.Core
         public void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
-            Raise<ArgumentException>.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
 
             AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + interval, interval);
 
@@ -246,9 +262,9 @@ namespace PommaLabs.KVLite.Core
         public void AddStatic<TVal>(string partition, string key, TVal value)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
-            Raise<ArgumentException>.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
 
             AddInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
 
@@ -267,8 +283,8 @@ namespace PommaLabs.KVLite.Core
         public void AddStaticToDefaultPartition<TVal>(string key, TVal value)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
-            Raise<ArgumentException>.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
 
             AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
 
@@ -288,9 +304,9 @@ namespace PommaLabs.KVLite.Core
         public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
-            Raise<ArgumentException>.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
 
             AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero);
 
@@ -309,8 +325,8 @@ namespace PommaLabs.KVLite.Core
         public void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
-            Raise<ArgumentException>.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
 
             AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero);
 
@@ -337,7 +353,7 @@ namespace PommaLabs.KVLite.Core
         public void Clear(string partition)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             ClearInternal(partition);
 
@@ -356,8 +372,8 @@ namespace PommaLabs.KVLite.Core
         public bool Contains(string partition, string key)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             return ContainsInternal(partition, key);
         }
@@ -371,7 +387,7 @@ namespace PommaLabs.KVLite.Core
         public bool DefaultPartitionContains(string key)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             return ContainsInternal(Settings.DefaultPartition, key);
         }
@@ -399,7 +415,7 @@ namespace PommaLabs.KVLite.Core
         public int Count(string partition)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             var result = Convert.ToInt32(CountInternal(partition));
 
@@ -431,7 +447,7 @@ namespace PommaLabs.KVLite.Core
         public long LongCount(string partition)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             var result = CountInternal(partition);
 
@@ -456,8 +472,8 @@ namespace PommaLabs.KVLite.Core
         public Option<TVal> Get<TVal>(string partition, string key)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             var result = GetInternal<TVal>(partition, key);
 
@@ -481,7 +497,7 @@ namespace PommaLabs.KVLite.Core
         public Option<TVal> GetFromDefaultPartition<TVal>(string key)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             var result = GetInternal<TVal>(Settings.DefaultPartition, key);
 
@@ -507,8 +523,8 @@ namespace PommaLabs.KVLite.Core
         public Option<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             var result = GetItemInternal<TVal>(partition, key);
 
@@ -532,7 +548,7 @@ namespace PommaLabs.KVLite.Core
         public Option<CacheItem<TVal>> GetItemFromDefaultPartition<TVal>(string key)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             var result = GetItemInternal<TVal>(Settings.DefaultPartition, key);
 
@@ -579,7 +595,7 @@ namespace PommaLabs.KVLite.Core
         public CacheItem<TVal>[] GetItems<TVal>(string partition)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             var result = GetItemsInternal<TVal>(partition);
 
@@ -607,8 +623,8 @@ namespace PommaLabs.KVLite.Core
         public Option<TVal> Peek<TVal>(string partition, string key)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             var result = PeekInternal<TVal>(partition, key);
 
@@ -634,7 +650,7 @@ namespace PommaLabs.KVLite.Core
         public Option<TVal> PeekIntoDefaultPartition<TVal>(string key)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             var result = PeekInternal<TVal>(Settings.DefaultPartition, key);
 
@@ -661,8 +677,8 @@ namespace PommaLabs.KVLite.Core
         public Option<CacheItem<TVal>> PeekItem<TVal>(string partition, string key)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             var result = PeekItemInternal<TVal>(partition, key);
 
@@ -688,7 +704,7 @@ namespace PommaLabs.KVLite.Core
         public Option<CacheItem<TVal>> PeekItemIntoDefaultPartition<TVal>(string key)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             var result = PeekItemInternal<TVal>(Settings.DefaultPartition, key);
 
@@ -733,7 +749,7 @@ namespace PommaLabs.KVLite.Core
         public CacheItem<TVal>[] PeekItems<TVal>(string partition)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             var result = PeekItemsInternal<TVal>(partition);
 
@@ -752,8 +768,8 @@ namespace PommaLabs.KVLite.Core
         public void Remove(string partition, string key)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(partition, ErrorMessages.NullPartition);
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             RemoveInternal(partition, key);
 
@@ -768,7 +784,7 @@ namespace PommaLabs.KVLite.Core
         public void RemoveFromDefaultPartition(string key)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(key, ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             RemoveInternal(Settings.DefaultPartition, key);
 

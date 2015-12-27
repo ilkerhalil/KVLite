@@ -65,7 +65,7 @@ namespace PommaLabs.KVLite.Core
             set
             {
                 // Preconditions
-                Raise<ArgumentException>.If(string.IsNullOrWhiteSpace(value));
+                RaiseArgumentException.IfStringIsNullOrWhiteSpace(value, nameof(DefaultPartition));
 
                 _defaultPartition = value;
                 OnPropertyChanged();
@@ -88,7 +88,7 @@ namespace PommaLabs.KVLite.Core
             set
             {
                 // Preconditions
-                Raise<ArgumentOutOfRangeException>.If(value <= 0);
+                RaiseArgumentOutOfRangeException.If(value <= 0);
 
                 _staticIntervalInDays = value;
                 StaticInterval = TimeSpan.FromDays(value);
@@ -112,7 +112,7 @@ namespace PommaLabs.KVLite.Core
             set
             {
                 // Preconditions
-                Raise<ArgumentOutOfRangeException>.If(value <= 0);
+                RaiseArgumentOutOfRangeException.If(value <= 0);
 
                 _insertionCountBeforeCleanup = value;
                 OnPropertyChanged();
@@ -135,7 +135,7 @@ namespace PommaLabs.KVLite.Core
             set
             {
                 // Preconditions
-                Raise<ArgumentOutOfRangeException>.If(value <= 0);
+                RaiseArgumentOutOfRangeException.If(value <= 0);
 
                 _maxCacheSizeInMB = value;
                 OnPropertyChanged();
@@ -158,7 +158,7 @@ namespace PommaLabs.KVLite.Core
             set
             {
                 // Preconditions
-                Raise<ArgumentOutOfRangeException>.If(value <= 0);
+                RaiseArgumentOutOfRangeException.If(value <= 0);
 
                 _maxJournalSizeInMB = value;
                 OnPropertyChanged();

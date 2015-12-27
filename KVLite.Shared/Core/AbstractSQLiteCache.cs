@@ -132,7 +132,7 @@ namespace PommaLabs.KVLite.Core
         internal AbstractSQLiteCache(TCacheSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor)
         {
             // Preconditions
-            Raise<ArgumentNullException>.IfIsNull(settings, ErrorMessages.NullSettings);
+            RaiseArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
 
             _settings = settings;
             _clock = clock ?? new SystemClock();

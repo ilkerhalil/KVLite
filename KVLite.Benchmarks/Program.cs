@@ -394,7 +394,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var readTasks = new List<Task<Option<DataTable>>>();
             foreach (var table in tables)
             {
-                DataTable localTable = table;
+                var localTable = table;
                 readTasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.GetFromDefaultPartition<DataTable>(localTable.TableName)));
             }
             foreach (var task in writeTasks)
