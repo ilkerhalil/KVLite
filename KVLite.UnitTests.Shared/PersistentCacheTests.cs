@@ -63,7 +63,7 @@ namespace PommaLabs.KVLite.UnitTests
             catch (Exception ex)
             {
                 Assert.IsInstanceOf<ArgumentException>(ex);
-                Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));
+                Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCacheFile));
             }
         }
 
@@ -78,7 +78,7 @@ namespace PommaLabs.KVLite.UnitTests
             catch (Exception ex)
             {
                 Assert.IsInstanceOf<ArgumentException>(ex);
-                Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));
+                Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCacheFile));
             }
         }
 
@@ -93,7 +93,7 @@ namespace PommaLabs.KVLite.UnitTests
             catch (Exception ex)
             {
                 Assert.IsInstanceOf<ArgumentException>(ex);
-                Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCachePath));
+                Assert.True(ex.Message.Contains(ErrorMessages.NullOrEmptyCacheFile));
             }
         }
 

@@ -45,7 +45,7 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
     [Serializable]
-    public abstract class AbstractSQLiteCache<TCacheSettings> : AbstractCache<TCacheSettings> 
+    public abstract class AbstractSQLiteCache<TCacheSettings> : AbstractCache<TCacheSettings>
         where TCacheSettings : AbstractCacheSettings
     {
         #region Constants
@@ -381,7 +381,7 @@ namespace PommaLabs.KVLite.Core
             using (var cmd = ctx.InternalResource.CreateCommand())
             {
                 cmd.CommandText = SQLiteQueries.Add;
-                cmd.Parameters.AddRange(new[] 
+                cmd.Parameters.AddRange(new[]
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter(nameof(key), key),
@@ -407,6 +407,11 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+        /// <summary>
+        ///   Clears this instance or a partition, if specified.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <param name="cacheReadMode">The cache read mode.</param>
         protected sealed override void ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
             using (var ctx = _connectionPool.GetObject())
@@ -417,12 +422,19 @@ namespace PommaLabs.KVLite.Core
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate)),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())                    
+                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
                 });
                 cmd.ExecuteNonQuery();
             }
         }
 
+        /// <summary>
+        ///   Determines whether cache contains the specified partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>Whether cache contains the specified partition and key.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected sealed override bool ContainsInternal(string partition, string key)
         {
             using (var ctx = _connectionPool.GetObject())
@@ -439,6 +451,13 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+        /// <summary>
+        ///   The number of items in the cache or in a partition, if specified.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <param name="cacheReadMode">The cache read mode.</param>
+        /// <returns>The number of items in the cache.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected sealed override long CountInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate)
         {
             // No need for a transaction, since it is just a select.
@@ -491,7 +510,7 @@ namespace PommaLabs.KVLite.Core
                 using (var reader = cmd.ExecuteReader())
                 {
                     tmpItem = MapDataReader(reader).FirstOrDefault();
-                }             
+                }
             }
 
             return DeserializeCacheItem<TVal>(tmpItem);
@@ -515,7 +534,7 @@ namespace PommaLabs.KVLite.Core
                         .Where(i => i.HasValue)
                         .Select(i => i.Value)
                         .ToArray();
-                }                
+                }
             }
         }
 
@@ -679,7 +698,7 @@ namespace PommaLabs.KVLite.Core
             // Create and open the connection.
             var connection = new SQLiteConnection(_connectionString);
             connection.Open();
-            
+
             // Sets PRAGMAs for this new connection.
             using (var cmd = connection.CreateCommand())
             {
