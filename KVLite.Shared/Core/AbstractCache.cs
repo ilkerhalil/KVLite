@@ -21,14 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Diagnostics;
 using Common.Logging;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
-using PommaLabs.Thrower;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
+using PommaLabs.Thrower;
+using System;
+using System.Diagnostics;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -78,9 +78,10 @@ namespace PommaLabs.KVLite.Core
         /// <value>The serializer used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>.
-        ///   Therefore, if you do not specify another serializer, make sure that your objects are
-        ///   serializable (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as public properties).
+        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>. Therefore,
+        ///   if you do not specify another serializer, make sure that your objects are serializable
+        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields
+        ///   as public properties).
         /// </remarks>
         public abstract ISerializer Serializer { get; }
 
@@ -95,6 +96,15 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         public abstract bool CanPeek { get; }
 
+        /// <summary>
+        ///   Adds given value with the specified expiry time and refresh internal.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry time.</param>
+        /// <param name="interval">The refresh interval.</param>
         protected abstract void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval);
 
         /// <summary>
@@ -122,21 +132,79 @@ namespace PommaLabs.KVLite.Core
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected abstract long CountInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate);
 
+        /// <summary>
+        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by the corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with specified partition and key.</returns>
         protected abstract Option<TVal> GetInternal<TVal>(string partition, string key);
 
+        /// <summary>
+        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The cache item with specified partition and key.</returns>
         protected abstract Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key);
 
+        /// <summary>
+        ///   Gets all cache items or the ones in a partition, if specified. If an item is a
+        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <returns>All cache items.</returns>
         protected abstract CacheItem<TVal>[] GetItemsInternal<TVal>(string partition);
 
+        /// <summary>
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///   The item corresponding to given partition and key, without updating expiry date.
+        /// </returns>
         protected abstract Option<TVal> PeekInternal<TVal>(string partition, string key);
 
+        /// <summary>
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///   The item corresponding to given partition and key, without updating expiry date.
+        /// </returns>
         protected abstract Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key);
 
+        /// <summary>
+        ///   Gets the all values in the cache or in the specified partition, without updating
+        ///   expiry dates.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <returns>All values, without updating expiry dates.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
         protected abstract CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition);
 
+        /// <summary>
+        ///   Removes the value with given partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
         protected abstract void RemoveInternal(string partition, string key);
 
-        #endregion
+        #endregion Abstract members
 
         #region ICache members
 
@@ -186,9 +254,10 @@ namespace PommaLabs.KVLite.Core
         /// <returns>The value with the default partition and specified key.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <remarks>
-        ///   This method, differently from other readers (like <see cref="GetFromDefaultPartition{TVal}(string)"/> or
-        ///   <see cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return object, because
-        ///   indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
+        ///   This method, differently from other readers (like
+        ///   <see cref="GetFromDefaultPartition{TVal}(string)"/> or
+        ///   <see cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return
+        ///   object, because indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
         /// </remarks>
         public Option<object> this[string key]
         {
@@ -793,6 +862,6 @@ namespace PommaLabs.KVLite.Core
             Debug.Assert(!DefaultPartitionContains(key));
         }
 
-        #endregion
+        #endregion ICache members
     }
 }

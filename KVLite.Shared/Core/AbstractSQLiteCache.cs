@@ -355,6 +355,15 @@ namespace PommaLabs.KVLite.Core
 
         #region Private Methods
 
+        /// <summary>
+        ///   Adds given value with the specified expiry time and refresh internal.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry time.</param>
+        /// <param name="interval">The refresh interval.</param>
         protected sealed override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
@@ -475,6 +484,14 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+        /// <summary>
+        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by the corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with specified partition and key.</returns>
         protected sealed override Option<TVal> GetInternal<TVal>(string partition, string key)
         {
             byte[] serializedValue;
@@ -494,6 +511,14 @@ namespace PommaLabs.KVLite.Core
             return DeserializeValue<TVal>(serializedValue, partition, key);
         }
 
+        /// <summary>
+        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The cache item with specified partition and key.</returns>
         protected sealed override Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
             DbCacheItem tmpItem;
@@ -516,6 +541,13 @@ namespace PommaLabs.KVLite.Core
             return DeserializeCacheItem<TVal>(tmpItem);
         }
 
+        /// <summary>
+        ///   Gets all cache items or the ones in a partition, if specified. If an item is a
+        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <returns>All cache items.</returns>
         protected sealed override CacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
         {
             using (var ctx = _connectionPool.GetObject())
@@ -538,6 +570,15 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+        /// <summary>
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///   The item corresponding to given partition and key, without updating expiry date.
+        /// </returns>
         protected sealed override Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
             byte[] serializedValue;
@@ -557,6 +598,15 @@ namespace PommaLabs.KVLite.Core
             return DeserializeValue<TVal>(serializedValue, partition, key);
         }
 
+        /// <summary>
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///   The item corresponding to given partition and key, without updating expiry date.
+        /// </returns>
         protected sealed override Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             DbCacheItem tmpItem;
@@ -579,6 +629,18 @@ namespace PommaLabs.KVLite.Core
             return DeserializeCacheItem<TVal>(tmpItem);
         }
 
+        /// <summary>
+        ///   Gets the all values in the cache or in the specified partition, without updating
+        ///   expiry dates.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <returns>All values, without updating expiry dates.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="T:System.Object"/> as type parameter; that will work whether the required
+        ///   value is a class or not.
+        /// </remarks>
         protected sealed override CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
         {
             using (var ctx = _connectionPool.GetObject())
@@ -601,6 +663,11 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+        /// <summary>
+        ///   Removes the value with given partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
         protected sealed override void RemoveInternal(string partition, string key)
         {
             using (var ctx = _connectionPool.GetObject())
@@ -695,9 +762,13 @@ namespace PommaLabs.KVLite.Core
 
         PooledObjectWrapper<SQLiteConnection> CreatePooledConnection()
         {
+#pragma warning disable CC0022 // Should dispose object
+
             // Create and open the connection.
             var connection = new SQLiteConnection(_connectionString);
             connection.Open();
+
+#pragma warning restore CC0022 // Should dispose object
 
             // Sets PRAGMAs for this new connection.
             using (var cmd = connection.CreateCommand())

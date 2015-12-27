@@ -81,8 +81,11 @@ namespace PommaLabs.KVLite.Web
                 {
                     _method = (ViewStateStorageMethod) Enum.Parse(typeof(ViewStateStorageMethod), storageMethod.Value, true);
                 }
-                // ReSharper disable once EmptyGeneralCatchClause
+#pragma warning disable CC0004 // Catch block cannot be empty
+#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
                 catch { }
+#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+#pragma warning restore CC0004 // Catch block cannot be empty
             }
 
             var compressed = node.Attributes[nameof(Compressed)];
@@ -98,8 +101,11 @@ namespace PommaLabs.KVLite.Web
                 {
                     _behavior = (ViewStateStorageBehavior) Enum.Parse(typeof(ViewStateStorageBehavior), behavior.Value, true);
                 }
-                // ReSharper disable once EmptyGeneralCatchClause
+#pragma warning disable CC0004 // Catch block cannot be empty
+#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
                 catch { }
+#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+#pragma warning restore CC0004 // Catch block cannot be empty
             }
 
             var viewstatefilesMaxAge = node.Attributes[nameof(ViewStateFilesMaxAge)];
@@ -109,8 +115,11 @@ namespace PommaLabs.KVLite.Web
                 {
                     _fileage = Double.Parse(viewstatefilesMaxAge.Value);
                 }
-                // ReSharper disable once EmptyGeneralCatchClause
+#pragma warning disable CC0004 // Catch block cannot be empty
+#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
                 catch { }
+#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+#pragma warning restore CC0004 // Catch block cannot be empty
             }
 
             var viewstateCleanupInterval = node.Attributes[nameof(ViewStateCleanupInterval)];
@@ -120,8 +129,11 @@ namespace PommaLabs.KVLite.Web
                 {
                     _maxAge = TimeSpan.Parse(viewstateCleanupInterval.Value);
                 }
-                // ReSharper disable once EmptyGeneralCatchClause
+#pragma warning disable CC0004 // Catch block cannot be empty
+#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
                 catch { }
+#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+#pragma warning restore CC0004 // Catch block cannot be empty
             }
         }
 

@@ -51,7 +51,7 @@ namespace PommaLabs.KVLite.UnitTests
         #region Cache Creation
 
         [TestCase("")]
-        [TestCase(null)]
+        [TestCase((string) null)]
         [TestCase("   ")]
         public void NewCache_BlankName(string name)
         {
