@@ -54,16 +54,16 @@
       <HintPath>..\..\packages\Finsa.CodeServices.Compression.Snappy.3.0.8\lib\net45\Finsa.CodeServices.Compression.Snappy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Serialization, Version=3.0.8.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Finsa.CodeServices.Serialization.3.0.8\lib\net45\Finsa.CodeServices.Serialization.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Serialization, Version=3.0.10.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Finsa.CodeServices.Serialization.3.0.10\lib\net45\Finsa.CodeServices.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization.Json, Version=3.0.8.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Finsa.CodeServices.Serialization.Json.3.0.8\lib\net45\Finsa.CodeServices.Serialization.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Finsa.CodeServices.Serialization.Xml, Version=3.0.8.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Finsa.CodeServices.Serialization.Xml.3.0.8\lib\net45\Finsa.CodeServices.Serialization.Xml.dll</HintPath>
+    <Reference Include="Finsa.CodeServices.Serialization.Xml, Version=3.0.10.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Finsa.CodeServices.Serialization.Xml.3.0.10\lib\net45\Finsa.CodeServices.Serialization.Xml.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization.Yaml, Version=3.0.8.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
