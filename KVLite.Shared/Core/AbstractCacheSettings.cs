@@ -65,7 +65,7 @@ namespace PommaLabs.KVLite.Core
             set
             {
                 // Preconditions
-                RaiseArgumentException.IfStringIsNullOrWhiteSpace(value, nameof(DefaultPartition));
+                RaiseArgumentException.IfIsNullOrWhiteSpace(value, nameof(DefaultPartition));
 
                 _defaultPartition = value;
                 OnPropertyChanged();

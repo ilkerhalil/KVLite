@@ -290,7 +290,7 @@ namespace PommaLabs.KVLite.Core
             // Preconditions
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
 
             AddInternal(partition, key, value, Clock.UtcNow + interval, interval);
 
@@ -311,7 +311,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
 
             AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + interval, interval);
 
@@ -333,7 +333,7 @@ namespace PommaLabs.KVLite.Core
             // Preconditions
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
 
             AddInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
 
@@ -353,7 +353,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
 
             AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
 
@@ -375,7 +375,7 @@ namespace PommaLabs.KVLite.Core
             // Preconditions
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
 
             AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero);
 
@@ -395,7 +395,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
 
             AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero);
 

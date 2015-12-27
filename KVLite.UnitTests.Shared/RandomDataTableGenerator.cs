@@ -46,7 +46,7 @@ namespace PommaLabs.KVLite.UnitTests
         public RandomDataTableGenerator(params string[] columnNames)
         {
             RaiseArgumentNullException.IfIsNull(columnNames, nameof(columnNames));
-            RaiseArgumentException.If(columnNames.Any(string.IsNullOrEmpty));
+            RaiseArgumentException.If(columnNames.Any(string.IsNullOrEmpty), nameof(columnNames), "Each column name cannot be null or empty");
 
             _columnNames = columnNames.Clone() as string[];
         }
