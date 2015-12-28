@@ -205,6 +205,9 @@ namespace PommaLabs.KVLite.Core
         [Pure]
         public long CacheSizeInKB()
         {
+            // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+
             try
             {
                 // No need for a transaction, since it is just a select.
@@ -238,6 +241,7 @@ namespace PommaLabs.KVLite.Core
         public void Clear(CacheReadMode cacheReadMode)
         {
             // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
             try
@@ -265,6 +269,7 @@ namespace PommaLabs.KVLite.Core
         public void Clear(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
@@ -294,6 +299,7 @@ namespace PommaLabs.KVLite.Core
         public int Count(CacheReadMode cacheReadMode)
         {
             // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
             try
@@ -322,6 +328,7 @@ namespace PommaLabs.KVLite.Core
         public int Count(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
@@ -350,6 +357,7 @@ namespace PommaLabs.KVLite.Core
         public long LongCount(CacheReadMode cacheReadMode)
         {
             // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
             try
@@ -378,6 +386,7 @@ namespace PommaLabs.KVLite.Core
         public long LongCount(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
@@ -402,6 +411,9 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         public void Vacuum()
         {
+            // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+
             try
             {
                 _log.Info($"Vacuuming the SQLite DB '{Settings.CacheUri}'...");
@@ -425,6 +437,30 @@ namespace PommaLabs.KVLite.Core
         }
 
         #endregion Public Members
+
+        #region IDisposable members
+
+        /// <summary>
+        ///   Performs application-defined tasks associated with freeing, releasing, or resetting
+        ///   unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">True if it is a managed dispose, false otherwise.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing)
+            {
+                // Nothing to do, we can handle only managed Dispose calls.
+                return;
+            }
+
+            if (_connectionPool != null)
+            {
+                _connectionPool.Clear();
+                _connectionPool = null;
+            }
+        }
+
+        #endregion IDisposable members
 
         #region ICache Members
 

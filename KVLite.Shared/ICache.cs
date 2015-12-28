@@ -51,7 +51,7 @@ namespace PommaLabs.KVLite
     ///   <see cref="PersistentCacheConfiguration.DefaultStaticIntervalInDays"/>) or the one for the
     ///   <see cref="VolatileCache"/> ( <see cref="VolatileCacheConfiguration.DefaultStaticIntervalInDays"/>).
     /// </summary>
-    public interface ICache
+    public interface ICache : IDisposable
     {
         /// <summary>
         ///   Gets the clock used by the cache.
@@ -74,6 +74,13 @@ namespace PommaLabs.KVLite
         /// </remarks>
         [Pure]
         ICompressor Compressor { get; }
+
+        /// <summary>
+        ///   Whether this cache has been disposed or not. When a cache has been disposed, no more
+        ///   operations are allowed on it.
+        /// </summary>
+        [Pure]
+        bool Disposed { get; }
 
         /// <summary>
         ///   The last error "swallowed" by the cache. All KVLite caches, by definition, try to

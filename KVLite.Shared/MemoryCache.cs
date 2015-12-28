@@ -44,7 +44,7 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   An in-memory cache based on the .NET <see cref="SystemMemoryCache"/>.
     /// </summary>
-    public sealed class MemoryCache : AbstractCache<MemoryCacheSettings>, IDisposable
+    public sealed class MemoryCache : AbstractCache<MemoryCacheSettings>
     {
         #region Default Instance
 
@@ -67,12 +67,6 @@ namespace PommaLabs.KVLite
         ///   The system memory cache used as backend.
         /// </summary>
         SystemMemoryCache _store;
-
-        /// <summary>
-        ///   Whether this cache has been disposed or not. When a cache has been disposed, no more
-        ///   operations are allowed on it.
-        /// </summary>
-        bool _disposed;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.
@@ -118,15 +112,16 @@ namespace PommaLabs.KVLite
         ///   Performs application-defined tasks associated with freeing, releasing, or resetting
         ///   unmanaged resources.
         /// </summary>
+        /// <param name="disposing">True if it is a managed dispose, false otherwise.</param>
         /// <remarks>
         ///   When called on a cache using <see cref="SystemMemoryCache.Default"/> as store, this
         ///   method does nothing. In fact, it is not safe to dispose the default memory cache instance.
         /// </remarks>
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            if (_disposed)
+            if (!disposing)
             {
-                // Nothing to do, object has been disposed.
+                // Nothing to do, we can handle only managed Dispose calls.
                 return;
             }
 
@@ -135,8 +130,6 @@ namespace PommaLabs.KVLite
                 _store.Dispose();
                 _store = null;
             }
-
-            _disposed = true;
         }
 
         #endregion IDisposable members
@@ -209,9 +202,6 @@ namespace PommaLabs.KVLite
         /// <param name="interval">The refresh interval.</param>
         protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval)
         {
-            // Preconditions
-            RaiseObjectDisposedException.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
-
             var policy = (interval == TimeSpan.Zero)
                 ? new SystemCacheItemPolicy { AbsoluteExpiration = utcExpiry }
                 : new SystemCacheItemPolicy { SlidingExpiration = interval };
@@ -226,9 +216,6 @@ namespace PommaLabs.KVLite
         /// <param name="cacheReadMode">The cache read mode.</param>
         protected override void ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
-            // Preconditions
-            RaiseObjectDisposedException.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
-
             // We need to make a snapshot of the keys, since the cache might be used by other
             // processes. Therefore, we start projecting all keys.
             var keys = _store.Select(x => x.Key);
@@ -259,9 +246,6 @@ namespace PommaLabs.KVLite
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected override bool ContainsInternal(string partition, string key)
         {
-            // Preconditions
-            RaiseObjectDisposedException.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
-
             var maybeCacheKey = SerializeToCacheKey(partition, key);
             return _store.Contains(maybeCacheKey);
         }
@@ -275,9 +259,6 @@ namespace PommaLabs.KVLite
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected override long CountInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate)
         {
-            // Preconditions
-            RaiseObjectDisposedException.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
-
             // If partition has not been specified, then we use the GetCount method provided
             // directly by the MemoryCache.
             if (partition == null)
@@ -300,9 +281,6 @@ namespace PommaLabs.KVLite
         /// <returns>The value with specified partition and key.</returns>
         protected override Option<TVal> GetInternal<TVal>(string partition, string key)
         {
-            // Preconditions
-            RaiseObjectDisposedException.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
-
             var maybeCacheKey = SerializeToCacheKey(partition, key);
             var maybeValue = _store.Get(maybeCacheKey);
 
@@ -326,9 +304,6 @@ namespace PommaLabs.KVLite
         /// <returns>The cache item with specified partition and key.</returns>
         protected override Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
-            // Preconditions
-            RaiseObjectDisposedException.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
-
             var maybeCacheKey = SerializeToCacheKey(partition, key);
             var maybeCacheItem = _store.GetCacheItem(maybeCacheKey);
 
@@ -357,9 +332,6 @@ namespace PommaLabs.KVLite
         /// <returns>All cache items.</returns>
         protected override CacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
         {
-            // Preconditions
-            RaiseObjectDisposedException.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
-
             // Pick only the items with the right type.
             var q = _store.Where(x => x.Value is TVal).Select(x => new
             {
@@ -435,9 +407,6 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         protected override void RemoveInternal(string partition, string key)
         {
-            // Preconditions
-            RaiseObjectDisposedException.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
-
             var maybeCacheKey = SerializeToCacheKey(partition, key);
             _store.Remove(maybeCacheKey);
         }
@@ -456,9 +425,6 @@ namespace PommaLabs.KVLite
 
         void InitSystemMemoryCache()
         {
-            // Preconditions
-            RaiseObjectDisposedException.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
-
             // If a memory cache was already instanced, and it was not the default, the dispose it
             // after applying the new initialization.
             if (_store != null && _store != SystemMemoryCache.Default)
@@ -493,8 +459,8 @@ namespace PommaLabs.KVLite
         public long CacheSizeInKB()
         {
             // Preconditions
-            RaiseObjectDisposedException.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
-            
+            RaiseObjectDisposedException.If(Disposed, ErrorMessages.CacheHasBeenDisposed);
+
             try
             {
                 var serializer = new BinarySerializer();
@@ -526,7 +492,7 @@ namespace PommaLabs.KVLite
             public string Key { get; set; }
         }
 
-#if NET45
+#if !NET40
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
 
@@ -536,7 +502,7 @@ namespace PommaLabs.KVLite
             Key = key
         });
 
-#if NET45
+#if !NET40
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
 

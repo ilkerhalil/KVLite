@@ -55,8 +55,21 @@ namespace PommaLabs.KVLite.UnitTests
         [TearDown]
         public virtual void TearDown()
         {
-            Cache.Clear();
-            Cache = null;
+            try
+            {
+                Cache?.Clear();
+            }
+#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
+#pragma warning disable CC0004 // Catch block cannot be empty
+            catch
+            {
+            }
+#pragma warning restore CC0004 // Catch block cannot be empty
+#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+            finally
+            {
+                Cache = null;
+            }
         }
 
         #endregion Setup/Teardown

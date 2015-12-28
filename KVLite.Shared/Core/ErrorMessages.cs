@@ -52,7 +52,7 @@ namespace PommaLabs.KVLite.Core
         public const string NullValue = @"Value cannot be null, please specify one non-null object.";
         public const string NullValueGetter = @"Value getter function cannot be null, please specify one non-null function.";
 
+        public const string CacheHasBeenDisposed = @"Cache instance has been disposed, therefore no more operations are allowed on it.";
         public const string MemoryCacheDoesNotAllowPeeking = @".NET memory cache does not allow peeking items, therefore this method is not implemented.";
-        public const string MemoryCacheHasBeenDisposed = @"This MemoryCache instance has been disposed, therefore no more operations are allowed on it.";
     }
 }

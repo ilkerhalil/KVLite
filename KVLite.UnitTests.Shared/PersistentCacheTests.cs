@@ -50,7 +50,7 @@ namespace PommaLabs.KVLite.UnitTests
 
         #endregion Setup/Teardown
 
-        #region Cache Creation
+        #region Cache creation and disposal
 
         [Test]
         public void NewCache_BlankPath()
@@ -97,7 +97,15 @@ namespace PommaLabs.KVLite.UnitTests
             }
         }
 
-        #endregion Cache Creation
+        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        public void Dispose_ObjectDisposedExceptionAfterDispose()
+        {
+            Cache = new PersistentCache(new PersistentCacheSettings());
+            Cache.Dispose();
+            Cache.Count();
+        }
+
+        #endregion Cache creation and disposal
 
         #region SQLite-specific Clean
 

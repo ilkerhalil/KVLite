@@ -48,7 +48,7 @@ namespace PommaLabs.KVLite.UnitTests
 
         #endregion Setup/Teardown
 
-        #region Cache Creation
+        #region Cache creation and disposal
 
         [TestCase("")]
         [TestCase((string) null)]
@@ -102,7 +102,15 @@ namespace PommaLabs.KVLite.UnitTests
             new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
         }
 
-        #endregion Cache Creation
+        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        public void Dispose_ObjectDisposedExceptionAfterDispose()
+        {
+            Cache = new VolatileCache(new VolatileCacheSettings());
+            Cache.Dispose();
+            Cache.Count();
+        }
+
+        #endregion Cache creation and disposal
 
         #region SQLite-specific Clean
 
