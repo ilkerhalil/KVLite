@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
@@ -70,7 +71,7 @@ namespace PommaLabs.KVLite.Core
 
         #endregion Constants
 
-        #region Fields        
+        #region Fields
 
         /// <summary>
         ///   The connection pool used to cache open connections.
@@ -140,7 +141,8 @@ namespace PommaLabs.KVLite.Core
             _log = log ?? LogManager.GetLogger(GetType());
             _compressor = compressor ?? new SnappyCompressor();
 
-            // We need to properly customize the default serializer settings in no custom serializer has been specified.
+            // We need to properly customize the default serializer settings in no custom serializer
+            // has been specified.
             if (serializer != null)
             {
                 // Use the specified serializer.
@@ -148,7 +150,8 @@ namespace PommaLabs.KVLite.Core
             }
             else
             {
-                // We apply many customizations to the JSON serializer, in order to achieve a small output size.
+                // We apply many customizations to the JSON serializer, in order to achieve a small
+                // output size.
                 var serializerSettings = new JsonSerializerSettings
                 {
                     DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
@@ -165,7 +168,7 @@ namespace PommaLabs.KVLite.Core
                 };
                 serializerSettings.Converters.Add(new OptionConverter());
                 _serializer = new JsonSerializer(serializerSettings);
-            }            
+            }
 
             _settings.PropertyChanged += Settings_PropertyChanged;
 
@@ -202,20 +205,28 @@ namespace PommaLabs.KVLite.Core
         [Pure]
         public long CacheSizeInKB()
         {
-            // No need for a transaction, since it is just a select.
-            using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
+            try
             {
-                cmd.CommandText = "PRAGMA page_count;";
-                var pageCount = (long) cmd.ExecuteScalar();
+                // No need for a transaction, since it is just a select.
+                using (var ctx = _connectionPool.GetObject())
+                using (var cmd = ctx.InternalResource.CreateCommand())
+                {
+                    cmd.CommandText = "PRAGMA page_count;";
+                    var pageCount = (long) cmd.ExecuteScalar();
 
-                cmd.CommandText = "PRAGMA freelist_count;";
-                var freelistCount = (long) cmd.ExecuteScalar();
+                    cmd.CommandText = "PRAGMA freelist_count;";
+                    var freelistCount = (long) cmd.ExecuteScalar();
 
-                cmd.CommandText = "PRAGMA page_size;";
-                var pageSizeInKB = (long) cmd.ExecuteScalar() / 1024L;
+                    cmd.CommandText = "PRAGMA page_size;";
+                    var pageSizeInKB = (long) cmd.ExecuteScalar() / 1024L;
 
-                return (pageCount - freelistCount) * pageSizeInKB;
+                    return (pageCount - freelistCount) * pageSizeInKB;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ErrorMessages.InternalErrorOnReadAll, ex);
+                return 0L;
             }
         }
 
@@ -225,7 +236,21 @@ namespace PommaLabs.KVLite.Core
         /// <param name="cacheReadMode">The cache read mode.</param>
         public void Clear(CacheReadMode cacheReadMode)
         {
-            ClearInternal(null, cacheReadMode);
+            // Preconditions
+            RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+
+            try
+            {
+                ClearInternal(null, cacheReadMode);
+
+                // Postconditions
+                Debug.Assert(Count(cacheReadMode) == 0);
+                Debug.Assert(LongCount(cacheReadMode) == 0L);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ErrorMessages.InternalErrorOnClearAll, ex);
+            }
         }
 
         /// <summary>
@@ -235,7 +260,22 @@ namespace PommaLabs.KVLite.Core
         /// <param name="cacheReadMode">The cache read mode.</param>
         public void Clear(string partition, CacheReadMode cacheReadMode)
         {
-            ClearInternal(partition, cacheReadMode);
+            // Preconditions
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+
+            try
+            {
+                ClearInternal(partition, cacheReadMode);
+
+                // Postconditions
+                Debug.Assert(Count(partition, cacheReadMode) == 0);
+                Debug.Assert(LongCount(partition, cacheReadMode) == 0L);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnClearPartition, partition), ex);
+            }
         }
 
         /// <summary>
@@ -244,7 +284,25 @@ namespace PommaLabs.KVLite.Core
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
         [Pure]
-        public int Count(CacheReadMode cacheReadMode) => Convert.ToInt32(CountInternal(null, cacheReadMode));
+        public int Count(CacheReadMode cacheReadMode)
+        {
+            // Preconditions
+            RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+
+            try
+            {
+                var result = Convert.ToInt32(CountInternal(null, cacheReadMode));
+
+                // Postconditions
+                Debug.Assert(result >= 0);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ErrorMessages.InternalErrorOnCountAll, ex);
+                return 0;
+            }
+        }
 
         /// <summary>
         ///   The number of items in the cache for given partition.
@@ -253,7 +311,26 @@ namespace PommaLabs.KVLite.Core
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
         [Pure]
-        public int Count(string partition, CacheReadMode cacheReadMode) => Convert.ToInt32(CountInternal(partition, cacheReadMode));
+        public int Count(string partition, CacheReadMode cacheReadMode)
+        {
+            // Preconditions
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+
+            try
+            {
+                var result = Convert.ToInt32(CountInternal(partition, cacheReadMode));
+
+                // Postconditions
+                Debug.Assert(result >= 0);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
+                return 0;
+            }
+        }
 
         /// <summary>
         ///   The number of items in the cache.
@@ -261,7 +338,25 @@ namespace PommaLabs.KVLite.Core
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
         [Pure]
-        public long LongCount(CacheReadMode cacheReadMode) => CountInternal(null, cacheReadMode);
+        public long LongCount(CacheReadMode cacheReadMode)
+        {
+            // Preconditions
+            RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+
+            try
+            {
+                var result = CountInternal(null, cacheReadMode);
+
+                // Postconditions
+                Debug.Assert(result >= 0L);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ErrorMessages.InternalErrorOnCountAll, ex);
+                return 0L;
+            }
+        }
 
         /// <summary>
         ///   The number of items in the cache for given partition.
@@ -270,24 +365,50 @@ namespace PommaLabs.KVLite.Core
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
         [Pure]
-        public long LongCount(string partition, CacheReadMode cacheReadMode) => CountInternal(partition, cacheReadMode);
+        public long LongCount(string partition, CacheReadMode cacheReadMode)
+        {
+            // Preconditions
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+
+            try
+            {
+                var result = CountInternal(partition, cacheReadMode);
+
+                // Postconditions
+                Debug.Assert(result >= 0L);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
+                return 0L;
+            }
+        }
 
         /// <summary>
         ///   Runs VACUUM on the underlying SQLite database.
         /// </summary>
         public void Vacuum()
         {
-            _log.Info($"Vacuuming the SQLite DB '{Settings.CacheUri}'...");
-
-            // Perform a cleanup before vacuuming.
-            ClearInternal(null, CacheReadMode.ConsiderExpiryDate);
-
-            // Vacuum cannot be run within a transaction.
-            using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
+            try
             {
-                cmd.CommandText = SQLiteQueries.Vacuum;
-                cmd.ExecuteNonQuery();
+                _log.Info($"Vacuuming the SQLite DB '{Settings.CacheUri}'...");
+
+                // Perform a cleanup before vacuuming.
+                ClearInternal(null, CacheReadMode.ConsiderExpiryDate);
+
+                // Vacuum cannot be run within a transaction.
+                using (var ctx = _connectionPool.GetObject())
+                using (var cmd = ctx.InternalResource.CreateCommand())
+                {
+                    cmd.CommandText = SQLiteQueries.Vacuum;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ErrorMessages.InternalErrorOnVacuum, ex);
             }
         }
 

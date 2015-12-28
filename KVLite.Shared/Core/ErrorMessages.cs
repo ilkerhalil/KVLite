@@ -23,9 +23,23 @@
 
 namespace PommaLabs.KVLite.Core
 {
+    /// <summary>
+    ///   Error messages used in KVLite.
+    /// </summary>
     static class ErrorMessages
     {
+        public const string InternalErrorOnClearAll = "An error occurred while clearing all cache partitions.";
+        public const string InternalErrorOnClearPartition = "An error occurred while clearing cache partition '{0}'.";
+        public const string InternalErrorOnCountAll = "An error occurred while counting items in all cache partitions.";
+        public const string InternalErrorOnCountPartition = "An error occurred while counting items in cache partition '{0}'.";
+        public const string InternalErrorOnReadAll = "An error occurred while reading items in all cache partitions.";
+        public const string InternalErrorOnReadPartition = "An error occurred while reading items in cache partition '{0}'.";
+        public const string InternalErrorOnRead = "An error occurred while reading item '{0}/{1}' from the cache.";
+        public const string InternalErrorOnWrite = "An error occurred while writing item '{0}/{1}' into the cache.";
+        public const string InternalErrorOnVacuum = "An error occurred while applying VACUUM on the SQLite cache.";
+
         public const string InvalidCacheName = "In-memory cache name can only contain alphanumeric characters, dots and underscores.";
+        public const string InvalidCacheReadMode = "An invalid enum value was given for cache read mode.";
 
         public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
 

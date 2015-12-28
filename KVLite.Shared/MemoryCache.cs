@@ -494,12 +494,20 @@ namespace PommaLabs.KVLite
         {
             // Preconditions
             RaiseObjectDisposedException.If(_disposed, ErrorMessages.MemoryCacheHasBeenDisposed);
-
-            var serializer = new BinarySerializer();
-            var cacheItems = _store.ToArray();
-            using (var stream = serializer.SerializeToStream(cacheItems))
+            
+            try
             {
-                return stream.Length / 1024L;
+                var serializer = new BinarySerializer();
+                var cacheItems = _store.ToArray();
+                using (var stream = serializer.SerializeToStream(cacheItems))
+                {
+                    return stream.Length / 1024L;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ErrorMessages.InternalErrorOnReadAll, ex);
+                return 0L;
             }
         }
 
