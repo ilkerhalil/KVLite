@@ -225,6 +225,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnReadAll, ex);
                 return 0L;
             }
@@ -243,12 +244,15 @@ namespace PommaLabs.KVLite.Core
             {
                 ClearInternal(null, cacheReadMode);
 
-                // Postconditions
-                Debug.Assert(Count(cacheReadMode) == 0);
-                Debug.Assert(LongCount(cacheReadMode) == 0L);
+                // Postconditions - NOT VALID: Methods below return counters which are not related
+                // to the number of items the call above actually cleared.
+
+                //Debug.Assert(Count(cacheReadMode) == 0);
+                //Debug.Assert(LongCount(cacheReadMode) == 0L);
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnClearAll, ex);
             }
         }
@@ -268,12 +272,15 @@ namespace PommaLabs.KVLite.Core
             {
                 ClearInternal(partition, cacheReadMode);
 
-                // Postconditions
-                Debug.Assert(Count(partition, cacheReadMode) == 0);
-                Debug.Assert(LongCount(partition, cacheReadMode) == 0L);
+                // Postconditions - NOT VALID: Methods below return counters which are not related
+                // to the number of items the call above actually cleared.
+
+                //Debug.Assert(Count(cacheReadMode) == 0);
+                //Debug.Assert(LongCount(cacheReadMode) == 0L);
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnClearPartition, partition), ex);
             }
         }
@@ -299,6 +306,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnCountAll, ex);
                 return 0;
             }
@@ -327,6 +335,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
                 return 0;
             }
@@ -353,6 +362,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnCountAll, ex);
                 return 0L;
             }
@@ -381,6 +391,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
                 return 0L;
             }
@@ -408,6 +419,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnVacuum, ex);
             }
         }
@@ -519,6 +531,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 _log.ErrorFormat("Could not serialize given value '{0}'", ex, value.SafeToString());
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
@@ -843,6 +856,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
                 RemoveInternal(partition, key);
@@ -872,6 +886,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
                 RemoveInternal(src.Partition, src.Key);

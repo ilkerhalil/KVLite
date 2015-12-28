@@ -62,6 +62,20 @@ namespace PommaLabs.KVLite.Core
         public abstract ICompressor Compressor { get; }
 
         /// <summary>
+        ///   The last error "swallowed" by the cache. All KVLite caches, by definition, try to
+        ///   swallow as much exceptions as possible, because a failure in the cache should never
+        ///   harm the main application. This is an important rule.
+        /// 
+        ///   This property might be used to expose the last error occurred while processing cache
+        ///   items. If no error has occurred, this property will simply be null.
+        /// 
+        ///   Every error is carefully logged using the provided
+        ///   <see cref="P:PommaLabs.KVLite.ICache.Log"/>, so no information is lost when the cache
+        ///   swallows the exception.
+        /// </summary>
+        public Exception LastError { get; protected set; }
+
+        /// <summary>
         ///   Gets the log used by the cache.
         /// </summary>
         /// <value>The log used by the cache.</value>
@@ -248,6 +262,7 @@ namespace PommaLabs.KVLite.Core
                 }
                 catch (Exception ex)
                 {
+                    LastError = ex;
                     Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
                     return Option.None<object>();
                 }
@@ -285,6 +300,7 @@ namespace PommaLabs.KVLite.Core
                 }
                 catch (Exception ex)
                 {
+                    LastError = ex;
                     Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, Settings.DefaultPartition, key), ex);
                     return Option.None<object>();
                 }
@@ -317,6 +333,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, partition, key), ex);
             }
         }
@@ -345,6 +362,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, Settings.DefaultPartition, key), ex);
             }
         }
@@ -374,6 +392,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, partition, key), ex);
             }
         }
@@ -401,6 +420,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, Settings.DefaultPartition, key), ex);
             }
         }
@@ -430,6 +450,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, partition, key), ex);
             }
         }
@@ -457,6 +478,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, Settings.DefaultPartition, key), ex);
             }
         }
@@ -476,6 +498,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnClearAll, ex);
             }
         }
@@ -499,6 +522,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnClearPartition, partition), ex);
             }
         }
@@ -522,6 +546,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
                 return false;
             }
@@ -544,6 +569,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, Settings.DefaultPartition, key), ex);
                 return false;
             }
@@ -566,6 +592,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnCountAll, ex);
                 return 0;
             }
@@ -592,6 +619,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
                 return 0;
             }
@@ -614,6 +642,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnCountAll, ex);
                 return 0L;
             }
@@ -640,6 +669,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
                 return 0L;
             }
@@ -674,6 +704,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
                 return Option.None<TVal>();
             }
@@ -707,6 +738,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, Settings.DefaultPartition, key), ex);
                 return Option.None<TVal>();
             }
@@ -741,6 +773,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
                 return Option.None<CacheItem<TVal>>();
             }
@@ -774,6 +807,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, Settings.DefaultPartition, key), ex);
                 return Option.None<CacheItem<TVal>>();
             }
@@ -804,6 +838,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnReadAll, ex);
                 return new CacheItem<TVal>[0];
             }
@@ -838,6 +873,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnReadPartition, partition), ex);
                 return new CacheItem<TVal>[0];
             }
@@ -873,6 +909,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
                 return Option.None<TVal>();
             }
@@ -908,6 +945,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, Settings.DefaultPartition, key), ex);
                 return Option.None<TVal>();
             }
@@ -943,6 +981,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
                 return Option.None<CacheItem<TVal>>();
             }
@@ -978,6 +1017,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, Settings.DefaultPartition, key), ex);
                 return Option.None<CacheItem<TVal>>();
             }
@@ -1007,6 +1047,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnReadAll, ex);
                 return new CacheItem<TVal>[0];
             }
@@ -1040,6 +1081,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnReadPartition, partition), ex);
                 return new CacheItem<TVal>[0];
             }
@@ -1065,6 +1107,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, partition, key), ex);
             }
         }
@@ -1088,6 +1131,7 @@ namespace PommaLabs.KVLite.Core
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, Settings.DefaultPartition, key), ex);
             }
         }

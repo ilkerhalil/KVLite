@@ -21,14 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Diagnostics.Contracts;
 using Common.Logging;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
+using System;
+using System.Diagnostics.Contracts;
 
 namespace PommaLabs.KVLite
 {
@@ -74,6 +74,20 @@ namespace PommaLabs.KVLite
         /// </remarks>
         [Pure]
         ICompressor Compressor { get; }
+
+        /// <summary>
+        ///   The last error "swallowed" by the cache. All KVLite caches, by definition, try to
+        ///   swallow as much exceptions as possible, because a failure in the cache should never
+        ///   harm the main application. This is an important rule.
+        /// 
+        ///   This property might be used to expose the last error occurred while processing cache
+        ///   items. If no error has occurred, this property will simply be null.
+        /// 
+        ///   Every error is carefully logged using the provided <see cref="Log"/>, so no
+        ///   information is lost when the cache swallows the exception.
+        /// </summary>
+        [Pure]
+        Exception LastError { get; }
 
         /// <summary>
         ///   Gets the log used by the cache.
@@ -140,9 +154,10 @@ namespace PommaLabs.KVLite
         /// <returns>The value with the default partition and specified key.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <remarks>
-        ///   This method, differently from other readers (like <see cref="GetFromDefaultPartition{TVal}(string)"/> or
-        ///   <see cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return object, because
-        ///   indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
+        ///   This method, differently from other readers (like
+        ///   <see cref="GetFromDefaultPartition{TVal}(string)"/> or
+        ///   <see cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return
+        ///   object, because indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
         /// </remarks>
         [Pure]
         Option<object> this[string key] { get; }

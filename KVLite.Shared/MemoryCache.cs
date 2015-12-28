@@ -506,6 +506,7 @@ namespace PommaLabs.KVLite
             }
             catch (Exception ex)
             {
+                LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnReadAll, ex);
                 return 0L;
             }
