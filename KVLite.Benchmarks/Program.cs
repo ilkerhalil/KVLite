@@ -93,6 +93,9 @@ namespace PommaLabs.KVLite.Benchmarks
                 StoreAndRetrieveEachDataTableAsync(tables, i);
 
                 FullyCleanCache();
+                StoreAndRetrieveEachDataTableAsync_Volatile(tables, i);
+
+                FullyCleanCache();
                 RemoveEachDataTable(tables, i);
 
                 FullyCleanCache();
@@ -413,6 +416,42 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Data tables stored and retrieved in: {0}", stopwatch.Elapsed);
             Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
+        }
+
+        static void StoreAndRetrieveEachDataTableAsync_Volatile(ICollection<DataTable> tables, int iteration)
+        {
+            Console.WriteLine(); // Spacer
+            Console.WriteLine(@"[Volatile] Storing and retrieving each data table asynchronously, iteration {0}...", iteration);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var writeTasks = new List<Task>();
+            foreach (var table in tables)
+            {
+                writeTasks.Add(TaskHelper.Run(() => VolatileCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
+            }
+            var readTasks = new List<Task<Option<DataTable>>>();
+            foreach (var table in tables)
+            {
+                var localTable = table;
+                readTasks.Add(Task.Factory.StartNew(() => VolatileCache.DefaultInstance.GetFromDefaultPartition<DataTable>(localTable.TableName)));
+            }
+            foreach (var task in writeTasks)
+            {
+                task.Wait();
+            }
+            foreach (var task in readTasks)
+            {
+                task.Wait();
+            }
+            stopwatch.Stop();
+
+            Debug.Assert(VolatileCache.DefaultInstance.Count() == tables.Count);
+            Debug.Assert(VolatileCache.DefaultInstance.LongCount() == tables.LongCount());
+
+            Console.WriteLine(@"[Volatile] Data tables stored and retrieved in: {0}", stopwatch.Elapsed);
+            Console.WriteLine(@"[Volatile] Current cache size: {0} MB", VolatileCache.DefaultInstance.CacheSizeInKB() / 1024L);
+            Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:.0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
         }
 
         static void RemoveEachDataTable(ICollection<DataTable> tables, int iteration)

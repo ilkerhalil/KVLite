@@ -932,7 +932,13 @@ namespace PommaLabs.KVLite.Core
                 cmd.ExecuteNonQuery();
             }
 
-            return new PooledObjectWrapper<SQLiteConnection>(connection);
+#pragma warning disable CC0022 // Should dispose object
+
+            var pooledConnection = new PooledObjectWrapper<SQLiteConnection>(connection);
+            pooledConnection.WrapperReleaseResourcesAction += (sc => sc.Dispose());
+            return pooledConnection;
+
+#pragma warning restore CC0022 // Should dispose object
         }
 
         void InitConnectionString()
