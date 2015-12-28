@@ -122,13 +122,64 @@ namespace PommaLabs.KVLite.UnitTests
             var v1 = StringItems[2];
             var v2 = StringItems[3];
             var i = TimeSpan.FromMinutes(10);
+
             Cache.AddSliding(p, k, Tuple.Create(v1, v2), i);
+
             var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
             Assert.IsNotNull(info);
             Assert.AreEqual(p, info.Partition);
             Assert.AreEqual(k, info.Key);
             Assert.AreEqual(v1, info.Value.Item1);
             Assert.AreEqual(v2, info.Value.Item2);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(i, info.Interval);
+        }
+
+        [Test]
+        public void GetOrAddSliding_ItemMissing_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var i = TimeSpan.FromMinutes(10);
+
+            var r = Cache.GetOrAddSliding(p, k, () => Tuple.Create(v1, v2), i);
+
+            var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+            Assert.AreEqual(v1, r.Item1);
+            Assert.AreEqual(v2, r.Item2);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(i, info.Interval);
+        }
+
+        [Test]
+        public void GetOrAddSliding_ItemAvailable_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var i = TimeSpan.FromMinutes(10);
+
+            Cache.GetOrAddSliding(p, k, () => Tuple.Create(v1, v2), i);
+
+            // Try to add again, should not work.
+            var r = Cache.GetOrAddSliding(p, k, () => Tuple.Create(v2, v1), i);
+
+            var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+            Assert.AreEqual(v1, r.Item1);
+            Assert.AreEqual(v2, r.Item2);
             Assert.IsNotNull(info.UtcExpiry);
             Assert.AreEqual(i, info.Interval);
         }
@@ -182,13 +233,62 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v1 = StringItems[2];
             var v2 = StringItems[3];
+
             Cache.AddStatic(p, k, Tuple.Create(v1, v2));
+
             var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
             Assert.IsNotNull(info);
             Assert.AreEqual(p, info.Partition);
             Assert.AreEqual(k, info.Key);
             Assert.AreEqual(v1, info.Value.Item1);
             Assert.AreEqual(v2, info.Value.Item2);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(TimeSpan.FromDays(Cache.Settings.StaticIntervalInDays), info.Interval);
+        }
+
+        [Test]
+        public void GetOrAddStatic_MissingItem_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+
+            var r = Cache.GetOrAddStatic(p, k, () => Tuple.Create(v1, v2));
+
+            var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+            Assert.AreEqual(v1, r.Item1);
+            Assert.AreEqual(v2, r.Item2);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(TimeSpan.FromDays(Cache.Settings.StaticIntervalInDays), info.Interval);
+        }
+
+        [Test]
+        public void GetOrAddStatic_ItemAvailable_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+
+            Cache.GetOrAddStatic(p, k, () => Tuple.Create(v1, v2));
+
+            // Try to add again, should not work.
+            var r = Cache.GetOrAddStatic(p, k, () => Tuple.Create(v2, v1));
+
+            var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+            Assert.AreEqual(v1, r.Item1);
+            Assert.AreEqual(v2, r.Item2);
             Assert.IsNotNull(info.UtcExpiry);
             Assert.AreEqual(TimeSpan.FromDays(Cache.Settings.StaticIntervalInDays), info.Interval);
         }
@@ -250,7 +350,9 @@ namespace PommaLabs.KVLite.UnitTests
             var v1 = StringItems[2];
             var v2 = StringItems[3];
             var e = Cache.Clock.UtcNow.AddMinutes(10);
+
             Cache.AddTimed(p, k, Tuple.Create(v1, v2), e);
+
             var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
             Assert.IsNotNull(info);
             Assert.AreEqual(p, info.Partition);
@@ -268,7 +370,68 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
-        public void AddTimedAsync_RightInfo()
+        public void GetOrAddTimed_MissingItem_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var e = Cache.Clock.UtcNow.AddMinutes(10);
+
+            var r = Cache.GetOrAddTimed(p, k, () => Tuple.Create(v1, v2), e);
+
+            var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+            Assert.AreEqual(v1, r.Item1);
+            Assert.AreEqual(v2, r.Item2);
+
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
+
+            Assert.AreEqual(TimeSpan.Zero, info.Interval);
+        }
+
+        [Test]
+        public void GetOrAddTimed_ItemAvailable_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var e = Cache.Clock.UtcNow.AddMinutes(10);
+
+            Cache.GetOrAddTimed(p, k, () => Tuple.Create(v1, v2), e);
+
+            // Try to add again, should not work.
+            var r = Cache.GetOrAddTimed(p, k, () => Tuple.Create(v2, v1), e);
+
+            var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+            Assert.AreEqual(v1, r.Item1);
+            Assert.AreEqual(v2, r.Item2);
+
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
+
+            Assert.AreEqual(TimeSpan.Zero, info.Interval);
+        }
+
+        [Test]
+        public void AddTimed_TwoTimes_RightInfo()
         {
             var p = StringItems[0];
             var k = StringItems[1];

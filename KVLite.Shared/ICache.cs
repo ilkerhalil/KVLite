@@ -404,6 +404,149 @@ namespace PommaLabs.KVLite
         CacheItem<TVal>[] GetItems<TVal>(string partition);
 
         /// <summary>
+        ///   At first, it tries to get the cache item with specified partition and key. If it is a
+        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "sliding" value with given partition and
+        ///   key. Value will last as much as specified in given interval and, if accessed before
+        ///   expiry, its lifetime will be extended by the interval itself.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <param name="interval">The interval.</param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
+        ///   are null.
+        /// </exception>
+        TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan interval);
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with default partition and specified key. If
+        ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "sliding" value with given key and default
+        ///   partition. Value will last as much as specified in given interval and, if accessed
+        ///   before expiry, its lifetime will be extended by the interval itself.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <param name="interval">The interval.</param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
+        /// </exception>
+        TVal GetOrAddSlidingToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan interval);
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with specified partition and key. If it is a
+        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "static" value with given partition and key.
+        ///   Value will last as much as specified in
+        ///   <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed before
+        ///   expiry, its lifetime will be extended by that interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
+        ///   are null.
+        /// </exception>
+        TVal GetOrAddStatic<TVal>(string partition, string key, Func<TVal> valueGetter);
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with default partition and specified key. If
+        ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "static" value with given key and default
+        ///   partition. Value will last as much as specified in
+        ///   <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed before
+        ///   expiry, its lifetime will be extended by that interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
+        /// </exception>
+        TVal GetOrAddStaticToDefaultPartition<TVal>(string key, Func<TVal> valueGetter);
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with specified partition and key. If it is a
+        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "timed" value with given partition and key.
+        ///   Value will last until the specified time and, if accessed before expiry, its lifetime
+        ///   will _not_ be extended.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
+        ///   are null.
+        /// </exception>
+        TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, DateTime utcExpiry);
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with default partition and specified key. If
+        ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "timed" value with given key and default
+        ///   partition. Value will last until the specified time and, if accessed before expiry,
+        ///   its lifetime will _not_ be extended.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
+        /// </exception>
+        TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, DateTime utcExpiry);
+
+        /// <summary>
         ///   Gets the value corresponding to given partition and key, without updating expiry date.
         /// </summary>
         /// <param name="partition">The partition.</param>

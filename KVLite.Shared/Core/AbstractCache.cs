@@ -880,6 +880,401 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
+        ///   At first, it tries to get the cache item with specified partition and key. If it is a
+        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "sliding" value with given partition and
+        ///   key. Value will last as much as specified in given interval and, if accessed before
+        ///   expiry, its lifetime will be extended by the interval itself.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <param name="interval">The interval.</param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
+        ///   are null.
+        /// </exception>
+        public TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan interval)
+        {
+            // Preconditions
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+
+            try
+            {
+                var result = GetInternal<TVal>(partition, key);
+
+                // Postconditions
+                Debug.Assert(Contains(partition, key) == result.HasValue);
+                if (result.HasValue)
+                {
+                    return result.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
+            }
+
+            // This line is reached when the cache does not contain the item or an error has occurred.
+            var value = valueGetter.Invoke();
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+
+            try
+            {
+                AddInternal(partition, key, value, Clock.UtcNow + interval, interval);
+
+                // Postconditions
+                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == interval);
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, partition, key), ex);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with default partition and specified key. If
+        ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "sliding" value with given key and default
+        ///   partition. Value will last as much as specified in given interval and, if accessed
+        ///   before expiry, its lifetime will be extended by the interval itself.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <param name="interval">The interval.</param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
+        /// </exception>
+        public TVal GetOrAddSlidingToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan interval)
+        {
+            // Preconditions
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+
+            try
+            {
+                var result = GetInternal<TVal>(Settings.DefaultPartition, key);
+
+                // Postconditions
+                Debug.Assert(Contains(Settings.DefaultPartition, key) == result.HasValue);
+                Debug.Assert(DefaultPartitionContains(key) == result.HasValue);
+                if (result.HasValue)
+                {
+                    return result.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, Settings.DefaultPartition, key), ex);
+            }
+
+            // This line is reached when the cache does not contain the item or an error has occurred.
+            var value = valueGetter.Invoke();
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+
+            try
+            {
+                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + interval, interval);
+
+                // Postconditions
+                Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == interval);
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, Settings.DefaultPartition, key), ex);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with specified partition and key. If it is a
+        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "static" value with given partition and key.
+        ///   Value will last as much as specified in
+        ///   <see cref="P:PommaLabs.KVLite.Core.AbstractCacheSettings.StaticIntervalInDays"/> and,
+        ///   if accessed before expiry, its lifetime will be extended by that interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
+        ///   are null.
+        /// </exception>
+        public TVal GetOrAddStatic<TVal>(string partition, string key, Func<TVal> valueGetter)
+        {
+            // Preconditions
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+
+            try
+            {
+                var result = GetInternal<TVal>(partition, key);
+
+                // Postconditions
+                Debug.Assert(Contains(partition, key) == result.HasValue);
+                if (result.HasValue)
+                {
+                    return result.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
+            }
+
+            // This line is reached when the cache does not contain the item or an error has occurred.
+            var value = valueGetter.Invoke();
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+
+            try
+            {
+                AddInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
+
+                // Postconditions
+                Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, partition, key), ex);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with default partition and specified key. If
+        ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "static" value with given key and default
+        ///   partition. Value will last as much as specified in
+        ///   <see cref="P:PommaLabs.KVLite.Core.AbstractCacheSettings.StaticIntervalInDays"/> and,
+        ///   if accessed before expiry, its lifetime will be extended by that interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
+        /// </exception>
+        public TVal GetOrAddStaticToDefaultPartition<TVal>(string key, Func<TVal> valueGetter)
+        {
+            // Preconditions
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+
+            try
+            {
+                var result = GetInternal<TVal>(Settings.DefaultPartition, key);
+
+                // Postconditions
+                Debug.Assert(Contains(Settings.DefaultPartition, key) == result.HasValue);
+                Debug.Assert(DefaultPartitionContains(key) == result.HasValue);
+                if (result.HasValue)
+                {
+                    return result.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, Settings.DefaultPartition, key), ex);
+            }
+
+            // This line is reached when the cache does not contain the item or an error has occurred.
+            var value = valueGetter.Invoke();
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+
+            try
+            {
+                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
+
+                // Postconditions
+                Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, Settings.DefaultPartition, key), ex);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with specified partition and key. If it is a
+        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "timed" value with given partition and key.
+        ///   Value will last until the specified time and, if accessed before expiry, its lifetime
+        ///   will _not_ be extended.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
+        ///   are null.
+        /// </exception>
+        public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, DateTime utcExpiry)
+        {
+            // Preconditions
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+
+            try
+            {
+                var result = GetInternal<TVal>(partition, key);
+
+                // Postconditions
+                Debug.Assert(Contains(partition, key) == result.HasValue);
+                if (result.HasValue)
+                {
+                    return result.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
+            }
+
+            // This line is reached when the cache does not contain the item or an error has occurred.
+            var value = valueGetter.Invoke();
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+
+            try
+            {
+                AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero);
+
+                // Postconditions
+                Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, partition, key), ex);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with default partition and specified key. If
+        ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "timed" value with given key and default
+        ///   partition. Value will last until the specified time and, if accessed before expiry,
+        ///   its lifetime will _not_ be extended.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
+        /// </exception>
+        public TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, DateTime utcExpiry)
+        {
+            // Preconditions
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+
+            try
+            {
+                var result = GetInternal<TVal>(Settings.DefaultPartition, key);
+
+                // Postconditions
+                Debug.Assert(Contains(Settings.DefaultPartition, key) == result.HasValue);
+                Debug.Assert(DefaultPartitionContains(key) == result.HasValue);
+                if (result.HasValue)
+                {
+                    return result.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, Settings.DefaultPartition, key), ex);
+            }
+
+            // This line is reached when the cache does not contain the item or an error has occurred.
+            var value = valueGetter.Invoke();
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+
+            try
+            {
+                AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero);
+
+                // Postconditions
+                Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, Settings.DefaultPartition, key), ex);
+            }
+
+            return value;
+        }
+
+        /// <summary>
         ///   Gets the value corresponding to given partition and key, without updating expiry date.
         /// </summary>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
