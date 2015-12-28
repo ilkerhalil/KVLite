@@ -88,7 +88,7 @@ namespace PommaLabs.KVLite
         /// <returns>The SQLite data source that will be used by the cache.</returns>
         protected override string GetDataSource(out SQLiteJournalModeEnum journalMode)
         {
-            journalMode = SQLiteJournalModeEnum.Memory;
+            journalMode = SQLiteJournalModeEnum.Off;
             return string.Format("file:{0}?mode=memory&cache=shared", Settings.CacheName);
         }
 
