@@ -80,6 +80,26 @@ namespace PommaLabs.KVLite.UnitTests
 
         #endregion Constants
 
+        #region Option serialization
+
+        [Test]
+        public void AddSliding_OptionType()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v = StringItems[2];
+            var i = TimeSpan.FromMinutes(10);
+
+            Cache.AddSliding(p, k, Option.Some(v), i);
+            var info = Cache.GetItem<Option<string>>(p, k).Value;
+
+            Assert.IsNotNull(info);
+            Assert.That(info.Value.HasValue);
+            Assert.That(info.Value.Value, Is.EqualTo(v));
+        }
+
+        #endregion
+
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void AddSliding_NullKey()

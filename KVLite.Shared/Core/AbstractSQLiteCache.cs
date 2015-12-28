@@ -29,6 +29,7 @@ using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
 using Finsa.CodeServices.Common.Portability;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
+using Finsa.CodeServices.Serialization.Json.Converters;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
@@ -69,7 +70,7 @@ namespace PommaLabs.KVLite.Core
 
         #endregion Constants
 
-        #region Fields
+        #region Fields        
 
         /// <summary>
         ///   The connection pool used to cache open connections.
@@ -138,17 +139,33 @@ namespace PommaLabs.KVLite.Core
             _clock = clock ?? new SystemClock();
             _log = log ?? LogManager.GetLogger(GetType());
             _compressor = compressor ?? new SnappyCompressor();
-            _serializer = serializer ?? new JsonSerializer(new JsonSerializerSettings
+
+            // We need to properly customize the default serializer settings in no custom serializer has been specified.
+            if (serializer != null)
             {
-                DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-                DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.IgnoreAndPopulate,
-                FloatFormatHandling = Newtonsoft.Json.FloatFormatHandling.String,
-                Formatting = Newtonsoft.Json.Formatting.None,
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
-                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None
-            });
+                // Use the specified serializer.
+                _serializer = serializer;
+            }
+            else
+            {
+                // We apply many customizations to the JSON serializer, in order to achieve a small output size.
+                var serializerSettings = new JsonSerializerSettings
+                {
+                    DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
+                    DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.IgnoreAndPopulate,
+                    Encoding = Finsa.CodeServices.Common.Text.Encoding.UTF8WithoutBOM,
+                    FloatFormatHandling = Newtonsoft.Json.FloatFormatHandling.String,
+                    Formatting = Newtonsoft.Json.Formatting.None,
+                    MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,
+                    NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
+                    PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
+                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
+                    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects,
+                    TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
+                };
+                serializerSettings.Converters.Add(new OptionConverter());
+                _serializer = new JsonSerializer(serializerSettings);
+            }            
 
             _settings.PropertyChanged += Settings_PropertyChanged;
 
