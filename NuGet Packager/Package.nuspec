@@ -23,7 +23,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="CodeProject.ObjectPool" version="[1.9.0, 2.0.0)" />
+            <dependency id="CodeProject.ObjectPool" version="[1.9.1, 2.0.0)" />
             <dependency id="Finsa.CodeServices.Compression.Snappy" version="[3.0.11, 4.0.0)" />
             <dependency id="Finsa.CodeServices.Serialization.Json" version="[3.0.11, 4.0.0)" />
             <dependency id="PommaLabs.KVLite.Core" version="[4.5.3, 5.0.0)" />

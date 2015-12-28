@@ -56,12 +56,14 @@ namespace PommaLabs.KVLite.Core
 
         public static readonly string CacheSchema = MinifyQuery(@"
             PRAGMA auto_vacuum = FULL;
+            DROP TABLE IF EXISTS CacheItem;
             CREATE TABLE CacheItem (
                 partition TEXT NOT NULL,
                 key TEXT NOT NULL,
                 utcCreation BIGINT NOT NULL,
                 utcExpiry BIGINT NOT NULL,
                 interval BIGINT NOT NULL,
+                tags TEXT NOT NULL,
                 serializedValue BLOB NOT NULL,
                 CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key)
             );
@@ -69,10 +71,10 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string Add = MinifyQuery(@"
-            insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
-            values (@partition, @key, @serializedValue, @utcNow, @utcExpiry, @interval);
+            insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval, tags)
+            values (@partition, @key, @serializedValue, @utcNow, @utcExpiry, @interval, @tags);
 
-            insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
+            insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval, tags)
             values ('KVLite.CacheVariables', 'insertion_count', 
                     (select coalesce(max(serializedValue) + 1, 1) as insertion_count 
                        from CacheItem 
@@ -80,7 +82,7 @@ namespace PommaLabs.KVLite.Core
                         and key = {InsertionCountVariable}
                         and utcExpiry > @utcNow
                         and serializedValue < @maxInsertionCount), -- Set to 1 when reaching the limit
-                    @utcNow, @utcNow + {CacheVariablesIntervalInSeconds}, {CacheVariablesIntervalInSeconds});
+                    @utcNow, @utcNow + {CacheVariablesIntervalInSeconds}, {CacheVariablesIntervalInSeconds}, '');
 
             select coalesce(max(serializedValue), 0) as insertion_count 
               from CacheItem 
@@ -103,13 +105,11 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string IsSchemaReady = MinifyQuery(@"
-            select count(*)
-              from sqlite_master
-             where name = 'CacheItem'
+            PRAGMA table_info(CacheItem)
         ");
 
         public static readonly string PeekManyItems = MinifyQuery(@"
-            select partition, key, utcCreation, utcExpiry, interval, serializedValue
+            select partition, key, utcCreation, utcExpiry, interval, tags, serializedValue
               from CacheItem
              where (@partition is null or partition = @partition)
                and partition != {CacheVariablesPartition} -- Ignore cache variables
@@ -117,7 +117,7 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string PeekOneItem = MinifyQuery(@"
-            select partition, key, utcCreation, utcExpiry, interval, serializedValue
+            select partition, key, utcCreation, utcExpiry, interval, tags, serializedValue
               from CacheItem
              where partition = @partition
                and key = @key

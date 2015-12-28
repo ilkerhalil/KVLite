@@ -176,18 +176,20 @@ namespace PommaLabs.KVLite.Core
             InitConnectionString();
 
             using (var ctx = _connectionPool.GetObject())
-            using (var trx = ctx.InternalResource.BeginTransaction())
             using (var cmd = ctx.InternalResource.CreateCommand())
             {
+                bool isSchemaReady;
                 cmd.CommandText = SQLiteQueries.IsSchemaReady;
-                cmd.Transaction = trx;
-                if ((long) cmd.ExecuteScalar() == 0L)
+                using (var dataReader = cmd.ExecuteReader())
+                {
+                    isSchemaReady = IsSchemaReady(dataReader);
+                }
+                if (!isSchemaReady)
                 {
                     // Creates the CacheItem table and the required indexes.
                     cmd.CommandText = SQLiteQueries.CacheSchema;
                     cmd.ExecuteNonQuery();
                 }
-                trx.Commit();
             }
 
             // Initial cleanup.
@@ -584,6 +586,7 @@ namespace PommaLabs.KVLite.Core
                     new SQLiteParameter(nameof(serializedValue), serializedValue),
                     new SQLiteParameter(nameof(utcExpiry), utcExpiry.ToUnixTime()),
                     new SQLiteParameter(nameof(interval), (long) interval.TotalSeconds),
+                    new SQLiteParameter("tags", ""),
                     new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime()),
                     new SQLiteParameter("maxInsertionCount", Settings.InsertionCountBeforeAutoClean)
                 });
@@ -933,18 +936,19 @@ namespace PommaLabs.KVLite.Core
 
         static IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
         {
-            var values = new object[6];
+            var values = new object[7];
             while (dataReader.Read())
             {
                 dataReader.GetValues(values);
                 yield return new DbCacheItem
                 {
-                    Partition = (string) values[0],
-                    Key = (string) values[1],
+                    Partition = values[0] as string,
+                    Key = values[1] as string,
                     UtcCreation = (long) values[2],
                     UtcExpiry = (long) values[3],
                     Interval = (long) values[4],
-                    SerializedValue = (byte[]) values[5]
+                    Tags = values[5] as string,
+                    SerializedValue = values[6] as byte[]
                 };
             }
         }
@@ -1023,6 +1027,24 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+        static bool IsSchemaReady(SQLiteDataReader dataReader)
+        {
+            var columns = new HashSet<string>();
+
+            while (dataReader.Read())
+            {
+                columns.Add(dataReader.GetValue(dataReader.GetOrdinal("name")) as string);
+            }
+
+            return columns.Contains("partition")
+                && columns.Contains("key")
+                && columns.Contains("utcCreation")
+                && columns.Contains("utcExpiry")
+                && columns.Contains("interval")
+                && columns.Contains("tags")
+                && columns.Contains("serializedValue");
+        }
+
         #endregion Private Methods
 
         #region Nested type: DbCacheItem
@@ -1034,24 +1056,20 @@ namespace PommaLabs.KVLite.Core
         sealed class DbCacheItem : EquatableObject<DbCacheItem>
         {
             #region Public Properties
-
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            
             public string Partition { get; set; }
-
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            
             public string Key { get; set; }
-
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            public byte[] SerializedValue { get; set; }
-
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            
             public long UtcCreation { get; set; }
-
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            
             public long UtcExpiry { get; set; }
-
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            
             public long Interval { get; set; }
+
+            public string Tags { get; set; }
+
+            public byte[] SerializedValue { get; set; }
 
             #endregion Public Properties
 

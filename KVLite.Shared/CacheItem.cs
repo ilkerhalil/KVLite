@@ -21,11 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Common;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Finsa.CodeServices.Common;
-using Newtonsoft.Json;
 
 namespace PommaLabs.KVLite
 {
@@ -73,6 +73,13 @@ namespace PommaLabs.KVLite
         /// </summary>
         [JsonProperty(Order = 5), DataMember(Order = 5)]
         public TimeSpan Interval { get; set; }
+
+        /// <summary>
+        ///   The tags that have been set for this item. If no tag is available, then the list is
+        ///   empty but not null.
+        /// </summary>
+        [JsonProperty(Order = 6), DataMember(Order = 6)]
+        public IList<string> Tags { get; set; }
 
         #endregion Public Properties
 
