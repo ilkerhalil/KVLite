@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<package>
+    <metadata>
+        <id>PommaLabs.KVLite.EntityFramework</id>
+        <version>4.5.3</version>
+        <title>KVLite - Entity Framework query cache provider</title>
+        <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
+        <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
+        <description>
+A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Entity Framework query cache provider.
+        </description>
+        <releaseNotes>
+* EntityFramework caching bootstrapper has been put in a separate assembly.
+        </releaseNotes>
+        <summary>
+A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Entity Framework query cache provider.
+        </summary>
+        <language>en-US</language>
+        <projectUrl>https://bitbucket.org/pomma89/kvlite/overview</projectUrl>
+        <iconUrl>https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-128.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+        <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
+        <dependencies>
+            <dependency id="EntityFramework" version="[6.1.3, 7.0.0)" />
+            <dependency id="EntityFramework.Extended" version="6.1.0.168" />
+            <dependency id="PommaLabs.KVLite.Core" version="[4.5.3, 5.0.0)" />
+        </dependencies>
+        <references></references>
+        <frameworkAssemblies></frameworkAssemblies>
+        <tags>kvlite entity framework extended query cache provider</tags>
+    </metadata>
+    <files>
+        <file src="lib\" target="lib" />
+    </files>
+</package>
