@@ -48,14 +48,14 @@ namespace PommaLabs.KVLite.WebApi
     /// </summary>
     public sealed class ApiOutputCache : IApiOutputCache
     {
-        #region Fields
+        #region Constants
 
         /// <summary>
         ///   The partition used by Web API output cache provider items.
         /// </summary>
         public const string ResponseCachePartition = "KVLite.WebApi.ApiOutputCache";
 
-        #endregion Fields
+        #endregion Constants
 
         #region Construction
 
@@ -71,7 +71,7 @@ namespace PommaLabs.KVLite.WebApi
 
         #endregion Construction
 
-        #region Public Members
+        #region Public members
 
         /// <summary>
         ///   Gets the underlying cache.
@@ -89,7 +89,7 @@ namespace PommaLabs.KVLite.WebApi
             configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new ApiOutputCache(cache));
         }
 
-        #endregion Public Members
+        #endregion Public members
 
         #region IApiOutputCache Members
 
@@ -97,15 +97,7 @@ namespace PommaLabs.KVLite.WebApi
 
         public IEnumerable<string> AllKeys => Cache.GetItems<object>(ResponseCachePartition).Select(i => i.Key);
 
-        public void RemoveStartsWith(string key)
-        {
-            var items = Cache.GetItems<object>(ResponseCachePartition);
-            foreach (var i in items.Where(item => item.Key.StartsWith(key, StringComparison.Ordinal)))
-            {
-                Debug.Assert(i.Partition == ResponseCachePartition);
-                Cache.Remove(ResponseCachePartition, i.Key);
-            }
-        }
+        public void RemoveStartsWith(string key) => Cache.Remove(ResponseCachePartition, key);
 
         public T Get<T>(string key) where T : class => Cache.Get<T>(ResponseCachePartition, key).ValueOrDefault();
 
@@ -117,8 +109,12 @@ namespace PommaLabs.KVLite.WebApi
 
         public void Add(string key, object o, DateTimeOffset expiration, string dependsOnKey = null)
         {
-            // KVLite does not support dependency handling; therefore, we ignore the dependsOnKey parameter.
-            Cache.AddTimed(ResponseCachePartition, key, o, expiration.UtcDateTime);
+            string[] parentKeys = null;
+            if (dependsOnKey != null)
+            {
+                parentKeys = new[] { dependsOnKey };
+            }
+            Cache.AddTimed(ResponseCachePartition, key, o, expiration.UtcDateTime, parentKeys);
         }
 
 #pragma warning restore 1591

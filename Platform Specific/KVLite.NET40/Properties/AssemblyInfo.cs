@@ -58,5 +58,7 @@ using System.Runtime.InteropServices;
 [assembly: CLSCompliant(true)]
 
 // To allow simpler unit testing.
+[assembly: InternalsVisibleTo("PommaLabs.KVLite.EntityFramework")]
+[assembly: InternalsVisibleTo("PommaLabs.KVLite.Nancy")]
 [assembly: InternalsVisibleTo("PommaLabs.KVLite.UnitTests")]
 [assembly: InternalsVisibleTo("PommaLabs.KVLite.WebApi")]

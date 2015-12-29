@@ -21,9 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using EntityFramework.Caching;
+using PommaLabs.KVLite.Core;
+using PommaLabs.Thrower;
 using System;
 using System.Threading.Tasks;
-using EntityFramework.Caching;
 
 namespace PommaLabs.KVLite.EntityFramework
 {
@@ -31,18 +33,45 @@ namespace PommaLabs.KVLite.EntityFramework
     {
         #region Constants
 
+        /// <summary>
+        ///   The partition used by EF cache provider items.
+        /// </summary>
         const string EfCachePartition = "KVLite.EntityFramework.CacheProvider";
 
-        #endregion
+        #endregion Constants
 
-        readonly ICache _cache;
+        #region Construction
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="CacheProvider"/> class.
+        /// </summary>
+        /// <param name="cache">The cache that will be used as entry container.</param>
+        public CacheProvider(ICache cache)
+        {
+            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Cache = cache;
+        }
+
+        #endregion Construction
+
+        #region Public members
+
+        /// <summary>
+        ///   Gets the underlying cache.
+        /// </summary>
+        /// <value>The underlying cache.</value>
+        public ICache Cache { get; }
+
+        #endregion Public members
+
+        #region ICacheProvider members
 
         public bool Add(CacheKey cacheKey, object value, CachePolicy cachePolicy)
         {
             throw new NotImplementedException();
         }
 
-        public long ClearCache() => _cache.Clear(EfCachePartition);
+        public long ClearCache() => Cache.Clear(EfCachePartition);
 
         public int Expire(CacheTag cacheTag)
         {
@@ -73,5 +102,7 @@ namespace PommaLabs.KVLite.EntityFramework
         {
             throw new NotImplementedException();
         }
+
+        #endregion ICacheProvider members
     }
 }
