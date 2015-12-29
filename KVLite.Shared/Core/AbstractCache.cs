@@ -30,6 +30,7 @@ using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -107,7 +108,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="utcExpiry">The UTC expiry time.</param>
         /// <param name="interval">The refresh interval.</param>
         /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
-        protected abstract void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys = null);
+        protected abstract void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys);
 
         /// <summary>
         ///   Clears this instance or a partition, if specified.
@@ -360,17 +361,19 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
-        public void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval)
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        public void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
-                AddInternal(partition, key, value, Clock.UtcNow + interval, interval);
+                AddInternal(partition, key, value, Clock.UtcNow + interval, interval, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == interval);
@@ -391,16 +394,18 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
-        public void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval)
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        public void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
-                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + interval, interval);
+                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + interval, interval, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == interval);
@@ -421,17 +426,19 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        public void AddStatic<TVal>(string partition, string key, TVal value)
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        public void AddStatic<TVal>(string partition, string key, TVal value, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
-                AddInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
+                AddInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
@@ -451,16 +458,18 @@ namespace PommaLabs.KVLite.Core
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        public void AddStaticToDefaultPartition<TVal>(string key, TVal value)
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        public void AddStaticToDefaultPartition<TVal>(string key, TVal value, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
-                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
+                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
@@ -481,17 +490,19 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry)
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
-                AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero);
+                AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
@@ -511,16 +522,18 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        public void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry)
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        public void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
-                AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero);
+                AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
@@ -541,20 +554,19 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="lifetime">The desired lifetime.</param>
-        /// <exception cref="T:System.ArgumentNullException">
-        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
-        /// </exception>
-        public void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime)
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        public void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
-                AddInternal(partition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero);
+                AddInternal(partition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
@@ -573,17 +585,18 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="lifetime">The desired lifetime.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.</exception>
-        public void AddTimedToDefaultPartition<TVal>(string key, TVal value, TimeSpan lifetime)
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        public void AddTimedToDefaultPartition<TVal>(string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
-                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero);
+                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
@@ -1115,21 +1128,19 @@ namespace PommaLabs.KVLite.Core
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="interval">The interval.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">
-        ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
-        ///   are null.
-        /// </exception>
-        public TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan interval)
+        public TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
@@ -1154,7 +1165,7 @@ namespace PommaLabs.KVLite.Core
 
             try
             {
-                AddInternal(partition, key, value, Clock.UtcNow + interval, interval);
+                AddInternal(partition, key, value, Clock.UtcNow + interval, interval, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == interval);
@@ -1182,19 +1193,18 @@ namespace PommaLabs.KVLite.Core
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="interval">The interval.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">
-        ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
-        /// </exception>
-        public TVal GetOrAddSlidingToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan interval)
+        public TVal GetOrAddSlidingToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
@@ -1220,7 +1230,7 @@ namespace PommaLabs.KVLite.Core
 
             try
             {
-                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + interval, interval);
+                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + interval, interval, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == interval);
@@ -1249,21 +1259,19 @@ namespace PommaLabs.KVLite.Core
         /// <param name="valueGetter">
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">
-        ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
-        ///   are null.
-        /// </exception>
-        public TVal GetOrAddStatic<TVal>(string partition, string key, Func<TVal> valueGetter)
+        public TVal GetOrAddStatic<TVal>(string partition, string key, Func<TVal> valueGetter, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
@@ -1288,7 +1296,7 @@ namespace PommaLabs.KVLite.Core
 
             try
             {
-                AddInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
+                AddInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
@@ -1316,19 +1324,18 @@ namespace PommaLabs.KVLite.Core
         /// <param name="valueGetter">
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">
-        ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
-        /// </exception>
-        public TVal GetOrAddStaticToDefaultPartition<TVal>(string key, Func<TVal> valueGetter)
+        public TVal GetOrAddStaticToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
@@ -1354,7 +1361,7 @@ namespace PommaLabs.KVLite.Core
 
             try
             {
-                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval);
+                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == Settings.StaticInterval);
@@ -1383,21 +1390,19 @@ namespace PommaLabs.KVLite.Core
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">
-        ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
-        ///   are null.
-        /// </exception>
-        public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, DateTime utcExpiry)
+        public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
@@ -1422,7 +1427,7 @@ namespace PommaLabs.KVLite.Core
 
             try
             {
-                AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero);
+                AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
@@ -1449,19 +1454,18 @@ namespace PommaLabs.KVLite.Core
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">
-        ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
-        /// </exception>
-        public TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, DateTime utcExpiry)
+        public TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
@@ -1487,7 +1491,7 @@ namespace PommaLabs.KVLite.Core
 
             try
             {
-                AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero);
+                AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
@@ -1516,21 +1520,19 @@ namespace PommaLabs.KVLite.Core
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="lifetime">The desired lifetime.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">
-        ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
-        ///   are null.
-        /// </exception>
-        public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan lifetime)
+        public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
@@ -1555,7 +1557,7 @@ namespace PommaLabs.KVLite.Core
 
             try
             {
-                AddInternal(partition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero);
+                AddInternal(partition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
@@ -1582,19 +1584,18 @@ namespace PommaLabs.KVLite.Core
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="lifetime">The desired lifetime.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">
-        ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
-        /// </exception>
-        public TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan lifetime)
+        public TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
             try
             {
@@ -1620,7 +1621,7 @@ namespace PommaLabs.KVLite.Core
 
             try
             {
-                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero);
+                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);

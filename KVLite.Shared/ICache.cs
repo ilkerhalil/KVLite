@@ -28,6 +28,7 @@ using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace PommaLabs.KVLite
@@ -179,10 +180,11 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
-        void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval);
+        void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null);
 
         /// <summary>
         ///   Adds a "sliding" value with given key and default partition. Value will last as much
@@ -193,8 +195,9 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval);
+        void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval, IList<string> parentKeys = null);
 
         /// <summary>
         ///   Adds a "static" value with given partition and key. Value will last as much as
@@ -205,10 +208,11 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
-        void AddStatic<TVal>(string partition, string key, TVal value);
+        void AddStatic<TVal>(string partition, string key, TVal value, IList<string> parentKeys = null);
 
         /// <summary>
         ///   Adds a "static" value with given key and default partition. Value will last as much as
@@ -218,8 +222,9 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        void AddStaticToDefaultPartition<TVal>(string key, TVal value);
+        void AddStaticToDefaultPartition<TVal>(string key, TVal value, IList<string> parentKeys = null);
 
         /// <summary>
         ///   Adds a "timed" value with given partition and key. Value will last until the specified
@@ -230,10 +235,11 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
-        void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry);
+        void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null);
 
         /// <summary>
         ///   Adds a "timed" value with given key and default partition. Value will last until the
@@ -242,8 +248,9 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry);
+        void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null);
 
         /// <summary>
         ///   Adds a "timed" value with given partition and key. Value will last for the specified
@@ -254,10 +261,11 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="lifetime">The desired lifetime.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
-        void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime);
+        void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null);
 
         /// <summary>
         ///   Adds a "timed" value with given key and default partition. Value will last for the
@@ -266,8 +274,9 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="lifetime">The desired lifetime.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        void AddTimedToDefaultPartition<TVal>(string key, TVal value, TimeSpan lifetime);
+        void AddTimedToDefaultPartition<TVal>(string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null);
 
         /// <summary>
         ///   Clears this instance, that is, it removes all values.
@@ -473,6 +482,7 @@ namespace PommaLabs.KVLite
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="interval">The interval.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -481,7 +491,7 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
         ///   are null.
         /// </exception>
-        TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan interval);
+        TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null);
 
         /// <summary>
         ///   At first, it tries to get the cache item with default partition and specified key. If
@@ -497,6 +507,7 @@ namespace PommaLabs.KVLite
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="interval">The interval.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -504,7 +515,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
         /// </exception>
-        TVal GetOrAddSlidingToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan interval);
+        TVal GetOrAddSlidingToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null);
 
         /// <summary>
         ///   At first, it tries to get the cache item with specified partition and key. If it is a
@@ -521,6 +532,7 @@ namespace PommaLabs.KVLite
         /// <param name="valueGetter">
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -529,7 +541,7 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
         ///   are null.
         /// </exception>
-        TVal GetOrAddStatic<TVal>(string partition, string key, Func<TVal> valueGetter);
+        TVal GetOrAddStatic<TVal>(string partition, string key, Func<TVal> valueGetter, IList<string> parentKeys = null);
 
         /// <summary>
         ///   At first, it tries to get the cache item with default partition and specified key. If
@@ -545,6 +557,7 @@ namespace PommaLabs.KVLite
         /// <param name="valueGetter">
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -552,7 +565,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
         /// </exception>
-        TVal GetOrAddStaticToDefaultPartition<TVal>(string key, Func<TVal> valueGetter);
+        TVal GetOrAddStaticToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, IList<string> parentKeys = null);
 
         /// <summary>
         ///   At first, it tries to get the cache item with specified partition and key. If it is a
@@ -569,6 +582,7 @@ namespace PommaLabs.KVLite
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -577,7 +591,7 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
         ///   are null.
         /// </exception>
-        TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, DateTime utcExpiry);
+        TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null);
 
         /// <summary>
         ///   At first, it tries to get the cache item with default partition and specified key. If
@@ -592,6 +606,7 @@ namespace PommaLabs.KVLite
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -599,7 +614,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
         /// </exception>
-        TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, DateTime utcExpiry);
+        TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null);
 
         /// <summary>
         ///   At first, it tries to get the cache item with specified partition and key. If it is a
@@ -616,6 +631,7 @@ namespace PommaLabs.KVLite
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="lifetime">The desired lifetime.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -624,7 +640,7 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
         ///   are null.
         /// </exception>
-        TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan lifetime);
+        TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null);
 
         /// <summary>
         ///   At first, it tries to get the cache item with default partition and specified key. If
@@ -639,6 +655,7 @@ namespace PommaLabs.KVLite
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="lifetime">The desired lifetime.</param>
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -646,7 +663,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
         /// </exception>
-        TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan lifetime);
+        TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null);
 
         /// <summary>
         ///   Gets the value corresponding to given partition and key, without updating expiry date.
