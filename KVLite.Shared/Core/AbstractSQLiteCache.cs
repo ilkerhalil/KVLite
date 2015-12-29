@@ -560,7 +560,8 @@ namespace PommaLabs.KVLite.Core
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry time.</param>
         /// <param name="interval">The refresh interval.</param>
-        protected sealed override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval)
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        protected sealed override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
             byte[] serializedValue;
@@ -594,19 +595,40 @@ namespace PommaLabs.KVLite.Core
                     new SQLiteParameter(nameof(serializedValue), serializedValue),
                     new SQLiteParameter(nameof(utcExpiry), utcExpiry.ToUnixTime()),
                     new SQLiteParameter(nameof(interval), (long) interval.TotalSeconds),
-                    new SQLiteParameter("parentKey0", null),
-                    new SQLiteParameter("parentKey1", null),
-                    new SQLiteParameter("parentKey2", null),
-                    new SQLiteParameter("parentKey3", null),
-                    new SQLiteParameter("parentKey4", null),
-                    new SQLiteParameter("parentKey5", null),
-                    new SQLiteParameter("parentKey6", null),
-                    new SQLiteParameter("parentKey7", null),
-                    new SQLiteParameter("parentKey8", null),
-                    new SQLiteParameter("parentKey9", null),
                     new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime()),
                     new SQLiteParameter("maxInsertionCount", Settings.InsertionCountBeforeAutoClean)
                 });
+
+                // Also add the parent keys, if any.
+                var parameters = cmd.Parameters;
+                var parentKeyCount = parentKeys?.Count ?? 0;
+                if (parentKeyCount != 0)
+                {
+                    parameters.Add(new SQLiteParameter("parentKey0", parentKeyCount >= 0 ? parentKeys[0] : null));
+                    parameters.Add(new SQLiteParameter("parentKey1", parentKeyCount >= 1 ? parentKeys[1] : null));
+                    parameters.Add(new SQLiteParameter("parentKey2", parentKeyCount >= 2 ? parentKeys[2] : null));
+                    parameters.Add(new SQLiteParameter("parentKey3", parentKeyCount >= 3 ? parentKeys[3] : null));
+                    parameters.Add(new SQLiteParameter("parentKey4", parentKeyCount >= 4 ? parentKeys[4] : null));
+                    parameters.Add(new SQLiteParameter("parentKey5", parentKeyCount >= 5 ? parentKeys[5] : null));
+                    parameters.Add(new SQLiteParameter("parentKey6", parentKeyCount >= 6 ? parentKeys[6] : null));
+                    parameters.Add(new SQLiteParameter("parentKey7", parentKeyCount >= 7 ? parentKeys[7] : null));
+                    parameters.Add(new SQLiteParameter("parentKey8", parentKeyCount >= 8 ? parentKeys[8] : null));
+                    parameters.Add(new SQLiteParameter("parentKey9", parentKeyCount >= 9 ? parentKeys[9] : null));
+                }
+                else
+                {
+                    parameters.Add(new SQLiteParameter("parentKey0", null));
+                    parameters.Add(new SQLiteParameter("parentKey1", null));
+                    parameters.Add(new SQLiteParameter("parentKey2", null));
+                    parameters.Add(new SQLiteParameter("parentKey3", null));
+                    parameters.Add(new SQLiteParameter("parentKey4", null));
+                    parameters.Add(new SQLiteParameter("parentKey5", null));
+                    parameters.Add(new SQLiteParameter("parentKey6", null));
+                    parameters.Add(new SQLiteParameter("parentKey7", null));
+                    parameters.Add(new SQLiteParameter("parentKey8", null));
+                    parameters.Add(new SQLiteParameter("parentKey9", null));
+                }
+
                 insertionCount = (long) cmd.ExecuteScalar();
             }
 
@@ -947,7 +969,8 @@ namespace PommaLabs.KVLite.Core
                     Value = UnsafeDeserializeValue<TVal>(src.SerializedValue),
                     UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcCreation),
                     UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry),
-                    Interval = TimeSpan.FromSeconds(src.Interval)
+                    Interval = TimeSpan.FromSeconds(src.Interval),
+                    ParentKeys = src.ParentKeys
                 });
             }
             catch (Exception ex)

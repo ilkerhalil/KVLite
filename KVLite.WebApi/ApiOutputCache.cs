@@ -53,7 +53,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <summary>
         ///   The partition used by Web API output cache provider items.
         /// </summary>
-        public const string ResponseCachePartition = "KVLite.Web.Http.ApiOutputCache";
+        public const string ResponseCachePartition = "KVLite.WebApi.ApiOutputCache";
 
         #endregion Fields
 

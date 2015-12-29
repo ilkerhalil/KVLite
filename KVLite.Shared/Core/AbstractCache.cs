@@ -28,6 +28,7 @@ using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.Thrower;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace PommaLabs.KVLite.Core
@@ -105,7 +106,8 @@ namespace PommaLabs.KVLite.Core
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry time.</param>
         /// <param name="interval">The refresh interval.</param>
-        protected abstract void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval);
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        protected abstract void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys = null);
 
         /// <summary>
         ///   Clears this instance or a partition, if specified.

@@ -200,11 +200,17 @@ namespace PommaLabs.KVLite
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry time.</param>
         /// <param name="interval">The refresh interval.</param>
-        protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval)
+        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
             var policy = (interval == TimeSpan.Zero)
                 ? new SystemCacheItemPolicy { AbsoluteExpiration = utcExpiry }
                 : new SystemCacheItemPolicy { SlidingExpiration = interval };
+
+            if (parentKeys != null && parentKeys.Count > 0)
+            {
+                policy.ChangeMonitors.Add(_store.CreateCacheEntryChangeMonitor(parentKeys.Select(pk => SerializeToCacheKey(partition, pk))));
+            }
 
             _store.Set(SerializeToCacheKey(partition, key), value, policy);
         }

@@ -29,6 +29,12 @@ namespace PommaLabs.KVLite.EntityFramework
 {
     public sealed class CacheProvider : ICacheProvider
     {
+        #region Constants
+
+        const string EfCachePartition = "KVLite.EntityFramework.CacheProvider";
+
+        #endregion
+
         readonly ICache _cache;
 
         public bool Add(CacheKey cacheKey, object value, CachePolicy cachePolicy)
@@ -36,10 +42,7 @@ namespace PommaLabs.KVLite.EntityFramework
             throw new NotImplementedException();
         }
 
-        public long ClearCache()
-        {
-            throw new NotImplementedException();
-        }
+        public long ClearCache() => _cache.Clear(EfCachePartition);
 
         public int Expire(CacheTag cacheTag)
         {
