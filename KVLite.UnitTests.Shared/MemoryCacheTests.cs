@@ -25,7 +25,6 @@ using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Common.Threading.Tasks;
 using Finsa.CodeServices.Serialization;
 using NUnit.Framework;
-using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -285,6 +284,39 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(StringItems[1], Cache.GetFromDefaultPartition<string>(StringItems[0]).Value);
             Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[2], Cache.Clock.UtcNow.AddMinutes(10));
             Assert.AreEqual(StringItems[2], Cache.GetFromDefaultPartition<string>(StringItems[0]).Value);
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Clear_ReturnsTheNumberOfItemsRemoved(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
+            }
+
+            Assert.That(Cache.Clear(), Is.EqualTo(itemCount));
+            Assert.That(Cache.Count(), Is.EqualTo(0));
+            Assert.That(Cache.LongCount(), Is.EqualTo(0L));
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Clear_SinglePartition_ReturnsTheNumberOfItemsRemoved(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
+                Cache.AddTimed(StringItems[i], StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
+            }
+
+            Assert.That(Cache.ClearDefaultPartition(), Is.EqualTo(itemCount));
+            Assert.That(Cache.DefaultPartitionCount(), Is.EqualTo(0));
+            Assert.That(Cache.DefaultPartitionLongCount(), Is.EqualTo(0L));
+            Assert.That(Cache.Count(), Is.EqualTo(itemCount));
+            Assert.That(Cache.LongCount(), Is.EqualTo(itemCount));
         }
 
         [Test]

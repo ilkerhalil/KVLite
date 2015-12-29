@@ -214,7 +214,10 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="partition">The optional partition.</param>
         /// <param name="cacheReadMode">The cache read mode.</param>
-        protected override void ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
+        /// <returns>
+        ///   The number of items that have been removed.
+        /// </returns>
+        protected override long ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
             // We need to make a snapshot of the keys, since the cache might be used by other
             // processes. Therefore, we start projecting all keys.
@@ -235,6 +238,8 @@ namespace PommaLabs.KVLite
             {
                 _store.Remove(key);
             }
+
+            return keysArray.LongLength;
         }
 
         /// <summary>

@@ -240,7 +240,8 @@ namespace PommaLabs.KVLite.Core
         ///   Clears the cache using the specified cache read mode.
         /// </summary>
         /// <param name="cacheReadMode">The cache read mode.</param>
-        public void Clear(CacheReadMode cacheReadMode)
+        /// <returns>The number of items that have been removed.</returns>
+        public long Clear(CacheReadMode cacheReadMode)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -248,18 +249,21 @@ namespace PommaLabs.KVLite.Core
 
             try
             {
-                ClearInternal(null, cacheReadMode);
+                var result = ClearInternal(null, cacheReadMode);
 
                 // Postconditions - NOT VALID: Methods below return counters which are not related
                 // to the number of items the call above actually cleared.
 
                 //Debug.Assert(Count(cacheReadMode) == 0);
                 //Debug.Assert(LongCount(cacheReadMode) == 0L);
+                Debug.Assert(result >= 0L);
+                return result;
             }
             catch (Exception ex)
             {
                 LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnClearAll, ex);
+                return 0L;
             }
         }
 
@@ -268,7 +272,8 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="cacheReadMode">The cache read mode.</param>
-        public void Clear(string partition, CacheReadMode cacheReadMode)
+        /// <returns>The number of items that have been removed.</returns>
+        public long Clear(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -277,18 +282,21 @@ namespace PommaLabs.KVLite.Core
 
             try
             {
-                ClearInternal(partition, cacheReadMode);
+                var result = ClearInternal(partition, cacheReadMode);
 
                 // Postconditions - NOT VALID: Methods below return counters which are not related
                 // to the number of items the call above actually cleared.
 
                 //Debug.Assert(Count(cacheReadMode) == 0);
                 //Debug.Assert(LongCount(cacheReadMode) == 0L);
+                Debug.Assert(result >= 0L);
+                return result;
             }
             catch (Exception ex)
             {
                 LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnClearPartition, partition), ex);
+                return 0L;
             }
         }
 
@@ -620,7 +628,8 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="partition">The optional partition.</param>
         /// <param name="cacheReadMode">The cache read mode.</param>
-        protected sealed override void ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
+        /// <returns>The number of items that have been removed.</returns>
+        protected sealed override long ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
             using (var ctx = _connectionPool.GetObject())
             using (var cmd = ctx.InternalResource.CreateCommand())
@@ -632,7 +641,16 @@ namespace PommaLabs.KVLite.Core
                     new SQLiteParameter("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate)),
                     new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
                 });
-                cmd.ExecuteNonQuery();
+                var removedItemCount = cmd.ExecuteNonQuery();
+                if (removedItemCount > 0 && partition == null)
+                {
+                    // If we are performing a full cache cleanup, then we also remove the items
+                    // related to KVLite cache variables. Therefore, we have to remove the count of
+                    // that variables from the number of deleted rows.
+                    return removedItemCount - 1;
+                }
+                // In this case, the number is OK and can be returned.
+                return removedItemCount;
             }
         }
 
@@ -974,7 +992,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     dbCacheItem.ParentKeys = new string[parentKeyCount];
                     Array.Copy(values, parentKeysStartIndex, dbCacheItem.ParentKeys, 0, dbCacheItem.ParentKeys.Length);
-                }                
+                }
 
                 yield return dbCacheItem;
             }
@@ -1095,7 +1113,7 @@ namespace PommaLabs.KVLite.Core
 
             public static readonly string[] NoParentKeys = new string[0];
 
-            #endregion
+            #endregion Constants
 
             #region Public Properties
 

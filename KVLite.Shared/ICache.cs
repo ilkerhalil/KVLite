@@ -246,16 +246,48 @@ namespace PommaLabs.KVLite
         void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry);
 
         /// <summary>
+        ///   Adds a "timed" value with given partition and key. Value will last for the specified
+        ///   lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="lifetime">The desired lifetime.</param>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
+        void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime);
+
+        /// <summary>
+        ///   Adds a "timed" value with given key and default partition. Value will last for the
+        ///   specified lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="lifetime">The desired lifetime.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
+        void AddTimedToDefaultPartition<TVal>(string key, TVal value, TimeSpan lifetime);
+
+        /// <summary>
         ///   Clears this instance, that is, it removes all values.
         /// </summary>
-        void Clear();
+        /// <returns>The number of items that have been removed.</returns>
+        long Clear();
 
         /// <summary>
         ///   Clears given partition, that is, it removes all its values.
         /// </summary>
         /// <param name="partition">The partition.</param>
+        /// <returns>The number of items that have been removed.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
-        void Clear(string partition);
+        long Clear(string partition);
+
+        /// <summary>
+        ///   Clears default partition, that is, it removes all its values.
+        /// </summary>
+        /// <returns>The number of items that have been removed.</returns>
+        long ClearDefaultPartition();
 
         /// <summary>
         ///   Determines whether cache contains the specified partition and key.
@@ -299,6 +331,14 @@ namespace PommaLabs.KVLite
         int Count(string partition);
 
         /// <summary>
+        ///   The number of items in default partition.
+        /// </summary>
+        /// <returns>The number of items in default partition.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        [Pure]
+        int DefaultPartitionCount();
+
+        /// <summary>
         ///   The number of items in the cache.
         /// </summary>
         /// <returns>The number of items in the cache.</returns>
@@ -315,6 +355,14 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
         [Pure]
         long LongCount(string partition);
+
+        /// <summary>
+        ///   The number of items in default partition.
+        /// </summary>
+        /// <returns>The number of items in default partition.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        [Pure]
+        long DefaultPartitionLongCount();
 
         /// <summary>
         ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
@@ -552,6 +600,53 @@ namespace PommaLabs.KVLite
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
         /// </exception>
         TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, DateTime utcExpiry);
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with specified partition and key. If it is a
+        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "timed" value with given partition and key.
+        ///   Value will last for the specified lifetime and, if accessed before expiry, its
+        ///   lifetime will _not_ be extended.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <param name="lifetime">The desired lifetime.</param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
+        ///   are null.
+        /// </exception>
+        TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan lifetime);
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with default partition and specified key. If
+        ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "timed" value with given key and default
+        ///   partition. Value will last for the specified lifetime and, if accessed before expiry,
+        ///   its lifetime will _not_ be extended.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <param name="lifetime">The desired lifetime.</param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
+        /// </exception>
+        TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan lifetime);
 
         /// <summary>
         ///   Gets the value corresponding to given partition and key, without updating expiry date.

@@ -112,7 +112,8 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="partition">The optional partition.</param>
         /// <param name="cacheReadMode">The cache read mode.</param>
-        protected abstract void ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate);
+        /// <returns>The number of items that have been removed.</returns>
+        protected abstract long ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate);
 
         /// <summary>
         ///   Determines whether cache contains the specified partition and key.
@@ -530,25 +531,92 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
+        ///   Adds a "timed" value with given partition and key. Value will last for the specified
+        ///   lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="lifetime">The desired lifetime.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
+        /// </exception>
+        public void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime)
+        {
+            // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+
+            try
+            {
+                AddInternal(partition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero);
+
+                // Postconditions
+                Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, partition, key), ex);
+            }
+        }
+
+        /// <summary>
+        ///   Adds a "timed" value with given key and default partition. Value will last for the
+        ///   specified lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="lifetime">The desired lifetime.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null.</exception>
+        public void AddTimedToDefaultPartition<TVal>(string key, TVal value, TimeSpan lifetime)
+        {
+            // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+
+            try
+            {
+                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero);
+
+                // Postconditions
+                Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, Settings.DefaultPartition, key), ex);
+            }
+        }
+
+        /// <summary>
         ///   Clears this instance, that is, it removes all values.
         /// </summary>
-        public void Clear()
+        /// <returns>The number of items that have been removed.</returns>
+        public long Clear()
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
 
             try
             {
-                ClearInternal(null);
+                var result = ClearInternal(null);
 
                 // Postconditions
+                Debug.Assert(result >= 0L);
                 Debug.Assert(Count() == 0);
                 Debug.Assert(LongCount() == 0L);
+                return result;
             }
             catch (Exception ex)
             {
                 LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnClearAll, ex);
+                return 0L;
             }
         }
 
@@ -556,7 +624,8 @@ namespace PommaLabs.KVLite.Core
         ///   Clears given partition, that is, it removes all its values.
         /// </summary>
         /// <param name="partition">The partition.</param>
-        public void Clear(string partition)
+        /// <returns>The number of items that have been removed.</returns>
+        public long Clear(string partition)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -564,16 +633,46 @@ namespace PommaLabs.KVLite.Core
 
             try
             {
-                ClearInternal(partition);
+                var result = ClearInternal(partition);
 
                 // Postconditions
+                Debug.Assert(result >= 0L);
                 Debug.Assert(Count(partition) == 0);
                 Debug.Assert(LongCount(partition) == 0L);
+                return result;
             }
             catch (Exception ex)
             {
                 LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnClearPartition, partition), ex);
+                return 0L;
+            }
+        }
+
+        /// <summary>
+        ///   Clears default partition, that is, it removes all its values.
+        /// </summary>
+        /// <returns>The number of items that have been removed.</returns>
+        public long ClearDefaultPartition()
+        {
+            // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+
+            try
+            {
+                var result = ClearInternal(Settings.DefaultPartition);
+
+                // Postconditions
+                Debug.Assert(result >= 0L);
+                Debug.Assert(Count(Settings.DefaultPartition) == 0);
+                Debug.Assert(LongCount(Settings.DefaultPartition) == 0L);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnClearPartition, Settings.DefaultPartition), ex);
+                return 0L;
             }
         }
 
@@ -682,6 +781,32 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
+        ///   The number of items in default partition.
+        /// </summary>
+        /// <returns>The number of items in default partition.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        public int DefaultPartitionCount()
+        {
+            // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+
+            try
+            {
+                var result = Convert.ToInt32(CountInternal(Settings.DefaultPartition));
+
+                // Postconditions
+                Debug.Assert(result >= 0);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnCountPartition, Settings.DefaultPartition), ex);
+                return 0;
+            }
+        }
+
+        /// <summary>
         ///   The number of items in the cache.
         /// </summary>
         /// <returns>The number of items in the cache.</returns>
@@ -731,6 +856,32 @@ namespace PommaLabs.KVLite.Core
             {
                 LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
+                return 0L;
+            }
+        }
+
+        /// <summary>
+        ///   The number of items in default partition.
+        /// </summary>
+        /// <returns>The number of items in default partition.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        public long DefaultPartitionLongCount()
+        {
+            // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+
+            try
+            {
+                var result = CountInternal(Settings.DefaultPartition);
+
+                // Postconditions
+                Debug.Assert(result >= 0L);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnCountPartition, Settings.DefaultPartition), ex);
                 return 0L;
             }
         }
@@ -1335,6 +1486,139 @@ namespace PommaLabs.KVLite.Core
             try
             {
                 AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero);
+
+                // Postconditions
+                Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, Settings.DefaultPartition, key), ex);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with specified partition and key. If it is a
+        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "timed" value with given partition and key.
+        ///   Value will last for the specified lifetime and, if accessed before expiry, its
+        ///   lifetime will _not_ be extended.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <param name="lifetime">The desired lifetime.</param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
+        ///   are null.
+        /// </exception>
+        public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan lifetime)
+        {
+            // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+
+            try
+            {
+                var result = GetInternal<TVal>(partition, key);
+
+                // Postconditions
+                Debug.Assert(Contains(partition, key) == result.HasValue);
+                if (result.HasValue)
+                {
+                    return result.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
+            }
+
+            // This line is reached when the cache does not contain the item or an error has occurred.
+            var value = valueGetter.Invoke();
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+
+            try
+            {
+                AddInternal(partition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero);
+
+                // Postconditions
+                Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnWrite, partition, key), ex);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        ///   At first, it tries to get the cache item with default partition and specified key. If
+        ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// 
+        ///   If the value is not found, then it adds a "timed" value with given key and default
+        ///   partition. Value will last for the specified lifetime and, if accessed before expiry,
+        ///   its lifetime will _not_ be extended.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="valueGetter">
+        ///   The function that is called in order to get the value when it was not found inside the cache.
+        /// </param>
+        /// <param name="lifetime">The desired lifetime.</param>
+        /// <returns>
+        ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
+        ///   case a new value has been added to the cache.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
+        /// </exception>
+        public TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan lifetime)
+        {
+            // Preconditions
+            RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+
+            try
+            {
+                var result = GetInternal<TVal>(Settings.DefaultPartition, key);
+
+                // Postconditions
+                Debug.Assert(Contains(Settings.DefaultPartition, key) == result.HasValue);
+                Debug.Assert(DefaultPartitionContains(key) == result.HasValue);
+                if (result.HasValue)
+                {
+                    return result.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, Settings.DefaultPartition, key), ex);
+            }
+
+            // This line is reached when the cache does not contain the item or an error has occurred.
+            var value = valueGetter.Invoke();
+            RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+
+            try
+            {
+                AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero);
 
                 // Postconditions
                 Debug.Assert(!Contains(Settings.DefaultPartition, key) || !CanPeek || PeekItem<TVal>(Settings.DefaultPartition, key).Value.Interval == TimeSpan.Zero);

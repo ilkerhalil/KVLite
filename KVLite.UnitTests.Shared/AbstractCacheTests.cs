@@ -383,6 +383,34 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
+        public void AddTimed_WithTimeSpan_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var l = TimeSpan.FromMinutes(10);
+
+            Cache.AddTimed(p, k, Tuple.Create(v1, v2), l);
+
+            var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+
+            var e = Cache.Clock.UtcNow.Add(l);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
+
+            Assert.AreEqual(TimeSpan.Zero, info.Interval);
+        }
+
+        [Test]
         public void GetOrAddTimed_MissingItem_RightInfo()
         {
             var p = StringItems[0];
@@ -402,6 +430,36 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v1, r.Item1);
             Assert.AreEqual(v2, r.Item2);
 
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
+
+            Assert.AreEqual(TimeSpan.Zero, info.Interval);
+        }
+
+        [Test]
+        public void GetOrAddTimed_WithTimeSpan_MissingItem_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var l = TimeSpan.FromMinutes(10);
+
+            var r = Cache.GetOrAddTimed(p, k, () => Tuple.Create(v1, v2), l);
+
+            var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+            Assert.AreEqual(v1, r.Item1);
+            Assert.AreEqual(v2, r.Item2);
+
+            var e = Cache.Clock.UtcNow.Add(l);
             Assert.IsNotNull(info.UtcExpiry);
             Assert.AreEqual(e.Date, info.UtcExpiry.Date);
             Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
@@ -855,6 +913,39 @@ namespace PommaLabs.KVLite.UnitTests
                 Assert.IsNotNull(item);
                 Assert.AreEqual(item.UtcExpiry.ToUnixTime(), (Cache.Clock.UtcNow + interval).ToUnixTime());
             }
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Clear_ReturnsTheNumberOfItemsRemoved(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
+            }
+
+            Assert.That(Cache.Clear(), Is.EqualTo(itemCount));
+            Assert.That(Cache.Count(), Is.EqualTo(0));
+            Assert.That(Cache.LongCount(), Is.EqualTo(0L));
+        }
+
+        [TestCase(SmallItemCount)]
+        [TestCase(MediumItemCount)]
+        [TestCase(LargeItemCount)]
+        public void Clear_SinglePartition_ReturnsTheNumberOfItemsRemoved(int itemCount)
+        {
+            for (var i = 0; i < itemCount; ++i)
+            {
+                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
+                Cache.AddTimed(StringItems[i], StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
+            }
+
+            Assert.That(Cache.ClearDefaultPartition(), Is.EqualTo(itemCount));
+            Assert.That(Cache.DefaultPartitionCount(), Is.EqualTo(0));
+            Assert.That(Cache.DefaultPartitionLongCount(), Is.EqualTo(0L));
+            Assert.That(Cache.Count(), Is.EqualTo(itemCount));
+            Assert.That(Cache.LongCount(), Is.EqualTo(itemCount));
         }
 
         [Test]
