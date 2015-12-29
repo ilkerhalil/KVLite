@@ -73,6 +73,7 @@ namespace PommaLabs.KVLite.WebApi
 
         [Route("items")]
 #endif
+
         public virtual IEnumerable<CacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
             var items = Cache.GetItems<object>();
@@ -102,6 +103,7 @@ namespace PommaLabs.KVLite.WebApi
 
         [Route("items/withValues")]
 #endif
+
         public virtual IEnumerable<CacheItem<object>> GetItemsWithValues(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
             return QueryCacheItems(Cache.GetItems<object>(), partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
@@ -114,6 +116,7 @@ namespace PommaLabs.KVLite.WebApi
 
         [Route("items")]
 #endif
+
         public virtual void DeleteItems()
         {
             Cache.Clear();
@@ -139,6 +142,7 @@ namespace PommaLabs.KVLite.WebApi
 
         [Route("items/{partition}")]
 #endif
+
         public virtual IEnumerable<CacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
             var items = Cache.GetItems<object>(partition);
@@ -168,6 +172,7 @@ namespace PommaLabs.KVLite.WebApi
 
         [Route("items/{partition}/withValues")]
 #endif
+
         public virtual IEnumerable<CacheItem<object>> GetPartitionItemsWithValues(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
             return QueryCacheItems(Cache.GetItems<object>(partition), partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
@@ -181,6 +186,7 @@ namespace PommaLabs.KVLite.WebApi
 
         [Route("items/{partition}")]
 #endif
+
         public virtual void DeletePartitionItems(string partition) => Cache.Clear(partition);
 
         /// <summary>
@@ -193,6 +199,7 @@ namespace PommaLabs.KVLite.WebApi
 
         [Route("items/{partition}/{key}")]
 #endif
+
         public virtual Option<CacheItem<object>> GetItem(string partition, string key) => Cache.GetItem<object>(partition, key);
 
         /// <summary>
@@ -204,6 +211,7 @@ namespace PommaLabs.KVLite.WebApi
 
         [Route("items/{partition}/{key}")]
 #endif
+
         public virtual void DeleteItem(string partition, string key) => Cache.Remove(partition, key);
 
         /// <summary>

@@ -29,6 +29,9 @@ using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.EntityFramework
 {
+    /// <summary>
+    ///   KVLite-based query cache for Entity Framework.
+    /// </summary>
     public sealed class CacheProvider : ICacheProvider
     {
         #region Constants
@@ -66,38 +69,116 @@ namespace PommaLabs.KVLite.EntityFramework
 
         #region ICacheProvider members
 
+        /// <summary>
+        ///   Inserts a cache entry into the cache without overwriting any existing cache entry.
+        /// </summary>
+        /// <param name="cacheKey">A unique identifier for the cache entry.</param>
+        /// <param name="value">The object to insert.</param>
+        /// <param name="cachePolicy">
+        ///   An object that contains eviction details for the cache entry.
+        /// </param>
+        /// <returns>
+        ///   <c>true</c> if insertion succeeded, or <c>false</c> if there is an already an entry in
+        ///   the cache that has the same key as key.
+        /// </returns>
         public bool Add(CacheKey cacheKey, object value, CachePolicy cachePolicy)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        ///   Clears all entries from the cache
+        /// </summary>
+        /// <returns>The number of items removed.</returns>
         public long ClearCache() => Cache.Clear(EfCachePartition);
 
+        /// <summary>
+        ///   Expires the specified cache tag.
+        /// </summary>
+        /// <param name="cacheTag">The cache tag.</param>
+        /// <returns>The number of items expired.</returns>
         public int Expire(CacheTag cacheTag)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        ///   Gets the cache value for the specified key
+        /// </summary>
+        /// <param name="cacheKey">A unique identifier for the cache entry.</param>
+        /// <returns>
+        ///   The cache value for the specified key, if the entry exists; otherwise, <see langword="null"/>.
+        /// </returns>
         public object Get(CacheKey cacheKey)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        ///   Gets the cache value for the specified key that is already in the dictionary or the
+        ///   new value for the key as returned by <paramref name="valueFactory"/>.
+        /// </summary>
+        /// <param name="cacheKey">A unique identifier for the cache entry.</param>
+        /// <param name="valueFactory">
+        ///   The function used to generate a value to insert into cache.
+        /// </param>
+        /// <param name="cachePolicy">
+        ///   A <see cref="T:EntityFramework.Caching.CachePolicy"/> that contains eviction details
+        ///   for the cache entry.
+        /// </param>
+        /// <returns>
+        ///   The value for the key. This will be either the existing value for the key if the key
+        ///   is already in the cache, or the new value for the key as returned by
+        ///   <paramref name="valueFactory"/> if the key was not in the cache.
+        /// </returns>
         public object GetOrAdd(CacheKey cacheKey, Func<CacheKey, object> valueFactory, CachePolicy cachePolicy)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        ///   Gets the cache value for the specified key that is already in the dictionary or the
+        ///   new value for the key as returned asynchronously by <paramref name="valueFactory"/>.
+        /// </summary>
+        /// <param name="cacheKey">A unique identifier for the cache entry.</param>
+        /// <param name="valueFactory">
+        ///   The asynchronous function used to generate a value to insert into cache.
+        /// </param>
+        /// <param name="cachePolicy">
+        ///   A <see cref="T:EntityFramework.Caching.CachePolicy"/> that contains eviction details
+        ///   for the cache entry.
+        /// </param>
+        /// <returns>
+        ///   The value for the key. This will be either the existing value for the key if the key
+        ///   is already in the cache, or the new value for the key as returned by
+        ///   <paramref name="valueFactory"/> if the key was not in the cache.
+        /// </returns>
         public Task<object> GetOrAddAsync(CacheKey cacheKey, Func<CacheKey, Task<object>> valueFactory, CachePolicy cachePolicy)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        ///   Removes a cache entry from the cache.
+        /// </summary>
+        /// <param name="cacheKey">A unique identifier for the cache entry.</param>
+        /// <returns>
+        ///   If the entry is found in the cache, the removed cache entry; otherwise, <see langword="null"/>.
+        /// </returns>
         public object Remove(CacheKey cacheKey)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        ///   Inserts a cache entry into the cache overwriting any existing cache entry.
+        /// </summary>
+        /// <param name="cacheKey">A unique identifier for the cache entry.</param>
+        /// <param name="value">The object to insert.</param>
+        /// <param name="cachePolicy">
+        ///   A <see cref="T:EntityFramework.Caching.CachePolicy"/> that contains eviction details
+        ///   for the cache entry.
+        /// </param>
         public bool Set(CacheKey cacheKey, object value, CachePolicy cachePolicy)
         {
             throw new NotImplementedException();
