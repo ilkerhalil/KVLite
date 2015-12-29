@@ -266,6 +266,56 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
+        public void AddStatic_WithParentKey_RemoveParentAndChildrenShouldAlsoBeRemoved()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var t = StringItems[4];
+
+            Cache.AddStatic(p, t, t);
+            Cache.AddStatic(p, k, Tuple.Create(v1, v2), new[] { t });
+
+            Assert.That(Cache.Contains(p, t));
+            Assert.That(Cache.Contains(p, k));
+
+            Cache.Remove(p, t);
+
+            Assert.That(!Cache.Contains(p, t));
+            Assert.That(!Cache.Contains(p, k));
+        }
+
+        [Test]
+        public void AddStatic_WithParentKey_RemoveParentAndChildrenShouldAlsoBeRemoved_Nested()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var t1 = StringItems[4];
+            var t2 = StringItems[5];
+            var t3 = StringItems[6];
+
+            Cache.AddStatic(p, t1, t1);
+            Cache.AddStatic(p, t2, t2, new[] { t1 });
+            Cache.AddStatic(p, t3, t3, new[] { t2 });
+            Cache.AddStatic(p, k, Tuple.Create(v1, v2), new[] { t3 });
+
+            Assert.That(Cache.Contains(p, t1));
+            Assert.That(Cache.Contains(p, t2));
+            Assert.That(Cache.Contains(p, t3));
+            Assert.That(Cache.Contains(p, k));
+
+            Cache.Remove(p, t1);
+
+            Assert.That(!Cache.Contains(p, t1));
+            Assert.That(!Cache.Contains(p, t2));
+            Assert.That(!Cache.Contains(p, t3));
+            Assert.That(!Cache.Contains(p, k));
+        }
+
+        [Test]
         public void AddStatic_RightInfo()
         {
             var p = StringItems[0];
