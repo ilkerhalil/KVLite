@@ -945,7 +945,9 @@ namespace PommaLabs.KVLite.Core
 
         static IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
         {
-            var values = new object[16];
+            const int valueCount = 16;
+            var values = new object[valueCount];
+
             while (dataReader.Read())
             {
                 dataReader.GetValues(values);
@@ -959,13 +961,20 @@ namespace PommaLabs.KVLite.Core
                     Interval = (long) values[5]
                 };
 
-                // Read the parent keys, if any.
+                // Quickly read the parent keys, if any.
                 const int parentKeysStartIndex = 6;
-                var valueCount = dataReader.FieldCount;
                 var firstNullIndex = parentKeysStartIndex;
-                for (; firstNullIndex < valueCount && !(values[firstNullIndex] is DBNull); ++firstNullIndex) { }
-                dbCacheItem.ParentKeys = new string[firstNullIndex - parentKeysStartIndex];
-                Array.Copy(values, parentKeysStartIndex, dbCacheItem.ParentKeys, 0, dbCacheItem.ParentKeys.Length);
+                while (firstNullIndex < valueCount && !(values[firstNullIndex] is DBNull)) { ++firstNullIndex; }
+                var parentKeyCount = firstNullIndex - parentKeysStartIndex;
+                if (parentKeyCount == 0)
+                {
+                    dbCacheItem.ParentKeys = DbCacheItem.NoParentKeys;
+                }
+                else
+                {
+                    dbCacheItem.ParentKeys = new string[parentKeyCount];
+                    Array.Copy(values, parentKeysStartIndex, dbCacheItem.ParentKeys, 0, dbCacheItem.ParentKeys.Length);
+                }                
 
                 yield return dbCacheItem;
             }
@@ -1082,6 +1091,12 @@ namespace PommaLabs.KVLite.Core
         [Serializable]
         sealed class DbCacheItem : EquatableObject<DbCacheItem>
         {
+            #region Constants
+
+            public static readonly string[] NoParentKeys = new string[0];
+
+            #endregion
+
             #region Public Properties
 
             public string Partition { get; set; }

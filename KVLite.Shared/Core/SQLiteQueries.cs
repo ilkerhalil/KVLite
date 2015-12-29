@@ -86,7 +86,17 @@ namespace PommaLabs.KVLite.Core
                 CONSTRAINT CacheItem_FK8 FOREIGN KEY (partition, parentKey8) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
                 CONSTRAINT CacheItem_FK9 FOREIGN KEY (partition, parentKey9) REFERENCES CacheItem (partition, key) ON DELETE CASCADE
             );
-            CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);
+            CREATE INDEX CacheItem_UtcExpiry_Idx ON CacheItem (utcExpiry ASC);
+            CREATE INDEX CacheItem_ParentKey0_Idx ON CacheItem (partition, parentKey0);
+            CREATE INDEX CacheItem_ParentKey1_Idx ON CacheItem (partition, parentKey1);
+            CREATE INDEX CacheItem_ParentKey2_Idx ON CacheItem (partition, parentKey2);
+            CREATE INDEX CacheItem_ParentKey3_Idx ON CacheItem (partition, parentKey3);
+            CREATE INDEX CacheItem_ParentKey4_Idx ON CacheItem (partition, parentKey4);
+            CREATE INDEX CacheItem_ParentKey5_Idx ON CacheItem (partition, parentKey5);
+            CREATE INDEX CacheItem_ParentKey6_Idx ON CacheItem (partition, parentKey6);
+            CREATE INDEX CacheItem_ParentKey7_Idx ON CacheItem (partition, parentKey7);
+            CREATE INDEX CacheItem_ParentKey8_Idx ON CacheItem (partition, parentKey8);
+            CREATE INDEX CacheItem_ParentKey9_Idx ON CacheItem (partition, parentKey9);
         ");
 
         public static readonly string Add = MinifyQuery(@"
