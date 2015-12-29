@@ -604,16 +604,16 @@ namespace PommaLabs.KVLite.Core
                 var parentKeyCount = parentKeys?.Count ?? 0;
                 if (parentKeyCount != 0)
                 {
-                    parameters.Add(new SQLiteParameter("parentKey0", parentKeyCount >= 0 ? parentKeys[0] : null));
-                    parameters.Add(new SQLiteParameter("parentKey1", parentKeyCount >= 1 ? parentKeys[1] : null));
-                    parameters.Add(new SQLiteParameter("parentKey2", parentKeyCount >= 2 ? parentKeys[2] : null));
-                    parameters.Add(new SQLiteParameter("parentKey3", parentKeyCount >= 3 ? parentKeys[3] : null));
-                    parameters.Add(new SQLiteParameter("parentKey4", parentKeyCount >= 4 ? parentKeys[4] : null));
-                    parameters.Add(new SQLiteParameter("parentKey5", parentKeyCount >= 5 ? parentKeys[5] : null));
-                    parameters.Add(new SQLiteParameter("parentKey6", parentKeyCount >= 6 ? parentKeys[6] : null));
-                    parameters.Add(new SQLiteParameter("parentKey7", parentKeyCount >= 7 ? parentKeys[7] : null));
-                    parameters.Add(new SQLiteParameter("parentKey8", parentKeyCount >= 8 ? parentKeys[8] : null));
-                    parameters.Add(new SQLiteParameter("parentKey9", parentKeyCount >= 9 ? parentKeys[9] : null));
+                    parameters.Add(new SQLiteParameter("parentKey0", parentKeyCount > 0 ? parentKeys[0] : null));
+                    parameters.Add(new SQLiteParameter("parentKey1", parentKeyCount > 1 ? parentKeys[1] : null));
+                    parameters.Add(new SQLiteParameter("parentKey2", parentKeyCount > 2 ? parentKeys[2] : null));
+                    parameters.Add(new SQLiteParameter("parentKey3", parentKeyCount > 3 ? parentKeys[3] : null));
+                    parameters.Add(new SQLiteParameter("parentKey4", parentKeyCount > 4 ? parentKeys[4] : null));
+                    parameters.Add(new SQLiteParameter("parentKey5", parentKeyCount > 5 ? parentKeys[5] : null));
+                    parameters.Add(new SQLiteParameter("parentKey6", parentKeyCount > 6 ? parentKeys[6] : null));
+                    parameters.Add(new SQLiteParameter("parentKey7", parentKeyCount > 7 ? parentKeys[7] : null));
+                    parameters.Add(new SQLiteParameter("parentKey8", parentKeyCount > 8 ? parentKeys[8] : null));
+                    parameters.Add(new SQLiteParameter("parentKey9", parentKeyCount > 9 ? parentKeys[9] : null));
                 }
                 else
                 {
