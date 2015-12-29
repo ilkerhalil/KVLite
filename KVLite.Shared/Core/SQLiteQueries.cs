@@ -60,21 +60,44 @@ namespace PommaLabs.KVLite.Core
             CREATE TABLE CacheItem (
                 partition TEXT NOT NULL,
                 key TEXT NOT NULL,
+                serializedValue BLOB NOT NULL,
                 utcCreation BIGINT NOT NULL,
                 utcExpiry BIGINT NOT NULL,
                 interval BIGINT NOT NULL,
-                tags TEXT NOT NULL,
-                serializedValue BLOB NOT NULL,
-                CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key)
+                parentKey0 TEXT,
+                parentKey1 TEXT,
+                parentKey2 TEXT,
+                parentKey3 TEXT,
+                parentKey4 TEXT,
+                parentKey5 TEXT,
+                parentKey6 TEXT,
+                parentKey7 TEXT,
+                parentKey8 TEXT,
+                parentKey9 TEXT,
+                CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key),
+                CONSTRAINT CacheItem_FK0 FOREIGN KEY (partition, parentKey0) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
+                CONSTRAINT CacheItem_FK1 FOREIGN KEY (partition, parentKey1) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
+                CONSTRAINT CacheItem_FK2 FOREIGN KEY (partition, parentKey2) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
+                CONSTRAINT CacheItem_FK3 FOREIGN KEY (partition, parentKey3) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
+                CONSTRAINT CacheItem_FK4 FOREIGN KEY (partition, parentKey4) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
+                CONSTRAINT CacheItem_FK5 FOREIGN KEY (partition, parentKey5) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
+                CONSTRAINT CacheItem_FK6 FOREIGN KEY (partition, parentKey6) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
+                CONSTRAINT CacheItem_FK7 FOREIGN KEY (partition, parentKey7) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
+                CONSTRAINT CacheItem_FK8 FOREIGN KEY (partition, parentKey8) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
+                CONSTRAINT CacheItem_FK9 FOREIGN KEY (partition, parentKey9) REFERENCES CacheItem (partition, key) ON DELETE CASCADE
             );
             CREATE INDEX UtcExpiry_Idx ON CacheItem (utcExpiry ASC);
         ");
 
         public static readonly string Add = MinifyQuery(@"
-            insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval, tags)
-            values (@partition, @key, @serializedValue, @utcNow, @utcExpiry, @interval, @tags);
+            insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval, 
+                                              parentKey0, parentKey1, parentKey2, parentKey3, parentKey4, 
+                                              parentKey5, parentKey6, parentKey7, parentKey8, parentKey9)
+            values (@partition, @key, @serializedValue, @utcNow, @utcExpiry, @interval, 
+                    @parentKey0, @parentKey1, @parentKey2, @parentKey3, @parentKey4, 
+                    @parentKey5, @parentKey6, @parentKey7, @parentKey8, @parentKey9);
 
-            insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval, tags)
+            insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
             values ('KVLite.CacheVariables', 'insertion_count', 
                     (select coalesce(max(serializedValue) + 1, 1) as insertion_count 
                        from CacheItem 
@@ -82,7 +105,7 @@ namespace PommaLabs.KVLite.Core
                         and key = {InsertionCountVariable}
                         and utcExpiry > @utcNow
                         and serializedValue < @maxInsertionCount), -- Set to 1 when reaching the limit
-                    @utcNow, @utcNow + {CacheVariablesIntervalInSeconds}, {CacheVariablesIntervalInSeconds}, '');
+                    @utcNow, @utcNow + {CacheVariablesIntervalInSeconds}, {CacheVariablesIntervalInSeconds});
 
             select coalesce(max(serializedValue), 0) as insertion_count 
               from CacheItem 
@@ -109,7 +132,9 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string PeekManyItems = MinifyQuery(@"
-            select partition, key, utcCreation, utcExpiry, interval, tags, serializedValue
+            select partition, key, serializedValue, utcCreation, utcExpiry, interval, 
+                   parentKey0, parentKey1, parentKey2, parentKey3, parentKey4, 
+                   parentKey5, parentKey6, parentKey7, parentKey8, parentKey9
               from CacheItem
              where (@partition is null or partition = @partition)
                and partition != {CacheVariablesPartition} -- Ignore cache variables
@@ -117,7 +142,9 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string PeekOneItem = MinifyQuery(@"
-            select partition, key, utcCreation, utcExpiry, interval, tags, serializedValue
+            select partition, key, serializedValue, utcCreation, utcExpiry, interval, 
+                   parentKey0, parentKey1, parentKey2, parentKey3, parentKey4, 
+                   parentKey5, parentKey6, parentKey7, parentKey8, parentKey9
               from CacheItem
              where partition = @partition
                and key = @key
@@ -141,6 +168,7 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string SetPragmas = MinifyQuery(@"
+            PRAGMA foreign_keys = ON;
             PRAGMA cache_spill = 1;
             PRAGMA count_changes = 0; -- Not required by our queries
             PRAGMA journal_size_limit = {0}; -- Size in bytes

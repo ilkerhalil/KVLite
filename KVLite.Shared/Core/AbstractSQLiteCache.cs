@@ -586,7 +586,16 @@ namespace PommaLabs.KVLite.Core
                     new SQLiteParameter(nameof(serializedValue), serializedValue),
                     new SQLiteParameter(nameof(utcExpiry), utcExpiry.ToUnixTime()),
                     new SQLiteParameter(nameof(interval), (long) interval.TotalSeconds),
-                    new SQLiteParameter("tags", ""),
+                    new SQLiteParameter("parentKey0", null),
+                    new SQLiteParameter("parentKey1", null),
+                    new SQLiteParameter("parentKey2", null),
+                    new SQLiteParameter("parentKey3", null),
+                    new SQLiteParameter("parentKey4", null),
+                    new SQLiteParameter("parentKey5", null),
+                    new SQLiteParameter("parentKey6", null),
+                    new SQLiteParameter("parentKey7", null),
+                    new SQLiteParameter("parentKey8", null),
+                    new SQLiteParameter("parentKey9", null),
                     new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime()),
                     new SQLiteParameter("maxInsertionCount", Settings.InsertionCountBeforeAutoClean)
                 });
@@ -936,20 +945,29 @@ namespace PommaLabs.KVLite.Core
 
         static IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
         {
-            var values = new object[7];
+            var values = new object[16];
             while (dataReader.Read())
             {
                 dataReader.GetValues(values);
-                yield return new DbCacheItem
+                var dbCacheItem = new DbCacheItem
                 {
                     Partition = values[0] as string,
                     Key = values[1] as string,
-                    UtcCreation = (long) values[2],
-                    UtcExpiry = (long) values[3],
-                    Interval = (long) values[4],
-                    Tags = values[5] as string,
-                    SerializedValue = values[6] as byte[]
+                    SerializedValue = values[2] as byte[],
+                    UtcCreation = (long) values[3],
+                    UtcExpiry = (long) values[4],
+                    Interval = (long) values[5]
                 };
+
+                // Read the parent keys, if any.
+                const int parentKeysStartIndex = 6;
+                var valueCount = dataReader.FieldCount;
+                var firstNullIndex = parentKeysStartIndex;
+                for (; firstNullIndex < valueCount && !(values[firstNullIndex] is DBNull); ++firstNullIndex) { }
+                dbCacheItem.ParentKeys = new string[firstNullIndex - parentKeysStartIndex];
+                Array.Copy(values, parentKeysStartIndex, dbCacheItem.ParentKeys, 0, dbCacheItem.ParentKeys.Length);
+
+                yield return dbCacheItem;
             }
         }
 
@@ -1038,11 +1056,20 @@ namespace PommaLabs.KVLite.Core
 
             return columns.Contains("partition")
                 && columns.Contains("key")
+                && columns.Contains("serializedValue")
                 && columns.Contains("utcCreation")
                 && columns.Contains("utcExpiry")
                 && columns.Contains("interval")
-                && columns.Contains("tags")
-                && columns.Contains("serializedValue");
+                && columns.Contains("parentKey0")
+                && columns.Contains("parentKey1")
+                && columns.Contains("parentKey2")
+                && columns.Contains("parentKey3")
+                && columns.Contains("parentKey4")
+                && columns.Contains("parentKey5")
+                && columns.Contains("parentKey6")
+                && columns.Contains("parentKey7")
+                && columns.Contains("parentKey8")
+                && columns.Contains("parentKey9");
         }
 
         #endregion Private Methods
@@ -1056,20 +1083,20 @@ namespace PommaLabs.KVLite.Core
         sealed class DbCacheItem : EquatableObject<DbCacheItem>
         {
             #region Public Properties
-            
-            public string Partition { get; set; }
-            
-            public string Key { get; set; }
-            
-            public long UtcCreation { get; set; }
-            
-            public long UtcExpiry { get; set; }
-            
-            public long Interval { get; set; }
 
-            public string Tags { get; set; }
+            public string Partition { get; set; }
+
+            public string Key { get; set; }
 
             public byte[] SerializedValue { get; set; }
+
+            public long UtcCreation { get; set; }
+
+            public long UtcExpiry { get; set; }
+
+            public long Interval { get; set; }
+
+            public string[] ParentKeys { get; set; }
 
             #endregion Public Properties
 
