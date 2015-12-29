@@ -12,7 +12,12 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
 This package contains the core references for KVLite.
         </description>
         <releaseNotes>
-* Nancy caching bootstrapper has been put in a separate assembly.
+* Updated lots of dependencies.
+* Added new methods to ICache, like GetOrAdd*.
+* Now each Clear* method returns the number of items cleared.
+* Every Add* method now accepts parent keys, that is, an entry may depend on other ones.
+* Improved error handling.
+* Added a query cache provider for Entity Framework.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
@@ -25,11 +30,11 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <dependency id="Common.Logging" version="[3.3.1, 4.0.0)" />
-            <dependency id="Finsa.CodeServices.Clock" version="[3.0.11, 4.0.0)" />
-            <dependency id="Finsa.CodeServices.Common" version="[3.0.11, 4.0.0)" />
-            <dependency id="Finsa.CodeServices.Compression" version="[3.0.11, 4.0.0)" />
-            <dependency id="Finsa.CodeServices.Serialization" version="[3.0.11, 4.0.0)" />
-            <dependency id="Newtonsoft.Json" version="[7.0.1, 8.0.0)" />
+            <dependency id="Finsa.CodeServices.Clock" version="[4.0.1, 5.0.0)" />
+            <dependency id="Finsa.CodeServices.Common" version="[4.0.1, 5.0.0)" />
+            <dependency id="Finsa.CodeServices.Compression" version="[4.0.1, 5.0.0)" />
+            <dependency id="Finsa.CodeServices.Serialization" version="[4.0.1, 5.0.0)" />
+            <dependency id="Newtonsoft.Json" version="[8.0.1, 10.0.0)" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
