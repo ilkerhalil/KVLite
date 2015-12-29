@@ -22,9 +22,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using EntityFramework.Caching;
+using Finsa.CodeServices.Common;
 using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.EntityFramework
@@ -83,7 +85,13 @@ namespace PommaLabs.KVLite.EntityFramework
         /// </returns>
         public bool Add(CacheKey cacheKey, object value, CachePolicy cachePolicy)
         {
-            throw new NotImplementedException();
+            if (Cache.Contains(EfCachePartition, cacheKey.Key))
+            {
+                // Cache already contains an entry for given key.
+                return false;
+            }
+            // Cache does not contain given key, then we should add it.
+            return Set(cacheKey, value, cachePolicy);
         }
 
         /// <summary>
@@ -99,7 +107,8 @@ namespace PommaLabs.KVLite.EntityFramework
         /// <returns>The number of items expired.</returns>
         public int Expire(CacheTag cacheTag)
         {
-            throw new NotImplementedException();
+            Cache.Remove(EfCachePartition, cacheTag.ToString());
+            return 0; // KVLite does not expose that information.
         }
 
         /// <summary>
@@ -109,10 +118,7 @@ namespace PommaLabs.KVLite.EntityFramework
         /// <returns>
         ///   The cache value for the specified key, if the entry exists; otherwise, <see langword="null"/>.
         /// </returns>
-        public object Get(CacheKey cacheKey)
-        {
-            throw new NotImplementedException();
-        }
+        public object Get(CacheKey cacheKey) => Cache.Get<object>(EfCachePartition, cacheKey.Key).ValueOrDefault();
 
         /// <summary>
         ///   Gets the cache value for the specified key that is already in the dictionary or the
@@ -133,7 +139,33 @@ namespace PommaLabs.KVLite.EntityFramework
         /// </returns>
         public object GetOrAdd(CacheKey cacheKey, Func<CacheKey, object> valueFactory, CachePolicy cachePolicy)
         {
-            throw new NotImplementedException();
+            // We need to add the tags to the cache, so that we can use them as parent keys.
+            var parentKeys = AddTagsToCache(cacheKey.Tags);
+
+            switch (cachePolicy.Mode)
+            {
+                case CacheExpirationMode.Absolute:
+                    // The cache item will expire on the AbsoluteExpiration DateTime.
+                    var utcExpiry = cachePolicy.AbsoluteExpiration.DateTime.ToUniversalTime();
+                    return Cache.GetOrAddTimed(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), utcExpiry, parentKeys);
+
+                case CacheExpirationMode.Duration:
+                    // The cache item will expire using the Duration property to calculate the
+                    // absolute expiration from DateTimeOffset.Now.
+                    return Cache.GetOrAddTimed(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), cachePolicy.Duration, parentKeys);
+
+                case CacheExpirationMode.None:
+                    // The cache item will not expire.
+                    return Cache.GetOrAddStatic(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), parentKeys);
+
+                case CacheExpirationMode.Sliding:
+                    // The cache item will expire using the SlidingExpiration property as the sliding expiration.
+                    return Cache.GetOrAddSliding(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), cachePolicy.SlidingExpiration, parentKeys);
+
+                default:
+                    // Should never execute line below...
+                    return valueFactory?.Invoke(cacheKey);
+            }
         }
 
         /// <summary>
@@ -155,7 +187,11 @@ namespace PommaLabs.KVLite.EntityFramework
         /// </returns>
         public Task<object> GetOrAddAsync(CacheKey cacheKey, Func<CacheKey, Task<object>> valueFactory, CachePolicy cachePolicy)
         {
-            throw new NotImplementedException();
+#if NET40
+            return TaskEx.FromResult(GetOrAdd(cacheKey, ck => valueFactory?.Invoke(ck).Result, cachePolicy));
+#else
+            return Task.FromResult(GetOrAdd(cacheKey, ck => valueFactory?.Invoke(ck).Result, cachePolicy));
+#endif
         }
 
         /// <summary>
@@ -167,7 +203,9 @@ namespace PommaLabs.KVLite.EntityFramework
         /// </returns>
         public object Remove(CacheKey cacheKey)
         {
-            throw new NotImplementedException();
+            var maybeValue = Cache.Get<object>(EfCachePartition, cacheKey.Key);
+            Cache.Remove(EfCachePartition, cacheKey.Key);
+            return maybeValue.ValueOrDefault();
         }
 
         /// <summary>
@@ -181,9 +219,64 @@ namespace PommaLabs.KVLite.EntityFramework
         /// </param>
         public bool Set(CacheKey cacheKey, object value, CachePolicy cachePolicy)
         {
-            throw new NotImplementedException();
+            // We need to add the tags to the cache, so that we can use them as parent keys.
+            var parentKeys = AddTagsToCache(cacheKey.Tags);
+
+            switch (cachePolicy.Mode)
+            {
+                case CacheExpirationMode.Absolute:
+                    // The cache item will expire on the AbsoluteExpiration DateTime.
+                    var utcExpiry = cachePolicy.AbsoluteExpiration.DateTime.ToUniversalTime();
+                    Cache.AddTimed(EfCachePartition, cacheKey.Key, value, utcExpiry, parentKeys);
+                    break;
+
+                case CacheExpirationMode.Duration:
+                    // The cache item will expire using the Duration property to calculate the
+                    // absolute expiration from DateTimeOffset.Now.
+                    Cache.AddTimed(EfCachePartition, cacheKey.Key, value, cachePolicy.Duration, parentKeys);
+                    break;
+
+                case CacheExpirationMode.None:
+                    // The cache item will not expire.
+                    Cache.AddStatic(EfCachePartition, cacheKey.Key, value, parentKeys);
+                    break;
+
+                case CacheExpirationMode.Sliding:
+                    // The cache item will expire using the SlidingExpiration property as the sliding expiration.
+                    Cache.AddSliding(EfCachePartition, cacheKey.Key, value, cachePolicy.SlidingExpiration, parentKeys);
+                    break;
+            }
+
+            // The entry has been added.
+            return true;
         }
 
-        #endregion ICacheProvider members
+#endregion ICacheProvider members
+
+#region Private methods
+
+        /// <summary>
+        ///   Adds the tags to the cache, so that they can be used as parent keys.
+        /// </summary>
+        /// <param name="tags">The tags to be added.</param>
+        /// <returns>The tags converted into a format accepted by KVLite.</returns>
+        private string[] AddTagsToCache(HashSet<CacheTag> tags)
+        {
+            var parentKeys = new string[tags?.Count ?? 0];
+            var index = 0;
+            foreach (var tag in tags)
+            {
+                var parentKey = tag.ToString();
+                parentKeys[index] = parentKey;
+
+                // Adds the tag as a static item, so that it will not be deleted in a reasonable amount of time.
+                Cache.AddStatic(EfCachePartition, parentKey, parentKey);
+
+                index++;
+            }
+            return parentKeys;
+        }
+
+#endregion
     }
 }

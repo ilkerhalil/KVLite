@@ -50,9 +50,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("4.5.3")]
 [assembly: AssemblyFileVersion("4.5.3")]
 
-// Common Language Specification (CLS) compliance generally refers to the claim that CLS rules and
-// restrictions are being followed.
-[assembly: CLSCompliant(true)]
-
 // To allow simpler unit testing.
 [assembly: InternalsVisibleTo("PommaLabs.KVLite.UnitTests")]
