@@ -10,6 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AbstractCacheController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ApiOutputCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OutputCacheProvider.cs" />
   </ItemGroup>
 </Project>

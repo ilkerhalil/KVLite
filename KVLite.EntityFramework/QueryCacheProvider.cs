@@ -34,7 +34,7 @@ namespace PommaLabs.KVLite.EntityFramework
     /// <summary>
     ///   KVLite-based query cache for Entity Framework.
     /// </summary>
-    public sealed class CacheProvider : ICacheProvider
+    public sealed class QueryCacheProvider : ICacheProvider
     {
         #region Constants
 
@@ -48,10 +48,10 @@ namespace PommaLabs.KVLite.EntityFramework
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="CacheProvider"/> class.
+        ///   Initializes a new instance of the <see cref="QueryCacheProvider"/> class.
         /// </summary>
         /// <param name="cache">The cache that will be used as entry container.</param>
-        public CacheProvider(ICache cache)
+        public QueryCacheProvider(ICache cache)
         {
             RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
             Cache = cache;
@@ -66,6 +66,16 @@ namespace PommaLabs.KVLite.EntityFramework
         /// </summary>
         /// <value>The underlying cache.</value>
         public ICache Cache { get; }
+
+        /// <summary>
+        ///   Registers this class as the default query cache provider.
+        /// </summary>
+        /// <param name="cache">The underlying cache.</param>
+        public static void Register(ICache cache)
+        {
+            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Locator.Instance.Register<ICacheProvider>(() => new QueryCacheProvider(cache));
+        }
 
         #endregion Public members
 

@@ -45,7 +45,7 @@ namespace PommaLabs.KVLite.WebApi
     /// <summary>
     ///   KVLite-based output cache for Wev API.
     /// </summary>
-    public sealed class ApiOutputCache : IApiOutputCache
+    public sealed class OutputCacheProvider : IApiOutputCache
     {
         #region Constants
 
@@ -59,10 +59,10 @@ namespace PommaLabs.KVLite.WebApi
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="ApiOutputCache"/> class.
+        ///   Initializes a new instance of the <see cref="OutputCacheProvider"/> class.
         /// </summary>
         /// <param name="cache">The cache that will be used as entry container.</param>
-        public ApiOutputCache(ICache cache)
+        public OutputCacheProvider(ICache cache)
         {
             RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
             Cache = cache;
@@ -83,9 +83,10 @@ namespace PommaLabs.KVLite.WebApi
         /// </summary>
         /// <param name="configuration">The Web API configuration instance.</param>
         /// <param name="cache">The underlying cache.</param>
-        public static void RegisterAsCacheOutputProvider(HttpConfiguration configuration, ICache cache = null)
+        public static void Register(HttpConfiguration configuration, ICache cache)
         {
-            configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new ApiOutputCache(cache));
+            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new OutputCacheProvider(cache));
         }
 
         #endregion Public members

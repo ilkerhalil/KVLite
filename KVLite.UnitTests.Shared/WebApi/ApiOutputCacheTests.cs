@@ -30,12 +30,12 @@ namespace PommaLabs.KVLite.UnitTests.WebApi
     [TestFixture]
     sealed class ApiOutputCacheTests
     {
-        ApiOutputCache _outputCache;
+        OutputCacheProvider _outputCache;
 
         [SetUp]
         public void SetUp()
         {
-            _outputCache = new ApiOutputCache(new PersistentCache(new PersistentCacheSettings(), new MockClock()));
+            _outputCache = new OutputCacheProvider(new PersistentCache(new PersistentCacheSettings(), new MockClock()));
         }
 
         [TearDown]
