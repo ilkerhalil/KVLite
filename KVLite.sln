@@ -116,6 +116,7 @@ Global
 		KVLite.Shared\KVLite.Shared.projitems*{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}*SharedItemsImports = 4
 		KVLite.WebApi\KVLite.WebApi.projitems*{23b87a0b-df68-432b-b75c-4d73aecfa6e3}*SharedItemsImports = 4
 		KVLite.WebApi\KVLite.WebApi.projitems*{cc96ea69-dcc3-4d9e-bb6a-aced0c479ef3}*SharedItemsImports = 4
+		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{0aa94325-2bfb-449a-a6a6-c10e9c0fa65b}*SharedItemsImports = 4
 		KVLite.Shared\KVLite.Shared.projitems*{b81fca47-a533-4ffb-b202-f6e07668eb66}*SharedItemsImports = 4
 		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{bc14baf7-bbb6-4fbc-b472-0517ac48881c}*SharedItemsImports = 4
 		KVLite.UnitTests.Shared\KVLite.UnitTests.Shared.projitems*{1a86a31d-04ec-4c7e-9489-17ed514d48f5}*SharedItemsImports = 4
@@ -126,6 +127,7 @@ Global
 		KVLite.UnitTests.Shared\KVLite.UnitTests.Shared.projitems*{bbe6492a-198e-499e-add5-e8c904ec8182}*SharedItemsImports = 4
 		KVLite.Shared\KVLite.Shared.projitems*{3768ff1c-ade5-4c9d-9c00-cacb0ce40809}*SharedItemsImports = 4
 		KVLite.UnitTests.Shared\KVLite.UnitTests.Shared.projitems*{50e7c4c0-0723-41aa-bd2d-0b31ca2cc67d}*SharedItemsImports = 13
+		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{d3f95e04-5400-46b2-af46-d8809fb8bcb0}*SharedItemsImports = 4
 		KVLite.Nancy\KVLite.Nancy.projitems*{442146be-4713-4d3f-be9d-635fd50d70bb}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
