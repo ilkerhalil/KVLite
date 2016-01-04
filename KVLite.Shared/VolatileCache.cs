@@ -23,21 +23,20 @@
 
 using Common.Logging;
 using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
-using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
-using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.Portability;
 
 namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   An SQLite-based in-memory cache.
     /// </summary>
+    /// <remarks>SQLite-based caches do not allow more than ten parent keys per item.</remarks>
     public sealed class VolatileCache : AbstractSQLiteCache<VolatileCacheSettings>
     {
         #region Default Instance

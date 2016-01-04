@@ -23,6 +23,8 @@
 
 using Common.Logging;
 using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Common.Portability;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
@@ -30,15 +32,13 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using System.IO;
-using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.Portability;
-using System;
 
 namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   An SQLite-based persistent cache.
     /// </summary>
+    /// <remarks>SQLite-based caches do not allow more than ten parent keys per item.</remarks>
     public sealed class PersistentCache : AbstractSQLiteCache<PersistentCacheSettings>
     {
         #region Default Instance

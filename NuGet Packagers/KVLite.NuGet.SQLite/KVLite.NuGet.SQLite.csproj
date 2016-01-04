@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0451BAEF-DF2E-4B98-8644-94EE9415E389}</ProjectGuid>
+    <ProjectGuid>{2E320959-D538-4F38-8ACB-57382803C2A3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NuGetPackager</RootNamespace>
-    <AssemblyName>NuGetPackager</AssemblyName>
+    <RootNamespace>KVLite.NuGet.SQLite</RootNamespace>
+    <AssemblyName>KVLite.NuGet.SQLite</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -37,12 +37,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputPath>bin\Debug\</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputPath>bin\Release\</OutputPath>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -51,17 +49,28 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="content\KVLite.config" />
     <None Include="NuGetPackage.ps1" />
     <None Include="NuGetSetup.ps1" />
     <None Include="NuGet.exe" />
     <None Include="NuGet.config" />
-    <None Include="Package.nuspec">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Package.nuspec" />
+    <None Include="tools\net40\install.ps1" />
+    <None Include="tools\net451\install.ps1" />
+    <None Include="tools\net45\install.ps1" />
+    <None Include="tools\net46\install.ps1" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="content\net46\KVLite\x64\" />
+    <Folder Include="content\net46\KVLite\x86\" />
     <Folder Include="lib\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="content\net40\KVLite\x64\SQLite.Interop.dll" />
+    <Content Include="content\net40\KVLite\x86\SQLite.Interop.dll" />
+    <Content Include="content\net451\x64\SQLite.Interop.dll" />
+    <Content Include="content\net451\x86\SQLite.Interop.dll" />
+    <Content Include="content\net45\KVLite\x64\SQLite.Interop.dll" />
+    <Content Include="content\net45\KVLite\x86\SQLite.Interop.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

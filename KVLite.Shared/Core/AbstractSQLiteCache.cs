@@ -166,7 +166,6 @@ namespace PommaLabs.KVLite.Core
                     TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects,
                     TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
                 };
-                serializerSettings.Converters.Add(new OptionConverter());
                 _serializer = new JsonSerializer(serializerSettings);
             }
 
