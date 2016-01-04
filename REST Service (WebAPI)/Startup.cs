@@ -38,7 +38,7 @@ namespace RestService.WebApi
             });
 
             // Enables KVLite based output caching.
-            ApiOutputCache.RegisterAsCacheOutputProvider(config, CreateKernel().Get<ICache>());
+            OutputCacheProvider.Register(config, CreateKernel().Get<ICache>());
 
             // Add WebApi to the pipeline.
             app.UseWebApi(config);

@@ -138,6 +138,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\KVLite.EntityFramework.NET46\KVLite.EntityFramework.NET46.csproj">
+      <Project>{bc14baf7-bbb6-4fbc-b472-0517ac48881c}</Project>
+      <Name>KVLite.EntityFramework.NET46</Name>
+    </ProjectReference>
     <ProjectReference Include="..\KVLite.Nancy.NET46\KVLite.Nancy.NET46.csproj">
       <Project>{6f8516a0-5e50-44b2-aa8f-a3ab285f513e}</Project>
       <Name>KVLite.Nancy.NET46</Name>

@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using EntityFramework;
 using EntityFramework.Caching;
 using Finsa.CodeServices.Common;
 using PommaLabs.KVLite.Core;
@@ -74,7 +75,7 @@ namespace PommaLabs.KVLite.EntityFramework
         public static void Register(ICache cache)
         {
             RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
-            Locator.Instance.Register<ICacheProvider>(() => new QueryCacheProvider(cache));
+            Locator.Current.Register<ICacheProvider>(() => new QueryCacheProvider(cache));
         }
 
         #endregion Public members

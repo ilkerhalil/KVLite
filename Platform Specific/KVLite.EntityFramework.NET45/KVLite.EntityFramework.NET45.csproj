@@ -73,6 +73,12 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KVLite.NET45\KVLite.NET45.csproj">
+      <Project>{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}</Project>
+      <Name>KVLite.NET45</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\..\KVLite.EntityFramework\KVLite.EntityFramework.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

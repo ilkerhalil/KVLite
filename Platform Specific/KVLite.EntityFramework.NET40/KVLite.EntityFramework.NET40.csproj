@@ -99,6 +99,12 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KVLite.NET40\KVLite.NET40.csproj">
+      <Project>{b81fca47-a533-4ffb-b202-f6e07668eb66}</Project>
+      <Name>KVLite.NET40</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\..\KVLite.EntityFramework\KVLite.EntityFramework.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
