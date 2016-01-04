@@ -46,6 +46,7 @@ namespace PommaLabs.KVLite.Core
         public const string NullOrEmptyCacheName = @"Cache name cannot be null or empty.";
         public const string NullOrEmptyCacheFile = @"Cache file cannot be null or empty.";
         public const string NullCache = @"Cache cannot be null, please specify one valid cache or use either PersistentCache or VolatileCache default instances.";
+        public const string NullCacheResolver = @"Cache resolver function cannot be null, please specify one non-null function.";
         public const string NullKey = @"Key cannot be null, please specify one non-null string.";
         public const string NullPartition = @"Partition cannot be null, please specify one non-null string.";
         public const string NullSettings = @"Settings cannot be null, please specify valid settings or use the default instance.";

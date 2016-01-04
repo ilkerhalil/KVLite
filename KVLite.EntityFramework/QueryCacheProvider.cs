@@ -78,6 +78,16 @@ namespace PommaLabs.KVLite.EntityFramework
             Locator.Current.Register<ICacheProvider>(() => new QueryCacheProvider(cache));
         }
 
+        /// <summary>
+        ///   Registers this class as the default query cache provider.
+        /// </summary>
+        /// <param name="cacheResolver">The resolver used to get the underlying cache.</param>
+        public static void Register(Func<ICache> cacheResolver)
+        {
+            RaiseArgumentNullException.IfIsNull(cacheResolver, nameof(cacheResolver), ErrorMessages.NullCacheResolver);
+            Locator.Current.Register<ICacheProvider>(() => new QueryCacheProvider(cacheResolver?.Invoke()));
+        }
+
         #endregion Public members
 
         #region ICacheProvider members

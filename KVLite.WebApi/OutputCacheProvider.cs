@@ -89,6 +89,17 @@ namespace PommaLabs.KVLite.WebApi
             configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new OutputCacheProvider(cache));
         }
 
+        /// <summary>
+        ///   Registers this class as the default API output cache provider.
+        /// </summary>
+        /// <param name="configuration">The Web API configuration instance.</param>
+        /// <param name="cacheResolver">The resolver used to get the underlying cache.</param>
+        public static void Register(HttpConfiguration configuration, Func<ICache> cacheResolver)
+        {
+            RaiseArgumentNullException.IfIsNull(cacheResolver, nameof(cacheResolver), ErrorMessages.NullCacheResolver);
+            configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new OutputCacheProvider(cacheResolver?.Invoke()));
+        }
+
         #endregion Public members
 
         #region IApiOutputCache Members
