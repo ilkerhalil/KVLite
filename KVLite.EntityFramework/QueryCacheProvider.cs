@@ -42,7 +42,7 @@ namespace PommaLabs.KVLite.EntityFramework
         /// <summary>
         ///   The partition used by EF cache provider items.
         /// </summary>
-        const string EfCachePartition = "KVLite.EntityFramework.CacheProvider";
+        const string EfCachePartition = "KVLite.EntityFramework.QueryCacheProvider";
 
         #endregion Constants
 
@@ -274,7 +274,7 @@ namespace PommaLabs.KVLite.EntityFramework
 
 #endregion ICacheProvider members
 
-#region Private methods
+        #region Private methods
 
         /// <summary>
         ///   Adds the tags to the cache, so that they can be used as parent keys.
@@ -298,6 +298,6 @@ namespace PommaLabs.KVLite.EntityFramework
             return parentKeys;
         }
 
-#endregion
+        #endregion
     }
 }
