@@ -163,7 +163,7 @@ namespace PommaLabs.KVLite.Core
                     NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
                     PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
                     ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-                    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects,
+                    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
                     TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
                 };
                 _serializer = new JsonSerializer(serializerSettings);
@@ -800,6 +800,7 @@ namespace PommaLabs.KVLite.Core
                 using (var reader = cmd.ExecuteReader())
                 {
                     return MapDataReader(reader)
+                        .ToArray()
                         .Select(DeserializeCacheItem<TVal>)
                         .Where(i => i.HasValue)
                         .Select(i => i.Value)
@@ -893,6 +894,7 @@ namespace PommaLabs.KVLite.Core
                 using (var reader = cmd.ExecuteReader())
                 {
                     return MapDataReader(reader)
+                        .ToArray()
                         .Select(DeserializeCacheItem<TVal>)
                         .Where(i => i.HasValue)
                         .Select(i => i.Value)

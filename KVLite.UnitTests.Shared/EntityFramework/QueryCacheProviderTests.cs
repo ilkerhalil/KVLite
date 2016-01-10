@@ -27,12 +27,17 @@ using PommaLabs.KVLite.EntityFramework;
 using System.Data.Common;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.UnitTests.EntityFramework
 {
     [TestFixture]
     public sealed class QueryCacheProviderTests
     {
+        const string Pino = "PINO";
+        const string Gino = "GINO";
+        const string Nino = "NINO";
+
         DbConnection _dbConnection;
         TestDbContext _dbContext;
 
@@ -57,9 +62,9 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
 
                 ctx.TestEntities1.AddRange(new[]
                 {
-                    new TestEntity1 { Id = 1, Name = "PINO" },
-                    new TestEntity1 { Id = 2, Name = "GINO" },
-                    new TestEntity1 { Id = 3, Name = "NINO" },
+                    new TestEntity1 { Id = 1, Name = Pino },
+                    new TestEntity1 { Id = 2, Name = Gino },
+                    new TestEntity1 { Id = 3, Name = Nino }
                 });
                 ctx.SaveChanges();
             }                
@@ -83,19 +88,97 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                 Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.False);
                 Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.False);
 
-                var pino = _dbContext.TestEntities1.Where(te => te.Name == "PINO").FromCacheFirstOrDefault();
+                var pino = _dbContext.TestEntities1.Where(te => te.Name == Pino).FromCacheFirstOrDefault();
                 Assert.That(pino, Is.Not.Null);
+                Assert.That(pino.Name, Is.EqualTo(Pino));
 
                 using (var anotherContext = new TestDbContext(_dbConnection))
                 using (anotherContext.AsCaching()) 
                 {
-                    pino = anotherContext.TestEntities1.Where(te => te.Name == "PINO").FromCacheFirstOrDefault();
+                    pino = anotherContext.TestEntities1.Where(te => te.Name == Pino).FromCacheFirstOrDefault();
                     Assert.That(pino, Is.Not.Null);
+                    Assert.That(pino.Name, Is.EqualTo(Pino));
                 }                    
             }
             Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.True);
             Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.True);
         }
+
+        [Test]
+        public void FromCacheFirstOrDefault_ItemIsAvailable_TwoQueries()
+        {
+            using (_dbContext.AsCaching())
+            {
+                Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.False);
+                Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.False);
+
+                var pino = _dbContext.TestEntities1.Where(te => te.Name == Pino).FromCacheFirstOrDefault();
+                Assert.That(pino, Is.Not.Null);
+                Assert.That(pino.Name, Is.EqualTo(Pino));
+
+                using (var anotherContext = new TestDbContext(_dbConnection))
+                using (anotherContext.AsCaching())
+                {
+                    var gino = anotherContext.TestEntities1.Where(te => te.Name == Gino).FromCacheFirstOrDefault();
+                    Assert.That(gino, Is.Not.Null);
+                    Assert.That(gino.Name, Is.EqualTo(Gino));
+                }
+            }
+            Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.True);
+            Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.True);
+        }
+
+#if !NET40
+
+        [Test]
+        public async Task FromCacheFirstOrDefault_ItemIsAvailable_Async()
+        {
+            using (_dbContext.AsCaching())
+            {
+                Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.False);
+                Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.False);
+
+                var pino = await _dbContext.TestEntities1.Where(te => te.Name == Pino).FromCacheFirstOrDefaultAsync();
+                Assert.That(pino, Is.Not.Null);
+                Assert.That(pino.Name, Is.EqualTo(Pino));
+
+                using (var anotherContext = new TestDbContext(_dbConnection))
+                using (anotherContext.AsCaching())
+                {
+                    pino = await anotherContext.TestEntities1.Where(te => te.Name == Pino).FromCacheFirstOrDefaultAsync();
+                    Assert.That(pino, Is.Not.Null);
+                    Assert.That(pino.Name, Is.EqualTo(Pino));
+                }
+            }
+            Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.True);
+            Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.True);
+        }
+
+        [Test]
+        public async Task FromCacheFirstOrDefault_ItemIsAvailable_TwoQueries_Async()
+        {
+            using (_dbContext.AsCaching())
+            {
+                Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.False);
+                Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.False);
+
+                var pino = await _dbContext.TestEntities1.Where(te => te.Name == Pino).FromCacheFirstOrDefaultAsync();
+                Assert.That(pino, Is.Not.Null);
+                Assert.That(pino.Name, Is.EqualTo(Pino));
+
+                using (var anotherContext = new TestDbContext(_dbConnection))
+                using (anotherContext.AsCaching())
+                {
+                    var gino = await anotherContext.TestEntities1.Where(te => te.Name == Gino).FromCacheFirstOrDefaultAsync();
+                    Assert.That(gino, Is.Not.Null);
+                    Assert.That(gino.Name, Is.EqualTo(Gino));
+                }
+            }
+            Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.True);
+            Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.True);
+        }
+
+#endif
 
         public sealed class TestDbContext : DbContext
         {
