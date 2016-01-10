@@ -188,7 +188,7 @@ namespace PommaLabs.KVLite.Core
         public static readonly string SetPragmas = MinifyQuery(@"
             PRAGMA foreign_keys = ON;
             PRAGMA cache_spill = 1;
-            PRAGMA count_changes = 0; -- Not required by our queries
+            PRAGMA count_changes = 1; -- Required by INSERT/UPDATE
             PRAGMA journal_size_limit = {0}; -- Size in bytes
             PRAGMA wal_autocheckpoint = {1};
             PRAGMA temp_store = MEMORY;
