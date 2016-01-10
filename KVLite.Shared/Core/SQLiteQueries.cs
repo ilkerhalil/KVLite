@@ -100,12 +100,20 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string Add = MinifyQuery(@"
-            insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval, 
-                                              parentKey0, parentKey1, parentKey2, parentKey3, parentKey4, 
-                                              parentKey5, parentKey6, parentKey7, parentKey8, parentKey9)
+            insert or ignore into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval, 
+                                             parentKey0, parentKey1, parentKey2, parentKey3, parentKey4, 
+                                             parentKey5, parentKey6, parentKey7, parentKey8, parentKey9)
             values (@partition, @key, @serializedValue, @utcNow, @utcExpiry, @interval, 
                     @parentKey0, @parentKey1, @parentKey2, @parentKey3, @parentKey4, 
                     @parentKey5, @parentKey6, @parentKey7, @parentKey8, @parentKey9);
+
+            update CacheItem
+               set serializedValue = @serializedValue, utcCreation = @utcNow, utcExpiry = @utcExpiry, interval = @interval,
+                   parentKey0 = @parentKey0, parentKey1 = @parentKey1, parentKey2 = @parentKey2, parentKey3 = @parentKey3,
+                   parentKey4 = @parentKey4, parentKey5 = @parentKey5, parentKey6 = @parentKey6, parentKey7 = @parentKey7,
+                   parentKey8 = @parentKey8, parentKey9 = @parentKey9
+             where changes() = 0 -- Above INSERT has failed
+               and partition = @partition and key = @key
 
             insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
             values ('KVLite.CacheVariables', 'insertion_count', 
