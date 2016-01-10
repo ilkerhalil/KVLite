@@ -27,7 +27,6 @@ using PommaLabs.KVLite.EntityFramework;
 using System.Data.Common;
 using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.UnitTests.EntityFramework
 {
@@ -50,6 +49,8 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
         [SetUp]
         public void SetUp()
         {
+            VolatileCache.DefaultInstance.Clear();
+
             _dbConnection = Effort.DbConnectionFactory.CreateTransient();
             _dbConnection.Open();
             _dbContext = new TestDbContext(_dbConnection);
@@ -78,6 +79,96 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
 
             _dbConnection?.Dispose();
             _dbConnection = null;
+
+            VolatileCache.DefaultInstance.Clear();
+        }
+
+        [Test]
+        public void FromCache_ItemsAreAvaialable_DifferentQueries()
+        {
+            using (_dbContext.AsCaching())
+            {
+                var inis = _dbContext.TestEntities1.FromCache();
+                Assert.That(inis, Is.Not.Null);
+                Assert.That(inis.Count(), Is.EqualTo(3));
+                Assert.That(inis.Count(i => i.Name == Pino), Is.EqualTo(1));
+                Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(1));
+                Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
+
+                Assert.That(VolatileCache.DefaultInstance.GetItems<object>().Length, Is.EqualTo(1));
+
+                using (var anotherContext = new TestDbContext(_dbConnection))
+                using (anotherContext.AsCaching())
+                {
+                    inis = _dbContext.TestEntities1.Where(te => te.Name == Pino || te.Name == Nino).FromCache();
+                    Assert.That(inis, Is.Not.Null);
+                    Assert.That(inis.Count(), Is.EqualTo(2));
+                    Assert.That(inis.Count(i => i.Name == Pino), Is.EqualTo(1));
+                    Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(0));
+                    Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
+
+                    Assert.That(VolatileCache.DefaultInstance.GetItems<object>().Length, Is.EqualTo(2));
+                }
+            }
+        }
+
+        [Test]
+        public void FromCache_ItemsAreAvaialable_DifferentQueries_WithTags()
+        {
+            using (_dbContext.AsCaching())
+            {
+                var inis = _dbContext.TestEntities1.FromCache(tags: new[] { Pino, Gino, Nino });
+                Assert.That(inis, Is.Not.Null);
+                Assert.That(inis.Count(), Is.EqualTo(3));
+                Assert.That(inis.Count(i => i.Name == Pino), Is.EqualTo(1));
+                Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(1));
+                Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
+
+                Assert.That(VolatileCache.DefaultInstance.GetItems<object>().Length, Is.EqualTo(4));
+
+                using (var anotherContext = new TestDbContext(_dbConnection))
+                using (anotherContext.AsCaching())
+                {
+                    inis = _dbContext.TestEntities1.Where(te => te.Name == Pino || te.Name == Nino).FromCache(tags: new[] { Pino, Nino });
+                    Assert.That(inis, Is.Not.Null);
+                    Assert.That(inis.Count(), Is.EqualTo(2));
+                    Assert.That(inis.Count(i => i.Name == Pino), Is.EqualTo(1));
+                    Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(0));
+                    Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
+
+                    Assert.That(VolatileCache.DefaultInstance.GetItems<object>().Length, Is.EqualTo(5));
+                }
+            }
+        }
+
+        [Test]
+        public void FromCache_ItemsAreAvaialable()
+        {
+            using (_dbContext.AsCaching())
+            {
+                Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.False);
+                Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.False);
+
+                var inis = _dbContext.TestEntities1.FromCache();
+                Assert.That(inis, Is.Not.Null);
+                Assert.That(inis.Count(), Is.EqualTo(3));
+                Assert.That(inis.Count(i => i.Name == Pino), Is.EqualTo(1));
+                Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(1));
+                Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
+
+                using (var anotherContext = new TestDbContext(_dbConnection))
+                using (anotherContext.AsCaching())
+                {
+                    inis = _dbContext.TestEntities1.FromCache();
+                    Assert.That(inis, Is.Not.Null);
+                    Assert.That(inis.Count(), Is.EqualTo(3));
+                    Assert.That(inis.Count(i => i.Name == Pino), Is.EqualTo(1));
+                    Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(1));
+                    Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
+                }
+            }
+            Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.True);
+            Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.True);
         }
 
         [Test]
@@ -131,7 +222,37 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
 #if !NET40
 
         [Test]
-        public async Task FromCacheFirstOrDefault_ItemIsAvailable_Async()
+        public async System.Threading.Tasks.Task FromCache_ItemsAreAvaialable_Async()
+        {
+            using (_dbContext.AsCaching())
+            {
+                Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.False);
+                Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.False);
+
+                var inis = await _dbContext.TestEntities1.FromCacheAsync();
+                Assert.That(inis, Is.Not.Null);
+                Assert.That(inis.Count(), Is.EqualTo(3));
+                Assert.That(inis.Count(i => i.Name == Pino), Is.EqualTo(1));
+                Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(1));
+                Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
+
+                using (var anotherContext = new TestDbContext(_dbConnection))
+                using (anotherContext.AsCaching())
+                {
+                    inis = await _dbContext.TestEntities1.FromCacheAsync();
+                    Assert.That(inis, Is.Not.Null);
+                    Assert.That(inis.Count(), Is.EqualTo(3));
+                    Assert.That(inis.Count(i => i.Name == Pino), Is.EqualTo(1));
+                    Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(1));
+                    Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
+                }
+            }
+            Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.True);
+            Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.True);
+        }
+
+        [Test]
+        public async System.Threading.Tasks.Task FromCacheFirstOrDefault_ItemIsAvailable_Async()
         {
             using (_dbContext.AsCaching())
             {
@@ -155,7 +276,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
         }
 
         [Test]
-        public async Task FromCacheFirstOrDefault_ItemIsAvailable_TwoQueries_Async()
+        public async System.Threading.Tasks.Task FromCacheFirstOrDefault_ItemIsAvailable_TwoQueries_Async()
         {
             using (_dbContext.AsCaching())
             {
@@ -179,6 +300,28 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
         }
 
 #endif
+
+        [Test]
+        public void FromCacheFirstOrDefault_ItemIsNotAvailable()
+        {
+            using (_dbContext.AsCaching())
+            {
+                Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.False);
+                Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.False);
+
+                var pinoGino = _dbContext.TestEntities1.Where(te => te.Name == Pino + Gino).FromCacheFirstOrDefault();
+                Assert.That(pinoGino, Is.Null);
+
+                using (var anotherContext = new TestDbContext(_dbConnection))
+                using (anotherContext.AsCaching())
+                {
+                    pinoGino = _dbContext.TestEntities1.Where(te => te.Name == Pino + Gino).FromCacheFirstOrDefault();
+                    Assert.That(pinoGino, Is.Null);
+                }
+            }
+            Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.True);
+            Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.True);
+        }
 
         public sealed class TestDbContext : DbContext
         {
