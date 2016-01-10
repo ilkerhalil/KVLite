@@ -1,4 +1,4 @@
-﻿// File name: ApiOutputCache.cs
+﻿// File name: OutputCacheProvider.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 

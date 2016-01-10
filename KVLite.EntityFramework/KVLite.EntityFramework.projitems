@@ -9,6 +9,7 @@
     <Import_RootNamespace>PommaLabs.KVLite.EntityFramework</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)QueryCacheExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QueryCacheProvider.cs" />
   </ItemGroup>
 </Project>
