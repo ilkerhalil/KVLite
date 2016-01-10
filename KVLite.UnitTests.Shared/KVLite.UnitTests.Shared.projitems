@@ -10,13 +10,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AbstractCacheTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntityFramework\QueryCacheProviderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryCacheTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NinjectConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PersistentCacheTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RandomDataTableGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebApi\AbstractCacheControllerTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)WebApi\ApiOutputCacheTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebApi\OutputCacheProviderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\Web\MemoryOutputCacheProviderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\Web\PersistentOutputCacheProviderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\Web\VolatileOutputCacheProviderTests.cs" />
