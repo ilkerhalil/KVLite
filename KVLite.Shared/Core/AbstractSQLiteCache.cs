@@ -663,6 +663,12 @@ namespace PommaLabs.KVLite.Core
                     new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
                 });
                 var removedItemCount = cmd.ExecuteNonQuery();
+
+                // Now we should perform a quick incremental vacuum.
+                cmd.CommandText = SQLiteQueries.IncrementalVacuum;
+                cmd.Parameters.Clear();
+                cmd.ExecuteNonQuery();
+
                 if (removedItemCount > 0 && partition == null)
                 {
                     // If we are performing a full cache cleanup, then we also remove the items

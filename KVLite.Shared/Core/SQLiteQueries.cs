@@ -136,8 +136,6 @@ namespace PommaLabs.KVLite.Core
                and ((@partition is null and partition = {CacheVariablesPartition}) -- Clear cache variables
                     or @ignoreExpiryDate = 1 or utcExpiry <= @utcNow); -- Clear only invalid rows
 
-            PRAGMA incremental_vacuum; -- Clears free list and makes DB file smaller
-
             select changes()
         ");
 
@@ -199,6 +197,10 @@ namespace PommaLabs.KVLite.Core
 
         public static readonly string Vacuum = MinifyQuery(@"
             vacuum; -- Clears free list and makes DB file smaller
+        ");
+
+        public static readonly string IncrementalVacuum = MinifyQuery(@"
+            PRAGMA incremental_vacuum; -- Clears free list and makes DB file smaller
         ");
 
         #endregion Public Queries
