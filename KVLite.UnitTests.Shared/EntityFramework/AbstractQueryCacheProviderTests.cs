@@ -1,4 +1,4 @@
-﻿// File name: QueryCacheProviderTests.cs
+﻿// File name: AbstractQueryCacheProviderTests.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using EntityFramework.Caching;
 using EntityFramework.Extensions;
 using NUnit.Framework;
 using PommaLabs.KVLite.EntityFramework;
@@ -31,7 +32,7 @@ using System.Linq;
 namespace PommaLabs.KVLite.UnitTests.EntityFramework
 {
     [TestFixture]
-    public sealed class QueryCacheProviderTests
+    abstract class AbstractQueryCacheProviderTests
     {
         const string Pino = "PINO";
         const string Gino = "GINO";
@@ -40,16 +41,20 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
         DbConnection _dbConnection;
         TestDbContext _dbContext;
 
-        static QueryCacheProviderTests()
+        static AbstractQueryCacheProviderTests()
         {
             Effort.Provider.EffortProviderConfiguration.RegisterProvider();
-            QueryCacheProvider.Register(VolatileCache.DefaultInstance);
         }
 
+        #region Setup/Teardown
+
+        protected ICache Cache;
+
         [SetUp]
-        public void SetUp()
+        public virtual void SetUp()
         {
-            VolatileCache.DefaultInstance.Clear();
+            Cache.Clear();
+            QueryCacheProvider.Register(Cache);
 
             _dbConnection = Effort.DbConnectionFactory.CreateTransient();
             _dbConnection.Open();
@@ -68,19 +73,54 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                     new TestEntity1 { Id = 3, Name = Nino }
                 });
                 ctx.SaveChanges();
-            }                
+            }
         }
 
         [TearDown]
-        public void TearDown()
+        public virtual void TearDown()
         {
-            _dbContext?.Dispose();
-            _dbContext = null;
+            try
+            {
+                _dbContext?.Dispose();
+                _dbContext = null;
 
-            _dbConnection?.Dispose();
-            _dbConnection = null;
+                _dbConnection?.Dispose();
+                _dbConnection = null;
 
-            VolatileCache.DefaultInstance.Clear();
+                Cache?.Clear();
+            }
+#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
+#pragma warning disable CC0004 // Catch block cannot be empty
+            catch
+            {
+            }
+#pragma warning restore CC0004 // Catch block cannot be empty
+#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+            finally
+            {
+                Cache = null;
+            }
+        }
+
+        #endregion Setup/Teardown
+
+        [Test]
+        public void FromCache_ItemsAreAvaialable_OneQueryWithTags_ExpireOneTag()
+        {
+            using (_dbContext.AsCaching())
+            {
+                var inis = _dbContext.TestEntities1.FromCache(tags: new[] { Pino, Gino, Nino });
+                Assert.That(inis, Is.Not.Null);
+                Assert.That(inis.Count(), Is.EqualTo(3));
+                Assert.That(inis.Count(i => i.Name == Pino), Is.EqualTo(1));
+                Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(1));
+                Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
+
+                Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(4));
+
+                CacheManager.Current.Expire(Pino);
+                Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(2));
+            }
         }
 
         [Test]
@@ -95,7 +135,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                 Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(1));
                 Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
 
-                Assert.That(VolatileCache.DefaultInstance.GetItems<object>().Length, Is.EqualTo(1));
+                Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(1));
 
                 using (var anotherContext = new TestDbContext(_dbConnection))
                 using (anotherContext.AsCaching())
@@ -107,7 +147,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                     Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(0));
                     Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
 
-                    Assert.That(VolatileCache.DefaultInstance.GetItems<object>().Length, Is.EqualTo(2));
+                    Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(2));
                 }
             }
         }
@@ -124,7 +164,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                 Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(1));
                 Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
 
-                Assert.That(VolatileCache.DefaultInstance.GetItems<object>().Length, Is.EqualTo(4));
+                Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(4));
 
                 using (var anotherContext = new TestDbContext(_dbConnection))
                 using (anotherContext.AsCaching())
@@ -136,7 +176,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                     Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(0));
                     Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
 
-                    Assert.That(VolatileCache.DefaultInstance.GetItems<object>().Length, Is.EqualTo(5));
+                    Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(5));
                 }
             }
         }

@@ -10,7 +10,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AbstractCacheTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EntityFramework\QueryCacheProviderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntityFramework\AbstractQueryCacheProviderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntityFramework\MemoryQueryCacheProviderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntityFramework\PersistentQueryCacheProviderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EntityFramework\VolatileQueryCacheProviderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryCacheTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NinjectConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PersistentCacheTests.cs" />
