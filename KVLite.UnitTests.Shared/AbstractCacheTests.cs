@@ -246,6 +246,28 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
+        public void AddSliding_TwoTimes_RightInfo_DifferentValue()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var i = TimeSpan.FromMinutes(10);
+
+            Cache.AddSliding(p, k, Tuple.Create(v1, v2), i);
+            Cache.AddSliding(p, k, Tuple.Create(v2, v1), i);
+
+            var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v2, info.Value.Item1);
+            Assert.AreEqual(v1, info.Value.Item2);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(i, info.Interval);
+        }
+
+        [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void AddStatic_NullKey()
         {

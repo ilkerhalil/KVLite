@@ -55,7 +55,7 @@ namespace PommaLabs.KVLite.Core
         #region Public Queries
 
         public static readonly string CacheSchema = MinifyQuery(@"
-            PRAGMA auto_vacuum = FULL;
+            PRAGMA auto_vacuum = INCREMENTAL;
             DROP TABLE IF EXISTS CacheItem;
             CREATE TABLE CacheItem (
                 partition TEXT NOT NULL,
@@ -100,12 +100,20 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string Add = MinifyQuery(@"
-            insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval, 
-                                              parentKey0, parentKey1, parentKey2, parentKey3, parentKey4, 
-                                              parentKey5, parentKey6, parentKey7, parentKey8, parentKey9)
+            insert or ignore into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval, 
+                                             parentKey0, parentKey1, parentKey2, parentKey3, parentKey4, 
+                                             parentKey5, parentKey6, parentKey7, parentKey8, parentKey9)
             values (@partition, @key, @serializedValue, @utcNow, @utcExpiry, @interval, 
                     @parentKey0, @parentKey1, @parentKey2, @parentKey3, @parentKey4, 
                     @parentKey5, @parentKey6, @parentKey7, @parentKey8, @parentKey9);
+
+            update CacheItem
+               set serializedValue = @serializedValue, utcCreation = @utcNow, utcExpiry = @utcExpiry, interval = @interval,
+                   parentKey0 = @parentKey0, parentKey1 = @parentKey1, parentKey2 = @parentKey2, parentKey3 = @parentKey3,
+                   parentKey4 = @parentKey4, parentKey5 = @parentKey5, parentKey6 = @parentKey6, parentKey7 = @parentKey7,
+                   parentKey8 = @parentKey8, parentKey9 = @parentKey9
+             where partition = @partition and key = @key
+               and changes() = 0; -- Above INSERT has failed
 
             insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
             values ('KVLite.CacheVariables', 'insertion_count', 
@@ -126,7 +134,9 @@ namespace PommaLabs.KVLite.Core
             delete from CacheItem
              where (@partition is null or partition = @partition)
                and ((@partition is null and partition = {CacheVariablesPartition}) -- Clear cache variables
-                    or @ignoreExpiryDate = 1 or utcExpiry <= @utcNow) -- Clear only invalid rows
+                    or @ignoreExpiryDate = 1 or utcExpiry <= @utcNow); -- Clear only invalid rows
+
+            select changes()
         ");
 
         public static readonly string Count = MinifyQuery(@"
@@ -174,20 +184,23 @@ namespace PommaLabs.KVLite.Core
         public static readonly string Remove = MinifyQuery(@"
             delete from CacheItem
              where partition = @partition
-               and key = @key
+               and key = @key;
         ");
 
         public static readonly string SetPragmas = MinifyQuery(@"
-            PRAGMA foreign_keys = ON;
-            PRAGMA cache_spill = 1;
-            PRAGMA count_changes = 0; -- Not required by our queries
+            PRAGMA automatic_index = OFF; -- All indexes are already defined
+            PRAGMA foreign_keys = ON; -- Required by parent keys
             PRAGMA journal_size_limit = {0}; -- Size in bytes
-            PRAGMA wal_autocheckpoint = {1};
             PRAGMA temp_store = MEMORY;
+            PRAGMA wal_autocheckpoint = {1};
         ");
 
         public static readonly string Vacuum = MinifyQuery(@"
             vacuum; -- Clears free list and makes DB file smaller
+        ");
+
+        public static readonly string IncrementalVacuum = MinifyQuery(@"
+            PRAGMA incremental_vacuum; -- Clears free list and makes DB file smaller
         ");
 
         #endregion Public Queries

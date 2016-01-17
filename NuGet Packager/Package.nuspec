@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite</id>
-        <version>5.0.2</version>
+        <version>5.0.4</version>
         <title>KVLite - Key-value store built on SQLite</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -22,18 +22,18 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
         </summary>
         <language>en-US</language>
-        <projectUrl>https://bitbucket.org/pomma89/kvlite/overview</projectUrl>
+        <projectUrl>https://github.com/pomma89/KVLite</projectUrl>
         <iconUrl>https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-128.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <dependency id="CodeProject.ObjectPool" version="[1.9.2, 2.0.0)" />
-            <dependency id="Finsa.CodeServices.Compression.Snappy" version="[4.0.1, 5.0.0)" />
-            <dependency id="Finsa.CodeServices.Serialization.Json" version="[4.0.1, 5.0.0)" />
-            <dependency id="PommaLabs.KVLite.Core" version="[5.0.2, 6.0.0)" />
-            <dependency id="PommaLabs.KVLite.SQLite" version="[1.0.99.0]" />
-            <dependency id="Thrower" version="[2.1.1, 3.0.0)" />
+            <dependency id="Finsa.CodeServices.Compression.Snappy" version="[4.0.2, 5.0.0)" />
+            <dependency id="Finsa.CodeServices.Serialization.Json" version="[4.0.2, 5.0.0)" />
+            <dependency id="PommaLabs.KVLite.Core" version="[5.0.4, 6.0.0)" />
+            <dependency id="PommaLabs.KVLite.SQLite" version="[1.0.99.1]" />
+            <dependency id="Thrower" version="[2.1.4, 3.0.0)" />
             <dependency id="Westwind.Utilities.Configuration" version="2.25" />
         </dependencies>
         <references></references>

@@ -163,7 +163,7 @@ namespace PommaLabs.KVLite.Core
                     NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
                     PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
                     ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-                    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects,
+                    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
                     TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
                 };
                 _serializer = new JsonSerializer(serializerSettings);
@@ -663,6 +663,12 @@ namespace PommaLabs.KVLite.Core
                     new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
                 });
                 var removedItemCount = cmd.ExecuteNonQuery();
+
+                // Now we should perform a quick incremental vacuum.
+                cmd.CommandText = SQLiteQueries.IncrementalVacuum;
+                cmd.Parameters.Clear();
+                cmd.ExecuteNonQuery();
+
                 if (removedItemCount > 0 && partition == null)
                 {
                     // If we are performing a full cache cleanup, then we also remove the items
@@ -800,6 +806,7 @@ namespace PommaLabs.KVLite.Core
                 using (var reader = cmd.ExecuteReader())
                 {
                     return MapDataReader(reader)
+                        .ToArray()
                         .Select(DeserializeCacheItem<TVal>)
                         .Where(i => i.HasValue)
                         .Select(i => i.Value)
@@ -893,6 +900,7 @@ namespace PommaLabs.KVLite.Core
                 using (var reader = cmd.ExecuteReader())
                 {
                     return MapDataReader(reader)
+                        .ToArray()
                         .Select(DeserializeCacheItem<TVal>)
                         .Where(i => i.HasValue)
                         .Select(i => i.Value)

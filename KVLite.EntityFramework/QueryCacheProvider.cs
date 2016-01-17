@@ -1,4 +1,4 @@
-﻿// File name: CacheProvider.cs
+﻿// File name: QueryCacheProvider.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 

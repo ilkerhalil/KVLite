@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.Core</id>
-        <version>5.0.2</version>
+        <version>5.0.4</version>
         <title>KVLite - Core library</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -23,18 +23,18 @@ This package contains the core references for KVLite.
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
         </summary>
         <language>en-US</language>
-        <projectUrl>https://bitbucket.org/pomma89/kvlite/overview</projectUrl>
+        <projectUrl>https://github.com/pomma89/KVLite</projectUrl>
         <iconUrl>https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-128.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <dependency id="Common.Logging" version="[3.3.1, 4.0.0)" />
-            <dependency id="Finsa.CodeServices.Clock" version="[4.0.1, 5.0.0)" />
-            <dependency id="Finsa.CodeServices.Common" version="[4.0.1, 5.0.0)" />
-            <dependency id="Finsa.CodeServices.Compression" version="[4.0.1, 5.0.0)" />
-            <dependency id="Finsa.CodeServices.Serialization" version="[4.0.1, 5.0.0)" />
-            <dependency id="Newtonsoft.Json" version="[8.0.1, 10.0.0)" />
+            <dependency id="Finsa.CodeServices.Clock" version="[4.0.2, 5.0.0)" />
+            <dependency id="Finsa.CodeServices.Common" version="[4.0.2, 5.0.0)" />
+            <dependency id="Finsa.CodeServices.Compression" version="[4.0.2, 5.0.0)" />
+            <dependency id="Finsa.CodeServices.Serialization" version="[4.0.2, 5.0.0)" />
+            <dependency id="Newtonsoft.Json" version="8.0.2" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
