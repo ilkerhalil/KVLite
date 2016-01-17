@@ -21,8 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using EntityFramework.Caching;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 
 namespace EntityFramework.Extensions
 {
@@ -31,6 +34,89 @@ namespace EntityFramework.Extensions
     /// </summary>
     public static class QueryCacheExtensions
     {
+        #region KVLite query cache extensions
+
+        /// <summary>
+        ///   Returns the result of the query; if possible from the cache, otherwise the query is
+        ///   materialized and the result cached before being returned.
+        /// 
+        ///   Query is cached as a "timed" value, that is, value will last until the specified time
+        ///   and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the data in the data source.</typeparam>
+        /// <param name="query">The query to be materialized.</param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <param name="tags">The list of tags to use for cache expiration.</param>
+        /// <returns>The result of the query.</returns>
+        public static IEnumerable<TEntity> FromTimedCache<TEntity>(this IQueryable<TEntity> query, DateTime utcExpiry, IEnumerable<string> tags = null)
+            where TEntity : class
+        {
+            var cachePolicy = CachePolicy.WithAbsoluteExpiration(new DateTimeOffset(utcExpiry));
+            return query.FromCache(cachePolicy, tags);
+        }
+
+        /// <summary>
+        ///   Returns the result of the query; if possible from the cache, otherwise the query is
+        ///   materialized and the result cached before being returned.
+        /// 
+        ///   Query is cached as a "timed" value, that is, value will last until the specified time
+        ///   and, if accessed before expiry, its lifetime will _not_ be extended.s
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the data in the data source.</typeparam>
+        /// <param name="query">The query to be materialized.</param>
+        /// <param name="utcExpiry">The UTC expiry.</param>
+        /// <param name="tags">The list of tags to use for cache expiration.</param>
+        /// <returns>The result of the query.</returns>
+        public static IEnumerable<TEntity> FromTimedCache<TEntity>(this IQueryable<TEntity> query, DateTimeOffset utcExpiry, IEnumerable<string> tags = null)
+            where TEntity : class
+        {
+            var cachePolicy = CachePolicy.WithAbsoluteExpiration(utcExpiry);
+            return query.FromCache(cachePolicy, tags);
+        }
+
+        /// <summary>
+        ///   Returns the result of the query; if possible from the cache, otherwise the query is
+        ///   materialized and the result cached before being returned.
+        /// 
+        ///   Query is cached as a "timed" value, that is, value will last for the specified
+        ///   lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the data in the data source.</typeparam>
+        /// <param name="query">The query to be materialized.</param>
+        /// <param name="lifetime">The desired lifetime.</param>
+        /// <param name="tags">The list of tags to use for cache expiration.</param>
+        /// <returns>The result of the query.</returns>
+        public static IEnumerable<TEntity> FromTimedCache<TEntity>(this IQueryable<TEntity> query, TimeSpan lifetime, IEnumerable<string> tags = null)
+            where TEntity : class
+        {
+            var cachePolicy = CachePolicy.WithDurationExpiration(lifetime);
+            return query.FromCache(cachePolicy, tags);
+        }
+
+        /// <summary>
+        ///   Returns the result of the query; if possible from the cache, otherwise the query is
+        ///   materialized and the result cached before being returned.
+        /// 
+        ///   Query is cached as a "sliding" value, that is, value will last as much as specified in
+        ///   given interval and, if accessed before expiry, its lifetime will be extended by the
+        ///   interval itself.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the data in the data source.</typeparam>
+        /// <param name="query">The query to be materialized.</param>
+        /// <param name="interval">The interval.</param>
+        /// <param name="tags">The list of tags to use for cache expiration.</param>
+        /// <returns>The result of the query.</returns>
+        public static IEnumerable<TEntity> FromSlidingCache<TEntity>(this IQueryable<TEntity> query, TimeSpan interval, IEnumerable<string> tags = null)
+            where TEntity : class
+        {
+            var cachePolicy = CachePolicy.WithSlidingExpiration(interval);
+            return query.FromCache(cachePolicy, tags);
+        }
+
+        #endregion KVLite query cache extensions
+
+        #region DbContext handling
+
         /// <summary>
         ///   Temporarily configures the given <see cref="DbContext"/> so that caching can work. For
         ///   example, in order to make caching work we need to disable lazy loading and proxy creation.
@@ -78,5 +164,7 @@ namespace EntityFramework.Extensions
                 _disposed = true;
             }
         }
+
+        #endregion DbContext handling
     }
 }
