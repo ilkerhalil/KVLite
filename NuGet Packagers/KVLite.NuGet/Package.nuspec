@@ -42,5 +42,6 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
     </metadata>
     <files>
         <file src="content\" target="content" />
+        <file src="LICENSE.txt" target="LICENSE.txt" />
     </files>
 </package>

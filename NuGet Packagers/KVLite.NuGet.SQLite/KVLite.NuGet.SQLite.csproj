@@ -71,6 +71,7 @@
     <Content Include="content\net451\KVLite\x86\SQLite.Interop.dll" />
     <Content Include="content\net45\KVLite\x64\SQLite.Interop.dll" />
     <Content Include="content\net45\KVLite\x86\SQLite.Interop.dll" />
+    <Content Include="LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
