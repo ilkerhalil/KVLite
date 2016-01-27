@@ -15,7 +15,7 @@ version: 5.0.5.{build}
 branches:
   # whitelist
   only:
-    - default
+    - master
 
 #---------------------------------#
 #    environment configuration    #
@@ -41,6 +41,9 @@ build:
 
 # build Configuration, i.e. Debug, Release, etc.
 configuration: Debug
+
+before_build:
+  - nuget restore
   
 #---------------------------------#
 #          web settings           #
