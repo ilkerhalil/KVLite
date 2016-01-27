@@ -7,7 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet", "NuGet Packa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CB218631-52E1-43BC-971F-94784A43B73E}"
 	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
 		LICENSE.md = LICENSE.md
+		pomma89.pfx = pomma89.pfx
+		pomma89.snk = pomma89.snk
 		README.md = README.md
 		VERSION.md = VERSION.md
 	EndProjectSection
