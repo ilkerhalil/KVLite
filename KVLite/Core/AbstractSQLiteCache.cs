@@ -26,6 +26,7 @@ using Common.Logging;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
+using Finsa.CodeServices.Common.Portability;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.Thrower;
@@ -144,7 +145,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
                     DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.IgnoreAndPopulate,
-                    Encoding = Finsa.CodeServices.Common.Text.Encoding.UTF8WithoutBOM,
+                    Encoding = PortableEncoding.UTF8WithoutBOM,
                     FloatFormatHandling = Newtonsoft.Json.FloatFormatHandling.String,
                     Formatting = Newtonsoft.Json.Formatting.None,
                     MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,

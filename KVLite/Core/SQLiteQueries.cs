@@ -21,7 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Finsa.CodeServices.Common.Text;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace PommaLabs.KVLite.Core
@@ -215,8 +215,7 @@ namespace PommaLabs.KVLite.Core
             query = Regex.Replace(query, @"\s+", " ", RegexOptions.Compiled);
 
             // Removes query placeholders.
-            query = new FastReplacer("{", "}")
-                .Append(query)
+            query = new StringBuilder(query)
                 .Replace("{CacheVariablesPartition}", "'KVLite.CacheVariables'")
                 .Replace("{InsertionCountVariable}", "'insertion_count'")
                 .Replace("{CacheVariablesIntervalInSeconds}", "3600000") // 1000 hours                
