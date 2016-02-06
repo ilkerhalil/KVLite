@@ -2,9 +2,9 @@
 
 <package>
     <metadata>
-        <id>PommaLabs.KVLite.Nancy</id>
+        <id>PommaLabs.KVLite.WebForms</id>
         <version>5.0.6</version>
-        <title>KVLite - Nancy caching bootstrapper</title>
+        <title>KVLite - WebForms caching components</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
         <description>
