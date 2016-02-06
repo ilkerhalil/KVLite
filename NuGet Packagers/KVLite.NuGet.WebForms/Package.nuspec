@@ -2,13 +2,13 @@
 
 <package>
     <metadata>
-        <id>PommaLabs.KVLite</id>
+        <id>PommaLabs.KVLite.Nancy</id>
         <version>5.0.5</version>
-        <title>KVLite - Key-value store built on SQLite</title>
+        <title>KVLite - Nancy caching bootstrapper</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
         <description>
-A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
+A simple, timed and persistent key-value store based on SQLite. This package adds the code and the references required to use the WebForms caching components, like a viewstate persister and an output cache provider.
         </description>
         <releaseNotes>
 * Updated lots of dependencies.
@@ -20,7 +20,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
 * Embedded SQLite via Fody/Costura.
         </releaseNotes>
         <summary>
-A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
+A simple, timed and persistent key-value store based on SQLite. This package adds the code and the references required to use the WebForms caching components, like a viewstate persister and an output cache provider.
         </summary>
         <language>en-US</language>
         <projectUrl>https://github.com/pomma89/KVLite</projectUrl>
@@ -29,17 +29,14 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="CodeProject.ObjectPool" version="[1.9.2, 2.0.0)" />
-            <dependency id="Finsa.CodeServices.Compression.Snappy" version="[4.0.9, 5.0.0)" />
-            <dependency id="Finsa.CodeServices.Serialization.Json" version="[4.0.9, 5.0.0)" />
             <dependency id="PommaLabs.KVLite.Core" version="[5.0.5, 6.0.0)" />
-            <dependency id="Thrower" version="[2.1.4, 3.0.0)" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
-        <tags>sqlite key value store concurrent persistent volatile in-memory cache provider timed</tags>
+        <tags>kvlite system web webforms output cache provider viewstate view state persister</tags>
     </metadata>
     <files>
+        <file src="lib\" target="lib" />
         <file src="LICENSE.txt" target="LICENSE.txt" />
     </files>
 </package>

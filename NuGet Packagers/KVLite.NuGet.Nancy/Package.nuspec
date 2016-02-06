@@ -8,7 +8,7 @@
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
         <description>
-A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Nancy caching bootstrapper.
+A simple, timed and persistent key-value store based on SQLite. This package adds the code and the references required to use the Nancy caching bootstrapper.
         </description>
         <releaseNotes>
 * Updated lots of dependencies.
@@ -20,7 +20,7 @@ A simple, timed and persistent key-value store based on SQLite. This package add
 * Embedded SQLite via Fody/Costura.
         </releaseNotes>
         <summary>
-A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Nancy caching bootstrapper.
+A simple, timed and persistent key-value store based on SQLite. This package adds the code and the references required to use the Nancy caching bootstrapper.
         </summary>
         <language>en-US</language>
         <projectUrl>https://github.com/pomma89/KVLite</projectUrl>

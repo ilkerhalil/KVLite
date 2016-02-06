@@ -84,7 +84,7 @@ namespace PommaLabs.KVLite.WebForms
         ///   Clears this persister instance.
         /// </summary>
         public void Clear() => Cache.Clear();
-        
+
         /// <summary>
         ///   Overridden by derived classes to deserialize and load persisted state information when
         ///   a <see cref="T:System.Web.UI.Page"/> object initializes its control hierarchy.
