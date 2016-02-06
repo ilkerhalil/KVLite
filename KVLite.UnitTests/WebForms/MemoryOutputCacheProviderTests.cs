@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NUnit.Framework;
-using PommaLabs.KVLite.Web;
+using PommaLabs.KVLite.WebForms;
 
 namespace PommaLabs.KVLite.UnitTests.WebForms
 {

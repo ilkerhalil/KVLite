@@ -25,7 +25,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 
-namespace PommaLabs.KVLite.Web
+namespace PommaLabs.KVLite.WebForms
 {
     /// <summary>
     ///   Base class for a custom viewstate persister.

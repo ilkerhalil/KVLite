@@ -176,6 +176,10 @@
       <Project>{cc96ea69-dcc3-4d9e-bb6a-aced0c479ef3}</Project>
       <Name>KVLite.WebApi.NET45</Name>
     </ProjectReference>
+    <ProjectReference Include="..\KVLite.WebForms.NET45\KVLite.WebForms.NET45.csproj">
+      <Project>{3183fee9-f71c-48b6-b485-64ae2f208c73}</Project>
+      <Name>KVLite.WebForms.NET45</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

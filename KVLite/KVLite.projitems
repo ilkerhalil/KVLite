@@ -23,16 +23,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PersistentCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VolatileCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\AbstractOutputCacheProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\AbstractViewStatePersister.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\MemoryOutputCacheProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\MemoryViewStatePersister.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\PersistentOutputCacheProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\PersistentViewStatePersister.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\ViewStateStorageSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\VolatileOutputCacheProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\VolatileViewStatePersister.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\WebCaches.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)doxyfile.txt" />

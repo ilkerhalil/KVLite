@@ -1,4 +1,4 @@
-﻿// File name: VolatileOutputCacheProvider.cs
+﻿// File name: MemoryPageStatePersister.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,28 +21,32 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-namespace PommaLabs.KVLite.Web
+using System.Web.UI;
+
+namespace PommaLabs.KVLite.WebForms
 {
     /// <summary>
-    ///   A custom output cache provider based on KVLite. By default, it uses the instance defined
-    ///   by the property <see cref="WebCaches.Volatile"/>.
+    ///   This class is a view state implementation based on <see cref="MemoryCache"/>.
     /// </summary>
-    public sealed class VolatileOutputCacheProvider : AbstractOutputCacheProvider
+    public sealed class MemoryViewStatePersister : AbstractViewStatePersister
     {
         /// <summary>
-        ///   Initializes the provider using the default cache, that is, <see cref="WebCaches.Volatile"/>.
+        ///   Initializes a new instance of the <see cref="MemoryViewStatePersister"/> class.
         /// </summary>
-        public VolatileOutputCacheProvider()
-            : base(WebCaches.Volatile)
+        /// <param name="page">The page.</param>
+        /// <remarks>This constructor is required.</remarks>
+        public MemoryViewStatePersister(Page page)
+            : base(page, WebCaches.Memory)
         {
         }
 
         /// <summary>
-        ///   Initializes the provider using the specified cache.
+        ///   Initializes a new instance of the <see cref="MemoryViewStatePersister"/> class.
         /// </summary>
-        /// <param name="cache">The cache that will be used by the provider.</param>
-        public VolatileOutputCacheProvider(VolatileCache cache)
-            : base(cache)
+        /// <param name="page">The page.</param>
+        /// <param name="cache">The memory cache.</param>
+        public MemoryViewStatePersister(Page page, MemoryCache cache)
+            : base(page, cache)
         {
         }
     }

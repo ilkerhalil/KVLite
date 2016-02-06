@@ -23,7 +23,7 @@
 
 using Finsa.CodeServices.Serialization;
 
-namespace PommaLabs.KVLite.Web
+namespace PommaLabs.KVLite.WebForms
 {
     /// <summary>
     ///   Class containing singletons for all cache types used inside the KVLite.Web branch.

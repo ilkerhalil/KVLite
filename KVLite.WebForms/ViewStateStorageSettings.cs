@@ -21,7 +21,7 @@ using System;
 using System.Configuration;
 using System.Xml;
 
-namespace PommaLabs.KVLite.Web
+namespace PommaLabs.KVLite.WebForms
 {
     /// <summary>
     ///   Represents the group of options used by the Flesk.Accelerator.Page class to determine the

@@ -1,4 +1,4 @@
-﻿// File name: MemoryOutputCacheProvider.cs
+﻿// File name: PersistentOutputCacheProvider.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,19 +21,19 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-namespace PommaLabs.KVLite.Web
+namespace PommaLabs.KVLite.WebForms
 {
     /// <summary>
     ///   A custom output cache provider based on KVLite. By default, it uses the instance defined
-    ///   by the property <see cref="WebCaches.Memory"/>.
+    ///   by the property <see cref="WebCaches.Persistent"/>.
     /// </summary>
-    public sealed class MemoryOutputCacheProvider : AbstractOutputCacheProvider
+    public sealed class PersistentOutputCacheProvider : AbstractOutputCacheProvider
     {
         /// <summary>
-        ///   Initializes the provider using the default cache, that is, <see cref="WebCaches.Memory"/>.
+        ///   Initializes the provider using the default cache, that is, <see cref="WebCaches.Persistent"/>.
         /// </summary>
-        public MemoryOutputCacheProvider()
-            : base(WebCaches.Memory)
+        public PersistentOutputCacheProvider()
+            : base(WebCaches.Persistent)
         {
         }
 
@@ -41,7 +41,7 @@ namespace PommaLabs.KVLite.Web
         ///   Initializes the provider using the specified cache.
         /// </summary>
         /// <param name="cache">The cache that will be used by the provider.</param>
-        public MemoryOutputCacheProvider(MemoryCache cache)
+        public PersistentOutputCacheProvider(PersistentCache cache)
             : base(cache)
         {
         }

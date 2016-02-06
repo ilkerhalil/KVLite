@@ -1,4 +1,4 @@
-﻿// File name: MemoryPageStatePersister.cs
+﻿// File name: VolatileOutputCacheProvider.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,32 +21,28 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Web.UI;
-
-namespace PommaLabs.KVLite.Web
+namespace PommaLabs.KVLite.WebForms
 {
     /// <summary>
-    ///   This class is a view state implementation based on <see cref="MemoryCache"/>.
+    ///   A custom output cache provider based on KVLite. By default, it uses the instance defined
+    ///   by the property <see cref="WebCaches.Volatile"/>.
     /// </summary>
-    public sealed class MemoryViewStatePersister : AbstractViewStatePersister
+    public sealed class VolatileOutputCacheProvider : AbstractOutputCacheProvider
     {
         /// <summary>
-        ///   Initializes a new instance of the <see cref="MemoryViewStatePersister"/> class.
+        ///   Initializes the provider using the default cache, that is, <see cref="WebCaches.Volatile"/>.
         /// </summary>
-        /// <param name="page">The page.</param>
-        /// <remarks>This constructor is required.</remarks>
-        public MemoryViewStatePersister(Page page)
-            : base(page, WebCaches.Memory)
+        public VolatileOutputCacheProvider()
+            : base(WebCaches.Volatile)
         {
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="MemoryViewStatePersister"/> class.
+        ///   Initializes the provider using the specified cache.
         /// </summary>
-        /// <param name="page">The page.</param>
-        /// <param name="cache">The memory cache.</param>
-        public MemoryViewStatePersister(Page page, MemoryCache cache)
-            : base(page, cache)
+        /// <param name="cache">The cache that will be used by the provider.</param>
+        public VolatileOutputCacheProvider(VolatileCache cache)
+            : base(cache)
         {
         }
     }

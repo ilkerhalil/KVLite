@@ -1,4 +1,4 @@
-﻿// File name: PersistentPageStatePersister.cs
+﻿// File name: VolatilePageStatePersister.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -23,29 +23,29 @@
 
 using System.Web.UI;
 
-namespace PommaLabs.KVLite.Web
+namespace PommaLabs.KVLite.WebForms
 {
     /// <summary>
-    ///   This class is a view state implementation based on <see cref="PersistentCache"/>.
+    ///   This class is a view state implementation based on <see cref="VolatileCache"/>.
     /// </summary>
-    public sealed class PersistentViewStatePersister : AbstractViewStatePersister
+    public sealed class VolatileViewStatePersister : AbstractViewStatePersister
     {
         /// <summary>
-        ///   Initializes a new instance of the <see cref="PersistentViewStatePersister"/> class.
+        ///   Initializes a new instance of the <see cref="VolatileViewStatePersister"/> class.
         /// </summary>
         /// <param name="page">The page.</param>
         /// <remarks>This constructor is required.</remarks>
-        public PersistentViewStatePersister(Page page)
-            : base(page, WebCaches.Persistent)
+        public VolatileViewStatePersister(Page page)
+            : base(page, WebCaches.Volatile)
         {
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="PersistentViewStatePersister"/> class.
+        ///   Initializes a new instance of the <see cref="VolatileViewStatePersister"/> class.
         /// </summary>
         /// <param name="page">The page.</param>
-        /// <param name="cache">The persistent cache.</param>
-        public PersistentViewStatePersister(Page page, PersistentCache cache)
+        /// <param name="cache">The volatile cache.</param>
+        public VolatileViewStatePersister(Page page, VolatileCache cache)
             : base(page, cache)
         {
         }

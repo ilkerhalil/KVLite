@@ -27,7 +27,7 @@ using PommaLabs.Thrower;
 using System;
 using System.Web.Caching;
 
-namespace PommaLabs.KVLite.Web
+namespace PommaLabs.KVLite.WebForms
 {
     /// <summary>
     ///   Abstract class for KVLite-based output cache providers.

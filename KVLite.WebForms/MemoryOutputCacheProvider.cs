@@ -1,4 +1,4 @@
-﻿// File name: VolatilePageStatePersister.cs
+﻿// File name: MemoryOutputCacheProvider.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,32 +21,28 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Web.UI;
-
-namespace PommaLabs.KVLite.Web
+namespace PommaLabs.KVLite.WebForms
 {
     /// <summary>
-    ///   This class is a view state implementation based on <see cref="VolatileCache"/>.
+    ///   A custom output cache provider based on KVLite. By default, it uses the instance defined
+    ///   by the property <see cref="WebCaches.Memory"/>.
     /// </summary>
-    public sealed class VolatileViewStatePersister : AbstractViewStatePersister
+    public sealed class MemoryOutputCacheProvider : AbstractOutputCacheProvider
     {
         /// <summary>
-        ///   Initializes a new instance of the <see cref="VolatileViewStatePersister"/> class.
+        ///   Initializes the provider using the default cache, that is, <see cref="WebCaches.Memory"/>.
         /// </summary>
-        /// <param name="page">The page.</param>
-        /// <remarks>This constructor is required.</remarks>
-        public VolatileViewStatePersister(Page page)
-            : base(page, WebCaches.Volatile)
+        public MemoryOutputCacheProvider()
+            : base(WebCaches.Memory)
         {
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="VolatileViewStatePersister"/> class.
+        ///   Initializes the provider using the specified cache.
         /// </summary>
-        /// <param name="page">The page.</param>
-        /// <param name="cache">The volatile cache.</param>
-        public VolatileViewStatePersister(Page page, VolatileCache cache)
-            : base(page, cache)
+        /// <param name="cache">The cache that will be used by the provider.</param>
+        public MemoryOutputCacheProvider(MemoryCache cache)
+            : base(cache)
         {
         }
     }

@@ -1,4 +1,4 @@
-﻿// File name: PersistentOutputCacheProvider.cs
+﻿// File name: PersistentPageStatePersister.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,28 +21,32 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-namespace PommaLabs.KVLite.Web
+using System.Web.UI;
+
+namespace PommaLabs.KVLite.WebForms
 {
     /// <summary>
-    ///   A custom output cache provider based on KVLite. By default, it uses the instance defined
-    ///   by the property <see cref="WebCaches.Persistent"/>.
+    ///   This class is a view state implementation based on <see cref="PersistentCache"/>.
     /// </summary>
-    public sealed class PersistentOutputCacheProvider : AbstractOutputCacheProvider
+    public sealed class PersistentViewStatePersister : AbstractViewStatePersister
     {
         /// <summary>
-        ///   Initializes the provider using the default cache, that is, <see cref="WebCaches.Persistent"/>.
+        ///   Initializes a new instance of the <see cref="PersistentViewStatePersister"/> class.
         /// </summary>
-        public PersistentOutputCacheProvider()
-            : base(WebCaches.Persistent)
+        /// <param name="page">The page.</param>
+        /// <remarks>This constructor is required.</remarks>
+        public PersistentViewStatePersister(Page page)
+            : base(page, WebCaches.Persistent)
         {
         }
 
         /// <summary>
-        ///   Initializes the provider using the specified cache.
+        ///   Initializes a new instance of the <see cref="PersistentViewStatePersister"/> class.
         /// </summary>
-        /// <param name="cache">The cache that will be used by the provider.</param>
-        public PersistentOutputCacheProvider(PersistentCache cache)
-            : base(cache)
+        /// <param name="page">The page.</param>
+        /// <param name="cache">The persistent cache.</param>
+        public PersistentViewStatePersister(Page page, PersistentCache cache)
+            : base(page, cache)
         {
         }
     }
