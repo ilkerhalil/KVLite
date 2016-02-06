@@ -188,7 +188,6 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string SetPragmas = MinifyQuery(@"
-            PRAGMA automatic_index = OFF; -- All indexes are already defined
             PRAGMA foreign_keys = ON; -- Required by parent keys
             PRAGMA journal_size_limit = {0}; -- Size in bytes
             PRAGMA temp_store = MEMORY;

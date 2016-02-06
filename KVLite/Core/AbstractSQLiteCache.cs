@@ -26,10 +26,8 @@ using Common.Logging;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
-using Finsa.CodeServices.Common.Portability;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
-using Finsa.CodeServices.Serialization.Json.Converters;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
@@ -549,7 +547,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry time.</param>
         /// <param name="interval">The refresh interval.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         protected sealed override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
             // Serializing may be pretty expensive, therefore we keep it out of the transaction.
@@ -1056,8 +1056,8 @@ namespace PommaLabs.KVLite.Core
                 BaseSchemaName = "kvlite",
                 BinaryGUID = true,
                 BrowsableConnectionString = false,
-                /* Number of pages of 1KB */
-                CacheSize = 8192,
+                /* Number of pages of 1KB, 2000 is the suggested value */
+                CacheSize = 2000,
                 DateTimeFormat = SQLiteDateFormats.Ticks,
                 DateTimeKind = DateTimeKind.Utc,
                 DefaultIsolationLevel = IsolationLevel.ReadCommitted,
@@ -1069,7 +1069,7 @@ namespace PommaLabs.KVLite.Core
                 FullUri = cacheUri,
                 JournalMode = journalMode,
                 LegacyFormat = false,
-                /* Each page is 1KB large - Multiply by 1024*1024/32768 */
+                /* Each page is 1KB large - Multiply by 1024*1024/PageSizeInBytes */
                 MaxPageCount = Settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes,
                 PageSize = PageSizeInBytes,
                 /* We use a custom object pool */

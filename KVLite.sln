@@ -28,7 +28,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Logo", "Project Log
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{EFEDDCD8-239A-4197-B666-9A0D3795F8BC}"
 	ProjectSection(SolutionItems) = preProject
-		Documentation\SQLite Performance Tuning - MozillaWiki.pdf = Documentation\SQLite Performance Tuning - MozillaWiki.pdf
+		Documentation\SQLite Performance Tuning.pdf = Documentation\SQLite Performance Tuning.pdf
+		Documentation\Universal System.Data.SQLite binary for .NET and Mono.pdf = Documentation\Universal System.Data.SQLite binary for .NET and Mono.pdf
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.Nancy", "KVLite.Examples.Nancy\KVLite.Examples.Nancy.csproj", "{ED638DD5-E755-4B7A-940D-5C94AB425686}"
