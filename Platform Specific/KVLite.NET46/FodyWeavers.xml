@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Weavers>
+    <Costura CreateTemporaryAssemblies="false"
+             IncludeAssemblies="System.Data.SQLite"
+             Unmanaged32Assemblies="SQLite.Interop.dll" 
+             Unmanaged64Assemblies="SQLite.Interop.dll" />
+</Weavers>

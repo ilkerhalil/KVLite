@@ -95,14 +95,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="KVLite\x64\SQLite.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="KVLite\x86\SQLite.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Platform Specific\KVLite.NET45\KVLite.NET45.csproj">
       <Project>{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}</Project>
       <Name>KVLite.NET45</Name>

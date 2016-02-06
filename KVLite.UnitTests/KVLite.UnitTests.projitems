@@ -25,12 +25,4 @@
     <Compile Include="$(MSBuildThisFileDirectory)Web\Web\PersistentOutputCacheProviderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\Web\VolatileOutputCacheProviderTests.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)KVLite\x64\SQLite.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(MSBuildThisFileDirectory)KVLite\x86\SQLite.Interop.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 </Project>

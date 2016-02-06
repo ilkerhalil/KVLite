@@ -17,6 +17,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
 * Every Add* method now accepts parent keys, that is, an entry may depend on other ones.
 * Improved error handling.
 * Added a query cache provider for Entity Framework.
+* Embedded SQLite via Fody/Costura.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
@@ -32,7 +33,6 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
             <dependency id="Finsa.CodeServices.Compression.Snappy" version="[4.0.9, 5.0.0)" />
             <dependency id="Finsa.CodeServices.Serialization.Json" version="[4.0.9, 5.0.0)" />
             <dependency id="PommaLabs.KVLite.Core" version="[5.0.5, 6.0.0)" />
-            <dependency id="PommaLabs.KVLite.SQLite" version="[1.0.99.1]" />
             <dependency id="Thrower" version="[2.1.4, 3.0.0)" />
             <dependency id="Westwind.Utilities.Configuration" version="2.25" />
         </dependencies>

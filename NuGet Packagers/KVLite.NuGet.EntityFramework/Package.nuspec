@@ -17,6 +17,7 @@ A simple, timed and persistent key-value store based on SQLite. This package add
 * Every Add* method now accepts parent keys, that is, an entry may depend on other ones.
 * Improved error handling.
 * Added a query cache provider for Entity Framework.
+* Embedded SQLite via Fody/Costura.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. This package adds the references required to use the Entity Framework query cache provider.
