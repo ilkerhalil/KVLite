@@ -21,8 +21,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebApi\AbstractCacheControllerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebApi\OutputCacheProviderTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\Web\MemoryOutputCacheProviderTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\Web\PersistentOutputCacheProviderTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Web\Web\VolatileOutputCacheProviderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebForms\MemoryOutputCacheProviderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebForms\PersistentOutputCacheProviderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebForms\VolatileOutputCacheProviderTests.cs" />
   </ItemGroup>
 </Project>

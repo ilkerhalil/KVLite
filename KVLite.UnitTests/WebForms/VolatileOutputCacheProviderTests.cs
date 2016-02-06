@@ -1,4 +1,4 @@
-﻿// File name: PersistentOutputCacheProviderTests.cs
+﻿// File name: VolatileOutputCacheProviderTests.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -24,10 +24,10 @@
 using NUnit.Framework;
 using PommaLabs.KVLite.Web;
 
-namespace PommaLabs.KVLite.UnitTests.Web
+namespace PommaLabs.KVLite.UnitTests.WebForms
 {
     [TestFixture]
-    sealed class PersistentOutputCacheProviderTests
+    sealed class VolatileOutputCacheProviderTests
     {
         /// <summary>
         ///   Verifies issue #1.
@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite.UnitTests.Web
         [Test]
         public void Get_ShouldReturnNullIfItemIsMissing()
         {
-            var provider = new PersistentOutputCacheProvider();
+            var provider = new VolatileOutputCacheProvider();
             Assert.IsNull(provider.Get("X"));
         }
     }

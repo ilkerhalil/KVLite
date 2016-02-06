@@ -24,7 +24,7 @@
 using NUnit.Framework;
 using PommaLabs.KVLite.Web;
 
-namespace PommaLabs.KVLite.UnitTests.Web
+namespace PommaLabs.KVLite.UnitTests.WebForms
 {
     [TestFixture]
     sealed class MemoryOutputCacheProviderTests
