@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.WebForms</id>
-        <version>5.0.6</version>
+        <version>5.1.0</version>
         <title>KVLite - WebForms caching components</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -29,7 +29,7 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="PommaLabs.KVLite.Core" version="[5.0.6, 6.0.0)" />
+            <dependency id="PommaLabs.KVLite.Core" version="[5.1.0, 6.0.0)" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
