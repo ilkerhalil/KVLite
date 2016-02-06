@@ -38,20 +38,20 @@ namespace PommaLabs.KVLite
     {
         #region Fields
 
-        string _cacheName = MemoryCacheConfiguration.Instance.DefaultCacheName;
+        string _cacheName = nameof(MemoryCache);
 
         #endregion Fields
 
         #region Construction
 
         /// <summary>
-        ///   Sets default values read from <see cref="MemoryCacheConfiguration"/>.
+        ///   Sets default values for memory cache settings.
         /// </summary>
         public MemoryCacheSettings()
         {
-            DefaultPartition = MemoryCacheConfiguration.Instance.DefaultPartition;
-            StaticIntervalInDays = MemoryCacheConfiguration.Instance.DefaultStaticIntervalInDays;
-            MaxCacheSizeInMB = MemoryCacheConfiguration.Instance.DefaultMaxCacheSizeInMB;
+            DefaultPartition = "KVLite.DefaultPartition";
+            StaticIntervalInDays = 30;
+            MaxCacheSizeInMB = 256;
         }
 
         #endregion Construction
@@ -71,6 +71,8 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   The name of the in-memory store used as the backend for the cache.
+        /// 
+        ///   Default value is "MemoryCache".
         /// </summary>
         public string CacheName
         {

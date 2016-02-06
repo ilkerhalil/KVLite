@@ -21,11 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Core;
+using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using PommaLabs.Thrower;
-using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
@@ -37,22 +37,22 @@ namespace PommaLabs.KVLite
     {
         #region Fields
 
-        string _cacheFile = PersistentCacheConfiguration.Instance.DefaultCacheFile;
+        string _cacheFile = "PersistentCache.sqlite";
 
         #endregion Fields
 
         #region Construction
 
         /// <summary>
-        ///   Sets default values read from <see cref="PersistentCacheConfiguration"/>.
+        ///   Sets default values for persistent cache settings.
         /// </summary>
         public PersistentCacheSettings()
         {
-            DefaultPartition = PersistentCacheConfiguration.Instance.DefaultPartition;
-            StaticIntervalInDays = PersistentCacheConfiguration.Instance.DefaultStaticIntervalInDays;
-            InsertionCountBeforeAutoClean = PersistentCacheConfiguration.Instance.DefaultInsertionCountBeforeAutoClean;
-            MaxCacheSizeInMB = PersistentCacheConfiguration.Instance.DefaultMaxCacheSizeInMB;
-            MaxJournalSizeInMB = PersistentCacheConfiguration.Instance.DefaultMaxJournalSizeInMB;
+            DefaultPartition = "KVLite.DefaultPartition";
+            StaticIntervalInDays = 30;
+            InsertionCountBeforeAutoClean = 64;
+            MaxCacheSizeInMB = 1024;
+            MaxJournalSizeInMB = 64;
         }
 
         #endregion Construction
@@ -72,6 +72,8 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   The SQLite DB used as the backend for the cache.
+        /// 
+        ///   Default value is "PersistentCache.sqlite".
         /// </summary>
         public string CacheFile
         {

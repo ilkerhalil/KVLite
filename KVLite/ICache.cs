@@ -48,9 +48,7 @@ namespace PommaLabs.KVLite
     ///   In any case, to increase the ease of use, it is not mandatory neither to specify a
     ///   partition, nor to specify an expiration time. In both cases, a default value is used,
     ///   which can be customized by editing the KVLite configuration file. See, for example, the
-    ///   configuration for the <see cref="PersistentCache"/> (
-    ///   <see cref="PersistentCacheConfiguration.DefaultStaticIntervalInDays"/>) or the one for the
-    ///   <see cref="VolatileCache"/> ( <see cref="VolatileCacheConfiguration.DefaultStaticIntervalInDays"/>).
+    ///   abstract configuration of all caches ( <see cref="AbstractCacheSettings.StaticIntervalInDays"/>).
     /// </summary>
     public interface ICache : IDisposable
     {
@@ -180,7 +178,9 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
@@ -195,7 +195,9 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval, IList<string> parentKeys = null);
 
@@ -208,7 +210,9 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
@@ -222,7 +226,9 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         void AddStaticToDefaultPartition<TVal>(string key, TVal value, IList<string> parentKeys = null);
 
@@ -235,7 +241,9 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
@@ -248,7 +256,9 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null);
 
@@ -261,7 +271,9 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="lifetime">The desired lifetime.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
@@ -274,7 +286,9 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="lifetime">The desired lifetime.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         void AddTimedToDefaultPartition<TVal>(string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null);
 
@@ -482,7 +496,9 @@ namespace PommaLabs.KVLite
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="interval">The interval.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -507,7 +523,9 @@ namespace PommaLabs.KVLite
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="interval">The interval.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -532,7 +550,9 @@ namespace PommaLabs.KVLite
         /// <param name="valueGetter">
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -557,7 +577,9 @@ namespace PommaLabs.KVLite
         /// <param name="valueGetter">
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -582,7 +604,9 @@ namespace PommaLabs.KVLite
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -606,7 +630,9 @@ namespace PommaLabs.KVLite
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -631,7 +657,9 @@ namespace PommaLabs.KVLite
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="lifetime">The desired lifetime.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -655,7 +683,9 @@ namespace PommaLabs.KVLite
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="lifetime">The desired lifetime.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.

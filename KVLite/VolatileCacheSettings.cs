@@ -21,12 +21,12 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Core;
+using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
-using PommaLabs.Thrower;
-using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite
 {
@@ -38,22 +38,22 @@ namespace PommaLabs.KVLite
     {
         #region Fields
 
-        string _cacheName = VolatileCacheConfiguration.Instance.DefaultCacheName;
+        string _cacheName = nameof(VolatileCache);
 
         #endregion Fields
 
         #region Construction
 
         /// <summary>
-        ///   Sets default values read from <see cref="VolatileCacheSettings"/>.
+        ///   Sets default values for volatile cache settings.
         /// </summary>
         public VolatileCacheSettings()
         {
-            DefaultPartition = VolatileCacheConfiguration.Instance.DefaultPartition;
-            StaticIntervalInDays = VolatileCacheConfiguration.Instance.DefaultStaticIntervalInDays;
-            InsertionCountBeforeAutoClean = VolatileCacheConfiguration.Instance.DefaultInsertionCountBeforeAutoClean;
-            MaxCacheSizeInMB = VolatileCacheConfiguration.Instance.DefaultMaxCacheSizeInMB;
-            MaxJournalSizeInMB = VolatileCacheConfiguration.Instance.DefaultMaxJournalSizeInMB;
+            DefaultPartition = "KVLite.DefaultPartition";
+            StaticIntervalInDays = 30;
+            InsertionCountBeforeAutoClean = 64;
+            MaxCacheSizeInMB = 256;
+            MaxJournalSizeInMB = 64;
         }
 
         #endregion Construction

@@ -124,10 +124,6 @@
       <HintPath>..\..\packages\Troschuetz.Random.4.0.3\lib\net40\Troschuetz.Random.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Westwind.Utilities.Configuration, Version=2.25.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Westwind.Utilities.Configuration.2.25\lib\net40\Westwind.Utilities.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -18,13 +18,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\SQLiteQueries.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ICache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MemoryCacheConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PersistentCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PersistentCacheConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PersistentCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VolatileCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\AbstractOutputCacheProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Web\AbstractViewStatePersister.cs" />
@@ -39,10 +36,5 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)doxyfile.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)KVLite.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

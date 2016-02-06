@@ -197,9 +197,6 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="KVLite.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Platform Specific\KVLite.NET45\KVLite.NET45.csproj">
       <Project>{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}</Project>
       <Name>KVLite.NET45</Name>
