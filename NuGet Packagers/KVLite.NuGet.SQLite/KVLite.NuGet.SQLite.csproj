@@ -49,7 +49,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="build\net20\PommaLabs.KVLite.SQLite.targets" />
     <None Include="build\net40\PommaLabs.KVLite.SQLite.targets" />
     <None Include="build\net451\PommaLabs.KVLite.SQLite.targets" />
     <None Include="build\net45\PommaLabs.KVLite.SQLite.targets" />
@@ -62,8 +61,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="build\net20\x64\SQLite.Interop.dll" />
-    <Content Include="build\net20\x86\SQLite.Interop.dll" />
     <Content Include="build\net40\x64\SQLite.Interop.dll" />
     <Content Include="build\net40\x86\SQLite.Interop.dll" />
     <Content Include="build\net451\x64\SQLite.Interop.dll" />
@@ -72,8 +69,6 @@
     <Content Include="build\net45\x86\SQLite.Interop.dll" />
     <Content Include="build\net46\x64\SQLite.Interop.dll" />
     <Content Include="build\net46\x86\SQLite.Interop.dll" />
-    <Content Include="lib\net20\System.Data.SQLite.dll" />
-    <Content Include="lib\net20\System.Data.SQLite.xml" />
     <Content Include="lib\net40\System.Data.SQLite.dll" />
     <Content Include="lib\net40\System.Data.SQLite.xml" />
     <Content Include="lib\net451\System.Data.SQLite.dll" />
