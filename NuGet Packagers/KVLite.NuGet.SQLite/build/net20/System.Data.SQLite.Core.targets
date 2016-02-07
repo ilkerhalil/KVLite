@@ -47,7 +47,7 @@
                         '@(SQLiteInteropFiles)' != ''">
     <Content Include="@(SQLiteInteropFiles)">
       <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
