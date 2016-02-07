@@ -33,7 +33,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
             <dependency id="Finsa.CodeServices.Compression.Snappy" version="[4.1.0, 5.0.0)" />
             <dependency id="Finsa.CodeServices.Serialization.Json" version="[4.1.0, 5.0.0)" />
             <dependency id="PommaLabs.KVLite.Core" version="[5.1.1, 6.0.0)" />
-            <dependency id="PommaLabs.KVLite.SQLite" version="1.0.99.2" />
+            <dependency id="PommaLabs.KVLite.SQLite" version="1.0.99.3" />
             <dependency id="Thrower" version="[2.1.4, 3.0.0)" />
         </dependencies>
         <references></references>

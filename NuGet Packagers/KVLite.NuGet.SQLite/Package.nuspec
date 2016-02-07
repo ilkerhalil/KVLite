@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.SQLite</id>
-        <version>1.0.99.2</version>
+        <version>1.0.99.3</version>
         <title>KVLite - Core SQLite driver</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
