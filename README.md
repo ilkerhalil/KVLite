@@ -1,7 +1,7 @@
 ![](https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-64.png "KVLite Logo") KVLite
 ========================================
 
-A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store. KVLite also implements a caching bootstrapper for NancyFX, which can be configured to be either persistent or volatile.
+A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store. KVLite also implements caching components for other libraries, like Entity Framework, Web API, NancyFX, which can be configured to be either persistent or volatile.
 
 ## Summary ##
 
@@ -11,8 +11,10 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
 * [NuGet](https://www.nuget.org) package(s):
     + [PommaLabs.KVLite](https://www.nuget.org/packages/PommaLabs.KVLite/), includes Core and all native libraries.
     + [PommaLabs.KVLite (Core)](https://www.nuget.org/packages/PommaLabs.KVLite.Core/), all managed APIs.
-    + [PommaLabs.KVLite (Web API Output Cache Provider)](https://www.nuget.org/packages/PommaLabs.KVLite.WebApi/)
+    + [PommaLabs.KVLite (Entity Framework Query Cache Provider)](https://www.nuget.org/packages/PommaLabs.KVLite.EntityFramework/)
     + [PommaLabs.KVLite (Nancy Caching Bootstrapper)](https://www.nuget.org/packages/PommaLabs.KVLite.Nancy/)
+    + [PommaLabs.KVLite (Web API Output Cache Provider)](https://www.nuget.org/packages/PommaLabs.KVLite.WebApi/)
+    + [PommaLabs.KVLite (Web Forms Caching Components)](https://www.nuget.org/packages/PommaLabs.KVLite.WebForms/)
 
 ## About this repository and its maintainer ##
 
