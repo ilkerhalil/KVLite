@@ -17,7 +17,8 @@ A simple, timed and persistent key-value store based on SQLite. This package add
 * Every Add* method now accepts parent keys, that is, an entry may depend on other ones.
 * Improved error handling.
 * Added a query cache provider for Entity Framework.
-* Embedded SQLite via Fody/Costura.
+* Using custom NuGet package for SQLite.
+* Fixed AssemblyVersion, now it will not change anymore between minor releases.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. This package adds the code and the references required to use the Nancy caching bootstrapper.
