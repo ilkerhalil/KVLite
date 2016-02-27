@@ -81,6 +81,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.WebApi.NET45", "Platform Specific\KVLite.WebApi.NET45\KVLite.WebApi.NET45.csproj", "{CC96EA69-DCC3-4D9E-BB6A-ACED0C479EF3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.UnitTests.NET45", "Platform Specific\KVLite.UnitTests.NET45\KVLite.UnitTests.NET45.csproj", "{BBE6492A-198E-499E-ADD5-E8C904EC8182}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3183FEE9-F71C-48B6-B485-64AE2F208C73} = {3183FEE9-F71C-48B6-B485-64AE2F208C73}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NET46", "Platform Specific\KVLite.NET46\KVLite.NET46.csproj", "{3768FF1C-ADE5-4C9D-9C00-CACB0CE40809}"
 EndProject
