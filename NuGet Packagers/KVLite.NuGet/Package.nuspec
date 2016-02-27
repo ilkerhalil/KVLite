@@ -41,6 +41,6 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         <tags>sqlite key value store concurrent persistent volatile in-memory cache provider timed</tags>
     </metadata>
     <files>
-        <file src="LICENSE.txt" target="LICENSE.txt" />
+        <file src="LICENSE.md" target="LICENSE.md" />
     </files>
 </package>
