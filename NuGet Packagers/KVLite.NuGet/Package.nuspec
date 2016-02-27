@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite</id>
-        <version>5.1.1</version>
+        <version>5.2.1</version>
         <title>KVLite - Key-value store built on SQLite</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -32,7 +32,7 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
             <dependency id="CodeProject.ObjectPool" version="[1.9.3, 2.0.0)" />
             <dependency id="Finsa.CodeServices.Compression.Snappy" version="[4.1.0, 5.0.0)" />
             <dependency id="Finsa.CodeServices.Serialization.Json" version="[4.1.0, 5.0.0)" />
-            <dependency id="PommaLabs.KVLite.Core" version="[5.1.1, 6.0.0)" />
+            <dependency id="PommaLabs.KVLite.Core" version="[5.2.1, 6.0.0)" />
             <dependency id="PommaLabs.KVLite.SQLite" version="1.0.99.4" />
             <dependency id="Thrower" version="[2.1.4, 3.0.0)" />
         </dependencies>
