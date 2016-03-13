@@ -127,6 +127,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet.WebForms", "Nu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet.SQLite", "NuGet Packagers\KVLite.NuGet.SQLite\KVLite.NuGet.SQLite.csproj", "{3A60BAC5-2B90-4749-8D49-0CEFB2D2054D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.WebForms", "KVLite.Examples.WebForms\KVLite.Examples.WebForms.csproj", "{02AE0BEA-762D-4034-AB7C-F7A165E282F7}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{20b7f10e-aa70-4de6-839a-00978375d290}*SharedItemsImports = 13
@@ -442,6 +444,18 @@ Global
 		{3A60BAC5-2B90-4749-8D49-0CEFB2D2054D}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{3A60BAC5-2B90-4749-8D49-0CEFB2D2054D}.Release|x86.ActiveCfg = Release|Any CPU
 		{3A60BAC5-2B90-4749-8D49-0CEFB2D2054D}.Release|x86.Build.0 = Release|Any CPU
+		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Debug|x86.Build.0 = Debug|Any CPU
+		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Publish|Any CPU.Build.0 = Release|Any CPU
+		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Publish|x86.ActiveCfg = Release|Any CPU
+		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Publish|x86.Build.0 = Release|Any CPU
+		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|x86.ActiveCfg = Release|Any CPU
+		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
