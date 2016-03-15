@@ -3,11 +3,11 @@ using System.Runtime.InteropServices;
 
 // Le informazioni generali relative a un assembly sono controllate dal seguente set di attributi.
 // Modificare i valori di questi attributi per modificare le informazioni associate a un assembly.
-[assembly: AssemblyTitle("KVLite.Examples.WebForms")]
+[assembly: AssemblyTitle("PommaLabs.KVLite.Examples.WebForms")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("KVLite.Examples.WebForms")]
+[assembly: AssemblyProduct("PommaLabs.KVLite.Examples.WebForms")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
