@@ -22,6 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Finsa.CodeServices.Serialization;
+using System;
+using System.Runtime.Serialization.Formatters;
 
 namespace PommaLabs.KVLite.WebForms
 {
@@ -37,11 +39,25 @@ namespace PommaLabs.KVLite.WebForms
     /// </summary>
     /// <remarks>
     ///   We use custom defitions because the KVLite.Web branch usually deals with objects that
-    ///   require the <see cref="BinarySerializer"/> instead of the <see cref="JsonSerializer"/>,
-    ///   which is the default serializer for all caches.
+    ///   require the <see cref="BinarySerializer"/> instead of the JSON serializer, which is the
+    ///   default serializer for all caches.
     /// </remarks>
     public static class WebCaches
     {
+        private static readonly Lazy<PersistentCache> LazyPersistent = new Lazy<PersistentCache>(() => new PersistentCache(new PersistentCacheSettings(), serializer: new BinarySerializer(new BinarySerializerSettings
+        {
+            AssemblyFormat = FormatterAssemblyStyle.Simple,
+            FilterLevel = TypeFilterLevel.Full,
+            TypeFormat = FormatterTypeStyle.TypesWhenNeeded
+        })));
+
+        private static readonly Lazy<VolatileCache> LazyVolatile = new Lazy<VolatileCache>(() => new VolatileCache(new VolatileCacheSettings(), serializer: new BinarySerializer(new BinarySerializerSettings
+        {
+            AssemblyFormat = FormatterAssemblyStyle.Simple,
+            FilterLevel = TypeFilterLevel.Full,
+            TypeFormat = FormatterTypeStyle.TypesWhenNeeded
+        })));
+
         /// <summary>
         ///   The default instance for <see cref="MemoryCache"/>.
         /// </summary>
@@ -55,26 +71,18 @@ namespace PommaLabs.KVLite.WebForms
         ///   The default instance for <see cref="PersistentCache"/>.
         /// </summary>
         /// <remarks>
-        ///   Here we use a mostly vanilla instance, where we customize only the serializer with a <see cref="BinarySerializer"/>.
+        ///   Here we use a mostly vanilla instance, where we customize only the serializer with a
+        ///   <see cref="BinarySerializer"/>.
         /// </remarks>
-        public static PersistentCache Persistent { get; set; } = new PersistentCache(new PersistentCacheSettings(), serializer: new BinarySerializer(new BinarySerializerSettings
-        {
-            AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
-            FilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full,
-            TypeFormat = System.Runtime.Serialization.Formatters.FormatterTypeStyle.TypesWhenNeeded
-        }));
+        public static PersistentCache Persistent { get; set; } = LazyPersistent.Value;
 
         /// <summary>
         ///   The default instance for <see cref="VolatileCache"/>.
         /// </summary>
         /// <remarks>
-        ///   Here we use a mostly vanilla instance, where we customize only the serializer with a <see cref="BinarySerializer"/>.
+        ///   Here we use a mostly vanilla instance, where we customize only the serializer with a
+        ///   <see cref="BinarySerializer"/>.
         /// </remarks>
-        public static VolatileCache Volatile { get; set; } = new VolatileCache(new VolatileCacheSettings(), serializer: new BinarySerializer(new BinarySerializerSettings
-        {
-            AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
-            FilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full,
-            TypeFormat = System.Runtime.Serialization.Formatters.FormatterTypeStyle.TypesWhenNeeded
-        }));
+        public static VolatileCache Volatile { get; set; } = LazyVolatile.Value;
     }
 }

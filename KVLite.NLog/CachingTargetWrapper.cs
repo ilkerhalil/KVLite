@@ -1,4 +1,5 @@
-﻿using NLog.Targets.Wrappers;
+﻿using NLog.Targets;
+using NLog.Targets.Wrappers;
 
 namespace PommaLabs.KVLite.NLog
 {
