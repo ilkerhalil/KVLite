@@ -131,6 +131,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.WebForms", 
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KVLite.NLog", "KVLite.NLog\KVLite.NLog.shproj", "{18CCE4F8-740B-4B4C-BEA1-F697425A9A86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NLog.NET46", "Platform Specific\KVLite.NLog.NET46\KVLite.NLog.NET46.csproj", "{5BF43DAA-CC30-47F9-9146-57F73BD9483F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{20b7f10e-aa70-4de6-839a-00978375d290}*SharedItemsImports = 13
@@ -142,6 +144,7 @@ Global
 		KVLite\KVLite.projitems*{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}*SharedItemsImports = 4
 		KVLite.WebApi\KVLite.WebApi.projitems*{23b87a0b-df68-432b-b75c-4d73aecfa6e3}*SharedItemsImports = 4
 		KVLite.WebApi\KVLite.WebApi.projitems*{cc96ea69-dcc3-4d9e-bb6a-aced0c479ef3}*SharedItemsImports = 4
+		KVLite.NLog\KVLite.NLog.projitems*{5bf43daa-cc30-47f9-9146-57f73bd9483f}*SharedItemsImports = 4
 		KVLite.WebForms\KVLite.WebForms.projitems*{6de6294a-ced3-4e53-85fb-60b9fead1fe7}*SharedItemsImports = 4
 		KVLite.WebForms\KVLite.WebForms.projitems*{130b3de5-0e0f-440d-982e-cfc1fc4ac4fa}*SharedItemsImports = 4
 		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{0aa94325-2bfb-449a-a6a6-c10e9c0fa65b}*SharedItemsImports = 4
@@ -459,6 +462,18 @@ Global
 		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|x86.ActiveCfg = Release|Any CPU
 		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|x86.Build.0 = Release|Any CPU
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F}.Debug|x86.Build.0 = Debug|Any CPU
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F}.Publish|Any CPU.Build.0 = Release|Any CPU
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F}.Publish|x86.ActiveCfg = Release|Any CPU
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F}.Publish|x86.Build.0 = Release|Any CPU
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F}.Release|x86.ActiveCfg = Release|Any CPU
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -487,5 +502,6 @@ Global
 		{6DE6294A-CED3-4E53-85FB-60B9FEAD1FE7} = {58F3B79E-836C-4A4C-B993-DF9983AEF5AA}
 		{E40332D9-D540-4582-825C-008E2F125D42} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
 		{3A60BAC5-2B90-4749-8D49-0CEFB2D2054D} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
+		{5BF43DAA-CC30-47F9-9146-57F73BD9483F} = {58F3B79E-836C-4A4C-B993-DF9983AEF5AA}
 	EndGlobalSection
 EndGlobal
