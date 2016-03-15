@@ -129,11 +129,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet.SQLite", "NuGe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.WebForms", "KVLite.Examples.WebForms\KVLite.Examples.WebForms.csproj", "{02AE0BEA-762D-4034-AB7C-F7A165E282F7}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KVLite.NLog", "KVLite.NLog\KVLite.NLog.shproj", "{18CCE4F8-740B-4B4C-BEA1-F697425A9A86}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{20b7f10e-aa70-4de6-839a-00978375d290}*SharedItemsImports = 13
 		KVLite.Nancy\KVLite.Nancy.projitems*{6f8516a0-5e50-44b2-aa8f-a3ab285f513e}*SharedItemsImports = 4
 		KVLite\KVLite.projitems*{0fc92c9c-b90c-4d2f-9ee7-2f3c4b06fdd2}*SharedItemsImports = 13
+		KVLite.NLog\KVLite.NLog.projitems*{18cce4f8-740b-4b4c-bea1-f697425a9a86}*SharedItemsImports = 13
 		KVLite.WebForms\KVLite.WebForms.projitems*{3183fee9-f71c-48b6-b485-64ae2f208c73}*SharedItemsImports = 4
 		KVLite.WebForms\KVLite.WebForms.projitems*{2b0dfd0c-5762-46d2-bbdb-da11d31a3acc}*SharedItemsImports = 13
 		KVLite\KVLite.projitems*{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}*SharedItemsImports = 4
