@@ -585,7 +585,7 @@ namespace PommaLabs.KVLite.Core
                     new SQLiteParameter(nameof(serializedValue), serializedValue),
                     new SQLiteParameter(nameof(utcExpiry), utcExpiry.ToUnixTime()),
                     new SQLiteParameter(nameof(interval), (long) interval.TotalSeconds),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime()),
+                    new SQLiteParameter("utcNow", _clock.UnixTime),
                     new SQLiteParameter("maxInsertionCount", Settings.InsertionCountBeforeAutoClean)
                 });
 
@@ -651,7 +651,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate)),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 var removedItemCount = cmd.ExecuteNonQuery();
 
@@ -689,7 +689,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter(nameof(key), key),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 return (long) cmd.ExecuteScalar() > 0L;
             }
@@ -713,7 +713,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate)),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 return (long) cmd.ExecuteScalar();
             }
@@ -738,7 +738,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter(nameof(key), key),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 serializedValue = (byte[]) cmd.ExecuteScalar();
             }
@@ -765,7 +765,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter(nameof(key), key),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -792,7 +792,7 @@ namespace PommaLabs.KVLite.Core
                 cmd.Parameters.AddRange(new[]
                 {
                     new SQLiteParameter(nameof(partition), partition),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -826,7 +826,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter(nameof(key), key),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 serializedValue = (byte[]) cmd.ExecuteScalar();
             }
@@ -854,7 +854,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter(nameof(key), key),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -886,7 +886,7 @@ namespace PommaLabs.KVLite.Core
                 cmd.Parameters.AddRange(new[]
                 {
                     new SQLiteParameter(nameof(partition), partition),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 using (var reader = cmd.ExecuteReader())
                 {
