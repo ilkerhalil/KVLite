@@ -1,25 +1,25 @@
 // File name: AbstractCache.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Common.Logging;
 using Finsa.CodeServices.Clock;
@@ -69,8 +69,8 @@ namespace PommaLabs.KVLite.Core
         /// <value>The log used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to what
-        ///   <see cref="LogManager.GetLogger(System.Type)"/> returns.
+        ///   constructor. If not specified, it defaults to what <see
+        ///   cref="LogManager.GetLogger(System.Type)"/> returns.
         /// </remarks>
         public abstract ILog Log { get; }
 
@@ -82,8 +82,8 @@ namespace PommaLabs.KVLite.Core
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>. Therefore,
         ///   if you do not specify another serializer, make sure that your objects are serializable
-        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields
-        ///   as public properties).
+        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as
+        ///   public properties).
         /// </remarks>
         public abstract ISerializer Serializer { get; }
 
@@ -107,7 +107,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry time.</param>
         /// <param name="interval">The refresh interval.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         protected abstract void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys);
 
         /// <summary>
@@ -174,6 +176,9 @@ namespace PommaLabs.KVLite.Core
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         protected abstract Option<TVal> PeekInternal<TVal>(string partition, string key);
 
         /// <summary>
@@ -185,20 +190,25 @@ namespace PommaLabs.KVLite.Core
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         protected abstract Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key);
 
         /// <summary>
-        ///   Gets the all values in the cache or in the specified partition, without updating
-        ///   expiry dates.
+        ///   Gets the all values in the cache or in the specified partition, without updating expiry dates.
         /// </summary>
         /// <param name="partition">The optional partition.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All values, without updating expiry dates.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         protected abstract CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition);
 
         /// <summary>
@@ -254,12 +264,12 @@ namespace PommaLabs.KVLite.Core
         ///   The last error "swallowed" by the cache. All KVLite caches, by definition, try to
         ///   swallow as much exceptions as possible, because a failure in the cache should never
         ///   harm the main application. This is an important rule.
-        /// 
+        ///
         ///   This property might be used to expose the last error occurred while processing cache
         ///   items. If no error has occurred, this property will simply be null.
-        /// 
-        ///   Every error is carefully logged using the provided
-        ///   <see cref="P:PommaLabs.KVLite.ICache.Log"/>, so no information is lost when the cache
+        ///
+        ///   Every error is carefully logged using the provided <see
+        ///   cref="P:PommaLabs.KVLite.ICache.Log"/>, so no information is lost when the cache
         ///   swallows the exception.
         /// </summary>
         public Exception LastError { get; protected set; }
@@ -281,10 +291,10 @@ namespace PommaLabs.KVLite.Core
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
         /// <remarks>
-        ///   This method, differently from other readers (like
-        ///   <see cref="Get{TVal}(string,string)"/> or <see cref="Peek{TVal}(string,string)"/>),
-        ///   does not have a typed return object, because indexers cannot be generic. Therefore, we
-        ///   have to return a simple <see cref="object"/>.
+        ///   This method, differently from other readers (like <see
+        ///   cref="Get{TVal}(string,string)"/> or <see cref="Peek{TVal}(string,string)"/>), does not
+        ///   have a typed return object, because indexers cannot be generic. Therefore, we have to
+        ///   return a simple <see cref="object"/>.
         /// </remarks>
         public Option<object> this[string partition, string key]
         {
@@ -320,10 +330,10 @@ namespace PommaLabs.KVLite.Core
         /// <returns>The value with the default partition and specified key.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <remarks>
-        ///   This method, differently from other readers (like
-        ///   <see cref="GetFromDefaultPartition{TVal}(string)"/> or
-        ///   <see cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return
-        ///   object, because indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
+        ///   This method, differently from other readers (like <see
+        ///   cref="GetFromDefaultPartition{TVal}(string)"/> or <see
+        ///   cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return object,
+        ///   because indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
         /// </remarks>
         public Option<object> this[string key]
         {
@@ -361,7 +371,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         public void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -386,15 +398,17 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        ///   Adds a "sliding" value with given key and default partition. Value will last as much
-        ///   as specified in given interval and, if accessed before expiry, its lifetime will be
+        ///   Adds a "sliding" value with given key and default partition. Value will last as much as
+        ///   specified in given interval and, if accessed before expiry, its lifetime will be
         ///   extended by the interval itself.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="interval">The interval.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         public void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -426,7 +440,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         public void AddStatic<TVal>(string partition, string key, TVal value, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -458,7 +474,9 @@ namespace PommaLabs.KVLite.Core
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         public void AddStaticToDefaultPartition<TVal>(string key, TVal value, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -490,7 +508,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -522,7 +542,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         public void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -554,7 +576,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="lifetime">The desired lifetime.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         public void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -585,7 +609,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="lifetime">The desired lifetime.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         public void AddTimedToDefaultPartition<TVal>(string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -910,9 +936,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
         public Option<TVal> Get<TVal>(string partition, string key)
         {
@@ -945,9 +971,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <returns>The value with default partition and specified key.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
         public Option<TVal> GetFromDefaultPartition<TVal>(string key)
         {
@@ -981,9 +1007,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
         public Option<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
         {
@@ -1016,9 +1042,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <returns>The cache item with default partition and specified key.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
         public Option<CacheItem<TVal>> GetItemFromDefaultPartition<TVal>(string key)
         {
@@ -1044,15 +1070,15 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will
-        ///   be increased by corresponding interval.
+        ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will be
+        ///   increased by corresponding interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
         public CacheItem<TVal>[] GetItems<TVal>()
         {
@@ -1085,9 +1111,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <returns>All cache items in given partition.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
         public CacheItem<TVal>[] GetItems<TVal>(string partition)
         {
@@ -1116,10 +1142,10 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   At first, it tries to get the cache item with specified partition and key. If it is a
         ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
-        /// 
-        ///   If the value is not found, then it adds a "sliding" value with given partition and
-        ///   key. Value will last as much as specified in given interval and, if accessed before
-        ///   expiry, its lifetime will be extended by the interval itself.
+        ///
+        ///   If the value is not found, then it adds a "sliding" value with given partition and key.
+        ///   Value will last as much as specified in given interval and, if accessed before expiry,
+        ///   its lifetime will be extended by the interval itself.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
@@ -1128,7 +1154,9 @@ namespace PommaLabs.KVLite.Core
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="interval">The interval.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -1182,7 +1210,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   At first, it tries to get the cache item with default partition and specified key. If
         ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
-        /// 
+        ///
         ///   If the value is not found, then it adds a "sliding" value with given key and default
         ///   partition. Value will last as much as specified in given interval and, if accessed
         ///   before expiry, its lifetime will be extended by the interval itself.
@@ -1193,7 +1221,9 @@ namespace PommaLabs.KVLite.Core
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="interval">The interval.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -1247,11 +1277,11 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   At first, it tries to get the cache item with specified partition and key. If it is a
         ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
-        /// 
+        ///
         ///   If the value is not found, then it adds a "static" value with given partition and key.
-        ///   Value will last as much as specified in
-        ///   <see cref="P:PommaLabs.KVLite.Core.AbstractCacheSettings.StaticIntervalInDays"/> and,
-        ///   if accessed before expiry, its lifetime will be extended by that interval.
+        ///   Value will last as much as specified in <see
+        ///   cref="P:PommaLabs.KVLite.Core.AbstractCacheSettings.StaticIntervalInDays"/> and, if
+        ///   accessed before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
@@ -1259,7 +1289,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="valueGetter">
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -1313,18 +1345,20 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   At first, it tries to get the cache item with default partition and specified key. If
         ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
-        /// 
+        ///
         ///   If the value is not found, then it adds a "static" value with given key and default
-        ///   partition. Value will last as much as specified in
-        ///   <see cref="P:PommaLabs.KVLite.Core.AbstractCacheSettings.StaticIntervalInDays"/> and,
-        ///   if accessed before expiry, its lifetime will be extended by that interval.
+        ///   partition. Value will last as much as specified in <see
+        ///   cref="P:PommaLabs.KVLite.Core.AbstractCacheSettings.StaticIntervalInDays"/> and, if
+        ///   accessed before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="key">The key.</param>
         /// <param name="valueGetter">
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -1378,7 +1412,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   At first, it tries to get the cache item with specified partition and key. If it is a
         ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
-        /// 
+        ///
         ///   If the value is not found, then it adds a "timed" value with given partition and key.
         ///   Value will last until the specified time and, if accessed before expiry, its lifetime
         ///   will _not_ be extended.
@@ -1390,7 +1424,9 @@ namespace PommaLabs.KVLite.Core
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -1444,17 +1480,19 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   At first, it tries to get the cache item with default partition and specified key. If
         ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
-        /// 
+        ///
         ///   If the value is not found, then it adds a "timed" value with given key and default
-        ///   partition. Value will last until the specified time and, if accessed before expiry,
-        ///   its lifetime will _not_ be extended.
+        ///   partition. Value will last until the specified time and, if accessed before expiry, its
+        ///   lifetime will _not_ be extended.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="valueGetter">
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="utcExpiry">The UTC expiry.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -1508,10 +1546,10 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   At first, it tries to get the cache item with specified partition and key. If it is a
         ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
-        /// 
+        ///
         ///   If the value is not found, then it adds a "timed" value with given partition and key.
-        ///   Value will last for the specified lifetime and, if accessed before expiry, its
-        ///   lifetime will _not_ be extended.
+        ///   Value will last for the specified lifetime and, if accessed before expiry, its lifetime
+        ///   will _not_ be extended.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
@@ -1520,7 +1558,9 @@ namespace PommaLabs.KVLite.Core
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="lifetime">The desired lifetime.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -1574,7 +1614,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   At first, it tries to get the cache item with default partition and specified key. If
         ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
-        /// 
+        ///
         ///   If the value is not found, then it adds a "timed" value with given key and default
         ///   partition. Value will last for the specified lifetime and, if accessed before expiry,
         ///   its lifetime will _not_ be extended.
@@ -1584,7 +1624,9 @@ namespace PommaLabs.KVLite.Core
         ///   The function that is called in order to get the value when it was not found inside the cache.
         /// </param>
         /// <param name="lifetime">The desired lifetime.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         /// <returns>
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
@@ -1645,10 +1687,13 @@ namespace PommaLabs.KVLite.Core
         ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         public Option<TVal> Peek<TVal>(string partition, string key)
         {
             // Preconditions
@@ -1682,10 +1727,13 @@ namespace PommaLabs.KVLite.Core
         ///   The value corresponding to default partition and given key, without updating expiry date.
         /// </returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         public Option<TVal> PeekIntoDefaultPartition<TVal>(string key)
         {
             // Preconditions
@@ -1719,10 +1767,13 @@ namespace PommaLabs.KVLite.Core
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         public Option<CacheItem<TVal>> PeekItem<TVal>(string partition, string key)
         {
             // Preconditions
@@ -1747,8 +1798,7 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        ///   Gets the item corresponding to default partition and given key, without updating
-        ///   expiry date.
+        ///   Gets the item corresponding to default partition and given key, without updating expiry date.
         /// </summary>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <param name="key">The key.</param>
@@ -1756,10 +1806,13 @@ namespace PommaLabs.KVLite.Core
         ///   The item corresponding to default partition and givne key, without updating expiry date.
         /// </returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         public Option<CacheItem<TVal>> PeekItemIntoDefaultPartition<TVal>(string key)
         {
             // Preconditions
@@ -1789,10 +1842,13 @@ namespace PommaLabs.KVLite.Core
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All values, without updating expiry dates.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         public CacheItem<TVal>[] PeekItems<TVal>()
         {
             // Preconditions
@@ -1823,10 +1879,13 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <returns>All items in given partition, without updating expiry dates.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="object"/> as type parameter; that will work whether the required value is a class
+        ///   or not.
         /// </remarks>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         public CacheItem<TVal>[] PeekItems<TVal>(string partition)
         {
             // Preconditions

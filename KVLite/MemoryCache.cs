@@ -375,9 +375,12 @@ namespace PommaLabs.KVLite
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         protected override Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
-            throw new NotImplementedException(ErrorMessages.MemoryCacheDoesNotAllowPeeking);
+            throw new NotSupportedException(ErrorMessages.MemoryCacheDoesNotAllowPeeking);
         }
 
         /// <summary>
@@ -389,9 +392,12 @@ namespace PommaLabs.KVLite
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         protected override Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
-            throw new NotImplementedException(ErrorMessages.MemoryCacheDoesNotAllowPeeking);
+            throw new NotSupportedException(ErrorMessages.MemoryCacheDoesNotAllowPeeking);
         }
 
         /// <summary>
@@ -406,9 +412,12 @@ namespace PommaLabs.KVLite
         ///   <see cref="T:System.Object"/> as type parameter; that will work whether the required
         ///   value is a class or not.
         /// </remarks>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         protected override CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
         {
-            throw new NotImplementedException(ErrorMessages.MemoryCacheDoesNotAllowPeeking);
+            throw new NotSupportedException(ErrorMessages.MemoryCacheDoesNotAllowPeeking);
         }
 
         /// <summary>
