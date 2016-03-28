@@ -89,7 +89,9 @@ namespace PommaLabs.KVLite.UnitTests
             .Select(x => x.ToString(CultureInfo.InvariantCulture))
             .ToList();
 
+#pragma warning disable CC0033 // Dispose Fields Properly
         protected readonly IKernel Kernel = new StandardKernel(new NinjectConfig());
+#pragma warning restore CC0033 // Dispose Fields Properly
 
         #endregion Constants
 

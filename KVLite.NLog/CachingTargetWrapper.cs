@@ -101,7 +101,7 @@ namespace PommaLabs.KVLite.NLog
     ///   <code lang="C#" source="examples/targets/Configuration API/AsyncWrapper/Wrapping File/Example.cs"/>
     /// </example>
     [Target("CachingWrapper", IsWrapper = true)]
-    public class CachingTargetWrapper : WrapperTargetBase
+    public sealed class CachingTargetWrapper : WrapperTargetBase
     {
         private readonly object lockObject = new object();
         private Timer lazyWriterTimer;
@@ -133,12 +133,12 @@ namespace PommaLabs.KVLite.NLog
         /// <param name="overflowAction">The action to be taken when the queue overflows.</param>
         public CachingTargetWrapper(Target wrappedTarget, int queueLimit, CachingTargetWrapperOverflowAction overflowAction)
         {
-            this.RequestQueue = new CachingRequestQueue(10000, CachingTargetWrapperOverflowAction.Discard);
-            this.TimeToSleepBetweenBatches = 50;
-            this.BatchSize = 100;
-            this.WrappedTarget = wrappedTarget;
-            this.QueueLimit = queueLimit;
-            this.OverflowAction = overflowAction;
+            RequestQueue = new CachingRequestQueue(10000, CachingTargetWrapperOverflowAction.Discard);
+            TimeToSleepBetweenBatches = 50;
+            BatchSize = 100;
+            WrappedTarget = wrappedTarget;
+            QueueLimit = queueLimit;
+            OverflowAction = overflowAction;
         }
 
         /// <summary>
@@ -164,8 +164,8 @@ namespace PommaLabs.KVLite.NLog
         [DefaultValue("Discard")]
         public CachingTargetWrapperOverflowAction OverflowAction
         {
-            get { return this.RequestQueue.OnOverflow; }
-            set { this.RequestQueue.OnOverflow = value; }
+            get { return RequestQueue.OnOverflow; }
+            set { RequestQueue.OnOverflow = value; }
         }
 
         /// <summary>
@@ -175,8 +175,8 @@ namespace PommaLabs.KVLite.NLog
         [DefaultValue(10000)]
         public int QueueLimit
         {
-            get { return this.RequestQueue.RequestLimit; }
-            set { this.RequestQueue.RequestLimit = value; }
+            get { return RequestQueue.RequestLimit; }
+            set { RequestQueue.RequestLimit = value; }
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace PommaLabs.KVLite.NLog
         {
             lock (continuationQueueLock)
             {
-                this.flushAllContinuations.Enqueue(asyncContinuation);
+                flushAllContinuations.Enqueue(asyncContinuation);
             }
         }
 
@@ -201,16 +201,16 @@ namespace PommaLabs.KVLite.NLog
         /// </summary>
         protected override void InitializeTarget()
         {
-            if (this.TimeToSleepBetweenBatches <= 0)
+            if (TimeToSleepBetweenBatches <= 0)
             {
                 throw new NLogConfigurationException("The AysncTargetWrapper\'s TimeToSleepBetweenBatches property must be > 0");
             }
 
             base.InitializeTarget();
-            this.RequestQueue.Clear();
+            RequestQueue.Clear();
             InternalLogger.Trace("AsyncWrapper '{0}': start timer", Name);
-            this.lazyWriterTimer = new Timer(this.ProcessPendingEvents, null, Timeout.Infinite, Timeout.Infinite);
-            this.StartLazyWriterTimer();
+            lazyWriterTimer = new Timer(ProcessPendingEvents, null, Timeout.Infinite, Timeout.Infinite);
+            StartLazyWriterTimer();
         }
 
         /// <summary>
@@ -218,8 +218,8 @@ namespace PommaLabs.KVLite.NLog
         /// </summary>
         protected override void CloseTarget()
         {
-            this.StopLazyWriterThread();
-            if (this.RequestQueue.RequestCount > 0)
+            StopLazyWriterThread();
+            if (RequestQueue.RequestCount > 0)
             {
                 ProcessPendingEvents(null);
             }
@@ -230,13 +230,13 @@ namespace PommaLabs.KVLite.NLog
         /// <summary>
         ///   Starts the lazy writer thread which periodically writes queued log messages.
         /// </summary>
-        protected virtual void StartLazyWriterTimer()
+        private void StartLazyWriterTimer()
         {
-            lock (this.lockObject)
+            lock (lockObject)
             {
-                if (this.lazyWriterTimer != null)
+                if (lazyWriterTimer != null)
                 {
-                    this.lazyWriterTimer.Change(this.TimeToSleepBetweenBatches, Timeout.Infinite);
+                    lazyWriterTimer.Change(TimeToSleepBetweenBatches, Timeout.Infinite);
                 }
             }
         }
@@ -244,14 +244,14 @@ namespace PommaLabs.KVLite.NLog
         /// <summary>
         ///   Stops the lazy writer thread.
         /// </summary>
-        protected virtual void StopLazyWriterThread()
+        private void StopLazyWriterThread()
         {
-            lock (this.lockObject)
+            lock (lockObject)
             {
-                if (this.lazyWriterTimer != null)
+                if (lazyWriterTimer != null)
                 {
-                    this.lazyWriterTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                    this.lazyWriterTimer = null;
+                    lazyWriterTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                    lazyWriterTimer = null;
                 }
             }
         }
@@ -266,25 +266,25 @@ namespace PommaLabs.KVLite.NLog
         /// </remarks>
         protected override void Write(AsyncLogEventInfo logEvent)
         {
-            this.MergeEventProperties(logEvent.LogEvent);
-            this.PrecalculateVolatileLayouts(logEvent.LogEvent);
-            this.RequestQueue.Enqueue(logEvent);
+            MergeEventProperties(logEvent.LogEvent);
+            PrecalculateVolatileLayouts(logEvent.LogEvent);
+            RequestQueue.Enqueue(logEvent);
         }
 
         private void ProcessPendingEvents(object state)
         {
             AsyncContinuation[] continuations;
-            lock (this.continuationQueueLock)
+            lock (continuationQueueLock)
             {
-                continuations = this.flushAllContinuations.Count > 0
-                    ? this.flushAllContinuations.ToArray()
+                continuations = flushAllContinuations.Count > 0
+                    ? flushAllContinuations.ToArray()
                     : new AsyncContinuation[] { null };
-                this.flushAllContinuations.Clear();
+                flushAllContinuations.Clear();
             }
 
             try
             {
-                if (this.WrappedTarget == null)
+                if (WrappedTarget == null)
                 {
                     InternalLogger.Error("AsyncWrapper '{0}': WrappedTarget is NULL", Name);
                     return;
@@ -292,14 +292,14 @@ namespace PommaLabs.KVLite.NLog
 
                 foreach (var continuation in continuations)
                 {
-                    int count = this.BatchSize;
+                    var count = BatchSize;
                     if (continuation != null)
                     {
-                        count = this.RequestQueue.RequestCount;
+                        count = RequestQueue.RequestCount;
                     }
                     InternalLogger.Trace("AsyncWrapper '{0}': Flushing {1} events.", Name, count);
 
-                    if (this.RequestQueue.RequestCount == 0)
+                    if (RequestQueue.RequestCount == 0)
                     {
                         if (continuation != null)
                         {
@@ -307,17 +307,17 @@ namespace PommaLabs.KVLite.NLog
                         }
                     }
 
-                    AsyncLogEventInfo[] logEventInfos = this.RequestQueue.DequeueBatch(count);
+                    var logEventInfos = RequestQueue.DequeueBatch(count);
 
                     if (continuation != null)
                     {
                         // write all events, then flush, then call the continuation
-                        this.WrappedTarget.WriteAsyncLogEvents(logEventInfos);//, ex => this.WrappedTarget.Flush(continuation));
+                        WrappedTarget.WriteAsyncLogEvents(logEventInfos);//, ex => this.WrappedTarget.Flush(continuation));
                     }
                     else
                     {
                         // just write all events
-                        this.WrappedTarget.WriteAsyncLogEvents(logEventInfos);
+                        WrappedTarget.WriteAsyncLogEvents(logEventInfos);
                     }
                 }
             }
@@ -332,7 +332,7 @@ namespace PommaLabs.KVLite.NLog
             }
             finally
             {
-                this.StartLazyWriterTimer();
+                StartLazyWriterTimer();
             }
         }
     }

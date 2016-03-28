@@ -55,10 +55,12 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void NewCache_BlankPath()
         {
+            ICache cache;
             try
             {
-                // ReSharper disable once ObjectCreationAsStatement
-                new PersistentCache(new PersistentCacheSettings { CacheFile = BlankPath }, Kernel.Get<IClock>());
+#pragma warning disable CC0022 // Should dispose object
+                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = BlankPath }, Kernel.Get<IClock>());
+#pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)
             {
@@ -70,10 +72,12 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void NewCache_EmptyPath()
         {
+            ICache cache;
             try
             {
-                // ReSharper disable once ObjectCreationAsStatement
-                new PersistentCache(new PersistentCacheSettings { CacheFile = string.Empty }, Kernel.Get<IClock>());
+#pragma warning disable CC0022 // Should dispose object
+                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = string.Empty }, Kernel.Get<IClock>());
+#pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)
             {
@@ -85,10 +89,12 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void NewCache_NullPath()
         {
+            ICache cache;
             try
             {
-                // ReSharper disable once ObjectCreationAsStatement
-                new PersistentCache(new PersistentCacheSettings { CacheFile = null }, Kernel.Get<IClock>());
+#pragma warning disable CC0022 // Should dispose object
+                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = null }, Kernel.Get<IClock>());
+#pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)
             {

@@ -43,7 +43,7 @@ namespace PommaLabs.KVLite.Nancy
         /// <summary>
         ///   The partition used by Nancy response cache items.
         /// </summary>
-        const string ResponseCachePartition = "KVLite.Nancy.ResponseCache";
+        const string ResponseCachePartition = "KVL.Nancy.RC";
 
         readonly ICache _cache;
 

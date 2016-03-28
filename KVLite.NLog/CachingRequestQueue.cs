@@ -54,14 +54,26 @@
 
 using global::NLog.Common;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace PommaLabs.KVLite.NLog
 {
     /// <summary>
     ///   Asynchronous request queue.
     /// </summary>
-    internal class CachingRequestQueue
+    internal sealed class CachingRequestQueue
     {
+        #region Constants
+
+        /// <summary>
+        ///   The partition prefix used by NLog caching target wrapper items.
+        /// </summary>
+        public const string ResponseCachePartition = "KVL.NLog.CTW_";
+
+        #endregion Constants
+
+        private readonly ICache _cache;
+        private int _eventCount;
         private readonly Queue<AsyncLogEventInfo> _logEventInfoQueue = new Queue<AsyncLogEventInfo>();
 
         /// <summary>
@@ -98,16 +110,17 @@ namespace PommaLabs.KVLite.NLog
         /// <param name="logEventInfo">The log event info.</param>
         public void Enqueue(AsyncLogEventInfo logEventInfo)
         {
+            var newEventCount = Interlocked.Increment(ref _eventCount);
             lock (this)
             {
-                if (_logEventInfoQueue.Count >= RequestLimit)
+                if (newEventCount >= RequestLimit)
                 {
-                    InternalLogger.Debug("Async queue is full");
+                    InternalLogger.Debug("Caching queue is full");
                     switch (OnOverflow)
                     {
                         case CachingTargetWrapperOverflowAction.Discard:
-                            InternalLogger.Debug("Discarding one element from queue");
-                            _logEventInfoQueue.Dequeue();
+                            InternalLogger.Debug("Discarding incoming element");
+                            Interlocked.Decrement(ref _eventCount);
                             break;
 
                         case CachingTargetWrapperOverflowAction.Grow:
@@ -118,11 +131,11 @@ namespace PommaLabs.KVLite.NLog
                             while (_logEventInfoQueue.Count >= RequestLimit)
                             {
                                 InternalLogger.Debug("Blocking because the overflow action is Block...");
-                                System.Threading.Monitor.Wait(this);
-                                InternalLogger.Trace("Entered critical section.");
+                                Monitor.Wait(this);
+                                InternalLogger.Trace("Entered critical section");
                             }
 
-                            InternalLogger.Trace("Limit ok.");
+                            InternalLogger.Trace("Limit OK");
                             break;
                     }
                 }
