@@ -38,7 +38,7 @@ namespace PommaLabs.KVLite.UnitTests
         public override void Load()
         {
             Bind<IClock>().To<MockClock>().InSingletonScope();
-            Bind<ICompressor>().To<SnappyCompressor>().InSingletonScope();
+            Bind<ICompressor>().To<LZ4Compressor>().InSingletonScope();
             Bind<ILog>().To<NoOpLogger>().InSingletonScope();
             Bind<ISerializer>().To<JsonSerializer>().InSingletonScope();
             Bind<JsonSerializerSettings>().ToMethod(ctx => new JsonSerializerSettings());

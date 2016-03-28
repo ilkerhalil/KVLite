@@ -128,7 +128,7 @@ namespace PommaLabs.KVLite.Core
             _settings = settings;
             _clock = clock ?? new SystemClock();
             _log = log ?? LogManager.GetLogger(GetType());
-            _compressor = compressor ?? new SnappyCompressor();
+            _compressor = compressor ?? new LZ4Compressor();
 
             // We need to properly customize the default serializer settings in no custom serializer
             // has been specified.
