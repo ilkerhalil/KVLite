@@ -113,6 +113,70 @@ namespace PommaLabs.KVLite.UnitTests
 
         #endregion
 
+        #region Parent keys management
+
+        [Test, ExpectedException(typeof(NotSupportedException))]
+        public void AddSliding_TooManyParentKeys()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v = StringItems[2];
+            var t = new string[Cache.MaxParentKeyCountPerItem + 1];
+            Cache.AddSliding(p, k, v, TimeSpan.FromDays(1), t);
+        }
+
+        [Test, ExpectedException(typeof(NotSupportedException))]
+        public void AddStatic_TooManyParentKeys()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v = StringItems[2];
+            var t = new string[Cache.MaxParentKeyCountPerItem + 1];
+            Cache.AddStatic(p, k, v, t);
+        }
+
+        [Test, ExpectedException(typeof(NotSupportedException))]
+        public void AddTimed_TooManyParentKeys()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v = StringItems[2];
+            var t = new string[Cache.MaxParentKeyCountPerItem + 1];
+            Cache.AddTimed(p, k, v, TimeSpan.FromDays(1), t);
+        }
+
+        [Test, ExpectedException(typeof(NotSupportedException))]
+        public void GetOrAddSliding_TooManyParentKeys()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v = StringItems[2];
+            var t = new string[Cache.MaxParentKeyCountPerItem + 1];
+            Cache.GetOrAddSliding(p, k, () => v, TimeSpan.FromDays(1), t);
+        }
+
+        [Test, ExpectedException(typeof(NotSupportedException))]
+        public void GetOrAddStatic_TooManyParentKeys()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v = StringItems[2];
+            var t = new string[Cache.MaxParentKeyCountPerItem + 1];
+            Cache.GetOrAddStatic(p, k, () => v, t);
+        }
+
+        [Test, ExpectedException(typeof(NotSupportedException))]
+        public void GetOrAddTimed_TooManyParentKeys()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v = StringItems[2];
+            var t = new string[Cache.MaxParentKeyCountPerItem + 1];
+            Cache.GetOrAddTimed(p, k, () => v, TimeSpan.FromDays(1), t);
+        }
+
+        #endregion
+
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void AddSliding_NullKey()

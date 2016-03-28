@@ -1,25 +1,25 @@
 ﻿// File name: AbstractSQLiteCache.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool;
 using Common.Logging;
@@ -56,17 +56,17 @@ namespace PommaLabs.KVLite.Core
         ///   its defaults. WAL journal does limit the capability to change that value even when the
         ///   DB is still empty.
         /// </summary>
-        const int PageSizeInBytes = 1024;
+        private const int PageSizeInBytes = 4096;
 
         /// <summary>
         ///   The string used to tag streams coming from <see cref="RecyclableMemoryStreamManager.Instance"/>.
         /// </summary>
-        const string StreamTag = nameof(KVLite);
+        private const string StreamTag = nameof(KVLite);
 
         /// <summary>
         ///   The initial capacity of the streams retrieved from <see cref="RecyclableMemoryStreamManager.Instance"/>.
         /// </summary>
-        const int InitialStreamCapacity = 1024;
+        private const int InitialStreamCapacity = 512;
 
         #endregion Constants
 
@@ -75,37 +75,37 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   The connection pool used to cache open connections.
         /// </summary>
-        ObjectPool<PooledObjectWrapper<SQLiteConnection>> _connectionPool;
+        private ObjectPool<PooledObjectWrapper<SQLiteConnection>> _connectionPool;
 
         /// <summary>
         ///   The connection string used to connect to the SQLite database.
         /// </summary>
-        string _connectionString;
+        private string _connectionString;
 
         /// <summary>
         ///   The cache settings.
         /// </summary>
-        readonly TCacheSettings _settings;
+        private readonly TCacheSettings _settings;
 
         /// <summary>
         ///   The clock instance, used to compute expiry times, etc etc.
         /// </summary>
-        readonly IClock _clock;
+        private readonly IClock _clock;
 
         /// <summary>
         ///   The log used by the cache.
         /// </summary>
-        readonly ILog _log;
+        private readonly ILog _log;
 
         /// <summary>
         ///   The serializer used by the cache.
         /// </summary>
-        readonly ISerializer _serializer;
+        private readonly ISerializer _serializer;
 
         /// <summary>
         ///   The compressor used by the cache.
         /// </summary>
-        readonly ICompressor _compressor;
+        private readonly ICompressor _compressor;
 
         #endregion Fields
 
@@ -239,8 +239,8 @@ namespace PommaLabs.KVLite.Core
             {
                 var result = ClearInternal(null, cacheReadMode);
 
-                // Postconditions - NOT VALID: Methods below return counters which are not related
-                // to the number of items the call above actually cleared.
+                // Postconditions - NOT VALID: Methods below return counters which are not related to
+                // the number of items the call above actually cleared.
 
                 //Debug.Assert(Count(cacheReadMode) == 0);
                 //Debug.Assert(LongCount(cacheReadMode) == 0L);
@@ -272,8 +272,8 @@ namespace PommaLabs.KVLite.Core
             {
                 var result = ClearInternal(partition, cacheReadMode);
 
-                // Postconditions - NOT VALID: Methods below return counters which are not related
-                // to the number of items the call above actually cleared.
+                // Postconditions - NOT VALID: Methods below return counters which are not related to
+                // the number of items the call above actually cleared.
 
                 //Debug.Assert(Count(cacheReadMode) == 0);
                 //Debug.Assert(LongCount(cacheReadMode) == 0L);
@@ -488,10 +488,16 @@ namespace PommaLabs.KVLite.Core
         /// <value>The log used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to what
-        ///   <see cref="LogManager.GetLogger(System.Type)"/> returns.
+        ///   constructor. If not specified, it defaults to what <see
+        ///   cref="LogManager.GetLogger(System.Type)"/> returns.
         /// </remarks>
         public sealed override ILog Log => _log;
+
+        /// <summary>
+        ///   The maximum number of parent keys each item can have. SQLite based caches support up to
+        ///   five parent keys per item.
+        /// </summary>
+        public sealed override int MaxParentKeyCountPerItem { get; } = 5;
 
         /// <summary>
         ///   Gets the serializer used by the cache.
@@ -501,8 +507,8 @@ namespace PommaLabs.KVLite.Core
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>. Therefore,
         ///   if you do not specify another serializer, make sure that your objects are serializable
-        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields
-        ///   as public properties).
+        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as
+        ///   public properties).
         /// </remarks>
         public sealed override ISerializer Serializer => _serializer;
 
@@ -599,11 +605,6 @@ namespace PommaLabs.KVLite.Core
                     parameters.Add(new SQLiteParameter("parentKey2", parentKeyCount > 2 ? parentKeys[2] : null));
                     parameters.Add(new SQLiteParameter("parentKey3", parentKeyCount > 3 ? parentKeys[3] : null));
                     parameters.Add(new SQLiteParameter("parentKey4", parentKeyCount > 4 ? parentKeys[4] : null));
-                    parameters.Add(new SQLiteParameter("parentKey5", parentKeyCount > 5 ? parentKeys[5] : null));
-                    parameters.Add(new SQLiteParameter("parentKey6", parentKeyCount > 6 ? parentKeys[6] : null));
-                    parameters.Add(new SQLiteParameter("parentKey7", parentKeyCount > 7 ? parentKeys[7] : null));
-                    parameters.Add(new SQLiteParameter("parentKey8", parentKeyCount > 8 ? parentKeys[8] : null));
-                    parameters.Add(new SQLiteParameter("parentKey9", parentKeyCount > 9 ? parentKeys[9] : null));
                 }
                 else
                 {
@@ -612,21 +613,16 @@ namespace PommaLabs.KVLite.Core
                     parameters.Add(new SQLiteParameter("parentKey2", null));
                     parameters.Add(new SQLiteParameter("parentKey3", null));
                     parameters.Add(new SQLiteParameter("parentKey4", null));
-                    parameters.Add(new SQLiteParameter("parentKey5", null));
-                    parameters.Add(new SQLiteParameter("parentKey6", null));
-                    parameters.Add(new SQLiteParameter("parentKey7", null));
-                    parameters.Add(new SQLiteParameter("parentKey8", null));
-                    parameters.Add(new SQLiteParameter("parentKey9", null));
                 }
 
                 insertionCount = (long) cmd.ExecuteScalar();
             }
 
-            // Insertion has concluded successfully, therefore we increment the operation counter.
-            // If it has reached the "InsertionCountBeforeAutoClean" configuration parameter, then
-            // we must reset it and do a SOFT cleanup. Following code is not fully thread safe, but
-            // it does not matter, because the "InsertionCountBeforeAutoClean" parameter should be
-            // just an hint on when to do the cleanup.
+            // Insertion has concluded successfully, therefore we increment the operation counter. If
+            // it has reached the "InsertionCountBeforeAutoClean" configuration parameter, then we
+            // must reset it and do a SOFT cleanup. Following code is not fully thread safe, but it
+            // does not matter, because the "InsertionCountBeforeAutoClean" parameter should be just
+            // an hint on when to do the cleanup.
             if (insertionCount >= Settings.InsertionCountBeforeAutoClean)
             {
                 // If they were equal, then we need to run the maintenance cleanup. The insertion
@@ -866,16 +862,15 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        ///   Gets the all values in the cache or in the specified partition, without updating
-        ///   expiry dates.
+        ///   Gets the all values in the cache or in the specified partition, without updating expiry dates.
         /// </summary>
         /// <param name="partition">The optional partition.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All values, without updating expiry dates.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="T:System.Object"/> as type parameter; that will work whether the required
-        ///   value is a class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="T:System.Object"/> as type parameter; that will work whether the required value
+        ///   is a class or not.
         /// </remarks>
         protected sealed override CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
         {
@@ -920,7 +915,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
+        private TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
         {
             using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(StreamTag, serializedValue, 0, serializedValue.Length))
             using (var decompressionStream = _compressor.CreateDecompressionStream(memoryStream))
@@ -929,7 +924,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        Option<TVal> DeserializeValue<TVal>(byte[] serializedValue, string partition, string key)
+        private Option<TVal> DeserializeValue<TVal>(byte[] serializedValue, string partition, string key)
         {
             if (serializedValue == null)
             {
@@ -951,7 +946,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        Option<CacheItem<TVal>> DeserializeCacheItem<TVal>(DbCacheItem src)
+        private Option<CacheItem<TVal>> DeserializeCacheItem<TVal>(DbCacheItem src)
         {
             if (src == null)
             {
@@ -982,7 +977,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        static IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
+        private static IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
         {
             const int valueCount = 16;
             var values = new object[valueCount];
@@ -1019,7 +1014,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        PooledObjectWrapper<SQLiteConnection> CreatePooledConnection()
+        private PooledObjectWrapper<SQLiteConnection> CreatePooledConnection()
         {
 #pragma warning disable CC0022 // Should dispose object
 
@@ -1047,7 +1042,7 @@ namespace PommaLabs.KVLite.Core
 #pragma warning restore CC0022 // Should dispose object
         }
 
-        void InitConnectionString()
+        private void InitConnectionString()
         {
             SQLiteJournalModeEnum journalMode;
             var cacheUri = GetDataSource(out journalMode);
@@ -1055,10 +1050,8 @@ namespace PommaLabs.KVLite.Core
             var builder = new SQLiteConnectionStringBuilder
             {
                 BaseSchemaName = "kvlite",
-                BinaryGUID = true,
-                BrowsableConnectionString = false,
                 /* Number of pages of 1KB, 2000 is the suggested value */
-                CacheSize = 2000,
+                CacheSize = -2000,
                 DateTimeFormat = SQLiteDateFormats.Ticks,
                 DateTimeKind = DateTimeKind.Utc,
                 DefaultIsolationLevel = IsolationLevel.ReadCommitted,
@@ -1066,7 +1059,8 @@ namespace PommaLabs.KVLite.Core
                 DefaultTimeout = 180,
                 Enlist = false,
                 FailIfMissing = false,
-                ForeignKeys = false,
+                /* Required by parent keys */
+                ForeignKeys = true,
                 FullUri = cacheUri,
                 JournalMode = journalMode,
                 LegacyFormat = false,
@@ -1085,7 +1079,7 @@ namespace PommaLabs.KVLite.Core
             _connectionPool = new ObjectPool<PooledObjectWrapper<SQLiteConnection>>(1, 10, CreatePooledConnection);
         }
 
-        void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (DataSourceHasChanged(e.PropertyName))
             {
@@ -1093,7 +1087,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        static bool IsSchemaReady(SQLiteDataReader dataReader)
+        private static bool IsSchemaReady(SQLiteDataReader dataReader)
         {
             var columns = new HashSet<string>();
 
@@ -1102,7 +1096,8 @@ namespace PommaLabs.KVLite.Core
                 columns.Add(dataReader.GetValue(dataReader.GetOrdinal("name")) as string);
             }
 
-            return columns.Contains("partition")
+            return columns.Count == 11
+                && columns.Contains("partition")
                 && columns.Contains("key")
                 && columns.Contains("serializedValue")
                 && columns.Contains("utcCreation")
@@ -1112,12 +1107,7 @@ namespace PommaLabs.KVLite.Core
                 && columns.Contains("parentKey1")
                 && columns.Contains("parentKey2")
                 && columns.Contains("parentKey3")
-                && columns.Contains("parentKey4")
-                && columns.Contains("parentKey5")
-                && columns.Contains("parentKey6")
-                && columns.Contains("parentKey7")
-                && columns.Contains("parentKey8")
-                && columns.Contains("parentKey9");
+                && columns.Contains("parentKey4");
         }
 
         #endregion Private Methods
@@ -1128,7 +1118,7 @@ namespace PommaLabs.KVLite.Core
         ///   Represents a row in the cache table.
         /// </summary>
         [Serializable]
-        sealed class DbCacheItem : EquatableObject<DbCacheItem>
+        private sealed class DbCacheItem : EquatableObject<DbCacheItem>
         {
             #region Constants
 
@@ -1157,8 +1147,8 @@ namespace PommaLabs.KVLite.Core
             #region EquatableObject<DbCacheItem> Members
 
             /// <summary>
-            ///   Returns all property (or field) values, along with their names, so that they can
-            ///   be used to produce a meaningful <see cref="M:Finsa.CodeServices.Common.FormattableObject.ToString"/>.
+            ///   Returns all property (or field) values, along with their names, so that they can be
+            ///   used to produce a meaningful <see cref="M:Finsa.CodeServices.Common.FormattableObject.ToString"/>.
             /// </summary>
             protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
             {

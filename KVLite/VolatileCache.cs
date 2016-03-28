@@ -46,7 +46,9 @@ namespace PommaLabs.KVLite
         ///   default application settings.
         /// </summary>
         [Pure]
+#pragma warning disable CC0022 // Should dispose object
         public static VolatileCache DefaultInstance { get; } = new VolatileCache(new VolatileCacheSettings());
+#pragma warning restore CC0022 // Should dispose object
 
         #endregion Default Instance
 

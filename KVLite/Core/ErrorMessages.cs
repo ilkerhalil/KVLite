@@ -141,6 +141,11 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string MemoryCacheDoesNotAllowPeeking = @".NET memory cache does not allow peeking items, therefore this method is not implemented.";
+        public const string CacheDoesNotAllowPeeking = @"This cache does not allow peeking items, therefore this method is not implemented.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string TooManyParentKeys = @"Too many parent keys have been specified for this item.";
     }
 }

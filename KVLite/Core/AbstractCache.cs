@@ -75,6 +75,11 @@ namespace PommaLabs.KVLite.Core
         public abstract ILog Log { get; }
 
         /// <summary>
+        ///   The maximum number of parent keys each item can have.
+        /// </summary>
+        public abstract int MaxParentKeyCountPerItem { get; }
+
+        /// <summary>
         ///   Gets the serializer used by the cache.
         /// </summary>
         /// <value>The serializer used by the cache.</value>
@@ -374,6 +379,10 @@ namespace PommaLabs.KVLite.Core
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -381,8 +390,9 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 AddInternal(partition, key, value, Clock.UtcNow + interval, interval, parentKeys);
@@ -409,14 +419,19 @@ namespace PommaLabs.KVLite.Core
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + interval, interval, parentKeys);
@@ -443,6 +458,10 @@ namespace PommaLabs.KVLite.Core
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public void AddStatic<TVal>(string partition, string key, TVal value, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -450,8 +469,9 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 AddInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval, parentKeys);
@@ -477,14 +497,19 @@ namespace PommaLabs.KVLite.Core
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public void AddStaticToDefaultPartition<TVal>(string key, TVal value, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval, parentKeys);
@@ -511,6 +536,10 @@ namespace PommaLabs.KVLite.Core
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -518,8 +547,9 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero, parentKeys);
@@ -545,14 +575,19 @@ namespace PommaLabs.KVLite.Core
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero, parentKeys);
@@ -579,6 +614,10 @@ namespace PommaLabs.KVLite.Core
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -586,8 +625,9 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 AddInternal(partition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero, parentKeys);
@@ -612,14 +652,19 @@ namespace PommaLabs.KVLite.Core
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public void AddTimedToDefaultPartition<TVal>(string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero, parentKeys);
@@ -1161,6 +1206,10 @@ namespace PommaLabs.KVLite.Core
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -1168,8 +1217,9 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 var result = GetInternal<TVal>(partition, key);
@@ -1228,14 +1278,19 @@ namespace PommaLabs.KVLite.Core
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public TVal GetOrAddSlidingToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 var result = GetInternal<TVal>(Settings.DefaultPartition, key);
@@ -1296,6 +1351,10 @@ namespace PommaLabs.KVLite.Core
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public TVal GetOrAddStatic<TVal>(string partition, string key, Func<TVal> valueGetter, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -1303,8 +1362,9 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 var result = GetInternal<TVal>(partition, key);
@@ -1363,14 +1423,19 @@ namespace PommaLabs.KVLite.Core
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public TVal GetOrAddStaticToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 var result = GetInternal<TVal>(Settings.DefaultPartition, key);
@@ -1431,6 +1496,10 @@ namespace PommaLabs.KVLite.Core
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -1438,8 +1507,9 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 var result = GetInternal<TVal>(partition, key);
@@ -1497,14 +1567,19 @@ namespace PommaLabs.KVLite.Core
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 var result = GetInternal<TVal>(Settings.DefaultPartition, key);
@@ -1565,6 +1640,10 @@ namespace PommaLabs.KVLite.Core
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
@@ -1572,8 +1651,9 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 var result = GetInternal<TVal>(partition, key);
@@ -1631,14 +1711,19 @@ namespace PommaLabs.KVLite.Core
         ///   The value found in the cache or the one returned by <paramref name="valueGetter"/>, in
         ///   case a new value has been added to the cache.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         public TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-
+            
             try
             {
                 var result = GetInternal<TVal>(Settings.DefaultPartition, key);
@@ -1700,6 +1785,7 @@ namespace PommaLabs.KVLite.Core
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseNotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
             {
@@ -1739,6 +1825,7 @@ namespace PommaLabs.KVLite.Core
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseNotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
             {
@@ -1780,6 +1867,7 @@ namespace PommaLabs.KVLite.Core
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseNotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
             {
@@ -1818,6 +1906,7 @@ namespace PommaLabs.KVLite.Core
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            RaiseNotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
             {
@@ -1853,6 +1942,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            RaiseNotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
             {
@@ -1891,6 +1981,7 @@ namespace PommaLabs.KVLite.Core
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            RaiseNotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
             {

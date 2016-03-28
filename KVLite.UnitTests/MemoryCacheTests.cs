@@ -205,6 +205,68 @@ namespace PommaLabs.KVLite.UnitTests
 
         #endregion SystemMemoryCache disposal
 
+        #region Peek - Not supported
+
+        [Test, ExpectedException(typeof(NotSupportedException))]
+        public void Peek_ShouldThrowNotSupportedException()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v = StringItems[2];
+            Cache.AddStatic(p, k, v);
+            Cache.Peek<string>(p, k);
+        }
+
+        [Test, ExpectedException(typeof(NotSupportedException))]
+        public void PeekIntoDefaultPartition_ShouldThrowNotSupportedException()
+        {
+            var k = StringItems[1];
+            var v = StringItems[2];
+            Cache.AddStaticToDefaultPartition(k, v);
+            Cache.PeekIntoDefaultPartition<string>(k);
+        }
+
+        [Test, ExpectedException(typeof(NotSupportedException))]
+        public void PeekItem_ShouldThrowNotSupportedException()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v = StringItems[2];
+            Cache.AddStatic(p, k, v);
+            Cache.PeekItem<string>(p, k);
+        }
+
+        [Test, ExpectedException(typeof(NotSupportedException))]
+        public void PeekItemIntoDefaultPartition_ShouldThrowNotSupportedException()
+        {
+            var k = StringItems[1];
+            var v = StringItems[2];
+            Cache.AddStaticToDefaultPartition(k, v);
+            Cache.PeekItemIntoDefaultPartition<string>(k);
+        }
+
+        [Test, ExpectedException(typeof(NotSupportedException))]
+        public void PeekItems_AllCache_ShouldThrowNotSupportedException()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v = StringItems[2];
+            Cache.AddStatic(p, k, v);
+            Cache.PeekItems<string>();
+        }
+
+        [Test, ExpectedException(typeof(NotSupportedException))]
+        public void PeekItems_OnePartition_ShouldThrowNotSupportedException()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v = StringItems[2];
+            Cache.AddStatic(p, k, v);
+            Cache.PeekItems<string>(p);
+        }
+
+        #endregion
+
         [Test]
         public void AddStatic_WithParentKey_RemoveParentAndChildrenShouldAlsoBeRemoved()
         {

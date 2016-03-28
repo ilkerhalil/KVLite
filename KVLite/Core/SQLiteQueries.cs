@@ -69,22 +69,12 @@ namespace PommaLabs.KVLite.Core
                 parentKey2 TEXT,
                 parentKey3 TEXT,
                 parentKey4 TEXT,
-                parentKey5 TEXT,
-                parentKey6 TEXT,
-                parentKey7 TEXT,
-                parentKey8 TEXT,
-                parentKey9 TEXT,
                 CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key),
                 CONSTRAINT CacheItem_FK0 FOREIGN KEY (partition, parentKey0) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
                 CONSTRAINT CacheItem_FK1 FOREIGN KEY (partition, parentKey1) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
                 CONSTRAINT CacheItem_FK2 FOREIGN KEY (partition, parentKey2) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
                 CONSTRAINT CacheItem_FK3 FOREIGN KEY (partition, parentKey3) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
-                CONSTRAINT CacheItem_FK4 FOREIGN KEY (partition, parentKey4) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
-                CONSTRAINT CacheItem_FK5 FOREIGN KEY (partition, parentKey5) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
-                CONSTRAINT CacheItem_FK6 FOREIGN KEY (partition, parentKey6) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
-                CONSTRAINT CacheItem_FK7 FOREIGN KEY (partition, parentKey7) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
-                CONSTRAINT CacheItem_FK8 FOREIGN KEY (partition, parentKey8) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
-                CONSTRAINT CacheItem_FK9 FOREIGN KEY (partition, parentKey9) REFERENCES CacheItem (partition, key) ON DELETE CASCADE
+                CONSTRAINT CacheItem_FK4 FOREIGN KEY (partition, parentKey4) REFERENCES CacheItem (partition, key) ON DELETE CASCADE
             );
             CREATE INDEX CacheItem_UtcExpiry_Idx ON CacheItem (utcExpiry ASC);
             CREATE INDEX CacheItem_ParentKey0_Idx ON CacheItem (partition, parentKey0);
@@ -92,26 +82,17 @@ namespace PommaLabs.KVLite.Core
             CREATE INDEX CacheItem_ParentKey2_Idx ON CacheItem (partition, parentKey2);
             CREATE INDEX CacheItem_ParentKey3_Idx ON CacheItem (partition, parentKey3);
             CREATE INDEX CacheItem_ParentKey4_Idx ON CacheItem (partition, parentKey4);
-            CREATE INDEX CacheItem_ParentKey5_Idx ON CacheItem (partition, parentKey5);
-            CREATE INDEX CacheItem_ParentKey6_Idx ON CacheItem (partition, parentKey6);
-            CREATE INDEX CacheItem_ParentKey7_Idx ON CacheItem (partition, parentKey7);
-            CREATE INDEX CacheItem_ParentKey8_Idx ON CacheItem (partition, parentKey8);
-            CREATE INDEX CacheItem_ParentKey9_Idx ON CacheItem (partition, parentKey9);
         ");
 
         public static readonly string Add = MinifyQuery(@"
             insert or ignore into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval, 
-                                             parentKey0, parentKey1, parentKey2, parentKey3, parentKey4, 
-                                             parentKey5, parentKey6, parentKey7, parentKey8, parentKey9)
+                                             parentKey0, parentKey1, parentKey2, parentKey3, parentKey4)
             values (@partition, @key, @serializedValue, @utcNow, @utcExpiry, @interval, 
-                    @parentKey0, @parentKey1, @parentKey2, @parentKey3, @parentKey4, 
-                    @parentKey5, @parentKey6, @parentKey7, @parentKey8, @parentKey9);
+                    @parentKey0, @parentKey1, @parentKey2, @parentKey3, @parentKey4);
 
             update CacheItem
                set serializedValue = @serializedValue, utcCreation = @utcNow, utcExpiry = @utcExpiry, interval = @interval,
-                   parentKey0 = @parentKey0, parentKey1 = @parentKey1, parentKey2 = @parentKey2, parentKey3 = @parentKey3,
-                   parentKey4 = @parentKey4, parentKey5 = @parentKey5, parentKey6 = @parentKey6, parentKey7 = @parentKey7,
-                   parentKey8 = @parentKey8, parentKey9 = @parentKey9
+                   parentKey0 = @parentKey0, parentKey1 = @parentKey1, parentKey2 = @parentKey2, parentKey3 = @parentKey3, parentKey4 = @parentKey4
              where partition = @partition and key = @key
                and changes() = 0; -- Above INSERT has failed
 
@@ -153,8 +134,7 @@ namespace PommaLabs.KVLite.Core
 
         public static readonly string PeekManyItems = MinifyQuery(@"
             select partition, key, serializedValue, utcCreation, utcExpiry, interval, 
-                   parentKey0, parentKey1, parentKey2, parentKey3, parentKey4, 
-                   parentKey5, parentKey6, parentKey7, parentKey8, parentKey9
+                   parentKey0, parentKey1, parentKey2, parentKey3, parentKey4
               from CacheItem
              where (@partition is null or partition = @partition)
                and partition != {CacheVariablesPartition} -- Ignore cache variables
@@ -163,8 +143,7 @@ namespace PommaLabs.KVLite.Core
 
         public static readonly string PeekOneItem = MinifyQuery(@"
             select partition, key, serializedValue, utcCreation, utcExpiry, interval, 
-                   parentKey0, parentKey1, parentKey2, parentKey3, parentKey4, 
-                   parentKey5, parentKey6, parentKey7, parentKey8, parentKey9
+                   parentKey0, parentKey1, parentKey2, parentKey3, parentKey4
               from CacheItem
              where partition = @partition
                and key = @key
@@ -188,7 +167,6 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string SetPragmas = MinifyQuery(@"
-            PRAGMA foreign_keys = ON; -- Required by parent keys
             PRAGMA journal_size_limit = {0}; -- Size in bytes
             PRAGMA temp_store = MEMORY;
             PRAGMA wal_autocheckpoint = {1};

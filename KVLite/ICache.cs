@@ -108,6 +108,12 @@ namespace PommaLabs.KVLite
         ILog Log { get; }
 
         /// <summary>
+        ///   The maximum number of parent keys each item can have.
+        /// </summary>
+        [Pure]
+        int MaxParentKeyCountPerItem { get; }
+
+        /// <summary>
         ///   Gets the serializer used by the cache.
         /// </summary>
         /// <value>The serializer used by the cache.</value>
@@ -184,6 +190,10 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null);
 
         /// <summary>
@@ -199,6 +209,10 @@ namespace PommaLabs.KVLite
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval, IList<string> parentKeys = null);
 
         /// <summary>
@@ -216,6 +230,10 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         void AddStatic<TVal>(string partition, string key, TVal value, IList<string> parentKeys = null);
 
         /// <summary>
@@ -230,6 +248,10 @@ namespace PommaLabs.KVLite
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         void AddStaticToDefaultPartition<TVal>(string key, TVal value, IList<string> parentKeys = null);
 
         /// <summary>
@@ -247,6 +269,10 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null);
 
         /// <summary>
@@ -260,6 +286,10 @@ namespace PommaLabs.KVLite
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null);
 
         /// <summary>
@@ -277,6 +307,10 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null);
 
         /// <summary>
@@ -290,6 +324,10 @@ namespace PommaLabs.KVLite
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         void AddTimedToDefaultPartition<TVal>(string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null);
 
         /// <summary>
@@ -507,6 +545,10 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
         ///   are null.
         /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null);
 
         /// <summary>
@@ -532,6 +574,10 @@ namespace PommaLabs.KVLite
         /// </returns>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
+        /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         TVal GetOrAddSlidingToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null);
 
@@ -561,6 +607,10 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
         ///   are null.
         /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         TVal GetOrAddStatic<TVal>(string partition, string key, Func<TVal> valueGetter, IList<string> parentKeys = null);
 
         /// <summary>
@@ -586,6 +636,10 @@ namespace PommaLabs.KVLite
         /// </returns>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
+        /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         TVal GetOrAddStaticToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, IList<string> parentKeys = null);
 
@@ -615,6 +669,10 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
         ///   are null.
         /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null);
 
         /// <summary>
@@ -639,6 +697,10 @@ namespace PommaLabs.KVLite
         /// </returns>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
+        /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null);
 
@@ -668,6 +730,10 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/>, <paramref name="key"/> or <paramref name="valueGetter"/>
         ///   are null.
         /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        /// </exception>
         TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null);
 
         /// <summary>
@@ -692,6 +758,10 @@ namespace PommaLabs.KVLite
         /// </returns>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
+        /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///   Too many parent keys have been specified for this item. Please have a look at the <see
+        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null);
 
