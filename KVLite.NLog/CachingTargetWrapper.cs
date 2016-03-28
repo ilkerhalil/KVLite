@@ -133,9 +133,8 @@ namespace PommaLabs.KVLite.NLog
         /// <param name="overflowAction">The action to be taken when the queue overflows.</param>
         public CachingTargetWrapper(Target wrappedTarget, int queueLimit, CachingTargetWrapperOverflowAction overflowAction)
         {
-            RequestQueue = new CachingRequestQueue(10000, CachingTargetWrapperOverflowAction.Discard);
+            RequestQueue = new CachingRequestQueue(10000, 100, CachingTargetWrapperOverflowAction.Discard);
             TimeToSleepBetweenBatches = 50;
-            BatchSize = 100;
             WrappedTarget = wrappedTarget;
             QueueLimit = queueLimit;
             OverflowAction = overflowAction;
@@ -147,7 +146,11 @@ namespace PommaLabs.KVLite.NLog
         /// </summary>
         /// <docgen category="Buffering Options" order="100"/>
         [DefaultValue(100)]
-        public int BatchSize { get; set; }
+        public int BatchSize
+        {
+            get { return RequestQueue.BatchSize; }
+            set { RequestQueue.BatchSize = value; }
+        }
 
         /// <summary>
         ///   Gets or sets the time in milliseconds to sleep between batches.
@@ -175,8 +178,8 @@ namespace PommaLabs.KVLite.NLog
         [DefaultValue(10000)]
         public int QueueLimit
         {
-            get { return RequestQueue.RequestLimit; }
-            set { RequestQueue.RequestLimit = value; }
+            get { return RequestQueue.QueueLimit; }
+            set { RequestQueue.QueueLimit = value; }
         }
 
         /// <summary>
@@ -219,7 +222,7 @@ namespace PommaLabs.KVLite.NLog
         protected override void CloseTarget()
         {
             StopLazyWriterThread();
-            if (RequestQueue.RequestCount > 0)
+            if (RequestQueue.EventCount > 0)
             {
                 ProcessPendingEvents(null);
             }
@@ -295,11 +298,11 @@ namespace PommaLabs.KVLite.NLog
                     var count = BatchSize;
                     if (continuation != null)
                     {
-                        count = RequestQueue.RequestCount;
+                        count = RequestQueue.EventCount;
                     }
                     InternalLogger.Trace("AsyncWrapper '{0}': Flushing {1} events.", Name, count);
 
-                    if (RequestQueue.RequestCount == 0)
+                    if (RequestQueue.EventCount == 0)
                     {
                         if (continuation != null)
                         {

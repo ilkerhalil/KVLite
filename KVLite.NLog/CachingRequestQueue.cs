@@ -53,6 +53,7 @@
 #endregion Original NLog copyright
 
 using global::NLog.Common;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -68,29 +69,42 @@ namespace PommaLabs.KVLite.NLog
         /// <summary>
         ///   The partition prefix used by NLog caching target wrapper items.
         /// </summary>
-        public const string ResponseCachePartition = "KVL.NLog.CTW_";
+        public const string LogEventCachePartitionFormat = "KVL.NLog.CTW_{0}";
 
         #endregion Constants
 
         private readonly ICache _cache;
-        private int _eventCount;
+        private long _incomingEventCount;
+        private long _outgoingEventCount;
+        private long _lastBatch;
+        private TimeSpan _eventLifetime;
+
         private readonly Queue<AsyncLogEventInfo> _logEventInfoQueue = new Queue<AsyncLogEventInfo>();
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="CachingRequestQueue"/> class.
         /// </summary>
-        /// <param name="requestLimit">The request limit.</param>
+        /// <param name="queueLimit">The queue limit.</param>
+        /// <param name="batchSize">The batch size.</param>
         /// <param name="overflowAction">The overflow action.</param>
-        public CachingRequestQueue(int requestLimit, CachingTargetWrapperOverflowAction overflowAction)
+        /// <param name="eventLifetimeInSeconds">How many seconds an event will be kept into the cache.</param>
+        public CachingRequestQueue(int queueLimit, int batchSize, CachingTargetWrapperOverflowAction overflowAction, int eventLifetimeInSeconds)
         {
-            RequestLimit = requestLimit;
+            QueueLimit = queueLimit;
+            BatchSize = batchSize;
             OnOverflow = overflowAction;
+            EventLifetimeInSeconds = eventLifetimeInSeconds;
         }
 
         /// <summary>
-        ///   Gets or sets the request limit.
+        ///   Gets or sets the queue limit.
         /// </summary>
-        public int RequestLimit { get; set; }
+        public int QueueLimit { get; set; }
+
+        /// <summary>
+        ///   Gets or sets the batch size.
+        /// </summary>
+        public int BatchSize { get; set; }
 
         /// <summary>
         ///   Gets or sets the action to be taken when there's no more room in the queue and another
@@ -99,9 +113,20 @@ namespace PommaLabs.KVLite.NLog
         public CachingTargetWrapperOverflowAction OnOverflow { get; set; }
 
         /// <summary>
-        ///   Gets the number of requests currently in the queue.
+        ///   Gets or sets the batch size.
         /// </summary>
-        public int RequestCount => _logEventInfoQueue.Count;
+        public int EventLifetimeInSeconds
+        {
+            get { return (int) _eventLifetime.TotalSeconds; }
+            set { _eventLifetime = TimeSpan.FromSeconds(value); }
+        }
+
+        public bool HasEvents => _outgoingEventCount != _incomingEventCount;
+
+        /// <summary>
+        ///   Gets the number of events currently in the queue.
+        /// </summary>
+        public int EventCount => _incomingEventCount;
 
         /// <summary>
         ///   Enqueues another item. If the queue is overflown the appropriate action is taken as
@@ -110,38 +135,40 @@ namespace PommaLabs.KVLite.NLog
         /// <param name="logEventInfo">The log event info.</param>
         public void Enqueue(AsyncLogEventInfo logEventInfo)
         {
-            var newEventCount = Interlocked.Increment(ref _eventCount);
-            lock (this)
+            var newEventCount = Interlocked.Increment(ref _incomingEventCount);
+            var batchNumber = newEventCount / BatchSize;
+
+            if ((newEventCount - _outgoingEventCount) >= QueueLimit)
             {
-                if (newEventCount >= RequestLimit)
+                InternalLogger.Debug("Caching queue is full");
+                switch (OnOverflow)
                 {
-                    InternalLogger.Debug("Caching queue is full");
-                    switch (OnOverflow)
-                    {
-                        case CachingTargetWrapperOverflowAction.Discard:
-                            InternalLogger.Debug("Discarding incoming element");
-                            Interlocked.Decrement(ref _eventCount);
-                            break;
+                    case CachingTargetWrapperOverflowAction.Discard:
+                        InternalLogger.Debug("Discarding incoming element, since the overflow action is Discard");
+                        Interlocked.Decrement(ref _incomingEventCount);
+                        return; // Nothing more to do, exit.
 
-                        case CachingTargetWrapperOverflowAction.Grow:
-                            InternalLogger.Debug("The overflow action is Grow, adding element anyway");
-                            break;
+                    case CachingTargetWrapperOverflowAction.Grow:
+                        InternalLogger.Debug("The overflow action is Grow, adding element anyway");
+                        break;
 
-                        case CachingTargetWrapperOverflowAction.Block:
-                            while (_logEventInfoQueue.Count >= RequestLimit)
-                            {
-                                InternalLogger.Debug("Blocking because the overflow action is Block...");
-                                Monitor.Wait(this);
-                                InternalLogger.Trace("Entered critical section");
-                            }
+                    case CachingTargetWrapperOverflowAction.Block:
+                        while (_logEventInfoQueue.Count >= QueueLimit)
+                        {
+                            InternalLogger.Debug("Blocking because the overflow action is Block...");
+                            Monitor.Wait(this);
+                            InternalLogger.Trace("Entered critical section");
+                        }
 
-                            InternalLogger.Trace("Limit OK");
-                            break;
-                    }
+                        InternalLogger.Trace("Limit OK");
+                        break;
                 }
-
-                _logEventInfoQueue.Enqueue(logEventInfo);
             }
+
+            // Store the log event into the cache.
+            var partition = string.Format(LogEventCachePartitionFormat, batchNumber);
+            var key = (newEventCount % BatchSize).ToString();
+            _cache.AddTimed(partition, key, logEventInfo, _eventLifetime);
         }
 
         /// <summary>
@@ -168,7 +195,7 @@ namespace PommaLabs.KVLite.NLog
 
                 if (OnOverflow == CachingTargetWrapperOverflowAction.Block)
                 {
-                    System.Threading.Monitor.PulseAll(this);
+                    Monitor.PulseAll(this);
                 }
             }
 
@@ -180,6 +207,10 @@ namespace PommaLabs.KVLite.NLog
         /// </summary>
         public void Clear()
         {
+            // Resets all counters.
+            Interlocked.Exchange(ref _incomingEventCount, 0L);
+            Interlocked.Exchange(ref _outgoingEventCount, 0L);
+
             lock (this)
             {
                 _logEventInfoQueue.Clear();
