@@ -9,7 +9,8 @@
     <Import_RootNamespace>PommaLabs.KVLite.NLog</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)AsyncRequestQueue.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AsyncTargetWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CachingRequestQueue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CachingTargetWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CachingTargetWrapperOverflowAction.cs" />
   </ItemGroup>
 </Project>

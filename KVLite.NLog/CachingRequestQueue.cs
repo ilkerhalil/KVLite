@@ -53,7 +53,6 @@
 #endregion Original NLog copyright
 
 using global::NLog.Common;
-using global::NLog.Targets.Wrappers;
 using System.Collections.Generic;
 
 namespace PommaLabs.KVLite.NLog
@@ -61,19 +60,19 @@ namespace PommaLabs.KVLite.NLog
     /// <summary>
     ///   Asynchronous request queue.
     /// </summary>
-    internal class AsyncRequestQueue
+    internal class CachingRequestQueue
     {
-        private readonly Queue<AsyncLogEventInfo> logEventInfoQueue = new Queue<AsyncLogEventInfo>();
+        private readonly Queue<AsyncLogEventInfo> _logEventInfoQueue = new Queue<AsyncLogEventInfo>();
 
         /// <summary>
-        ///   Initializes a new instance of the AsyncRequestQueue class.
+        ///   Initializes a new instance of the <see cref="CachingRequestQueue"/> class.
         /// </summary>
-        /// <param name="requestLimit">Request limit.</param>
+        /// <param name="requestLimit">The request limit.</param>
         /// <param name="overflowAction">The overflow action.</param>
-        public AsyncRequestQueue(int requestLimit, AsyncTargetWrapperOverflowAction overflowAction)
+        public CachingRequestQueue(int requestLimit, CachingTargetWrapperOverflowAction overflowAction)
         {
-            this.RequestLimit = requestLimit;
-            this.OnOverflow = overflowAction;
+            RequestLimit = requestLimit;
+            OnOverflow = overflowAction;
         }
 
         /// <summary>
@@ -85,15 +84,12 @@ namespace PommaLabs.KVLite.NLog
         ///   Gets or sets the action to be taken when there's no more room in the queue and another
         ///   request is enqueued.
         /// </summary>
-        public AsyncTargetWrapperOverflowAction OnOverflow { get; set; }
+        public CachingTargetWrapperOverflowAction OnOverflow { get; set; }
 
         /// <summary>
         ///   Gets the number of requests currently in the queue.
         /// </summary>
-        public int RequestCount
-        {
-            get { return this.logEventInfoQueue.Count; }
-        }
+        public int RequestCount => _logEventInfoQueue.Count;
 
         /// <summary>
         ///   Enqueues another item. If the queue is overflown the appropriate action is taken as
@@ -104,22 +100,22 @@ namespace PommaLabs.KVLite.NLog
         {
             lock (this)
             {
-                if (this.logEventInfoQueue.Count >= this.RequestLimit)
+                if (_logEventInfoQueue.Count >= RequestLimit)
                 {
                     InternalLogger.Debug("Async queue is full");
-                    switch (this.OnOverflow)
+                    switch (OnOverflow)
                     {
-                        case AsyncTargetWrapperOverflowAction.Discard:
+                        case CachingTargetWrapperOverflowAction.Discard:
                             InternalLogger.Debug("Discarding one element from queue");
-                            this.logEventInfoQueue.Dequeue();
+                            _logEventInfoQueue.Dequeue();
                             break;
 
-                        case AsyncTargetWrapperOverflowAction.Grow:
+                        case CachingTargetWrapperOverflowAction.Grow:
                             InternalLogger.Debug("The overflow action is Grow, adding element anyway");
                             break;
 
-                        case AsyncTargetWrapperOverflowAction.Block:
-                            while (this.logEventInfoQueue.Count >= this.RequestLimit)
+                        case CachingTargetWrapperOverflowAction.Block:
+                            while (_logEventInfoQueue.Count >= RequestLimit)
                             {
                                 InternalLogger.Debug("Blocking because the overflow action is Block...");
                                 System.Threading.Monitor.Wait(this);
@@ -131,7 +127,7 @@ namespace PommaLabs.KVLite.NLog
                     }
                 }
 
-                this.logEventInfoQueue.Enqueue(logEventInfo);
+                _logEventInfoQueue.Enqueue(logEventInfo);
             }
         }
 
@@ -149,15 +145,15 @@ namespace PommaLabs.KVLite.NLog
             {
                 for (int i = 0; i < count; ++i)
                 {
-                    if (this.logEventInfoQueue.Count <= 0)
+                    if (_logEventInfoQueue.Count <= 0)
                     {
                         break;
                     }
 
-                    resultEvents.Add(this.logEventInfoQueue.Dequeue());
+                    resultEvents.Add(_logEventInfoQueue.Dequeue());
                 }
 
-                if (this.OnOverflow == AsyncTargetWrapperOverflowAction.Block)
+                if (OnOverflow == CachingTargetWrapperOverflowAction.Block)
                 {
                     System.Threading.Monitor.PulseAll(this);
                 }
@@ -173,7 +169,7 @@ namespace PommaLabs.KVLite.NLog
         {
             lock (this)
             {
-                this.logEventInfoQueue.Clear();
+                _logEventInfoQueue.Clear();
             }
         }
     }

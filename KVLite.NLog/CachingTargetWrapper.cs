@@ -101,7 +101,7 @@ namespace PommaLabs.KVLite.NLog
     ///   <code lang="C#" source="examples/targets/Configuration API/AsyncWrapper/Wrapping File/Example.cs"/>
     /// </example>
     [Target("CachingWrapper", IsWrapper = true)]
-    public class AsyncTargetWrapper : WrapperTargetBase
+    public class CachingTargetWrapper : WrapperTargetBase
     {
         private readonly object lockObject = new object();
         private Timer lazyWriterTimer;
@@ -109,31 +109,31 @@ namespace PommaLabs.KVLite.NLog
         private readonly object continuationQueueLock = new object();
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="AsyncTargetWrapper"/> class.
+        ///   Initializes a new instance of the <see cref="CachingTargetWrapper"/> class.
         /// </summary>
-        public AsyncTargetWrapper()
+        public CachingTargetWrapper()
             : this(null)
         {
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="AsyncTargetWrapper"/> class.
+        ///   Initializes a new instance of the <see cref="CachingTargetWrapper"/> class.
         /// </summary>
         /// <param name="wrappedTarget">The wrapped target.</param>
-        public AsyncTargetWrapper(Target wrappedTarget)
-            : this(wrappedTarget, 10000, AsyncTargetWrapperOverflowAction.Discard)
+        public CachingTargetWrapper(Target wrappedTarget)
+            : this(wrappedTarget, 10000, CachingTargetWrapperOverflowAction.Discard)
         {
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="AsyncTargetWrapper"/> class.
+        ///   Initializes a new instance of the <see cref="CachingTargetWrapper"/> class.
         /// </summary>
         /// <param name="wrappedTarget">The wrapped target.</param>
         /// <param name="queueLimit">Maximum number of requests in the queue.</param>
         /// <param name="overflowAction">The action to be taken when the queue overflows.</param>
-        public AsyncTargetWrapper(Target wrappedTarget, int queueLimit, AsyncTargetWrapperOverflowAction overflowAction)
+        public CachingTargetWrapper(Target wrappedTarget, int queueLimit, CachingTargetWrapperOverflowAction overflowAction)
         {
-            this.RequestQueue = new AsyncRequestQueue(10000, AsyncTargetWrapperOverflowAction.Discard);
+            this.RequestQueue = new CachingRequestQueue(10000, CachingTargetWrapperOverflowAction.Discard);
             this.TimeToSleepBetweenBatches = 50;
             this.BatchSize = 100;
             this.WrappedTarget = wrappedTarget;
@@ -162,7 +162,7 @@ namespace PommaLabs.KVLite.NLog
         /// </summary>
         /// <docgen category="Buffering Options" order="100"/>
         [DefaultValue("Discard")]
-        public AsyncTargetWrapperOverflowAction OverflowAction
+        public CachingTargetWrapperOverflowAction OverflowAction
         {
             get { return this.RequestQueue.OnOverflow; }
             set { this.RequestQueue.OnOverflow = value; }
@@ -182,7 +182,7 @@ namespace PommaLabs.KVLite.NLog
         /// <summary>
         ///   Gets the queue of lazy writer thread requests.
         /// </summary>
-        internal AsyncRequestQueue RequestQueue { get; private set; }
+        internal CachingRequestQueue RequestQueue { get; private set; }
 
         /// <summary>
         ///   Waits for the lazy writer thread to finish writing messages.
