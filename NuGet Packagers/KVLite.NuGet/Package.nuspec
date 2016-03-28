@@ -12,13 +12,9 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         </description>
         <releaseNotes>
 * Updated lots of dependencies.
-* Added new methods to ICache, like GetOrAdd*.
-* Now each Clear* method returns the number of items cleared.
-* Every Add* method now accepts parent keys, that is, an entry may depend on other ones.
-* Improved error handling.
-* Added a query cache provider for Entity Framework.
-* Using custom NuGet package for SQLite.
-* Fixed AssemblyVersion, now it will not change anymore between minor releases.
+* Fixed a bug in type name handling during serialization and deserialization.
+* Reduced the number of parent keys for SQLite caches from 10 to 5.
+* 
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.

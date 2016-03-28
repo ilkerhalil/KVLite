@@ -56,7 +56,7 @@ namespace PommaLabs.KVLite.Core
         ///   its defaults. WAL journal does limit the capability to change that value even when the
         ///   DB is still empty.
         /// </summary>
-        private const int PageSizeInBytes = 4096;
+        private const int PageSizeInBytes = 1024;
 
         /// <summary>
         ///   The string used to tag streams coming from <see cref="RecyclableMemoryStreamManager.Instance"/>.
@@ -153,7 +153,7 @@ namespace PommaLabs.KVLite.Core
                     PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
                     ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
                     TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
-                    TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
+                    TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
                 };
                 _serializer = new JsonSerializer(serializerSettings);
             }
