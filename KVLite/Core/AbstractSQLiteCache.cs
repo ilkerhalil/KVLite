@@ -1028,8 +1028,7 @@ namespace PommaLabs.KVLite.Core
             using (var cmd = connection.CreateCommand())
             {
                 var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB * 1024 * 1024;
-                var walAutoCheckpointInPages = journalSizeLimitInBytes / PageSizeInBytes / 3;
-                cmd.CommandText = string.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
+                cmd.CommandText = string.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes);
                 cmd.ExecuteNonQuery();
             }
 
@@ -1050,29 +1049,37 @@ namespace PommaLabs.KVLite.Core
             var builder = new SQLiteConnectionStringBuilder
             {
                 BaseSchemaName = "kvlite",
-                /* Number of pages of 1KB, 2000 is the suggested value */
-                CacheSize = -2000,
-                DateTimeFormat = SQLiteDateFormats.Ticks,
-                DateTimeKind = DateTimeKind.Utc,
-                DefaultIsolationLevel = IsolationLevel.ReadCommitted,
-                /* Settings three minutes as timeout should be more than enough... */
-                DefaultTimeout = 180,
-                Enlist = false,
-                FailIfMissing = false,
-                /* Required by parent keys */
-                ForeignKeys = true,
                 FullUri = cacheUri,
                 JournalMode = journalMode,
+                FailIfMissing = false,
                 LegacyFormat = false,
-                /* Each page is 1KB large - Multiply by 1024*1024/PageSizeInBytes */
-                MaxPageCount = Settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes,
-                PageSize = PageSizeInBytes,
-                /* We use a custom object pool */
-                Pooling = false,
-                PrepareRetries = 3,
                 ReadOnly = false,
                 SyncMode = SynchronizationModes.Off,
                 Version = 3,
+
+                /* KVLite uses UNIX time */
+                DateTimeFormat = SQLiteDateFormats.Ticks,
+                DateTimeKind = DateTimeKind.Utc,
+
+                /* Settings three minutes as timeout should be more than enough... */
+                DefaultTimeout = 180,
+                PrepareRetries = 3,
+
+                /* Transaction handling */
+                Enlist = false,
+                DefaultIsolationLevel = IsolationLevel.ReadCommitted,
+
+                /* Required by parent keys */
+                ForeignKeys = true,
+                RecursiveTriggers = true,
+
+                /* Each page is 4KB large - Multiply by 1024*1024/PageSizeInBytes */
+                MaxPageCount = Settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes,
+                PageSize = PageSizeInBytes,
+                CacheSize = -2000,
+
+                /* We use a custom object pool */
+                Pooling = false,
             };
 
             _connectionString = builder.ToString();

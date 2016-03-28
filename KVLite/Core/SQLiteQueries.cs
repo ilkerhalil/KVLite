@@ -169,7 +169,6 @@ namespace PommaLabs.KVLite.Core
         public static readonly string SetPragmas = MinifyQuery(@"
             PRAGMA journal_size_limit = {0}; -- Size in bytes
             PRAGMA temp_store = MEMORY;
-            PRAGMA wal_autocheckpoint = {1};
         ");
 
         public static readonly string Vacuum = MinifyQuery(@"
