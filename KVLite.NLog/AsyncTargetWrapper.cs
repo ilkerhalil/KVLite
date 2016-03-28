@@ -1,83 +1,106 @@
-﻿// 
+﻿// File name: CachingTargetWrapper.cs
+//
+// Author(s): Alessio Parma <alessio.parma@gmail.com>
+//
+// The MIT License (MIT)
+//
+// Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#region Original NLog copyright
+
 // Copyright (c) 2004-2011 Jaroslaw Kowalski <jaak@jkowalski.net>
-// 
+//
 // All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without 
-// modification, are permitted provided that the following conditions 
-// are met:
-// 
-// * Redistributions of source code must retain the above copyright notice, 
-//   this list of conditions and the following disclaimer. 
-// 
-// * Redistributions in binary form must reproduce the above copyright notice,
-//   this list of conditions and the following disclaimer in the documentation
-//   and/or other materials provided with the distribution. 
-// 
-// * Neither the name of Jaroslaw Kowalski nor the names of its 
-//   contributors may be used to endorse or promote products derived from this
-//   software without specific prior written permission. 
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
-// THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
+// Redistribution and use in source and binary forms, with or without modification, are permitted
+// provided that the following conditions are met:
+//
+// * Redistributions of source code must retain the above copyright notice, this list of conditions
+//   and the following disclaimer.
+//
+// * Redistributions in binary form must reproduce the above copyright notice, this list of
+//   conditions and the following disclaimer in the documentation and/or other materials provided
+//   with the distribution.
+//
+// * Neither the name of Jaroslaw Kowalski nor the names of its contributors may be used to endorse
+//   or promote products derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+// FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+// LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+#endregion Original NLog copyright
+
+using global::NLog;
+using global::NLog.Common;
+using global::NLog.Targets;
+using global::NLog.Targets.Wrappers;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading;
 
 namespace PommaLabs.KVLite.NLog
 {
-    using System;
-    using System.ComponentModel;
-    using System.Threading;
-    using System.Collections.Generic;
-    using global::NLog.Targets;
-    using global::NLog.Targets.Wrappers;
-    using global::NLog.Common;
-    using global::NLog;
-
     /// <summary>
-    /// Provides asynchronous, buffered execution of target writes.
+    ///   Provides asynchronous, buffered execution of target writes.
     /// </summary>
-    /// <seealso href="https://github.com/nlog/nlog/wiki/AsyncWrapper-target">Documentation on NLog Wiki</seealso>
+    /// <seealso href="https://github.com/nlog/nlog/wiki/AsyncWrapper-target">
+    ///   Documentation on NLog Wiki
+    /// </seealso>
     /// <remarks>
-    /// <p>
-    /// Asynchronous target wrapper allows the logger code to execute more quickly, by queueing
-    /// messages and processing them in a separate thread. You should wrap targets
-    /// that spend a non-trivial amount of time in their Write() method with asynchronous
-    /// target to speed up logging.
-    /// </p>
-    /// <p>
-    /// Because asynchronous logging is quite a common scenario, NLog supports a
-    /// shorthand notation for wrapping all targets with AsyncWrapper. Just add async="true" to
-    /// the &lt;targets/&gt; element in the configuration file.
-    /// </p>
-    /// <code lang="XML">
+    ///   <p>
+    ///     Asynchronous target wrapper allows the logger code to execute more quickly, by queueing
+    ///     messages and processing them in a separate thread. You should wrap targets that spend a
+    ///     non-trivial amount of time in their Write() method with asynchronous target to speed up logging.
+    ///   </p>
+    ///   <p>
+    ///     Because asynchronous logging is quite a common scenario, NLog supports a shorthand
+    ///     notation for wrapping all targets with AsyncWrapper. Just add async="true" to the
+    ///     &lt;targets/&gt; element in the configuration file.
+    ///   </p>
+    ///   <code lang="XML">
     /// <![CDATA[
     /// <targets async="true">
     ///    ... your targets go here ...
     /// </targets>
-    /// ]]></code>
+    /// ]]>
+    ///   </code>
     /// </remarks>
     /// <example>
-    /// <p>
-    /// To set up the target in the <a href="config.html">configuration file</a>, 
-    /// use the following syntax:
-    /// </p>
-    /// <code lang="XML" source="examples/targets/Configuration File/AsyncWrapper/NLog.config" />
-    /// <p>
-    /// The above examples assume just one target and a single rule. See below for
-    /// a programmatic configuration that's equivalent to the above config file:
-    /// </p>
-    /// <code lang="C#" source="examples/targets/Configuration API/AsyncWrapper/Wrapping File/Example.cs" />
+    ///   <p>
+    ///     To set up the target in the <a href="config.html">configuration file</a>, use the
+    ///     following syntax:
+    ///   </p>
+    ///   <code lang="XML" source="examples/targets/Configuration File/AsyncWrapper/NLog.config"/>
+    ///   <p>
+    ///     The above examples assume just one target and a single rule. See below for a programmatic
+    ///     configuration that's equivalent to the above config file:
+    ///   </p>
+    ///   <code lang="C#" source="examples/targets/Configuration API/AsyncWrapper/Wrapping File/Example.cs"/>
     /// </example>
-    [Target("AsyncWrapper", IsWrapper = true)]
+    [Target("CachingWrapper", IsWrapper = true)]
     public class AsyncTargetWrapper : WrapperTargetBase
     {
         private readonly object lockObject = new object();
@@ -86,7 +109,7 @@ namespace PommaLabs.KVLite.NLog
         private readonly object continuationQueueLock = new object();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AsyncTargetWrapper" /> class.
+        ///   Initializes a new instance of the <see cref="AsyncTargetWrapper"/> class.
         /// </summary>
         public AsyncTargetWrapper()
             : this(null)
@@ -94,7 +117,7 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AsyncTargetWrapper" /> class.
+        ///   Initializes a new instance of the <see cref="AsyncTargetWrapper"/> class.
         /// </summary>
         /// <param name="wrappedTarget">The wrapped target.</param>
         public AsyncTargetWrapper(Target wrappedTarget)
@@ -103,7 +126,7 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AsyncTargetWrapper" /> class.
+        ///   Initializes a new instance of the <see cref="AsyncTargetWrapper"/> class.
         /// </summary>
         /// <param name="wrappedTarget">The wrapped target.</param>
         /// <param name="queueLimit">Maximum number of requests in the queue.</param>
@@ -119,25 +142,25 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Gets or sets the number of log events that should be processed in a batch
-        /// by the lazy writer thread.
+        ///   Gets or sets the number of log events that should be processed in a batch by the lazy
+        ///   writer thread.
         /// </summary>
-        /// <docgen category='Buffering Options' order='100' />
+        /// <docgen category="Buffering Options" order="100"/>
         [DefaultValue(100)]
         public int BatchSize { get; set; }
 
         /// <summary>
-        /// Gets or sets the time in milliseconds to sleep between batches.
+        ///   Gets or sets the time in milliseconds to sleep between batches.
         /// </summary>
-        /// <docgen category='Buffering Options' order='100' />
+        /// <docgen category="Buffering Options" order="100"/>
         [DefaultValue(50)]
         public int TimeToSleepBetweenBatches { get; set; }
 
         /// <summary>
-        /// Gets or sets the action to be taken when the lazy writer thread request queue count
-        /// exceeds the set limit.
+        ///   Gets or sets the action to be taken when the lazy writer thread request queue count
+        ///   exceeds the set limit.
         /// </summary>
-        /// <docgen category='Buffering Options' order='100' />
+        /// <docgen category="Buffering Options" order="100"/>
         [DefaultValue("Discard")]
         public AsyncTargetWrapperOverflowAction OverflowAction
         {
@@ -146,9 +169,9 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Gets or sets the limit on the number of requests in the lazy writer thread request queue.
+        ///   Gets or sets the limit on the number of requests in the lazy writer thread request queue.
         /// </summary>
-        /// <docgen category='Buffering Options' order='100' />
+        /// <docgen category="Buffering Options" order="100"/>
         [DefaultValue(10000)]
         public int QueueLimit
         {
@@ -157,12 +180,12 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Gets the queue of lazy writer thread requests.
+        ///   Gets the queue of lazy writer thread requests.
         /// </summary>
         internal AsyncRequestQueue RequestQueue { get; private set; }
 
         /// <summary>
-        /// Waits for the lazy writer thread to finish writing messages.
+        ///   Waits for the lazy writer thread to finish writing messages.
         /// </summary>
         /// <param name="asyncContinuation">The asynchronous continuation.</param>
         protected override void FlushAsync(AsyncContinuation asyncContinuation)
@@ -174,7 +197,7 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Initializes the target by starting the lazy writer timer.
+        ///   Initializes the target by starting the lazy writer timer.
         /// </summary>
         protected override void InitializeTarget()
         {
@@ -191,7 +214,7 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Shuts down the lazy writer timer.
+        ///   Shuts down the lazy writer timer.
         /// </summary>
         protected override void CloseTarget()
         {
@@ -205,8 +228,7 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Starts the lazy writer thread which periodically writes
-        /// queued log messages.
+        ///   Starts the lazy writer thread which periodically writes queued log messages.
         /// </summary>
         protected virtual void StartLazyWriterTimer()
         {
@@ -220,7 +242,7 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Stops the lazy writer thread.
+        ///   Stops the lazy writer thread.
         /// </summary>
         protected virtual void StopLazyWriterThread()
         {
@@ -235,13 +257,12 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Adds the log event to asynchronous queue to be processed by
-        /// the lazy writer thread.
+        ///   Adds the log event to asynchronous queue to be processed by the lazy writer thread.
         /// </summary>
         /// <param name="logEvent">The log event.</param>
         /// <remarks>
-        /// The <see cref="Target.PrecalculateVolatileLayouts"/> is called
-        /// to ensure that the log event can be processed in another thread.
+        ///   The <see cref="Target.PrecalculateVolatileLayouts"/> is called to ensure that the log
+        ///   event can be processed in another thread.
         /// </remarks>
         protected override void Write(AsyncLogEventInfo logEvent)
         {
@@ -263,7 +284,6 @@ namespace PommaLabs.KVLite.NLog
 
             try
             {
-
                 if (this.WrappedTarget == null)
                 {
                     InternalLogger.Error("AsyncWrapper '{0}': WrappedTarget is NULL", Name);
@@ -309,7 +329,6 @@ namespace PommaLabs.KVLite.NLog
                 //{
                 //    throw;
                 //}
-
             }
             finally
             {

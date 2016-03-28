@@ -11,6 +11,5 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AsyncRequestQueue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AsyncTargetWrapper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CachingTargetWrapper.cs" />
   </ItemGroup>
 </Project>

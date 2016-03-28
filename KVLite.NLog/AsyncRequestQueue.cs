@@ -1,51 +1,72 @@
-﻿// 
+﻿// File name: CachingRequestQueue.cs
+// 
+// Author(s): Alessio Parma <alessio.parma@gmail.com>
+// 
+// The MIT License (MIT)
+// 
+// Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#region Original NLog copyright
+
 // Copyright (c) 2004-2011 Jaroslaw Kowalski <jaak@jkowalski.net>
-// 
+//
 // All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without 
-// modification, are permitted provided that the following conditions 
-// are met:
-// 
-// * Redistributions of source code must retain the above copyright notice, 
-//   this list of conditions and the following disclaimer. 
-// 
-// * Redistributions in binary form must reproduce the above copyright notice,
-//   this list of conditions and the following disclaimer in the documentation
-//   and/or other materials provided with the distribution. 
-// 
-// * Neither the name of Jaroslaw Kowalski nor the names of its 
-//   contributors may be used to endorse or promote products derived from this
-//   software without specific prior written permission. 
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
-// THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
+// Redistribution and use in source and binary forms, with or without modification, are permitted
+// provided that the following conditions are met:
+//
+// * Redistributions of source code must retain the above copyright notice, this list of conditions
+//   and the following disclaimer.
+//
+// * Redistributions in binary form must reproduce the above copyright notice, this list of
+//   conditions and the following disclaimer in the documentation and/or other materials provided
+//   with the distribution.
+//
+// * Neither the name of Jaroslaw Kowalski nor the names of its contributors may be used to endorse
+//   or promote products derived from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+// FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+// LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+#endregion Original NLog copyright
+
+using global::NLog.Common;
+using global::NLog.Targets.Wrappers;
+using System.Collections.Generic;
 
 namespace PommaLabs.KVLite.NLog
 {
-    using System.Collections.Generic;
-    using global::NLog.Common;
-    using global::NLog.Targets.Wrappers;
-
     /// <summary>
-    /// Asynchronous request queue.
+    ///   Asynchronous request queue.
     /// </summary>
     internal class AsyncRequestQueue
     {
         private readonly Queue<AsyncLogEventInfo> logEventInfoQueue = new Queue<AsyncLogEventInfo>();
 
         /// <summary>
-        /// Initializes a new instance of the AsyncRequestQueue class.
+        ///   Initializes a new instance of the AsyncRequestQueue class.
         /// </summary>
         /// <param name="requestLimit">Request limit.</param>
         /// <param name="overflowAction">The overflow action.</param>
@@ -56,18 +77,18 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Gets or sets the request limit.
+        ///   Gets or sets the request limit.
         /// </summary>
         public int RequestLimit { get; set; }
 
         /// <summary>
-        /// Gets or sets the action to be taken when there's no more room in
-        /// the queue and another request is enqueued.
+        ///   Gets or sets the action to be taken when there's no more room in the queue and another
+        ///   request is enqueued.
         /// </summary>
         public AsyncTargetWrapperOverflowAction OnOverflow { get; set; }
 
         /// <summary>
-        /// Gets the number of requests currently in the queue.
+        ///   Gets the number of requests currently in the queue.
         /// </summary>
         public int RequestCount
         {
@@ -75,8 +96,8 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Enqueues another item. If the queue is overflown the appropriate
-        /// action is taken as specified by <see cref="OnOverflow"/>.
+        ///   Enqueues another item. If the queue is overflown the appropriate action is taken as
+        ///   specified by <see cref="OnOverflow"/>.
         /// </summary>
         /// <param name="logEventInfo">The log event info.</param>
         public void Enqueue(AsyncLogEventInfo logEventInfo)
@@ -115,8 +136,8 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Dequeues a maximum of <c>count</c> items from the queue
-        /// and adds returns the list containing them.
+        ///   Dequeues a maximum of <c>count</c> items from the queue and adds returns the list
+        ///   containing them.
         /// </summary>
         /// <param name="count">Maximum number of items to be dequeued.</param>
         /// <returns>The array of log events.</returns>
@@ -146,7 +167,7 @@ namespace PommaLabs.KVLite.NLog
         }
 
         /// <summary>
-        /// Clears the queue.
+        ///   Clears the queue.
         /// </summary>
         public void Clear()
         {
