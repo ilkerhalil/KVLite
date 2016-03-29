@@ -133,7 +133,8 @@ namespace PommaLabs.KVLite.NLog
         /// <param name="overflowAction">The action to be taken when the queue overflows.</param>
         public CachingTargetWrapper(Target wrappedTarget, int queueLimit, CachingTargetWrapperOverflowAction overflowAction)
         {
-            RequestQueue = new CachingRequestQueue(10000, 100, CachingTargetWrapperOverflowAction.Discard);
+            RequestQueue = new CachingRequestQueue(10000, CachingTargetWrapperOverflowAction.Discard, 180);
+            BatchSize = 100;
             TimeToSleepBetweenBatches = 50;
             WrappedTarget = wrappedTarget;
             QueueLimit = queueLimit;
@@ -146,11 +147,7 @@ namespace PommaLabs.KVLite.NLog
         /// </summary>
         /// <docgen category="Buffering Options" order="100"/>
         [DefaultValue(100)]
-        public int BatchSize
-        {
-            get { return RequestQueue.BatchSize; }
-            set { RequestQueue.BatchSize = value; }
-        }
+        public int BatchSize { get; set; }
 
         /// <summary>
         ///   Gets or sets the time in milliseconds to sleep between batches.
@@ -167,8 +164,8 @@ namespace PommaLabs.KVLite.NLog
         [DefaultValue("Discard")]
         public CachingTargetWrapperOverflowAction OverflowAction
         {
-            get { return RequestQueue.OnOverflow; }
-            set { RequestQueue.OnOverflow = value; }
+            get { return RequestQueue.OverflowAction; }
+            set { RequestQueue.OverflowAction = value; }
         }
 
         /// <summary>
@@ -180,6 +177,15 @@ namespace PommaLabs.KVLite.NLog
         {
             get { return RequestQueue.QueueLimit; }
             set { RequestQueue.QueueLimit = value; }
+        }
+
+        /// <summary>
+        ///   Gets or sets the event lifetime, that is, how many seconds an event will be kept into the cache.
+        /// </summary>
+        public int EventLifetimeInSeconds
+        {
+            get { return RequestQueue.EventLifetimeInSeconds; }
+            set { RequestQueue.EventLifetimeInSeconds = value; }
         }
 
         /// <summary>

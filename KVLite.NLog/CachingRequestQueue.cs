@@ -74,8 +74,8 @@ namespace PommaLabs.KVLite.NLog
         #endregion Constants
 
         private readonly ICache _cache;
-        private long _incomingEventCount;
-        private long _outgoingEventCount;
+        private long _incomingEventCount = long.MinValue;
+        private long _outgoingEventCount = long.MinValue;
         private long _lastBatch;
         private TimeSpan _eventLifetime;
 
@@ -85,14 +85,12 @@ namespace PommaLabs.KVLite.NLog
         ///   Initializes a new instance of the <see cref="CachingRequestQueue"/> class.
         /// </summary>
         /// <param name="queueLimit">The queue limit.</param>
-        /// <param name="batchSize">The batch size.</param>
         /// <param name="overflowAction">The overflow action.</param>
         /// <param name="eventLifetimeInSeconds">How many seconds an event will be kept into the cache.</param>
-        public CachingRequestQueue(int queueLimit, int batchSize, CachingTargetWrapperOverflowAction overflowAction, int eventLifetimeInSeconds)
+        public CachingRequestQueue(int queueLimit, CachingTargetWrapperOverflowAction overflowAction, int eventLifetimeInSeconds)
         {
             QueueLimit = queueLimit;
-            BatchSize = batchSize;
-            OnOverflow = overflowAction;
+            OverflowAction = overflowAction;
             EventLifetimeInSeconds = eventLifetimeInSeconds;
         }
 
@@ -102,15 +100,10 @@ namespace PommaLabs.KVLite.NLog
         public int QueueLimit { get; set; }
 
         /// <summary>
-        ///   Gets or sets the batch size.
-        /// </summary>
-        public int BatchSize { get; set; }
-
-        /// <summary>
         ///   Gets or sets the action to be taken when there's no more room in the queue and another
         ///   request is enqueued.
         /// </summary>
-        public CachingTargetWrapperOverflowAction OnOverflow { get; set; }
+        public CachingTargetWrapperOverflowAction OverflowAction { get; set; }
 
         /// <summary>
         ///   Gets or sets the batch size.
@@ -126,22 +119,22 @@ namespace PommaLabs.KVLite.NLog
         /// <summary>
         ///   Gets the number of events currently in the queue.
         /// </summary>
-        public int EventCount => _incomingEventCount;
+        public int EventCount => (int) (_incomingEventCount - _outgoingEventCount);
 
         /// <summary>
         ///   Enqueues another item. If the queue is overflown the appropriate action is taken as
-        ///   specified by <see cref="OnOverflow"/>.
+        ///   specified by <see cref="OverflowAction"/>.
         /// </summary>
         /// <param name="logEventInfo">The log event info.</param>
         public void Enqueue(AsyncLogEventInfo logEventInfo)
         {
             var newEventCount = Interlocked.Increment(ref _incomingEventCount);
-            var batchNumber = newEventCount / BatchSize;
+            var batchNumber = newEventCount / 1;
 
             if ((newEventCount - _outgoingEventCount) >= QueueLimit)
             {
                 InternalLogger.Debug("Caching queue is full");
-                switch (OnOverflow)
+                switch (OverflowAction)
                 {
                     case CachingTargetWrapperOverflowAction.Discard:
                         InternalLogger.Debug("Discarding incoming element, since the overflow action is Discard");
@@ -167,7 +160,7 @@ namespace PommaLabs.KVLite.NLog
 
             // Store the log event into the cache.
             var partition = string.Format(LogEventCachePartitionFormat, batchNumber);
-            var key = (newEventCount % BatchSize).ToString();
+            var key = (newEventCount % 1).ToString();
             _cache.AddTimed(partition, key, logEventInfo, _eventLifetime);
         }
 
@@ -193,7 +186,7 @@ namespace PommaLabs.KVLite.NLog
                     resultEvents.Add(_logEventInfoQueue.Dequeue());
                 }
 
-                if (OnOverflow == CachingTargetWrapperOverflowAction.Block)
+                if (OverflowAction == CachingTargetWrapperOverflowAction.Block)
                 {
                     Monitor.PulseAll(this);
                 }
