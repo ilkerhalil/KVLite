@@ -6,3 +6,4 @@
 * Fixed a bug in type name handling during serialization and deserialization.
 * Reduced the number of parent keys for SQLite caches from 10 to 5.
 * Fixed an inizialization which was happening too early for WebCaches.
+* Now using Deflate as the default compressor. Deflate replaces Snappy, which seemed an "unsafe" solution on the long term.

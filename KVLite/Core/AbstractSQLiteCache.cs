@@ -128,7 +128,7 @@ namespace PommaLabs.KVLite.Core
             _settings = settings;
             _clock = clock ?? new SystemClock();
             _log = log ?? LogManager.GetLogger(GetType());
-            _compressor = compressor ?? new LZ4Compressor();
+            _compressor = compressor ?? new DeflateCompressor();
 
             // We need to properly customize the default serializer settings in no custom serializer
             // has been specified.
@@ -478,7 +478,7 @@ namespace PommaLabs.KVLite.Core
         /// <value>The compressor used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="SnappyCompressor"/>.
+        ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
         /// </remarks>
         public sealed override ICompressor Compressor => _compressor;
 
