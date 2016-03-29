@@ -1,6 +1,6 @@
 # Changelog for PommaLabs.KVLite #
 
-### v5.2.2 (2016-03-28) ###
+### v5.2.2 (2016-03-29) ###
 
 * Updated lots of dependencies.
 * Fixed a bug in type name handling during serialization and deserialization.
