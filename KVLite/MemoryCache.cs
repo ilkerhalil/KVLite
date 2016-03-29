@@ -1,25 +1,25 @@
 ﻿// File name: MemoryCache.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Common.Logging;
 using Finsa.CodeServices.Clock;
@@ -66,7 +66,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The system memory cache used as backend.
         /// </summary>
-        SystemMemoryCache _store;
+        private SystemMemoryCache _store;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.
@@ -151,8 +151,8 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <value>The compressor used by the cache.</value>
         /// <remarks>
-        ///   Since compression is not used inside this kind of cache, then this property defaults
-        ///   to <see cref="NoOpCompressor"/>.
+        ///   Since compression is not used inside this kind of cache, then this property defaults to
+        ///   <see cref="NoOpCompressor"/>.
         /// </remarks>
         public override ICompressor Compressor { get; } = new NoOpCompressor();
 
@@ -162,10 +162,16 @@ namespace PommaLabs.KVLite
         /// <value>The log used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to what
-        ///   <see cref="M:Common.Logging.LogManager.GetLogger(System.Type)"/> returns.
+        ///   constructor. If not specified, it defaults to what <see
+        ///   cref="M:Common.Logging.LogManager.GetLogger(System.Type)"/> returns.
         /// </remarks>
         public override ILog Log { get; }
+
+        /// <summary>
+        ///   The maximum number of parent keys each item can have. The .NET memory cache supports an
+        ///   unlimited number of parent keys per item.
+        /// </summary>
+        public override int MaxParentKeyCountPerItem { get; } = int.MaxValue;
 
         /// <summary>
         ///   Gets the serializer used by the cache.
@@ -175,8 +181,8 @@ namespace PommaLabs.KVLite
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>. Therefore,
         ///   if you do not specify another serializer, make sure that your objects are serializable
-        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields
-        ///   as public properties).
+        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as
+        ///   public properties).
         /// </remarks>
         public override ISerializer Serializer { get; }
 
@@ -200,7 +206,9 @@ namespace PommaLabs.KVLite
         /// <param name="value">The value.</param>
         /// <param name="utcExpiry">The UTC expiry time.</param>
         /// <param name="interval">The refresh interval.</param>
-        /// <param name="parentKeys">Keys, belonging to current partition, on which the new item will depend.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
             var policy = (interval == TimeSpan.Zero)
@@ -220,17 +228,14 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="partition">The optional partition.</param>
         /// <param name="cacheReadMode">The cache read mode.</param>
-        /// <returns>
-        ///   The number of items that have been removed.
-        /// </returns>
+        /// <returns>The number of items that have been removed.</returns>
         protected override long ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
             // We need to make a snapshot of the keys, since the cache might be used by other
             // processes. Therefore, we start projecting all keys.
             var keys = _store.Select(x => x.Key);
 
-            // Then, if a partition has been specified, we select only those keys that belong to
-            // that partition.
+            // Then, if a partition has been specified, we select only those keys that belong to that partition.
             if (partition != null)
             {
                 keys = keys.Where(k => DeserializeFromCacheKey(k).Partition == partition);
@@ -270,8 +275,8 @@ namespace PommaLabs.KVLite
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected override long CountInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate)
         {
-            // If partition has not been specified, then we use the GetCount method provided
-            // directly by the MemoryCache.
+            // If partition has not been specified, then we use the GetCount method provided directly
+            // by the MemoryCache.
             if (partition == null)
             {
                 return _store.GetCount();
@@ -375,9 +380,12 @@ namespace PommaLabs.KVLite
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         protected override Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
-            throw new NotImplementedException(ErrorMessages.MemoryCacheDoesNotAllowPeeking);
+            throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
         }
 
         /// <summary>
@@ -389,26 +397,31 @@ namespace PommaLabs.KVLite
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         protected override Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
-            throw new NotImplementedException(ErrorMessages.MemoryCacheDoesNotAllowPeeking);
+            throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
         }
 
         /// <summary>
-        ///   Gets the all values in the cache or in the specified partition, without updating
-        ///   expiry dates.
+        ///   Gets the all values in the cache or in the specified partition, without updating expiry dates.
         /// </summary>
         /// <param name="partition">The optional partition.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All values, without updating expiry dates.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="T:System.Object"/> as type parameter; that will work whether the required
-        ///   value is a class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass <see
+        ///   cref="T:System.Object"/> as type parameter; that will work whether the required value
+        ///   is a class or not.
         /// </remarks>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         protected override CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
         {
-            throw new NotImplementedException(ErrorMessages.MemoryCacheDoesNotAllowPeeking);
+            throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
         }
 
         /// <summary>
@@ -424,7 +437,7 @@ namespace PommaLabs.KVLite
 
         #endregion ICache members
 
-        void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
@@ -434,7 +447,7 @@ namespace PommaLabs.KVLite
             }
         }
 
-        void InitSystemMemoryCache()
+        private void InitSystemMemoryCache()
         {
             // If a memory cache was already instanced, and it was not the default, the dispose it
             // after applying the new initialization.
@@ -451,9 +464,9 @@ namespace PommaLabs.KVLite
                 return;
             }
 
-            // Otherwise, if a name has been specified, then we need to apply a proper
-            // configuration. This way is more dangerous, because it is not easy to choose the right
-            // moment to dispose the memory cache.
+            // Otherwise, if a name has been specified, then we need to apply a proper configuration.
+            // This way is more dangerous, because it is not easy to choose the right moment to
+            // dispose the memory cache.
             _store = new SystemMemoryCache(Settings.CacheName, new NameValueCollection
             {
                 { "CacheMemoryLimitMegabytes", Settings.MaxCacheSizeInMB.ToString() }
@@ -494,7 +507,7 @@ namespace PommaLabs.KVLite
         #region Cache key handling
 
         [Serializable, DataContract]
-        struct CacheKey
+        private struct CacheKey
         {
             [DataMember(Name = "p", Order = 0, EmitDefaultValue = false)]
             public string Partition { get; set; }
@@ -507,7 +520,7 @@ namespace PommaLabs.KVLite
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
 
-        string SerializeToCacheKey(string partition, string key) => Serializer.SerializeToString(new CacheKey
+        private string SerializeToCacheKey(string partition, string key) => Serializer.SerializeToString(new CacheKey
         {
             Partition = partition,
             Key = key
@@ -517,7 +530,7 @@ namespace PommaLabs.KVLite
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
 
-        CacheKey DeserializeFromCacheKey(string cacheKey) => Serializer.DeserializeFromString<CacheKey>(cacheKey);
+        private CacheKey DeserializeFromCacheKey(string cacheKey) => Serializer.DeserializeFromString<CacheKey>(cacheKey);
 
         #endregion Cache key handling
     }

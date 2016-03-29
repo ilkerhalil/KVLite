@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Finsa.CodeServices.Common;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -33,7 +32,7 @@ namespace PommaLabs.KVLite
     ///   An item that is stored in the cache.
     /// </summary>
     /// <typeparam name="TVal">The type of the value.</typeparam>
-    [Serializable, JsonObject(MemberSerialization.OptIn), DataContract]
+    [Serializable, DataContract]
     public class CacheItem<TVal> : EquatableObject<CacheItem<TVal>>
     {
         #region Public Properties
@@ -41,43 +40,43 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The partition corresponding to this entry.
         /// </summary>
-        [JsonProperty(Order = 0), DataMember(Order = 0)]
+        [DataMember(Order = 0)]
         public string Partition { get; set; }
 
         /// <summary>
         ///   The key corresponding to this entry.
         /// </summary>
-        [JsonProperty(Order = 1), DataMember(Order = 1)]
+        [DataMember(Order = 1)]
         public string Key { get; set; }
 
         /// <summary>
         ///   The typed value.
         /// </summary>
-        [JsonProperty(Order = 2), DataMember(Order = 2)]
+        [DataMember(Order = 2)]
         public TVal Value { get; set; }
 
         /// <summary>
         ///   When the cache item was created.
         /// </summary>
-        [JsonProperty(Order = 3), DataMember(Order = 3)]
+        [DataMember(Order = 3)]
         public DateTime UtcCreation { get; set; }
 
         /// <summary>
         ///   When the cache item will expire.
         /// </summary>
-        [JsonProperty(Order = 4), DataMember(Order = 4)]
+        [DataMember(Order = 4)]
         public DateTime UtcExpiry { get; set; }
 
         /// <summary>
         ///   The refresh interval, used if the item is sliding; if it is not, it equals to <see cref="TimeSpan.Zero"/>.
         /// </summary>
-        [JsonProperty(Order = 5), DataMember(Order = 5)]
+        [DataMember(Order = 5)]
         public TimeSpan Interval { get; set; }
 
         /// <summary>
         ///   The parent keys of this item. If not specified, the array will be empty, but not null.
         /// </summary>
-        [JsonProperty(Order = 6), DataMember(Order = 6)]
+        [DataMember(Order = 6)]
         public string[] ParentKeys { get; set; }
 
         #endregion Public Properties

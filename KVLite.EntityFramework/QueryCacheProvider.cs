@@ -42,7 +42,7 @@ namespace PommaLabs.KVLite.EntityFramework
         /// <summary>
         ///   The partition used by EF cache provider items.
         /// </summary>
-        const string EfCachePartition = "KVLite.EntityFramework.QueryCacheProvider";
+        const string EfCachePartition = "KVL.EF.QCP";
 
         #endregion Constants
 

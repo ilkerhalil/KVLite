@@ -1,25 +1,25 @@
 ﻿// File name: AbstractSQLiteCache.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool;
 using Common.Logging;
@@ -56,17 +56,17 @@ namespace PommaLabs.KVLite.Core
         ///   its defaults. WAL journal does limit the capability to change that value even when the
         ///   DB is still empty.
         /// </summary>
-        const int PageSizeInBytes = 1024;
+        private const int PageSizeInBytes = 1024;
 
         /// <summary>
         ///   The string used to tag streams coming from <see cref="RecyclableMemoryStreamManager.Instance"/>.
         /// </summary>
-        const string StreamTag = nameof(KVLite);
+        private const string StreamTag = nameof(KVLite);
 
         /// <summary>
         ///   The initial capacity of the streams retrieved from <see cref="RecyclableMemoryStreamManager.Instance"/>.
         /// </summary>
-        const int InitialStreamCapacity = 1024;
+        private const int InitialStreamCapacity = 512;
 
         #endregion Constants
 
@@ -75,37 +75,37 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   The connection pool used to cache open connections.
         /// </summary>
-        ObjectPool<PooledObjectWrapper<SQLiteConnection>> _connectionPool;
+        private ObjectPool<DbInterface> _connectionPool;
 
         /// <summary>
         ///   The connection string used to connect to the SQLite database.
         /// </summary>
-        string _connectionString;
+        private string _connectionString;
 
         /// <summary>
         ///   The cache settings.
         /// </summary>
-        readonly TCacheSettings _settings;
+        private readonly TCacheSettings _settings;
 
         /// <summary>
         ///   The clock instance, used to compute expiry times, etc etc.
         /// </summary>
-        readonly IClock _clock;
+        private readonly IClock _clock;
 
         /// <summary>
         ///   The log used by the cache.
         /// </summary>
-        readonly ILog _log;
+        private readonly ILog _log;
 
         /// <summary>
         ///   The serializer used by the cache.
         /// </summary>
-        readonly ISerializer _serializer;
+        private readonly ISerializer _serializer;
 
         /// <summary>
         ///   The compressor used by the cache.
         /// </summary>
-        readonly ICompressor _compressor;
+        private readonly ICompressor _compressor;
 
         #endregion Fields
 
@@ -128,7 +128,7 @@ namespace PommaLabs.KVLite.Core
             _settings = settings;
             _clock = clock ?? new SystemClock();
             _log = log ?? LogManager.GetLogger(GetType());
-            _compressor = compressor ?? new SnappyCompressor();
+            _compressor = compressor ?? new DeflateCompressor();
 
             // We need to properly customize the default serializer settings in no custom serializer
             // has been specified.
@@ -153,7 +153,7 @@ namespace PommaLabs.KVLite.Core
                     PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
                     ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
                     TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
-                    TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple
+                    TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
                 };
                 _serializer = new JsonSerializer(serializerSettings);
             }
@@ -164,7 +164,7 @@ namespace PommaLabs.KVLite.Core
             InitConnectionString();
 
             using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
+            using (var cmd = ctx.Connection.CreateCommand())
             {
                 bool isSchemaReady;
                 cmd.CommandText = SQLiteQueries.IsSchemaReady;
@@ -202,7 +202,7 @@ namespace PommaLabs.KVLite.Core
             {
                 // No need for a transaction, since it is just a select.
                 using (var ctx = _connectionPool.GetObject())
-                using (var cmd = ctx.InternalResource.CreateCommand())
+                using (var cmd = ctx.Connection.CreateCommand())
                 {
                     cmd.CommandText = "PRAGMA page_count;";
                     var pageCount = (long) cmd.ExecuteScalar();
@@ -239,8 +239,8 @@ namespace PommaLabs.KVLite.Core
             {
                 var result = ClearInternal(null, cacheReadMode);
 
-                // Postconditions - NOT VALID: Methods below return counters which are not related
-                // to the number of items the call above actually cleared.
+                // Postconditions - NOT VALID: Methods below return counters which are not related to
+                // the number of items the call above actually cleared.
 
                 //Debug.Assert(Count(cacheReadMode) == 0);
                 //Debug.Assert(LongCount(cacheReadMode) == 0L);
@@ -272,8 +272,8 @@ namespace PommaLabs.KVLite.Core
             {
                 var result = ClearInternal(partition, cacheReadMode);
 
-                // Postconditions - NOT VALID: Methods below return counters which are not related
-                // to the number of items the call above actually cleared.
+                // Postconditions - NOT VALID: Methods below return counters which are not related to
+                // the number of items the call above actually cleared.
 
                 //Debug.Assert(Count(cacheReadMode) == 0);
                 //Debug.Assert(LongCount(cacheReadMode) == 0L);
@@ -421,7 +421,7 @@ namespace PommaLabs.KVLite.Core
 
                 // Vacuum cannot be run within a transaction.
                 using (var ctx = _connectionPool.GetObject())
-                using (var cmd = ctx.InternalResource.CreateCommand())
+                using (var cmd = ctx.Connection.CreateCommand())
                 {
                     cmd.CommandText = SQLiteQueries.Vacuum;
                     cmd.ExecuteNonQuery();
@@ -478,7 +478,7 @@ namespace PommaLabs.KVLite.Core
         /// <value>The compressor used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="SnappyCompressor"/>.
+        ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
         /// </remarks>
         public sealed override ICompressor Compressor => _compressor;
 
@@ -494,6 +494,12 @@ namespace PommaLabs.KVLite.Core
         public sealed override ILog Log => _log;
 
         /// <summary>
+        ///   The maximum number of parent keys each item can have. SQLite based caches support up to
+        ///   five parent keys per item.
+        /// </summary>
+        public sealed override int MaxParentKeyCountPerItem { get; } = 5;
+
+        /// <summary>
         ///   Gets the serializer used by the cache.
         /// </summary>
         /// <value>The serializer used by the cache.</value>
@@ -501,8 +507,8 @@ namespace PommaLabs.KVLite.Core
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>. Therefore,
         ///   if you do not specify another serializer, make sure that your objects are serializable
-        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields
-        ///   as public properties).
+        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as
+        ///   public properties).
         /// </remarks>
         public sealed override ISerializer Serializer => _serializer;
 
@@ -575,58 +581,45 @@ namespace PommaLabs.KVLite.Core
 
             long insertionCount;
             using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                cmd.CommandText = SQLiteQueries.Add;
-                cmd.Parameters.AddRange(new[]
-                {
-                    new SQLiteParameter(nameof(partition), partition),
-                    new SQLiteParameter(nameof(key), key),
-                    new SQLiteParameter(nameof(serializedValue), serializedValue),
-                    new SQLiteParameter(nameof(utcExpiry), utcExpiry.ToUnixTime()),
-                    new SQLiteParameter(nameof(interval), (long) interval.TotalSeconds),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime()),
-                    new SQLiteParameter("maxInsertionCount", Settings.InsertionCountBeforeAutoClean)
-                });
+                ctx.Add_Partition.Value = partition;
+                ctx.Add_Key.Value = key;
+                ctx.Add_SerializedValue.Value = serializedValue;
+                ctx.Add_UtcExpiry.Value = utcExpiry.ToUnixTime();
+                ctx.Add_Interval.Value = (long) interval.TotalSeconds;
+                ctx.Add_UtcNow.Value = _clock.UnixTime;
+                ctx.Add_MaxInsertionCount.Value = Settings.InsertionCountBeforeAutoClean;
 
                 // Also add the parent keys, if any.
-                var parameters = cmd.Parameters;
                 var parentKeyCount = parentKeys?.Count ?? 0;
                 if (parentKeyCount != 0)
                 {
-                    parameters.Add(new SQLiteParameter("parentKey0", parentKeyCount > 0 ? parentKeys[0] : null));
-                    parameters.Add(new SQLiteParameter("parentKey1", parentKeyCount > 1 ? parentKeys[1] : null));
-                    parameters.Add(new SQLiteParameter("parentKey2", parentKeyCount > 2 ? parentKeys[2] : null));
-                    parameters.Add(new SQLiteParameter("parentKey3", parentKeyCount > 3 ? parentKeys[3] : null));
-                    parameters.Add(new SQLiteParameter("parentKey4", parentKeyCount > 4 ? parentKeys[4] : null));
-                    parameters.Add(new SQLiteParameter("parentKey5", parentKeyCount > 5 ? parentKeys[5] : null));
-                    parameters.Add(new SQLiteParameter("parentKey6", parentKeyCount > 6 ? parentKeys[6] : null));
-                    parameters.Add(new SQLiteParameter("parentKey7", parentKeyCount > 7 ? parentKeys[7] : null));
-                    parameters.Add(new SQLiteParameter("parentKey8", parentKeyCount > 8 ? parentKeys[8] : null));
-                    parameters.Add(new SQLiteParameter("parentKey9", parentKeyCount > 9 ? parentKeys[9] : null));
+                    ctx.Add_ParentKey0.Value = parentKeyCount > 0 ? parentKeys[0] : null;
+                    ctx.Add_ParentKey1.Value = parentKeyCount > 1 ? parentKeys[1] : null;
+                    ctx.Add_ParentKey2.Value = parentKeyCount > 2 ? parentKeys[2] : null;
+                    ctx.Add_ParentKey3.Value = parentKeyCount > 3 ? parentKeys[3] : null;
+                    ctx.Add_ParentKey4.Value = parentKeyCount > 4 ? parentKeys[4] : null;
                 }
                 else
                 {
-                    parameters.Add(new SQLiteParameter("parentKey0", null));
-                    parameters.Add(new SQLiteParameter("parentKey1", null));
-                    parameters.Add(new SQLiteParameter("parentKey2", null));
-                    parameters.Add(new SQLiteParameter("parentKey3", null));
-                    parameters.Add(new SQLiteParameter("parentKey4", null));
-                    parameters.Add(new SQLiteParameter("parentKey5", null));
-                    parameters.Add(new SQLiteParameter("parentKey6", null));
-                    parameters.Add(new SQLiteParameter("parentKey7", null));
-                    parameters.Add(new SQLiteParameter("parentKey8", null));
-                    parameters.Add(new SQLiteParameter("parentKey9", null));
+                    ctx.Add_ParentKey0.Value = null;
+                    ctx.Add_ParentKey1.Value = null;
+                    ctx.Add_ParentKey2.Value = null;
+                    ctx.Add_ParentKey3.Value = null;
+                    ctx.Add_ParentKey4.Value = null;
                 }
 
-                insertionCount = (long) cmd.ExecuteScalar();
+                insertionCount = (long) ctx.Add_Command.ExecuteScalar();
+
+                // We have to clear the serialized value parameter, in order to free some memory up.
+                ctx.Add_SerializedValue.Value = null;
             }
 
-            // Insertion has concluded successfully, therefore we increment the operation counter.
-            // If it has reached the "InsertionCountBeforeAutoClean" configuration parameter, then
-            // we must reset it and do a SOFT cleanup. Following code is not fully thread safe, but
-            // it does not matter, because the "InsertionCountBeforeAutoClean" parameter should be
-            // just an hint on when to do the cleanup.
+            // Insertion has concluded successfully, therefore we increment the operation counter. If
+            // it has reached the "InsertionCountBeforeAutoClean" configuration parameter, then we
+            // must reset it and do a SOFT cleanup. Following code is not fully thread safe, but it
+            // does not matter, because the "InsertionCountBeforeAutoClean" parameter should be just
+            // an hint on when to do the cleanup.
             if (insertionCount >= Settings.InsertionCountBeforeAutoClean)
             {
                 // If they were equal, then we need to run the maintenance cleanup. The insertion
@@ -644,21 +637,14 @@ namespace PommaLabs.KVLite.Core
         protected sealed override long ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
             using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
             {
-                cmd.CommandText = SQLiteQueries.Clear;
-                cmd.Parameters.AddRange(new[]
-                {
-                    new SQLiteParameter(nameof(partition), partition),
-                    new SQLiteParameter("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate)),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
-                });
-                var removedItemCount = cmd.ExecuteNonQuery();
+                ctx.Clear_Partition.Value = partition;
+                ctx.Clear_IgnoreExpiryDate.Value = (cacheReadMode == CacheReadMode.IgnoreExpiryDate);
+                ctx.Clear_UtcNow.Value = _clock.UnixTime;
+                var removedItemCount = ctx.Clear_Command.ExecuteNonQuery();
 
                 // Now we should perform a quick incremental vacuum.
-                cmd.CommandText = SQLiteQueries.IncrementalVacuum;
-                cmd.Parameters.Clear();
-                cmd.ExecuteNonQuery();
+                ctx.IncrementalVacuum_Command.ExecuteNonQuery();
 
                 if (removedItemCount > 0 && partition == null)
                 {
@@ -682,14 +668,14 @@ namespace PommaLabs.KVLite.Core
         protected sealed override bool ContainsInternal(string partition, string key)
         {
             using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
+            using (var cmd = ctx.Connection.CreateCommand())
             {
                 cmd.CommandText = SQLiteQueries.Contains;
                 cmd.Parameters.AddRange(new[]
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter(nameof(key), key),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 return (long) cmd.ExecuteScalar() > 0L;
             }
@@ -706,14 +692,14 @@ namespace PommaLabs.KVLite.Core
         {
             // No need for a transaction, since it is just a select.
             using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
+            using (var cmd = ctx.Connection.CreateCommand())
             {
                 cmd.CommandText = SQLiteQueries.Count;
                 cmd.Parameters.AddRange(new[]
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter("ignoreExpiryDate", (cacheReadMode == CacheReadMode.IgnoreExpiryDate)),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 return (long) cmd.ExecuteScalar();
             }
@@ -731,14 +717,14 @@ namespace PommaLabs.KVLite.Core
         {
             byte[] serializedValue;
             using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
+            using (var cmd = ctx.Connection.CreateCommand())
             {
                 cmd.CommandText = SQLiteQueries.GetOne;
                 cmd.Parameters.AddRange(new[]
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter(nameof(key), key),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 serializedValue = (byte[]) cmd.ExecuteScalar();
             }
@@ -758,14 +744,14 @@ namespace PommaLabs.KVLite.Core
         {
             DbCacheItem tmpItem;
             using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
+            using (var cmd = ctx.Connection.CreateCommand())
             {
                 cmd.CommandText = SQLiteQueries.GetOneItem;
                 cmd.Parameters.AddRange(new[]
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter(nameof(key), key),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -786,13 +772,13 @@ namespace PommaLabs.KVLite.Core
         protected sealed override CacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
         {
             using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
+            using (var cmd = ctx.Connection.CreateCommand())
             {
                 cmd.CommandText = SQLiteQueries.GetManyItems;
                 cmd.Parameters.AddRange(new[]
                 {
                     new SQLiteParameter(nameof(partition), partition),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -819,14 +805,14 @@ namespace PommaLabs.KVLite.Core
         {
             byte[] serializedValue;
             using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
+            using (var cmd = ctx.Connection.CreateCommand())
             {
                 cmd.CommandText = SQLiteQueries.PeekOne;
                 cmd.Parameters.AddRange(new[]
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter(nameof(key), key),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 serializedValue = (byte[]) cmd.ExecuteScalar();
             }
@@ -847,14 +833,14 @@ namespace PommaLabs.KVLite.Core
         {
             DbCacheItem tmpItem;
             using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
+            using (var cmd = ctx.Connection.CreateCommand())
             {
                 cmd.CommandText = SQLiteQueries.PeekOneItem;
                 cmd.Parameters.AddRange(new[]
                 {
                     new SQLiteParameter(nameof(partition), partition),
                     new SQLiteParameter(nameof(key), key),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -866,8 +852,7 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        ///   Gets the all values in the cache or in the specified partition, without updating
-        ///   expiry dates.
+        ///   Gets the all values in the cache or in the specified partition, without updating expiry dates.
         /// </summary>
         /// <param name="partition">The optional partition.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
@@ -880,13 +865,13 @@ namespace PommaLabs.KVLite.Core
         protected sealed override CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
         {
             using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
+            using (var cmd = ctx.Connection.CreateCommand())
             {
                 cmd.CommandText = SQLiteQueries.PeekManyItems;
                 cmd.Parameters.AddRange(new[]
                 {
                     new SQLiteParameter(nameof(partition), partition),
-                    new SQLiteParameter("utcNow", _clock.UtcNow.ToUnixTime())
+                    new SQLiteParameter("utcNow", _clock.UnixTime)
                 });
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -908,7 +893,7 @@ namespace PommaLabs.KVLite.Core
         protected sealed override void RemoveInternal(string partition, string key)
         {
             using (var ctx = _connectionPool.GetObject())
-            using (var cmd = ctx.InternalResource.CreateCommand())
+            using (var cmd = ctx.Connection.CreateCommand())
             {
                 cmd.CommandText = SQLiteQueries.Remove;
                 cmd.Parameters.AddRange(new[]
@@ -920,7 +905,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
+        private TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
         {
             using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(StreamTag, serializedValue, 0, serializedValue.Length))
             using (var decompressionStream = _compressor.CreateDecompressionStream(memoryStream))
@@ -929,7 +914,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        Option<TVal> DeserializeValue<TVal>(byte[] serializedValue, string partition, string key)
+        private Option<TVal> DeserializeValue<TVal>(byte[] serializedValue, string partition, string key)
         {
             if (serializedValue == null)
             {
@@ -951,7 +936,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        Option<CacheItem<TVal>> DeserializeCacheItem<TVal>(DbCacheItem src)
+        private Option<CacheItem<TVal>> DeserializeCacheItem<TVal>(DbCacheItem src)
         {
             if (src == null)
             {
@@ -982,7 +967,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        static IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
+        private static IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
         {
             const int valueCount = 16;
             var values = new object[valueCount];
@@ -1019,7 +1004,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        PooledObjectWrapper<SQLiteConnection> CreatePooledConnection()
+        private DbInterface CreatePooledConnection()
         {
 #pragma warning disable CC0022 // Should dispose object
 
@@ -1033,21 +1018,18 @@ namespace PommaLabs.KVLite.Core
             using (var cmd = connection.CreateCommand())
             {
                 var journalSizeLimitInBytes = Settings.MaxJournalSizeInMB * 1024 * 1024;
-                var walAutoCheckpointInPages = journalSizeLimitInBytes / PageSizeInBytes / 3;
-                cmd.CommandText = string.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes, walAutoCheckpointInPages);
+                cmd.CommandText = string.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes);
                 cmd.ExecuteNonQuery();
             }
 
 #pragma warning disable CC0022 // Should dispose object
 
-            var pooledConnection = new PooledObjectWrapper<SQLiteConnection>(connection);
-            pooledConnection.WrapperReleaseResourcesAction += (sc => sc.Dispose());
-            return pooledConnection;
+            return new DbInterface(connection);
 
 #pragma warning restore CC0022 // Should dispose object
         }
 
-        void InitConnectionString()
+        private void InitConnectionString()
         {
             SQLiteJournalModeEnum journalMode;
             var cacheUri = GetDataSource(out journalMode);
@@ -1055,37 +1037,44 @@ namespace PommaLabs.KVLite.Core
             var builder = new SQLiteConnectionStringBuilder
             {
                 BaseSchemaName = "kvlite",
-                BinaryGUID = true,
-                BrowsableConnectionString = false,
-                /* Number of pages of 1KB, 2000 is the suggested value */
-                CacheSize = 2000,
-                DateTimeFormat = SQLiteDateFormats.Ticks,
-                DateTimeKind = DateTimeKind.Utc,
-                DefaultIsolationLevel = IsolationLevel.ReadCommitted,
-                /* Settings three minutes as timeout should be more than enough... */
-                DefaultTimeout = 180,
-                Enlist = false,
-                FailIfMissing = false,
-                ForeignKeys = false,
                 FullUri = cacheUri,
                 JournalMode = journalMode,
+                FailIfMissing = false,
                 LegacyFormat = false,
-                /* Each page is 1KB large - Multiply by 1024*1024/PageSizeInBytes */
-                MaxPageCount = Settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes,
-                PageSize = PageSizeInBytes,
-                /* We use a custom object pool */
-                Pooling = false,
-                PrepareRetries = 3,
                 ReadOnly = false,
                 SyncMode = SynchronizationModes.Off,
                 Version = 3,
+
+                /* KVLite uses UNIX time */
+                DateTimeFormat = SQLiteDateFormats.Ticks,
+                DateTimeKind = DateTimeKind.Utc,
+
+                /* Settings three minutes as timeout should be more than enough... */
+                DefaultTimeout = 180,
+                PrepareRetries = 3,
+
+                /* Transaction handling */
+                Enlist = false,
+                DefaultIsolationLevel = IsolationLevel.ReadCommitted,
+
+                /* Required by parent keys */
+                ForeignKeys = true,
+                RecursiveTriggers = true,
+
+                /* Each page is 4KB large - Multiply by 1024*1024/PageSizeInBytes */
+                MaxPageCount = Settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes,
+                PageSize = PageSizeInBytes,
+                CacheSize = -2000,
+
+                /* We use a custom object pool */
+                Pooling = false,
             };
 
             _connectionString = builder.ToString();
-            _connectionPool = new ObjectPool<PooledObjectWrapper<SQLiteConnection>>(1, 10, CreatePooledConnection);
+            _connectionPool = new ObjectPool<DbInterface>(1, 10, CreatePooledConnection);
         }
 
-        void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (DataSourceHasChanged(e.PropertyName))
             {
@@ -1093,7 +1082,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        static bool IsSchemaReady(SQLiteDataReader dataReader)
+        private static bool IsSchemaReady(SQLiteDataReader dataReader)
         {
             var columns = new HashSet<string>();
 
@@ -1102,7 +1091,8 @@ namespace PommaLabs.KVLite.Core
                 columns.Add(dataReader.GetValue(dataReader.GetOrdinal("name")) as string);
             }
 
-            return columns.Contains("partition")
+            return columns.Count == 11
+                && columns.Contains("partition")
                 && columns.Contains("key")
                 && columns.Contains("serializedValue")
                 && columns.Contains("utcCreation")
@@ -1112,15 +1102,94 @@ namespace PommaLabs.KVLite.Core
                 && columns.Contains("parentKey1")
                 && columns.Contains("parentKey2")
                 && columns.Contains("parentKey3")
-                && columns.Contains("parentKey4")
-                && columns.Contains("parentKey5")
-                && columns.Contains("parentKey6")
-                && columns.Contains("parentKey7")
-                && columns.Contains("parentKey8")
-                && columns.Contains("parentKey9");
+                && columns.Contains("parentKey4");
         }
 
         #endregion Private Methods
+
+        #region Nested type: DbInterface
+
+        private sealed class DbInterface : PooledObject
+        {
+            public DbInterface(SQLiteConnection connection)
+            {
+                Connection = connection;
+
+                // Add
+                Add_Command = connection.CreateCommand();
+                Add_Command.CommandText = SQLiteQueries.Add;
+                Add_Command.Parameters.Add(Add_Partition = new SQLiteParameter("partition"));
+                Add_Command.Parameters.Add(Add_Key = new SQLiteParameter("key"));
+                Add_Command.Parameters.Add(Add_SerializedValue = new SQLiteParameter("serializedValue"));
+                Add_Command.Parameters.Add(Add_UtcExpiry = new SQLiteParameter("utcExpiry"));
+                Add_Command.Parameters.Add(Add_Interval = new SQLiteParameter("interval"));
+                Add_Command.Parameters.Add(Add_UtcNow = new SQLiteParameter("utcNow"));
+                Add_Command.Parameters.Add(Add_MaxInsertionCount = new SQLiteParameter("maxInsertionCount"));
+                Add_Command.Parameters.Add(Add_ParentKey0 = new SQLiteParameter("parentKey0"));
+                Add_Command.Parameters.Add(Add_ParentKey1 = new SQLiteParameter("parentKey1"));
+                Add_Command.Parameters.Add(Add_ParentKey2 = new SQLiteParameter("parentKey2"));
+                Add_Command.Parameters.Add(Add_ParentKey3 = new SQLiteParameter("parentKey3"));
+                Add_Command.Parameters.Add(Add_ParentKey4 = new SQLiteParameter("parentKey4"));
+
+                // Clear
+                Clear_Command = Connection.CreateCommand();
+                Clear_Command.CommandText = SQLiteQueries.Clear;
+                Clear_Command.Parameters.Add(Clear_Partition = new SQLiteParameter("partition"));
+                Clear_Command.Parameters.Add(Clear_IgnoreExpiryDate = new SQLiteParameter("ignoreExpiryDate"));
+                Clear_Command.Parameters.Add(Clear_UtcNow = new SQLiteParameter("utcNow"));
+
+                // Vacuum
+                IncrementalVacuum_Command = Connection.CreateCommand();
+                IncrementalVacuum_Command.CommandText = SQLiteQueries.IncrementalVacuum;
+            }
+
+            protected override void OnReleaseResources()
+            {
+                Add_Command.Dispose();
+                Clear_Command.Dispose();
+                IncrementalVacuum_Command.Dispose();
+                Connection.Dispose();
+
+                base.OnReleaseResources();
+            }
+
+            public SQLiteConnection Connection { get; }
+
+            #region Add
+
+            public SQLiteCommand Add_Command { get; }
+            public SQLiteParameter Add_Partition { get; }
+            public SQLiteParameter Add_Key { get; }
+            public SQLiteParameter Add_SerializedValue { get; }
+            public SQLiteParameter Add_UtcExpiry { get; }
+            public SQLiteParameter Add_Interval { get; }
+            public SQLiteParameter Add_UtcNow { get; }
+            public SQLiteParameter Add_MaxInsertionCount { get; }
+            public SQLiteParameter Add_ParentKey0 { get; }
+            public SQLiteParameter Add_ParentKey1 { get; }
+            public SQLiteParameter Add_ParentKey2 { get; }
+            public SQLiteParameter Add_ParentKey3 { get; }
+            public SQLiteParameter Add_ParentKey4 { get; }
+
+            #endregion Add
+
+            #region Clear
+
+            public SQLiteCommand Clear_Command { get; }
+            public SQLiteParameter Clear_Partition { get; }
+            public SQLiteParameter Clear_IgnoreExpiryDate { get; }
+            public SQLiteParameter Clear_UtcNow { get; }
+
+            #endregion Clear
+
+            #region Vacuum
+
+            public SQLiteCommand IncrementalVacuum_Command { get; }
+
+            #endregion Vacuum
+        }
+
+        #endregion Nested type: DbInterface
 
         #region Nested type: DbCacheItem
 
@@ -1128,7 +1197,7 @@ namespace PommaLabs.KVLite.Core
         ///   Represents a row in the cache table.
         /// </summary>
         [Serializable]
-        sealed class DbCacheItem : EquatableObject<DbCacheItem>
+        private sealed class DbCacheItem : EquatableObject<DbCacheItem>
         {
             #region Constants
 
@@ -1157,8 +1226,8 @@ namespace PommaLabs.KVLite.Core
             #region EquatableObject<DbCacheItem> Members
 
             /// <summary>
-            ///   Returns all property (or field) values, along with their names, so that they can
-            ///   be used to produce a meaningful <see cref="M:Finsa.CodeServices.Common.FormattableObject.ToString"/>.
+            ///   Returns all property (or field) values, along with their names, so that they can be
+            ///   used to produce a meaningful <see cref="M:Finsa.CodeServices.Common.FormattableObject.ToString"/>.
             /// </summary>
             protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
             {

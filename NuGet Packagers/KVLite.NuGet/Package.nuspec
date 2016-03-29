@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite</id>
-        <version>5.2.1</version>
+        <version>5.2.2</version>
         <title>KVLite - Key-value store built on SQLite</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -12,13 +12,10 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         </description>
         <releaseNotes>
 * Updated lots of dependencies.
-* Added new methods to ICache, like GetOrAdd*.
-* Now each Clear* method returns the number of items cleared.
-* Every Add* method now accepts parent keys, that is, an entry may depend on other ones.
-* Improved error handling.
-* Added a query cache provider for Entity Framework.
-* Using custom NuGet package for SQLite.
-* Fixed AssemblyVersion, now it will not change anymore between minor releases.
+* Fixed a bug in type name handling during serialization and deserialization.
+* Reduced the number of parent keys for SQLite caches from 10 to 5.
+* Fixed an inizialization which was happening too early for WebCaches.
+* Now using Deflate as the default compressor. Deflate replaces Snappy, which seemed an "unsafe" solution for the long term.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store.
@@ -30,12 +27,11 @@ A simple, timed and persistent key-value store based on SQLite. KVLite offers bo
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
-            <dependency id="CodeProject.ObjectPool" version="[1.10.1, 2.0.0)" />
-            <dependency id="Finsa.CodeServices.Compression.Snappy" version="[4.1.1, 5.0.0)" />
-            <dependency id="Finsa.CodeServices.Serialization.Json" version="[4.1.1, 5.0.0)" />
-            <dependency id="PommaLabs.KVLite.Core" version="[5.2.1, 6.0.0)" />
+            <dependency id="CodeProject.ObjectPool" version="1.10.1" />
+            <dependency id="Finsa.CodeServices.Serialization.Json" version="4.1.3" />
+            <dependency id="PommaLabs.KVLite.Core" version="5.2.2" />
             <dependency id="PommaLabs.KVLite.SQLite" version="1.0.99.4" />
-            <dependency id="Thrower" version="[2.2.1, 3.0.0)" />
+            <dependency id="Thrower" version="2.2.2" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>

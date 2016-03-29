@@ -22,6 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Finsa.CodeServices.Serialization;
+using PommaLabs.Thrower;
+using System;
+using System.Runtime.Serialization.Formatters;
 
 namespace PommaLabs.KVLite.WebForms
 {
@@ -37,11 +40,14 @@ namespace PommaLabs.KVLite.WebForms
     /// </summary>
     /// <remarks>
     ///   We use custom defitions because the KVLite.Web branch usually deals with objects that
-    ///   require the <see cref="BinarySerializer"/> instead of the <see cref="JsonSerializer"/>,
-    ///   which is the default serializer for all caches.
+    ///   require the <see cref="BinarySerializer"/> instead of the JSON serializer, which is the
+    ///   default serializer for all caches.
     /// </remarks>
     public static class WebCaches
     {
+        private static PersistentCache _persistentCache;
+        private static VolatileCache _volatileCache;
+        
         /// <summary>
         ///   The default instance for <see cref="MemoryCache"/>.
         /// </summary>
@@ -55,26 +61,50 @@ namespace PommaLabs.KVLite.WebForms
         ///   The default instance for <see cref="PersistentCache"/>.
         /// </summary>
         /// <remarks>
-        ///   Here we use a mostly vanilla instance, where we customize only the serializer with a <see cref="BinarySerializer"/>.
+        ///   Here we use a mostly vanilla instance, where we customize only the serializer with a
+        ///   <see cref="BinarySerializer"/>.
         /// </remarks>
-        public static PersistentCache Persistent { get; set; } = new PersistentCache(new PersistentCacheSettings(), serializer: new BinarySerializer(new BinarySerializerSettings
+        public static PersistentCache Persistent
         {
-            AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
-            FilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full,
-            TypeFormat = System.Runtime.Serialization.Formatters.FormatterTypeStyle.TypesWhenNeeded
-        }));
+            get
+            {
+                return _persistentCache ?? (_persistentCache = new PersistentCache(new PersistentCacheSettings(), serializer: new BinarySerializer(new BinarySerializerSettings
+                {
+                    AssemblyFormat = FormatterAssemblyStyle.Simple,
+                    FilterLevel = TypeFilterLevel.Full,
+                    TypeFormat = FormatterTypeStyle.TypesWhenNeeded
+                })));
+            }
+            set
+            {
+                RaiseArgumentNullException.IfIsNull(value, nameof(value));
+                _persistentCache = value;
+            }
+        }
 
         /// <summary>
         ///   The default instance for <see cref="VolatileCache"/>.
         /// </summary>
         /// <remarks>
-        ///   Here we use a mostly vanilla instance, where we customize only the serializer with a <see cref="BinarySerializer"/>.
+        ///   Here we use a mostly vanilla instance, where we customize only the serializer with a
+        ///   <see cref="BinarySerializer"/>.
         /// </remarks>
-        public static VolatileCache Volatile { get; set; } = new VolatileCache(new VolatileCacheSettings(), serializer: new BinarySerializer(new BinarySerializerSettings
+        public static VolatileCache Volatile
         {
-            AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
-            FilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full,
-            TypeFormat = System.Runtime.Serialization.Formatters.FormatterTypeStyle.TypesWhenNeeded
-        }));
+            get
+            {
+                return _volatileCache ?? (_volatileCache = new VolatileCache(new VolatileCacheSettings(), serializer: new BinarySerializer(new BinarySerializerSettings
+                {
+                    AssemblyFormat = FormatterAssemblyStyle.Simple,
+                    FilterLevel = TypeFilterLevel.Full,
+                    TypeFormat = FormatterTypeStyle.TypesWhenNeeded
+                })));
+            }
+            set
+            {
+                RaiseArgumentNullException.IfIsNull(value, nameof(value));
+                _volatileCache = value;
+            }
+        }
     }
 }

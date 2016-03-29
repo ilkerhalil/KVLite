@@ -55,10 +55,12 @@ namespace PommaLabs.KVLite.UnitTests
         [TestCase("   ")]
         public void NewCache_BlankName(string name)
         {
+            ICache cache;
             try
             {
-                // ReSharper disable once ObjectCreationAsStatement
-                new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
+#pragma warning disable CC0022 // Should dispose object
+                cache = new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
+#pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)
             {
@@ -74,10 +76,12 @@ namespace PommaLabs.KVLite.UnitTests
         [TestCase("_3?")]
         public void NewCache_WrongName(string name)
         {
+            ICache cache;
             try
             {
-                // ReSharper disable once ObjectCreationAsStatement
-                new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
+#pragma warning disable CC0022 // Should dispose object
+                cache = new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
+#pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)
             {
@@ -98,8 +102,10 @@ namespace PommaLabs.KVLite.UnitTests
         [TestCase("a...b")]
         public void NewCache_GoodName(string name)
         {
-            // ReSharper disable once ObjectCreationAsStatement
-            new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
+            ICache cache = new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
+            Assert.That(cache, Is.Not.Null);
+            cache.Dispose();
+            Assert.That(cache.Disposed, Is.True);
         }
 
         [Test, ExpectedException(typeof(ObjectDisposedException))]
@@ -168,19 +174,20 @@ namespace PommaLabs.KVLite.UnitTests
         public void AddStatic_TwoCaches_NoMix()
         {
             const string key = "key";
-            var another = new VolatileCache(new VolatileCacheSettings { CacheName = "another" }, Kernel.Get<IClock>());
+            using (var another = new VolatileCache(new VolatileCacheSettings { CacheName = "another" }, Kernel.Get<IClock>()))
+            {
+                Cache.AddStaticToDefaultPartition(key, 1);
+                another.AddStaticToDefaultPartition(key, 2);
+                Assert.True(Cache.DefaultPartitionContains(key));
+                Assert.True(another.DefaultPartitionContains(key));
+                Assert.AreEqual(1, ((VolatileCache) Cache)[key].Value);
+                Assert.AreEqual(2, another[key].Value);
 
-            Cache.AddStaticToDefaultPartition(key, 1);
-            another.AddStaticToDefaultPartition(key, 2);
-            Assert.True(Cache.DefaultPartitionContains(key));
-            Assert.True(another.DefaultPartitionContains(key));
-            Assert.AreEqual(1, ((VolatileCache) Cache)[key].Value);
-            Assert.AreEqual(2, another[key].Value);
-
-            another.AddStaticToDefaultPartition(key + key, 3);
-            Assert.False(Cache.DefaultPartitionContains(key + key));
-            Assert.True(another.DefaultPartitionContains(key + key));
-            Assert.AreEqual(3, another[key + key].Value);
+                another.AddStaticToDefaultPartition(key + key, 3);
+                Assert.False(Cache.DefaultPartitionContains(key + key));
+                Assert.True(another.DefaultPartitionContains(key + key));
+                Assert.AreEqual(3, another[key + key].Value);
+            }
         }
 
         #endregion Multiple Caches
