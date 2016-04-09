@@ -29,6 +29,7 @@ using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
 using Finsa.CodeServices.Common.Portability;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
+using Ionic.Zlib;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
@@ -128,7 +129,7 @@ namespace PommaLabs.KVLite.Core
             _settings = settings;
             _clock = clock ?? new SystemClock();
             _log = log ?? LogManager.GetLogger(GetType());
-            _compressor = compressor ?? new DeflateCompressor();
+            _compressor = compressor ?? new DeflateCompressor(CompressionLevel.BestSpeed);
 
             // We need to properly customize the default serializer settings in no custom serializer
             // has been specified.
