@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.Core</id>
-        <version>5.2.2</version>
+        <version>5.2.4</version>
         <title>KVLite - Core library</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>

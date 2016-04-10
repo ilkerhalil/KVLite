@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.EntityFramework</id>
-        <version>5.2.2</version>
+        <version>5.2.4</version>
         <title>KVLite - Entity Framework query cache provider</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -26,7 +26,7 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <dependencies>
             <dependency id="EntityFramework" version="6.1.3" />
             <dependency id="EntityFramework.Extended" version="6.1.0.168" />
-            <dependency id="PommaLabs.KVLite.Core" version="5.2.2" />
+            <dependency id="PommaLabs.KVLite.Core" version="5.2.4" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
