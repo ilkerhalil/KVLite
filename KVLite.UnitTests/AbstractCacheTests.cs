@@ -950,7 +950,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
-                var task = TaskHelper.Run(() => Cache.GetFromDefaultPartition<string>(StringItems[l]));
+                var task = TaskHelper.RunAsync(() => Cache.GetFromDefaultPartition<string>(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i)
@@ -1288,7 +1288,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
-                var task = TaskHelper.Run(() => Cache.PeekIntoDefaultPartition<string>(StringItems[l]));
+                var task = TaskHelper.RunAsync(() => Cache.PeekIntoDefaultPartition<string>(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i)

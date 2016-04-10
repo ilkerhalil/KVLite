@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.Nancy</id>
-        <version>5.2.2</version>
+        <version>5.2.4</version>
         <title>KVLite - Nancy caching bootstrapper</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -11,11 +11,8 @@
 A simple, timed and persistent key-value store based on SQLite. This package adds the code and the references required to use the Nancy caching bootstrapper.
         </description>
         <releaseNotes>
-* Updated lots of dependencies.
-* Fixed a bug in type name handling during serialization and deserialization.
-* Reduced the number of parent keys for SQLite caches from 10 to 5.
-* Fixed an inizialization which was happening too early for WebCaches.
-* Now using Deflate as the default compressor. Deflate replaces Snappy, which seemed an "unsafe" solution for the long term.
+* Updated a few dependencies.
+* Minor internal rework to cache SQLite commands.
         </releaseNotes>
         <summary>
 A simple, timed and persistent key-value store based on SQLite. This package adds the code and the references required to use the Nancy caching bootstrapper.
@@ -28,7 +25,7 @@ A simple, timed and persistent key-value store based on SQLite. This package add
         <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <dependency id="Nancy" version="1.4.3" />
-            <dependency id="PommaLabs.KVLite.Core" version="5.2.2" />
+            <dependency id="PommaLabs.KVLite.Core" version="5.2.4" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
