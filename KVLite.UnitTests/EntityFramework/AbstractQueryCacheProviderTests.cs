@@ -25,6 +25,9 @@ using EntityFramework.Caching;
 using EntityFramework.Extensions;
 using NUnit.Framework;
 using PommaLabs.KVLite.EntityFramework;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Common;
 using System.Data.Entity;
 using System.Linq;
@@ -374,6 +377,50 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
             Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.True);
         }
 
+        [Test]
+        public void FromCache_Paging_ShouldReturnDifferentItemsOnSamePageWhenChangingQuery()
+        {
+            _dbContext.TestEntities1.Add(new TestEntity1 { Id = 101, Name = "@A" });
+            _dbContext.TestEntities1.Add(new TestEntity1 { Id = 102, Name = "@B" });
+            _dbContext.TestEntities1.Add(new TestEntity1 { Id = 103, Name = "@C" });
+            _dbContext.TestEntities1.Add(new TestEntity1 { Id = 104, Name = "#A" });
+            _dbContext.TestEntities1.Add(new TestEntity1 { Id = 105, Name = "#B" });
+            _dbContext.TestEntities1.Add(new TestEntity1 { Id = 106, Name = "#C" });
+            _dbContext.SaveChanges();
+
+            using (_dbContext.AsCaching())
+            {
+                var e1 = _dbContext.TestEntities1
+                    .Where(e => e.Id > 100)
+                    .Where(e => e.Name.Contains("@"))
+                    .OrderBy(e => e.Id).Skip(1).Take(2).FromCache().ToArray();
+
+                Assert.That(e1[0].Id, Is.EqualTo(102));
+                Assert.That(e1[0].Name, Is.EqualTo("@B"));
+                Assert.That(e1[1].Id, Is.EqualTo(103));
+                Assert.That(e1[1].Name, Is.EqualTo("@C"));
+
+                var e2 = _dbContext.TestEntities1
+                    .Where(e => e.Id > 100)
+                    .Where(e => e.Name.Contains("#"))
+                    .OrderBy(e => e.Id).Skip(1).Take(2).FromCache().ToArray();
+
+                Assert.That(e2[0].Id, Is.EqualTo(105));
+                Assert.That(e2[0].Name, Is.EqualTo("#B"));
+                Assert.That(e2[1].Id, Is.EqualTo(106));
+                Assert.That(e2[1].Name, Is.EqualTo("#C"));
+
+                var e3 = _dbContext.TestEntities1
+                    .Where(e => e.Id > 100)
+                    .OrderBy(e => e.Id).Skip(2).Take(2).FromCache().ToArray();
+
+                Assert.That(e3[0].Id, Is.EqualTo(103));
+                Assert.That(e3[0].Name, Is.EqualTo("@C"));
+                Assert.That(e3[1].Id, Is.EqualTo(104));
+                Assert.That(e3[1].Name, Is.EqualTo("#A"));
+            }            
+        }
+
         public sealed class TestDbContext : DbContext
         {
             public TestDbContext(DbConnection connection)
@@ -386,6 +433,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
 
         public class TestEntity1
         {
+            [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
             public virtual int Id { get; set; }
 
             public virtual string Name { get; set; }
