@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
+### v5.2.3 (2016-04-10) ###
+
+* Updated a few dependencies.
+* Minor internal rework to cache SQLite commands.
+
 ### v5.2.2 (2016-03-29) ###
 
 * Updated lots of dependencies.
