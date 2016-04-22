@@ -1,7 +1,9 @@
 ![](https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-64.png "KVLite Logo") KVLite
 ===============================================================================================================
 
-A simple, timed and persistent key-value store based on SQLite. KVLite offers both a persistent and an in-memory implementation of that kind of store. KVLite also implements caching components for other libraries, like Entity Framework, Web API, NancyFX, which can be configured to be either persistent or volatile.
+*KVLite is a partition-based key-value store built on SQLite.*
+
+KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
 
 ## Summary ##
 
