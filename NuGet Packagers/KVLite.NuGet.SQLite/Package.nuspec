@@ -31,7 +31,7 @@ KVLite is a partition-based key-value store built on SQLite. This package contai
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
-        <tags>sqlite partition key value store concurrent persistent volatile memory timed sliding</tags>
+        <tags>kvlite system data sqlite driver</tags>
     </metadata>
     <files>
         <file src="build\" target="build" />

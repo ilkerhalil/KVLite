@@ -8,14 +8,16 @@
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
         <description>
-A simple, timed and persistent key-value store based on SQLite. This package adds the code and the references required to use the Web API output cache provider.
+KVLite is a partition-based key-value store built on SQLite. 
+KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
+
+This package contains the code and the references required to use the Web API output cache provider.
         </description>
         <releaseNotes>
-* Updated a few dependencies.
-* Minor internal rework to cache SQLite commands.
+* Updated System.Data.SQLite to version 1.0.101.0.
         </releaseNotes>
         <summary>
-A simple, timed and persistent key-value store based on SQLite. This package adds the code and the references required to use the Web API output cache provider.
+KVLite is a partition-based key-value store built on SQLite. This package contains the code and the references required to use the Web API output cache provider.
         </summary>
         <language>en-US</language>
         <projectUrl>https://github.com/pomma89/KVLite</projectUrl>
