@@ -57,7 +57,7 @@ namespace PommaLabs.KVLite.Core
         ///   its defaults. WAL journal does limit the capability to change that value even when the
         ///   DB is still empty.
         /// </summary>
-        private const int PageSizeInBytes = 1024;
+        private const int PageSizeInBytes = 4096;
 
         /// <summary>
         ///   The string used to tag streams coming from <see cref="RecyclableMemoryStreamManager.Instance"/>.
