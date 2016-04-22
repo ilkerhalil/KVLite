@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.WebApi</id>
-        <version>5.2.4</version>
+        <version>5.2.5</version>
         <title>KVLite - Web API output cache provider</title>
         <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
         <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
@@ -28,22 +28,22 @@ KVLite is a partition-based key-value store built on SQLite. This package contai
         <dependencies>
             <group>
                 <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-                <dependency id="PommaLabs.KVLite.Core" version="5.2.4" />
+                <dependency id="PommaLabs.KVLite.Core" version="5.2.5" />
                 <dependency id="Strathweb.CacheOutput.WebApi2" version="0.9.0" />
             </group>
             <group targetFramework="net46">
                 <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-                <dependency id="PommaLabs.KVLite.Core" version="5.2.4" />
+                <dependency id="PommaLabs.KVLite.Core" version="5.2.5" />
                 <dependency id="Strathweb.CacheOutput.WebApi2" version="0.9.0" />
             </group>
             <group targetFramework="net45">
                 <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-                <dependency id="PommaLabs.KVLite.Core" version="5.2.4" />
+                <dependency id="PommaLabs.KVLite.Core" version="5.2.5" />
                 <dependency id="Strathweb.CacheOutput.WebApi2" version="0.9.0" />
             </group>
             <group targetFramework="net40">
                 <dependency id="Microsoft.AspNet.WebApi.Client" version="[4.0.30506.0, 5.0.0)" />
-                <dependency id="PommaLabs.KVLite.Core" version="5.2.4" />
+                <dependency id="PommaLabs.KVLite.Core" version="5.2.5" />
                 <dependency id="Strathweb.CacheOutput" version="0.5" />
             </group>
         </dependencies>
