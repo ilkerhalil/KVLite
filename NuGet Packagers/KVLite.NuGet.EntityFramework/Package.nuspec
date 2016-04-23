@@ -5,8 +5,8 @@
         <id>PommaLabs.KVLite.EntityFramework</id>
         <version>5.2.5</version>
         <title>KVLite - Entity Framework query cache provider</title>
-        <authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</authors>
-        <owners>Alessio Parma &lt;alessio.parma@gmail.com&gt;</owners>
+        <authors>Alessio Parma</authors>
+        <owners>Alessio Parma</owners>
         <description>
 KVLite is a partition-based key-value store built on SQLite. 
 KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
