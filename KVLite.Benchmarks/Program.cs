@@ -31,6 +31,7 @@ using Finsa.CodeServices.Common;
 using PommaLabs.KVLite.UnitTests;
 using Finsa.CodeServices.Serialization;
 using Finsa.CodeServices.Common.Threading.Tasks;
+using BenchmarkDotNet.Running;
 
 namespace PommaLabs.KVLite.Benchmarks
 {
@@ -44,8 +45,14 @@ namespace PommaLabs.KVLite.Benchmarks
 
         static double _tableListSize;
 
-        public static void Main()
+        public static void Main(string[] args)
         {
+            if (args.Length == 1 && args[0].Equals(nameof(Comparison)))
+            {
+                BenchmarkRunner.Run<Comparison>();
+                return;
+            }
+
             Console.WriteLine(@"Running vacuum on DB...");
             PersistentCache.DefaultInstance.Vacuum();
             Console.WriteLine(@"Vacuum completed.");
