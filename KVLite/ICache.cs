@@ -93,7 +93,7 @@ namespace PommaLabs.KVLite
         ///   is lost when the cache swallows the exception.
         /// </summary>
         [Pure]
-        Exception LastError { get; }
+        Exception LastError { get; set; }
 
         /// <summary>
         ///   Gets the log used by the cache.
@@ -101,8 +101,8 @@ namespace PommaLabs.KVLite
         /// <value>The log used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to what <see
-        ///   cref="LogManager.GetLogger(System.Type)"/> returns.
+        ///   constructor. If not specified, it defaults to what
+        ///   <see cref="LogManager.GetLogger(Type)"/> returns.
         /// </remarks>
         [Pure]
         ILog Log { get; }
@@ -150,10 +150,10 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
         /// <remarks>
-        ///   This method, differently from other readers (like <see
-        ///   cref="Get{TVal}(string,string)"/> or <see cref="Peek{TVal}(string,string)"/>), does not
-        ///   have a typed return object, because indexers cannot be generic. Therefore, we have to
-        ///   return a simple <see cref="object"/>.
+        ///   This method, differently from other readers (like
+        ///   <see cref="Get{TVal}(string,string)"/> or <see cref="Peek{TVal}(string,string)"/>),
+        ///   does not have a typed return object, because indexers cannot be generic. Therefore, we
+        ///   have to return a simple <see cref="object"/>.
         /// </remarks>
         [Pure]
         Option<object> this[string partition, string key] { get; }
@@ -166,10 +166,10 @@ namespace PommaLabs.KVLite
         /// <returns>The value with the default partition and specified key.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <remarks>
-        ///   This method, differently from other readers (like <see
-        ///   cref="GetFromDefaultPartition{TVal}(string)"/> or <see
-        ///   cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return object,
-        ///   because indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
+        ///   This method, differently from other readers (like
+        ///   <see cref="GetFromDefaultPartition{TVal}(string)"/> or
+        ///   <see cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return
+        ///   object, because indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
         /// </remarks>
         [Pure]
         Option<object> this[string key] { get; }
@@ -191,8 +191,8 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null);
 
@@ -210,8 +210,8 @@ namespace PommaLabs.KVLite
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval, IList<string> parentKeys = null);
 
@@ -231,8 +231,8 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         void AddStatic<TVal>(string partition, string key, TVal value, IList<string> parentKeys = null);
 
@@ -249,8 +249,8 @@ namespace PommaLabs.KVLite
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         void AddStaticToDefaultPartition<TVal>(string key, TVal value, IList<string> parentKeys = null);
 
@@ -270,8 +270,8 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null);
 
@@ -287,8 +287,8 @@ namespace PommaLabs.KVLite
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null);
 
@@ -308,8 +308,8 @@ namespace PommaLabs.KVLite
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null);
 
@@ -325,8 +325,8 @@ namespace PommaLabs.KVLite
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         void AddTimedToDefaultPartition<TVal>(string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null);
 
@@ -434,9 +434,9 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the expected value.</typeparam>
         /// <returns>The value with specified partition and key.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
@@ -451,9 +451,9 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the expected value.</typeparam>
         /// <returns>The value with default partition and specified key.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         Option<TVal> GetFromDefaultPartition<TVal>(string key);
@@ -467,9 +467,9 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the expected value.</typeparam>
         /// <returns>The cache item with specified partition and key.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
@@ -484,9 +484,9 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the expected value.</typeparam>
         /// <returns>The cache item with default partition and specified key.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         Option<CacheItem<TVal>> GetItemFromDefaultPartition<TVal>(string key);
@@ -498,9 +498,9 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         CacheItem<TVal>[] GetItems<TVal>();
 
@@ -512,9 +512,9 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items in given partition.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
         CacheItem<TVal>[] GetItems<TVal>(string partition);
@@ -546,8 +546,8 @@ namespace PommaLabs.KVLite
         ///   are null.
         /// </exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null);
 
@@ -576,8 +576,8 @@ namespace PommaLabs.KVLite
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
         /// </exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         TVal GetOrAddSlidingToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null);
 
@@ -586,9 +586,9 @@ namespace PommaLabs.KVLite
         ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
         ///
         ///   If the value is not found, then it adds a "static" value with given partition and key.
-        ///   Value will last as much as specified in <see
-        ///   cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed before expiry, its
-        ///   lifetime will be extended by that interval.
+        ///   Value will last as much as specified in
+        ///   <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed before
+        ///   expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
@@ -608,8 +608,8 @@ namespace PommaLabs.KVLite
         ///   are null.
         /// </exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         TVal GetOrAddStatic<TVal>(string partition, string key, Func<TVal> valueGetter, IList<string> parentKeys = null);
 
@@ -618,9 +618,9 @@ namespace PommaLabs.KVLite
         ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
         ///
         ///   If the value is not found, then it adds a "static" value with given key and default
-        ///   partition. Value will last as much as specified in <see
-        ///   cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed before expiry, its
-        ///   lifetime will be extended by that interval.
+        ///   partition. Value will last as much as specified in
+        ///   <see cref="AbstractCacheSettings.StaticIntervalInDays"/> and, if accessed before
+        ///   expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="key">The key.</param>
@@ -638,8 +638,8 @@ namespace PommaLabs.KVLite
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
         /// </exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         TVal GetOrAddStaticToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, IList<string> parentKeys = null);
 
@@ -670,8 +670,8 @@ namespace PommaLabs.KVLite
         ///   are null.
         /// </exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null);
 
@@ -699,8 +699,8 @@ namespace PommaLabs.KVLite
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
         /// </exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null);
 
@@ -731,8 +731,8 @@ namespace PommaLabs.KVLite
         ///   are null.
         /// </exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null);
 
@@ -760,8 +760,8 @@ namespace PommaLabs.KVLite
         ///   <paramref name="key"/> or <paramref name="valueGetter"/> are null.
         /// </exception>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null);
 
@@ -775,9 +775,9 @@ namespace PommaLabs.KVLite
         ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
@@ -798,9 +798,9 @@ namespace PommaLabs.KVLite
         ///   The value corresponding to default partition and given key, without updating expiry date.
         /// </returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <exception cref="NotSupportedException">
@@ -819,9 +819,9 @@ namespace PommaLabs.KVLite
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
@@ -841,9 +841,9 @@ namespace PommaLabs.KVLite
         ///   The item corresponding to default partition and givne key, without updating expiry date.
         /// </returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <exception cref="NotSupportedException">
@@ -858,9 +858,9 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All values, without updating expiry dates.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
@@ -875,9 +875,9 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All items in given partition, without updating expiry dates.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
         /// <exception cref="NotSupportedException">

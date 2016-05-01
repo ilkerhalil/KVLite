@@ -69,8 +69,8 @@ namespace PommaLabs.KVLite.Core
         /// <value>The log used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to what <see
-        ///   cref="LogManager.GetLogger(System.Type)"/> returns.
+        ///   constructor. If not specified, it defaults to what
+        ///   <see cref="LogManager.GetLogger(System.Type)"/> returns.
         /// </remarks>
         public abstract ILog Log { get; }
 
@@ -207,9 +207,9 @@ namespace PommaLabs.KVLite.Core
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All values, without updating expiry dates.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
@@ -273,11 +273,11 @@ namespace PommaLabs.KVLite.Core
         ///   This property might be used to expose the last error occurred while processing cache
         ///   items. If no error has occurred, this property will simply be null.
         ///
-        ///   Every error is carefully logged using the provided <see
-        ///   cref="P:PommaLabs.KVLite.ICache.Log"/>, so no information is lost when the cache
+        ///   Every error is carefully logged using the provided
+        ///   <see cref="P:PommaLabs.KVLite.ICache.Log"/>, so no information is lost when the cache
         ///   swallows the exception.
         /// </summary>
-        public Exception LastError { get; protected set; }
+        public Exception LastError { get; set; }
 
         /// <summary>
         ///   The available settings for the cache.
@@ -296,10 +296,10 @@ namespace PommaLabs.KVLite.Core
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
         /// <remarks>
-        ///   This method, differently from other readers (like <see
-        ///   cref="Get{TVal}(string,string)"/> or <see cref="Peek{TVal}(string,string)"/>), does not
-        ///   have a typed return object, because indexers cannot be generic. Therefore, we have to
-        ///   return a simple <see cref="object"/>.
+        ///   This method, differently from other readers (like
+        ///   <see cref="Get{TVal}(string,string)"/> or <see cref="Peek{TVal}(string,string)"/>),
+        ///   does not have a typed return object, because indexers cannot be generic. Therefore, we
+        ///   have to return a simple <see cref="object"/>.
         /// </remarks>
         public Option<object> this[string partition, string key]
         {
@@ -335,10 +335,10 @@ namespace PommaLabs.KVLite.Core
         /// <returns>The value with the default partition and specified key.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <remarks>
-        ///   This method, differently from other readers (like <see
-        ///   cref="GetFromDefaultPartition{TVal}(string)"/> or <see
-        ///   cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return object,
-        ///   because indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
+        ///   This method, differently from other readers (like
+        ///   <see cref="GetFromDefaultPartition{TVal}(string)"/> or
+        ///   <see cref="PeekIntoDefaultPartition{TVal}(string)"/>), does not have a typed return
+        ///   object, because indexers cannot be generic. Therefore, we have to return a simple <see cref="object"/>.
         /// </remarks>
         public Option<object> this[string key]
         {
@@ -380,8 +380,8 @@ namespace PommaLabs.KVLite.Core
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null)
         {
@@ -392,7 +392,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 AddInternal(partition, key, value, Clock.UtcNow + interval, interval, parentKeys);
@@ -420,8 +420,8 @@ namespace PommaLabs.KVLite.Core
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public void AddSlidingToDefaultPartition<TVal>(string key, TVal value, TimeSpan interval, IList<string> parentKeys = null)
         {
@@ -431,7 +431,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + interval, interval, parentKeys);
@@ -459,8 +459,8 @@ namespace PommaLabs.KVLite.Core
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public void AddStatic<TVal>(string partition, string key, TVal value, IList<string> parentKeys = null)
         {
@@ -471,7 +471,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 AddInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval, parentKeys);
@@ -498,8 +498,8 @@ namespace PommaLabs.KVLite.Core
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public void AddStaticToDefaultPartition<TVal>(string key, TVal value, IList<string> parentKeys = null)
         {
@@ -509,7 +509,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval, parentKeys);
@@ -537,8 +537,8 @@ namespace PommaLabs.KVLite.Core
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null)
         {
@@ -549,7 +549,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero, parentKeys);
@@ -576,8 +576,8 @@ namespace PommaLabs.KVLite.Core
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public void AddTimedToDefaultPartition<TVal>(string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null)
         {
@@ -587,7 +587,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 AddInternal(Settings.DefaultPartition, key, value, utcExpiry, TimeSpan.Zero, parentKeys);
@@ -615,8 +615,8 @@ namespace PommaLabs.KVLite.Core
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null)
         {
@@ -627,7 +627,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 AddInternal(partition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero, parentKeys);
@@ -653,8 +653,8 @@ namespace PommaLabs.KVLite.Core
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public void AddTimedToDefaultPartition<TVal>(string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null)
         {
@@ -664,7 +664,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 AddInternal(Settings.DefaultPartition, key, value, Clock.UtcNow.Add(lifetime), TimeSpan.Zero, parentKeys);
@@ -981,9 +981,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         public Option<TVal> Get<TVal>(string partition, string key)
         {
@@ -1016,9 +1016,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <returns>The value with default partition and specified key.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         public Option<TVal> GetFromDefaultPartition<TVal>(string key)
         {
@@ -1052,9 +1052,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         public Option<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
         {
@@ -1087,9 +1087,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <returns>The cache item with default partition and specified key.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         public Option<CacheItem<TVal>> GetItemFromDefaultPartition<TVal>(string key)
         {
@@ -1121,9 +1121,9 @@ namespace PommaLabs.KVLite.Core
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         public CacheItem<TVal>[] GetItems<TVal>()
         {
@@ -1156,9 +1156,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <returns>All cache items in given partition.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         public CacheItem<TVal>[] GetItems<TVal>(string partition)
         {
@@ -1207,8 +1207,8 @@ namespace PommaLabs.KVLite.Core
         ///   case a new value has been added to the cache.
         /// </returns>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null)
         {
@@ -1219,7 +1219,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 var result = GetInternal<TVal>(partition, key);
@@ -1279,8 +1279,8 @@ namespace PommaLabs.KVLite.Core
         ///   case a new value has been added to the cache.
         /// </returns>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public TVal GetOrAddSlidingToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null)
         {
@@ -1290,7 +1290,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 var result = GetInternal<TVal>(Settings.DefaultPartition, key);
@@ -1334,9 +1334,9 @@ namespace PommaLabs.KVLite.Core
         ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
         ///
         ///   If the value is not found, then it adds a "static" value with given partition and key.
-        ///   Value will last as much as specified in <see
-        ///   cref="P:PommaLabs.KVLite.Core.AbstractCacheSettings.StaticIntervalInDays"/> and, if
-        ///   accessed before expiry, its lifetime will be extended by that interval.
+        ///   Value will last as much as specified in
+        ///   <see cref="P:PommaLabs.KVLite.Core.AbstractCacheSettings.StaticIntervalInDays"/> and,
+        ///   if accessed before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
@@ -1352,8 +1352,8 @@ namespace PommaLabs.KVLite.Core
         ///   case a new value has been added to the cache.
         /// </returns>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public TVal GetOrAddStatic<TVal>(string partition, string key, Func<TVal> valueGetter, IList<string> parentKeys = null)
         {
@@ -1364,7 +1364,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 var result = GetInternal<TVal>(partition, key);
@@ -1407,9 +1407,9 @@ namespace PommaLabs.KVLite.Core
         ///   it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
         ///
         ///   If the value is not found, then it adds a "static" value with given key and default
-        ///   partition. Value will last as much as specified in <see
-        ///   cref="P:PommaLabs.KVLite.Core.AbstractCacheSettings.StaticIntervalInDays"/> and, if
-        ///   accessed before expiry, its lifetime will be extended by that interval.
+        ///   partition. Value will last as much as specified in
+        ///   <see cref="P:PommaLabs.KVLite.Core.AbstractCacheSettings.StaticIntervalInDays"/> and,
+        ///   if accessed before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="key">The key.</param>
@@ -1424,8 +1424,8 @@ namespace PommaLabs.KVLite.Core
         ///   case a new value has been added to the cache.
         /// </returns>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public TVal GetOrAddStaticToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, IList<string> parentKeys = null)
         {
@@ -1435,7 +1435,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 var result = GetInternal<TVal>(Settings.DefaultPartition, key);
@@ -1497,8 +1497,8 @@ namespace PommaLabs.KVLite.Core
         ///   case a new value has been added to the cache.
         /// </returns>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null)
         {
@@ -1509,7 +1509,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 var result = GetInternal<TVal>(partition, key);
@@ -1568,8 +1568,8 @@ namespace PommaLabs.KVLite.Core
         ///   case a new value has been added to the cache.
         /// </returns>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null)
         {
@@ -1579,7 +1579,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 var result = GetInternal<TVal>(Settings.DefaultPartition, key);
@@ -1641,8 +1641,8 @@ namespace PommaLabs.KVLite.Core
         ///   case a new value has been added to the cache.
         /// </returns>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null)
         {
@@ -1653,7 +1653,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 var result = GetInternal<TVal>(partition, key);
@@ -1712,8 +1712,8 @@ namespace PommaLabs.KVLite.Core
         ///   case a new value has been added to the cache.
         /// </returns>
         /// <exception cref="NotSupportedException">
-        ///   Too many parent keys have been specified for this item. Please have a look at the <see
-        ///   cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   Too many parent keys have been specified for this item. Please have a look at the
+        ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
         public TVal GetOrAddTimedToDefaultPartition<TVal>(string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null)
         {
@@ -1723,7 +1723,7 @@ namespace PommaLabs.KVLite.Core
             RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
-            
+
             try
             {
                 var result = GetInternal<TVal>(Settings.DefaultPartition, key);
@@ -1772,9 +1772,9 @@ namespace PommaLabs.KVLite.Core
         ///   The value corresponding to given partition and key, without updating expiry date.
         /// </returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
@@ -1813,9 +1813,9 @@ namespace PommaLabs.KVLite.Core
         ///   The value corresponding to default partition and given key, without updating expiry date.
         /// </returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
@@ -1854,9 +1854,9 @@ namespace PommaLabs.KVLite.Core
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
@@ -1894,9 +1894,9 @@ namespace PommaLabs.KVLite.Core
         ///   The item corresponding to default partition and givne key, without updating expiry date.
         /// </returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
@@ -1931,9 +1931,9 @@ namespace PommaLabs.KVLite.Core
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All values, without updating expiry dates.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
@@ -1969,9 +1969,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <returns>All items in given partition, without updating expiry dates.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="object"/> as type parameter; that will work whether the required value is a class
-        ///   or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
