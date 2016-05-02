@@ -1,25 +1,25 @@
 ﻿// File name: SQLiteQueries.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Text;
 using System.Text.RegularExpressions;
@@ -29,11 +29,11 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   All queries used inside the <see cref="PersistentCache"/> class.
     /// </summary>
-    static class SQLiteQueries
+    internal static class SQLiteQueries
     {
         #region Private Queries
 
-        const string UpdateManyItems = @"
+        private const string UpdateManyItems = @"
             update CacheItem
                set utcExpiry = @utcNow + interval
              where (@partition is null or partition = @partition)
@@ -41,7 +41,7 @@ namespace PommaLabs.KVLite.Core
                and utcExpiry > @utcNow; -- Update only valid rows
         ";
 
-        const string UpdateOneItem = @"
+        private const string UpdateOneItem = @"
             update CacheItem
                set utcExpiry = @utcNow + interval
              where partition = @partition
@@ -85,9 +85,9 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string Add = MinifyQuery(@"
-            insert or ignore into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval, 
+            insert or ignore into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval,
                                              parentKey0, parentKey1, parentKey2, parentKey3, parentKey4)
-            values (@partition, @key, @serializedValue, @utcNow, @utcExpiry, @interval, 
+            values (@partition, @key, @serializedValue, @utcNow, @utcExpiry, @interval,
                     @parentKey0, @parentKey1, @parentKey2, @parentKey3, @parentKey4);
 
             update CacheItem
@@ -97,17 +97,17 @@ namespace PommaLabs.KVLite.Core
                and changes() = 0; -- Above INSERT has failed
 
             insert or replace into CacheItem (partition, key, serializedValue, utcCreation, utcExpiry, interval)
-            values ('KVLite.CacheVariables', 'insertion_count', 
-                    (select coalesce(max(serializedValue) + 1, 1) as insertion_count 
-                       from CacheItem 
-                      where partition = {CacheVariablesPartition} 
+            values ('KVLite.CacheVariables', 'insertion_count',
+                    (select coalesce(max(serializedValue) + 1, 1) as insertion_count
+                       from CacheItem
+                      where partition = {CacheVariablesPartition}
                         and key = {InsertionCountVariable}
                         and utcExpiry > @utcNow
                         and serializedValue < @maxInsertionCount), -- Set to 1 when reaching the limit
                     @utcNow, @utcNow + {CacheVariablesIntervalInSeconds}, {CacheVariablesIntervalInSeconds});
 
-            select coalesce(max(serializedValue), 0) as insertion_count 
-              from CacheItem 
+            select coalesce(max(serializedValue), 0) as insertion_count
+              from CacheItem
              where rowid = last_insert_rowid()
         ");
 
@@ -133,7 +133,7 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string PeekManyItems = MinifyQuery(@"
-            select partition, key, serializedValue, utcCreation, utcExpiry, interval, 
+            select partition, key, serializedValue, utcCreation, utcExpiry, interval,
                    parentKey0, parentKey1, parentKey2, parentKey3, parentKey4
               from CacheItem
              where (@partition is null or partition = @partition)
@@ -142,7 +142,7 @@ namespace PommaLabs.KVLite.Core
         ");
 
         public static readonly string PeekOneItem = MinifyQuery(@"
-            select partition, key, serializedValue, utcCreation, utcExpiry, interval, 
+            select partition, key, serializedValue, utcCreation, utcExpiry, interval,
                    parentKey0, parentKey1, parentKey2, parentKey3, parentKey4
               from CacheItem
              where partition = @partition
@@ -183,7 +183,7 @@ namespace PommaLabs.KVLite.Core
 
         #region Private Methods
 
-        static string MinifyQuery(string query)
+        private static string MinifyQuery(string query)
         {
             // Removes all SQL comments. Multiline excludes '/n' from '.' matches.
             query = Regex.Replace(query, @"--.*", string.Empty, RegexOptions.Multiline | RegexOptions.Compiled);
@@ -195,7 +195,7 @@ namespace PommaLabs.KVLite.Core
             query = new StringBuilder(query)
                 .Replace("{CacheVariablesPartition}", "'KVLite.CacheVariables'")
                 .Replace("{InsertionCountVariable}", "'insertion_count'")
-                .Replace("{CacheVariablesIntervalInSeconds}", "3600000") // 1000 hours                
+                .Replace("{CacheVariablesIntervalInSeconds}", "3600000") // 1000 hours
                 .ToString();
 
             // Removes initial and ending blanks.

@@ -37,13 +37,10 @@ namespace PommaLabs.KVLite
     /// </summary>
     public sealed class NoOpCache : AbstractCache<NoOpCacheSettings>
     {
-        public override bool CanPeek
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        /// <summary>
+        ///   <c>true</c> if the Peek methods are implemented, <c>false</c> otherwise.
+        /// </summary>
+        public override bool CanPeek { get; } = true;
 
         public override IClock Clock
         {

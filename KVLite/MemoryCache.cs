@@ -193,7 +193,7 @@ namespace PommaLabs.KVLite
         public override MemoryCacheSettings Settings { get; }
 
         /// <summary>
-        ///   True if the Peek methods are implemented, false otherwise.
+        ///   <c>true</c> if the Peek methods are implemented, <c>false</c> otherwise.
         /// </summary>
         public override bool CanPeek => false;
 

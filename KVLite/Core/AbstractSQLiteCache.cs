@@ -519,7 +519,7 @@ namespace PommaLabs.KVLite.Core
         public sealed override TCacheSettings Settings => _settings;
 
         /// <summary>
-        ///   True if the Peek methods are implemented, false otherwise.
+        ///   <c>true</c> if the Peek methods are implemented, <c>false</c> otherwise.
         /// </summary>
         public override bool CanPeek => true;
 

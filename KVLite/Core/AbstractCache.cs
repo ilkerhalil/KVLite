@@ -99,7 +99,7 @@ namespace PommaLabs.KVLite.Core
         public abstract TCacheSettings Settings { get; }
 
         /// <summary>
-        ///   True if the Peek methods are implemented, f-alse otherwise.
+        ///   <c>true</c> if the Peek methods are implemented, <c>false</c> otherwise.
         /// </summary>
         public abstract bool CanPeek { get; }
 
