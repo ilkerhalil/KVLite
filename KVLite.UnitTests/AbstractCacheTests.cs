@@ -691,6 +691,36 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
+        public async Task GetOrAddTimedAsync_WithTimeSpan_MissingItem_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var l = TimeSpan.FromMinutes(10);
+
+            var r = await Cache.GetOrAddTimedAsync(p, k, () => Task.FromResult(Tuple.Create(v1, v2)), l);
+
+            var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+            Assert.AreEqual(v1, r.Item1);
+            Assert.AreEqual(v2, r.Item2);
+
+            var e = Cache.Clock.UtcNow.Add(l);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
+
+            Assert.AreEqual(TimeSpan.Zero, info.Interval);
+        }
+
+        [Test]
         public void GetOrAddTimed_ItemAvailable_RightInfo()
         {
             var p = StringItems[0];
