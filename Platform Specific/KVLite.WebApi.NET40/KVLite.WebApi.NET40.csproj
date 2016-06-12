@@ -42,12 +42,28 @@
       <HintPath>..\..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Finsa.CodeServices.Caching, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Finsa.CodeServices.Caching.4.1.5.2\lib\net40\Finsa.CodeServices.Caching.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Finsa.CodeServices.Clock, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Finsa.CodeServices.Clock.4.1.5\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
+      <HintPath>..\..\packages\Finsa.CodeServices.Clock.4.1.5.2\lib\net40\Finsa.CodeServices.Clock.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Common, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Finsa.CodeServices.Common.4.1.5\lib\net40\Finsa.CodeServices.Common.dll</HintPath>
+      <HintPath>..\..\packages\Finsa.CodeServices.Common.4.1.5.2\lib\net40\Finsa.CodeServices.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Finsa.CodeServices.Compression, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Finsa.CodeServices.Compression.4.1.5.2\lib\net40\Finsa.CodeServices.Compression.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Finsa.CodeServices.Serialization, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Finsa.CodeServices.Serialization.4.1.5.2\lib\net40\Finsa.CodeServices.Serialization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Finsa.CodeServices.Serialization.Json, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Finsa.CodeServices.Serialization.Json.4.1.5.2\lib\net40\Finsa.CodeServices.Serialization.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -67,7 +83,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.Thrower, Version=2.2.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Thrower.2.2.3\lib\net40\PommaLabs.Thrower.dll</HintPath>
+      <HintPath>..\..\packages\Thrower.2.2.4\lib\net40\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -125,6 +141,10 @@
     </Reference>
     <Reference Include="WebApi.OutputCache.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Strathweb.CacheOutput.0.5\lib\net40\WebApi.OutputCache.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

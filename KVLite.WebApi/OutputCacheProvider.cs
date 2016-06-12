@@ -64,7 +64,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cache">The cache that will be used as entry container.</param>
         public OutputCacheProvider(ICache cache)
         {
-            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
             Cache = cache;
         }
 
@@ -85,7 +85,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cache">The underlying cache.</param>
         public static void Register(HttpConfiguration configuration, ICache cache)
         {
-            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
             configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new OutputCacheProvider(cache));
         }
 
@@ -96,7 +96,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cacheResolver">The resolver used to get the underlying cache.</param>
         public static void Register(HttpConfiguration configuration, Func<ICache> cacheResolver)
         {
-            RaiseArgumentNullException.IfIsNull(cacheResolver, nameof(cacheResolver), ErrorMessages.NullCacheResolver);
+            Raise.ArgumentNullException.IfIsNull(cacheResolver, nameof(cacheResolver), ErrorMessages.NullCacheResolver);
             configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new OutputCacheProvider(cacheResolver?.Invoke()));
         }
 

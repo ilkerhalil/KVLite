@@ -307,8 +307,8 @@ namespace PommaLabs.KVLite.Core
             {
                 // Preconditions
                 RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-                RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-                RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+                Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+                Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
                 try
                 {
@@ -346,7 +346,7 @@ namespace PommaLabs.KVLite.Core
             {
                 // Preconditions
                 RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-                RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+                Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
                 try
                 {
@@ -387,8 +387,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
@@ -427,7 +427,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
@@ -466,8 +466,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
@@ -505,7 +505,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
@@ -544,8 +544,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
@@ -583,7 +583,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
@@ -622,8 +622,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
@@ -660,7 +660,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
@@ -715,7 +715,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             try
             {
@@ -773,8 +773,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             try
             {
@@ -798,7 +798,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             try
             {
@@ -848,7 +848,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             try
             {
@@ -928,7 +928,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             try
             {
@@ -989,8 +989,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             try
             {
@@ -1024,7 +1024,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             try
             {
@@ -1060,8 +1060,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             try
             {
@@ -1095,7 +1095,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             try
             {
@@ -1164,7 +1164,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             try
             {
@@ -1214,9 +1214,9 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -1286,8 +1286,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -1359,9 +1359,9 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -1431,8 +1431,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -1504,9 +1504,9 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -1575,8 +1575,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -1648,9 +1648,9 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -1719,8 +1719,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -1783,8 +1783,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseNotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
@@ -1824,7 +1824,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseNotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
@@ -1865,8 +1865,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseNotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
@@ -1905,7 +1905,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             RaiseNotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
@@ -1980,7 +1980,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseNotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
@@ -2010,8 +2010,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             try
             {
@@ -2035,7 +2035,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
             try
             {

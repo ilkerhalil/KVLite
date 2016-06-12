@@ -62,7 +62,7 @@ namespace PommaLabs.KVLite.WebForms
         protected AbstractViewStatePersister(Page page, ICache cache)
             : base(page)
         {
-            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
             Cache = cache;
         }
 

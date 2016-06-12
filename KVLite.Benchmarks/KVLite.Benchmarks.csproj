@@ -39,8 +39,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BenchmarkDotNet, Version=0.9.5.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">
-      <HintPath>..\packages\BenchmarkDotNet.0.9.5\lib\net46\BenchmarkDotNet.dll</HintPath>
+    <Reference Include="BenchmarkDotNet, Version=0.9.7.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">
+      <HintPath>..\packages\BenchmarkDotNet.0.9.7\lib\net40\BenchmarkDotNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
@@ -52,15 +52,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Clock, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Clock.4.1.5\lib\net46\Finsa.CodeServices.Clock.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Clock.4.1.5.2\lib\net46\Finsa.CodeServices.Clock.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Common, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Common.4.1.5\lib\net45\Finsa.CodeServices.Common.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Common.4.1.5.2\lib\net46\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Compression, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Compression.4.1.5\lib\net45\Finsa.CodeServices.Compression.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Compression.4.1.5.2\lib\net46\Finsa.CodeServices.Compression.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Compression.LZ4, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
@@ -68,11 +68,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Serialization.4.1.5\lib\net45\Finsa.CodeServices.Serialization.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.4.1.5.2\lib\net46\Finsa.CodeServices.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization.Json, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Serialization.Json.4.1.5\lib\net45\Finsa.CodeServices.Serialization.Json.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.Json.4.1.5.2\lib\net46\Finsa.CodeServices.Serialization.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LZ4, Version=1.0.10.93, Culture=neutral, PublicKeyToken=62e1b5ec1eec9bdd, processorArchitecture=MSIL">
@@ -92,7 +92,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.Thrower, Version=2.2.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\Thrower.2.2.3\lib\net45\PommaLabs.Thrower.dll</HintPath>
+      <HintPath>..\packages\Thrower.2.2.4\lib\net46\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

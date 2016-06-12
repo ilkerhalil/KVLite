@@ -45,7 +45,7 @@ namespace PommaLabs.KVLite.WebForms
         /// <param name="cache">The cache that will be used by the provider.</param>
         protected AbstractOutputCacheProvider(ICache cache)
         {
-            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
             Cache = cache;
         }
 

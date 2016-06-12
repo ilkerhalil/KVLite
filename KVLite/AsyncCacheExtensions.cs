@@ -75,11 +75,11 @@ namespace PommaLabs.KVLite
         public static async Task<TVal> GetOrAddTimedAsync<TVal>(this ICache cache, string partition, string key, Func<Task<TVal>> asyncValueGetter, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
-            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
             RaiseObjectDisposedException.If(cache.Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            RaiseArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            RaiseArgumentNullException.IfIsNull(asyncValueGetter, nameof(asyncValueGetter), ErrorMessages.NullValueGetter);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            Raise.ArgumentNullException.IfIsNull(asyncValueGetter, nameof(asyncValueGetter), ErrorMessages.NullValueGetter);
             RaiseNotSupportedException.If(parentKeys != null && parentKeys.Count > cache.MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             RaiseArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 

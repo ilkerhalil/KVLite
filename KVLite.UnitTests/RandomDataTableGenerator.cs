@@ -45,7 +45,7 @@ namespace PommaLabs.KVLite.UnitTests
         /// <param name="columnNames">The columns that the data tables will have.</param>
         public RandomDataTableGenerator(params string[] columnNames)
         {
-            RaiseArgumentNullException.IfIsNull(columnNames, nameof(columnNames));
+            Raise.ArgumentNullException.IfIsNull(columnNames, nameof(columnNames));
             RaiseArgumentException.If(columnNames.Any(string.IsNullOrEmpty), nameof(columnNames), "Each column name cannot be null or empty");
 
             _columnNames = columnNames.Clone() as string[];

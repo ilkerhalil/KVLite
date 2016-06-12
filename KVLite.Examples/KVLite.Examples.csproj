@@ -48,23 +48,23 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Clock, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Clock.4.1.5\lib\net45\Finsa.CodeServices.Clock.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Clock.4.1.5.2\lib\net45\Finsa.CodeServices.Clock.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Common, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Common.4.1.5\lib\net45\Finsa.CodeServices.Common.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Common.4.1.5.2\lib\net45\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Compression, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Compression.4.1.5\lib\net45\Finsa.CodeServices.Compression.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Compression.4.1.5.2\lib\net45\Finsa.CodeServices.Compression.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Serialization.4.1.5\lib\net45\Finsa.CodeServices.Serialization.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.4.1.5.2\lib\net45\Finsa.CodeServices.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization.Json, Version=4.1.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Serialization.Json.4.1.5\lib\net45\Finsa.CodeServices.Serialization.Json.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.Json.4.1.5.2\lib\net45\Finsa.CodeServices.Serialization.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -72,7 +72,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.Thrower, Version=2.2.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\Thrower.2.2.3\lib\net45\PommaLabs.Thrower.dll</HintPath>
+      <HintPath>..\packages\Thrower.2.2.4\lib\net45\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

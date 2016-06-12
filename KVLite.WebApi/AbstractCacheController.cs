@@ -43,7 +43,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cache">The cache used by the Web API output cache.</param>
         protected AbstractCacheController(ICache cache)
         {
-            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
             Cache = cache;
         }
 

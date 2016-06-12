@@ -124,7 +124,7 @@ namespace PommaLabs.KVLite.Core
         internal AbstractSQLiteCache(TCacheSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor)
         {
             // Preconditions
-            RaiseArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
+            Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
 
             _settings = settings;
             _clock = clock ?? new SystemClock();
@@ -266,7 +266,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
             try
@@ -328,7 +328,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
             try
@@ -386,7 +386,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            RaiseArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             RaiseArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
             try
