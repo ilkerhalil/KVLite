@@ -23,6 +23,7 @@
 
 using EntityFramework.Caching;
 using EntityFramework.Extensions;
+using Finsa.CodeServices.Caching;
 using NUnit.Framework;
 using PommaLabs.KVLite.EntityFramework;
 using System;
@@ -119,10 +120,10 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                 Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(1));
                 Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
 
-                Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(4));
+                Assert.That(Cache.GetItems<object>().Count, Is.EqualTo(4));
 
                 CacheManager.Current.Expire(Pino);
-                Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(2));
+                Assert.That(Cache.GetItems<object>().Count, Is.EqualTo(2));
             }
         }
 
@@ -138,7 +139,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                 Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(1));
                 Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
 
-                Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(1));
+                Assert.That(Cache.GetItems<object>().Count, Is.EqualTo(1));
 
                 using (var anotherContext = new TestDbContext(_dbConnection))
                 using (anotherContext.AsCaching())
@@ -150,7 +151,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                     Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(0));
                     Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
 
-                    Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(2));
+                    Assert.That(Cache.GetItems<object>().Count, Is.EqualTo(2));
                 }
             }
         }
@@ -167,7 +168,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                 Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(1));
                 Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
 
-                Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(4));
+                Assert.That(Cache.GetItems<object>().Count, Is.EqualTo(4));
 
                 using (var anotherContext = new TestDbContext(_dbConnection))
                 using (anotherContext.AsCaching())
@@ -183,13 +184,13 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                     {
                         // FIXME: MemoryCache is triggering one more delete than necessary. 
                         //        Of course, this is a broken behaviour, but there is no easy way to fix it right now.
-                        Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(4));
+                        Assert.That(Cache.GetItems<object>().Count, Is.EqualTo(4));
                         Assert.Ignore("MemoryCache has a partially buggy behavior...");
                     }
                     else
                     {
                         // This is the right behavior.
-                        Assert.That(Cache.GetItems<object>().Length, Is.EqualTo(5));
+                        Assert.That(Cache.GetItems<object>().Count, Is.EqualTo(5));
                     }
                 }
             }

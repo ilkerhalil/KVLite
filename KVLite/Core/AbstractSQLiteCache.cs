@@ -23,6 +23,7 @@
 
 using CodeProject.ObjectPool;
 using Common.Logging;
+using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
@@ -175,7 +176,7 @@ namespace PommaLabs.KVLite.Core
                 }
                 if (!isSchemaReady)
                 {
-                    // Creates the CacheItem table and the required indexes.
+                    // Creates the ICacheItem table and the required indexes.
                     cmd.CommandText = SQLiteQueries.CacheSchema;
                     cmd.ExecuteNonQuery();
                 }
@@ -725,9 +726,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        protected sealed override Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
+        protected sealed override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
-            DbCacheItem tmpItem;
+            DbICacheItem tmpItem;
             using (var db = _connectionPool.GetObject())
             {
                 db.GetOneItem_Partition.Value = partition;
@@ -739,7 +740,7 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
-            return DeserializeCacheItem<TVal>(tmpItem);
+            return DeserializeICacheItem<TVal>(tmpItem);
         }
 
         /// <summary>
@@ -749,7 +750,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The optional partition.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
-        protected sealed override CacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
+        protected sealed override ICacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
         {
             using (var db = _connectionPool.GetObject())
             {
@@ -759,7 +760,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     return MapDataReader(reader)
                         .ToArray()
-                        .Select(DeserializeCacheItem<TVal>)
+                        .Select(DeserializeICacheItem<TVal>)
                         .Where(i => i.HasValue)
                         .Select(i => i.Value)
                         .ToArray();
@@ -799,9 +800,9 @@ namespace PommaLabs.KVLite.Core
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        protected sealed override Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
+        protected sealed override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
-            DbCacheItem tmpItem;
+            DbICacheItem tmpItem;
             using (var db = _connectionPool.GetObject())
             {
                 db.PeekOneItem_Partition.Value = partition;
@@ -813,7 +814,7 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
-            return DeserializeCacheItem<TVal>(tmpItem);
+            return DeserializeICacheItem<TVal>(tmpItem);
         }
 
         /// <summary>
@@ -827,7 +828,7 @@ namespace PommaLabs.KVLite.Core
         ///   <see cref="T:System.Object"/> as type parameter; that will work whether the required
         ///   value is a class or not.
         /// </remarks>
-        protected sealed override CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
+        protected sealed override ICacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
         {
             using (var db = _connectionPool.GetObject())
             {
@@ -837,7 +838,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     return MapDataReader(reader)
                         .ToArray()
-                        .Select(DeserializeCacheItem<TVal>)
+                        .Select(DeserializeICacheItem<TVal>)
                         .Where(i => i.HasValue)
                         .Select(i => i.Value)
                         .ToArray();
@@ -891,16 +892,16 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private Option<CacheItem<TVal>> DeserializeCacheItem<TVal>(DbCacheItem src)
+        private Option<ICacheItem<TVal>> DeserializeICacheItem<TVal>(DbICacheItem src)
         {
             if (src == null)
             {
                 // Nothing to deserialize, return None.
-                return Option.None<CacheItem<TVal>>();
+                return Option.None<ICacheItem<TVal>>();
             }
             try
             {
-                return Option.Some(new CacheItem<TVal>
+                return Option.Some<ICacheItem<TVal>>(new CacheItem<TVal>
                 {
                     Partition = src.Partition,
                     Key = src.Key,
@@ -918,11 +919,11 @@ namespace PommaLabs.KVLite.Core
                 // element (in order to avoid future errors) and we return None.
                 RemoveInternal(src.Partition, src.Key);
                 _log.Warn("Something wrong happened during deserialization", ex);
-                return Option.None<CacheItem<TVal>>();
+                return Option.None<ICacheItem<TVal>>();
             }
         }
 
-        private static IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
+        private static IEnumerable<DbICacheItem> MapDataReader(SQLiteDataReader dataReader)
         {
             const int valueCount = 16;
             var values = new object[valueCount];
@@ -930,7 +931,7 @@ namespace PommaLabs.KVLite.Core
             while (dataReader.Read())
             {
                 dataReader.GetValues(values);
-                var dbCacheItem = new DbCacheItem
+                var dbICacheItem = new DbICacheItem
                 {
                     Partition = values[0] as string,
                     Key = values[1] as string,
@@ -947,15 +948,15 @@ namespace PommaLabs.KVLite.Core
                 var parentKeyCount = firstNullIndex - parentKeysStartIndex;
                 if (parentKeyCount == 0)
                 {
-                    dbCacheItem.ParentKeys = DbCacheItem.NoParentKeys;
+                    dbICacheItem.ParentKeys = DbICacheItem.NoParentKeys;
                 }
                 else
                 {
-                    dbCacheItem.ParentKeys = new string[parentKeyCount];
-                    Array.Copy(values, parentKeysStartIndex, dbCacheItem.ParentKeys, 0, dbCacheItem.ParentKeys.Length);
+                    dbICacheItem.ParentKeys = new string[parentKeyCount];
+                    Array.Copy(values, parentKeysStartIndex, dbICacheItem.ParentKeys, 0, dbICacheItem.ParentKeys.Length);
                 }
 
-                yield return dbCacheItem;
+                yield return dbICacheItem;
             }
         }
 
@@ -1293,13 +1294,13 @@ namespace PommaLabs.KVLite.Core
 
         #endregion Nested type: DbInterface
 
-        #region Nested type: DbCacheItem
+        #region Nested type: DbICacheItem
 
         /// <summary>
         ///   Represents a row in the cache table.
         /// </summary>
         [Serializable]
-        private sealed class DbCacheItem : EquatableObject<DbCacheItem>
+        private sealed class DbICacheItem : EquatableObject<DbICacheItem>
         {
             #region Constants
 
@@ -1325,7 +1326,7 @@ namespace PommaLabs.KVLite.Core
 
             #endregion Public Properties
 
-            #region EquatableObject<DbCacheItem> Members
+            #region EquatableObject<DbICacheItem> Members
 
             /// <summary>
             ///   Returns all property (or field) values, along with their names, so that they can be
@@ -1347,9 +1348,9 @@ namespace PommaLabs.KVLite.Core
                 yield return Key;
             }
 
-            #endregion EquatableObject<DbCacheItem> Members
+            #endregion EquatableObject<DbICacheItem> Members
         }
 
-        #endregion Nested type: DbCacheItem
+        #endregion Nested type: DbICacheItem
     }
 }

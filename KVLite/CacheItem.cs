@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Common;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ namespace PommaLabs.KVLite
     /// </summary>
     /// <typeparam name="TVal">The type of the value.</typeparam>
     [Serializable, DataContract]
-    public class CacheItem<TVal> : EquatableObject<CacheItem<TVal>>
+    public sealed class CacheItem<TVal> : EquatableObject<CacheItem<TVal>>, ICacheItem<TVal>
     {
         #region Public Properties
 

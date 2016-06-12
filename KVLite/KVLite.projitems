@@ -9,7 +9,6 @@
     <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)AsyncCacheExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CacheItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CacheReadMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\AbstractCache.cs" />

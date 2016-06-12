@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Common.Logging;
+using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Compression;
@@ -318,7 +319,7 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        protected override Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
+        protected override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
             var maybeCacheKey = SerializeToCacheKey(partition, key);
             var maybeCacheItem = _store.GetCacheItem(maybeCacheKey);
@@ -326,12 +327,12 @@ namespace PommaLabs.KVLite
             // If item is not present or if it has the wrong type, return None.
             if (maybeCacheItem == null || !(maybeCacheItem.Value is TVal))
             {
-                return Option.None<CacheItem<TVal>>();
+                return Option.None<ICacheItem<TVal>>();
             }
 
             // Otherwise, generate the KVLite cache item and return it. Many properties available in
             // the KVLite cache items cannot be filled due to missing information.
-            return Option.Some(new CacheItem<TVal>
+            return Option.Some<ICacheItem<TVal>>(new CacheItem<TVal>
             {
                 Partition = partition,
                 Key = key,
@@ -346,7 +347,7 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The optional partition.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
-        protected override CacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
+        protected override ICacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
         {
             // Pick only the items with the right type.
             var q = _store.Where(x => x.Value is TVal).Select(x => new
@@ -400,7 +401,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected override Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
+        protected override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
         }
@@ -419,7 +420,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected override CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
+        protected override ICacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
         {
             throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
         }

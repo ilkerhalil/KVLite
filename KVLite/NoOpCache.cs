@@ -23,6 +23,7 @@
 
 using Common.Logging;
 using Common.Logging.Simple;
+using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Compression;
@@ -194,7 +195,7 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        protected override Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key) => Option.None<CacheItem<TVal>>();
+        protected override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key) => Option.None<ICacheItem<TVal>>();
 
         /// <summary>
         ///   Gets all cache items or the ones in a partition, if specified. If an item is a
@@ -203,7 +204,7 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The optional partition.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
-        protected override CacheItem<TVal>[] GetItemsInternal<TVal>(string partition) => new CacheItem<TVal>[0];
+        protected override ICacheItem<TVal>[] GetItemsInternal<TVal>(string partition) => new ICacheItem<TVal>[0];
 
         /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
@@ -233,7 +234,7 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="P:PommaLabs.KVLite.Core.AbstractCache`1.CanPeek"/> property).
         /// </exception>
-        protected override Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key) => Option.None<CacheItem<TVal>>();
+        protected override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key) => Option.None<ICacheItem<TVal>>();
 
         /// <summary>
         ///   Gets the all values in the cache or in the specified partition, without updating expiry dates.
@@ -250,7 +251,7 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="P:PommaLabs.KVLite.Core.AbstractCache`1.CanPeek"/> property).
         /// </exception>
-        protected override CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition) => new CacheItem<TVal>[0];
+        protected override ICacheItem<TVal>[] PeekItemsInternal<TVal>(string partition) => new ICacheItem<TVal>[0];
 
         /// <summary>
         ///   Removes the value with given partition and key.

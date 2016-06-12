@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Common.Logging;
+using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Compression;
@@ -161,7 +162,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        protected abstract Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key);
+        protected abstract Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets all cache items or the ones in a partition, if specified. If an item is a
@@ -170,7 +171,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The optional partition.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
-        protected abstract CacheItem<TVal>[] GetItemsInternal<TVal>(string partition);
+        protected abstract ICacheItem<TVal>[] GetItemsInternal<TVal>(string partition);
 
         /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
@@ -198,7 +199,7 @@ namespace PommaLabs.KVLite.Core
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected abstract Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key);
+        protected abstract Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets the all values in the cache or in the specified partition, without updating expiry dates.
@@ -214,7 +215,7 @@ namespace PommaLabs.KVLite.Core
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected abstract CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition);
+        protected abstract ICacheItem<TVal>[] PeekItemsInternal<TVal>(string partition);
 
         /// <summary>
         ///   Removes the value with given partition and key.
@@ -283,7 +284,7 @@ namespace PommaLabs.KVLite.Core
         ///   The available settings for the cache.
         /// </summary>
         /// <value>The available settings for the cache.</value>
-        AbstractCacheSettings ICache.Settings => Settings;
+        ICacheSettings ICache.Settings => Settings;
 
         /// <summary>
         ///   Gets the value with the specified partition and key.
@@ -1056,7 +1057,7 @@ namespace PommaLabs.KVLite.Core
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public Option<CacheItem<TVal>> GetItem<TVal>(string partition, string key)
+        public Option<ICacheItem<TVal>> GetItem<TVal>(string partition, string key)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -1075,7 +1076,7 @@ namespace PommaLabs.KVLite.Core
             {
                 LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
-                return Option.None<CacheItem<TVal>>();
+                return Option.None<ICacheItem<TVal>>();
             }
         }
 
@@ -1091,7 +1092,7 @@ namespace PommaLabs.KVLite.Core
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public Option<CacheItem<TVal>> GetItemFromDefaultPartition<TVal>(string key)
+        public Option<ICacheItem<TVal>> GetItemFromDefaultPartition<TVal>(string key)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -1110,7 +1111,7 @@ namespace PommaLabs.KVLite.Core
             {
                 LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, Settings.DefaultPartition, key), ex);
-                return Option.None<CacheItem<TVal>>();
+                return Option.None<ICacheItem<TVal>>();
             }
         }
 
@@ -1125,7 +1126,7 @@ namespace PommaLabs.KVLite.Core
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public CacheItem<TVal>[] GetItems<TVal>()
+        public IList<ICacheItem<TVal>> GetItems<TVal>()
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -1144,7 +1145,7 @@ namespace PommaLabs.KVLite.Core
             {
                 LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnReadAll, ex);
-                return new CacheItem<TVal>[0];
+                return new ICacheItem<TVal>[0];
             }
         }
 
@@ -1160,7 +1161,7 @@ namespace PommaLabs.KVLite.Core
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public CacheItem<TVal>[] GetItems<TVal>(string partition)
+        public IList<ICacheItem<TVal>> GetItems<TVal>(string partition)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -1180,7 +1181,7 @@ namespace PommaLabs.KVLite.Core
             {
                 LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnReadPartition, partition), ex);
-                return new CacheItem<TVal>[0];
+                return new ICacheItem<TVal>[0];
             }
         }
 
@@ -1861,7 +1862,7 @@ namespace PommaLabs.KVLite.Core
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        public Option<CacheItem<TVal>> PeekItem<TVal>(string partition, string key)
+        public Option<ICacheItem<TVal>> PeekItem<TVal>(string partition, string key)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -1881,7 +1882,7 @@ namespace PommaLabs.KVLite.Core
             {
                 LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
-                return Option.None<CacheItem<TVal>>();
+                return Option.None<ICacheItem<TVal>>();
             }
         }
 
@@ -1901,7 +1902,7 @@ namespace PommaLabs.KVLite.Core
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        public Option<CacheItem<TVal>> PeekItemIntoDefaultPartition<TVal>(string key)
+        public Option<ICacheItem<TVal>> PeekItemIntoDefaultPartition<TVal>(string key)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -1921,7 +1922,7 @@ namespace PommaLabs.KVLite.Core
             {
                 LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnRead, Settings.DefaultPartition, key), ex);
-                return Option.None<CacheItem<TVal>>();
+                return Option.None<ICacheItem<TVal>>();
             }
         }
 
@@ -1938,7 +1939,7 @@ namespace PommaLabs.KVLite.Core
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        public CacheItem<TVal>[] PeekItems<TVal>()
+        public IList<ICacheItem<TVal>> PeekItems<TVal>()
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -1958,7 +1959,7 @@ namespace PommaLabs.KVLite.Core
             {
                 LastError = ex;
                 Log.Error(ErrorMessages.InternalErrorOnReadAll, ex);
-                return new CacheItem<TVal>[0];
+                return new ICacheItem<TVal>[0];
             }
         }
 
@@ -1976,7 +1977,7 @@ namespace PommaLabs.KVLite.Core
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        public CacheItem<TVal>[] PeekItems<TVal>(string partition)
+        public IList<ICacheItem<TVal>> PeekItems<TVal>(string partition)
         {
             // Preconditions
             RaiseObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -1997,7 +1998,7 @@ namespace PommaLabs.KVLite.Core
             {
                 LastError = ex;
                 Log.Error(string.Format(ErrorMessages.InternalErrorOnReadPartition, partition), ex);
-                return new CacheItem<TVal>[0];
+                return new ICacheItem<TVal>[0];
             }
         }
 
