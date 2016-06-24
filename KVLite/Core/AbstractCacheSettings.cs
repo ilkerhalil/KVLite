@@ -34,7 +34,7 @@ namespace PommaLabs.KVLite.Core
     ///   Base class for cache settings. Contains settings shared among different caches.
     /// </summary>
     [Serializable]
-    public abstract class AbstractCacheSettings : ICacheSettings, INotifyPropertyChanged
+    public abstract class AbstractCacheSettings : ICacheSettings, IAsyncCacheSettings, INotifyPropertyChanged
     {
         #region Fields
 

@@ -237,7 +237,7 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.IsNotNull(info.UtcExpiry);
             Assert.AreEqual(i, info.Interval);
 
-            Assert.That(info.ParentKeys.Length, Is.EqualTo(1));
+            Assert.That(info.ParentKeys.Count, Is.EqualTo(1));
             Assert.That(info.ParentKeys, Contains.Item(t));
         }
 
@@ -445,7 +445,7 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.IsNotNull(info.UtcExpiry);
             Assert.AreEqual(TimeSpan.FromDays(Cache.Settings.StaticIntervalInDays), info.Interval);
 
-            Assert.That(info.ParentKeys.Length, Is.EqualTo(1));
+            Assert.That(info.ParentKeys.Count, Is.EqualTo(1));
             Assert.That(info.ParentKeys, Contains.Item(t));
         }
 
@@ -600,7 +600,7 @@ namespace PommaLabs.KVLite.UnitTests
 
             Assert.AreEqual(TimeSpan.Zero, info.Interval);
 
-            Assert.That(info.ParentKeys.Length, Is.EqualTo(1));
+            Assert.That(info.ParentKeys.Count, Is.EqualTo(1));
             Assert.That(info.ParentKeys, Contains.Item(t));
         }
 
@@ -920,7 +920,6 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache[Cache.Settings.DefaultPartition, StringItems[i]].HasValue);
-                Assert.IsFalse(Cache[StringItems[i]].HasValue);
             }
         }
 

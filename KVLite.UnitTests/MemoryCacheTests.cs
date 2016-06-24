@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Common.Threading.Tasks;
 using Finsa.CodeServices.Serialization;
@@ -489,7 +490,6 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache[Cache.Settings.DefaultPartition, StringItems[i]].HasValue);
-                Assert.IsFalse(Cache[StringItems[i]].HasValue);
             }
         }
 

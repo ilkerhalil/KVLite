@@ -32,6 +32,7 @@ using PommaLabs.KVLite.UnitTests;
 using Finsa.CodeServices.Serialization;
 using Finsa.CodeServices.Common.Threading.Tasks;
 using BenchmarkDotNet.Running;
+using Finsa.CodeServices.Caching;
 
 namespace PommaLabs.KVLite.Benchmarks
 {

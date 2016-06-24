@@ -728,7 +728,7 @@ namespace PommaLabs.KVLite.Core
         /// <returns>The cache item with specified partition and key.</returns>
         protected sealed override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
-            DbICacheItem tmpItem;
+            DbCacheItem tmpItem;
             using (var db = _connectionPool.GetObject())
             {
                 db.GetOneItem_Partition.Value = partition;
@@ -802,7 +802,7 @@ namespace PommaLabs.KVLite.Core
         /// </returns>
         protected sealed override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
-            DbICacheItem tmpItem;
+            DbCacheItem tmpItem;
             using (var db = _connectionPool.GetObject())
             {
                 db.PeekOneItem_Partition.Value = partition;
@@ -892,7 +892,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private Option<ICacheItem<TVal>> DeserializeICacheItem<TVal>(DbICacheItem src)
+        private Option<ICacheItem<TVal>> DeserializeICacheItem<TVal>(DbCacheItem src)
         {
             if (src == null)
             {
@@ -923,7 +923,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private static IEnumerable<DbICacheItem> MapDataReader(SQLiteDataReader dataReader)
+        private static IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
         {
             const int valueCount = 16;
             var values = new object[valueCount];
@@ -931,7 +931,7 @@ namespace PommaLabs.KVLite.Core
             while (dataReader.Read())
             {
                 dataReader.GetValues(values);
-                var dbICacheItem = new DbICacheItem
+                var dbICacheItem = new DbCacheItem
                 {
                     Partition = values[0] as string,
                     Key = values[1] as string,
@@ -948,7 +948,7 @@ namespace PommaLabs.KVLite.Core
                 var parentKeyCount = firstNullIndex - parentKeysStartIndex;
                 if (parentKeyCount == 0)
                 {
-                    dbICacheItem.ParentKeys = DbICacheItem.NoParentKeys;
+                    dbICacheItem.ParentKeys = CacheExtensions.NoParentKeys;
                 }
                 else
                 {
@@ -1294,20 +1294,14 @@ namespace PommaLabs.KVLite.Core
 
         #endregion Nested type: DbInterface
 
-        #region Nested type: DbICacheItem
+        #region Nested type: DbCacheItem
 
         /// <summary>
         ///   Represents a row in the cache table.
         /// </summary>
         [Serializable]
-        private sealed class DbICacheItem : EquatableObject<DbICacheItem>
+        private sealed class DbCacheItem : EquatableObject<DbCacheItem>
         {
-            #region Constants
-
-            public static readonly string[] NoParentKeys = new string[0];
-
-            #endregion Constants
-
             #region Public Properties
 
             public string Partition { get; set; }
@@ -1351,6 +1345,6 @@ namespace PommaLabs.KVLite.Core
             #endregion EquatableObject<DbICacheItem> Members
         }
 
-        #endregion Nested type: DbICacheItem
+        #endregion Nested type: DbCacheItem
     }
 }

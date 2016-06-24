@@ -77,11 +77,8 @@ namespace PommaLabs.KVLite.WebApi
 
         public virtual IEnumerable<ICacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
-            var items = Cache.GetItems<object>();
-            foreach (var item in items)
-            {
-                item.Value = null; // Removes the value, as stated in the docs.
-            }
+            // Removes the value, as stated in the docs.
+            var items = Cache.GetItems<object>().Select(i => new CacheItem<object>(i.Partition, i.Key, null, i.UtcCreation, i.UtcExpiry, i.Interval, i.ParentKeys));
             return QueryCacheItems(items, partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
 
@@ -146,11 +143,8 @@ namespace PommaLabs.KVLite.WebApi
 
         public virtual IEnumerable<ICacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
-            var items = Cache.GetItems<object>(partition);
-            foreach (var item in items)
-            {
-                item.Value = null; // Removes the value, as stated in the docs.
-            }
+            // Removes the value, as stated in the docs.
+            var items = Cache.GetItems<object>(partition).Select(i => new CacheItem<object>(i.Partition, i.Key, null, i.UtcCreation, i.UtcExpiry, i.Interval, i.ParentKeys));
             return QueryCacheItems(items, partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
 
@@ -230,7 +224,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="fromCreation">Optional, the minimum creation date items should have.</param>
         /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
         /// <returns>The items extracted by the query.</returns>
-        static IEnumerable<CacheItem<object>> QueryCacheItems(IEnumerable<CacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
+        static IEnumerable<ICacheItem<object>> QueryCacheItems(IEnumerable<ICacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
         {
             if (fromExpiry.HasValue)
             {
