@@ -171,16 +171,13 @@ namespace PommaLabs.KVLite.Nancy
                 }
             }
 
-            public Response ToResponse()
+            public Response ToResponse() => new Response
             {
-                return new Response
-                {
-                    ContentType = _contentType,
-                    Headers = _headers,
-                    StatusCode = _statusCode,
-                    Contents = stream => stream.Write(_contents, 0, _contents.Length)
-                };
-            }
+                ContentType = _contentType,
+                Headers = _headers,
+                StatusCode = _statusCode,
+                Contents = stream => stream.Write(_contents, 0, _contents.Length)
+            };
         }
     }
 }

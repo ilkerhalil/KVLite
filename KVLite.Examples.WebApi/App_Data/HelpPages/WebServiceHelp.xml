@@ -9,9 +9,9 @@
               Exposes the KVLite cache controller and allows further customizations.
             </summary>
         </member>
-        <member name="M:RestService.WebApi.Controllers.CacheController.#ctor(PommaLabs.KVLite.ICache)">
+        <member name="M:RestService.WebApi.Controllers.CacheController.#ctor(Finsa.CodeServices.Caching.ICache)">
             <summary>
-              Injects the <see cref="T:PommaLabs.KVLite.ICache"/> dependency into the base controller.
+              Injects the <see cref="T:Finsa.CodeServices.Caching.ICache"/> dependency into the base controller.
             </summary>
             <param name="cache">The cache.</param>
         </member>

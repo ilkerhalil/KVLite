@@ -21,11 +21,13 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Caching;
 using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace PommaLabs.KVLite
@@ -33,12 +35,13 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   Settings used by <see cref="MemoryCache"/>.
     /// </summary>
-    [Serializable]
-    public sealed class MemoryCacheSettings : AbstractCacheSettings
+    [Serializable, DataContract]
+    public sealed class MemoryCacheSettings : AbstractCacheSettings<MemoryCacheSettings>
     {
         #region Fields
 
         string _cacheName = nameof(MemoryCache);
+        private int _maxCacheSizeInMB;
 
         #endregion Fields
 
@@ -70,10 +73,35 @@ namespace PommaLabs.KVLite
         #region Settings
 
         /// <summary>
+        ///   Max size in megabytes for the cache.
+        /// </summary>
+        [DataMember]
+        public int MaxCacheSizeInMB
+        {
+            get
+            {
+                var result = _maxCacheSizeInMB;
+
+                // Postconditions
+                Debug.Assert(result > 0);
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                RaiseArgumentOutOfRangeException.If(value <= 0);
+
+                _maxCacheSizeInMB = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         ///   The name of the in-memory store used as the backend for the cache.
         /// 
         ///   Default value is "MemoryCache".
         /// </summary>
+        [DataMember]
         public string CacheName
         {
             get
@@ -99,6 +127,7 @@ namespace PommaLabs.KVLite
         ///   Gets the cache URI; used for logging.
         /// </summary>
         /// <value>The cache URI.</value>
+        [IgnoreDataMember]
         public override string CacheUri => CacheName;
 
         #endregion Settings

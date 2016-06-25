@@ -24,82 +24,32 @@
 using Finsa.CodeServices.Caching;
 using PommaLabs.Thrower;
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 
 namespace PommaLabs.KVLite.Core
 {
     /// <summary>
     ///   Base class for cache settings. Contains settings shared among different caches.
     /// </summary>
-    [Serializable]
-    public abstract class AbstractCacheSettings : ICacheSettings, IAsyncCacheSettings, INotifyPropertyChanged
+    [Serializable, DataContract]
+    public abstract class AbstractSQLiteCacheSettings<TSettings> : AbstractCacheSettings<TSettings>
+        where TSettings : AbstractSQLiteCacheSettings<TSettings>
     {
         #region Fields
 
-        private string _defaultPartition;
         private int _insertionCountBeforeCleanup;
         private int _maxCacheSizeInMB;
         private int _maxJournalSizeInMB;
-        private int _staticIntervalInDays;
-
-        internal TimeSpan StaticInterval;
 
         #endregion Fields
 
         #region Settings
 
         /// <summary>
-        ///   The partition used when none is specified.
-        /// </summary>
-        public string DefaultPartition
-        {
-            get
-            {
-                var result = _defaultPartition;
-
-                // Postconditions
-                Debug.Assert(!string.IsNullOrWhiteSpace(result));
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                RaiseArgumentException.IfIsNullOrWhiteSpace(value, nameof(DefaultPartition));
-
-                _defaultPartition = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        ///   How many days static values will last.
-        /// </summary>
-        public int StaticIntervalInDays
-        {
-            get
-            {
-                var result = _staticIntervalInDays;
-
-                // Postconditions
-                Debug.Assert(result > 0);
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                RaiseArgumentOutOfRangeException.If(value <= 0);
-
-                _staticIntervalInDays = value;
-                StaticInterval = TimeSpan.FromDays(value);
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
         ///   Number of inserts before a cache cleanup is issued.
         /// </summary>
+        [DataMember]
         public int InsertionCountBeforeAutoClean
         {
             get
@@ -123,6 +73,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   Max size in megabytes for the cache.
         /// </summary>
+        [DataMember]
         public int MaxCacheSizeInMB
         {
             get
@@ -146,6 +97,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   Max size in megabytes for the SQLite journal log.
         /// </summary>
+        [DataMember]
         public int MaxJournalSizeInMB
         {
             get
@@ -167,37 +119,5 @@ namespace PommaLabs.KVLite.Core
         }
 
         #endregion Settings
-
-        #region Abstract Settings
-
-        /// <summary>
-        ///   Gets the cache URI; used for logging.
-        /// </summary>
-        /// <value>The cache URI.</value>
-        public abstract string CacheUri { get; }
-
-        #endregion Abstract Settings
-
-        #region INotifyPropertyChanged Members
-
-        /// <summary>
-        ///   Occurs when a property value changes.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        ///   Called when a property changed.
-        /// </summary>
-        /// <param name="propertyName">Name of the property.</param>
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            var handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        #endregion INotifyPropertyChanged Members
     }
 }

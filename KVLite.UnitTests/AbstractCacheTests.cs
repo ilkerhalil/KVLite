@@ -41,11 +41,11 @@ using Task = System.Threading.Tasks.Task;
 namespace PommaLabs.KVLite.UnitTests
 {
     [TestFixture]
-    abstract class AbstractCacheTests<TCacheSettings> where TCacheSettings : AbstractCacheSettings
+    abstract class AbstractCacheTests<TSettings> where TSettings : AbstractSQLiteCacheSettings<TSettings>
     {
         #region Setup/Teardown
 
-        protected AbstractSQLiteCache<TCacheSettings> Cache;
+        protected AbstractSQLiteCache<TSettings> Cache;
 
         [SetUp]
         public virtual void SetUp()

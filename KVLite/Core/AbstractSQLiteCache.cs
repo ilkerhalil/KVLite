@@ -46,10 +46,10 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Base class for caches, implements common functionalities.
     /// </summary>
-    /// <typeparam name="TCacheSettings">The type of the cache settings.</typeparam>
+    /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
     [Serializable]
-    public abstract class AbstractSQLiteCache<TCacheSettings> : AbstractCache<TCacheSettings>
-        where TCacheSettings : AbstractCacheSettings
+    public abstract class AbstractSQLiteCache<TSettings> : AbstractCache<TSettings>
+        where TSettings : AbstractSQLiteCacheSettings<TSettings>
     {
         #region Constants
 
@@ -87,7 +87,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   The cache settings.
         /// </summary>
-        private readonly TCacheSettings _settings;
+        private readonly TSettings _settings;
 
         /// <summary>
         ///   The clock instance, used to compute expiry times, etc etc.
@@ -122,7 +122,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
-        internal AbstractSQLiteCache(TCacheSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor)
+        internal AbstractSQLiteCache(TSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -517,7 +517,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   The available settings for the cache.
         /// </summary>
-        public sealed override TCacheSettings Settings => _settings;
+        public sealed override TSettings Settings => _settings;
 
         /// <summary>
         ///   <c>true</c> if the Peek methods are implemented, <c>false</c> otherwise.
@@ -750,7 +750,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The optional partition.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
-        protected sealed override ICacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
+        protected sealed override IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition)
         {
             using (var db = _connectionPool.GetObject())
             {
@@ -828,7 +828,7 @@ namespace PommaLabs.KVLite.Core
         ///   <see cref="T:System.Object"/> as type parameter; that will work whether the required
         ///   value is a class or not.
         /// </remarks>
-        protected sealed override ICacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
+        protected sealed override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
         {
             using (var db = _connectionPool.GetObject())
             {

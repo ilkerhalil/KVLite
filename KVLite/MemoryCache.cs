@@ -347,7 +347,7 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The optional partition.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
-        protected override ICacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
+        protected override IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition)
         {
             // Pick only the items with the right type.
             var q = _store.Where(x => x.Value is TVal).Select(x => new
@@ -420,7 +420,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected override ICacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
+        protected override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
         {
             throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
         }
