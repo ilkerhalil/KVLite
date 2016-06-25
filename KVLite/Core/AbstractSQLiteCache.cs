@@ -143,7 +143,7 @@ namespace PommaLabs.KVLite.Core
             {
                 // We apply many customizations to the JSON serializer, in order to achieve a small
                 // output size.
-                var serializerSettings = new JsonSerializerSettings
+                _serializer = new JsonSerializer(new JsonSerializerSettings
                 {
                     DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
                     DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.IgnoreAndPopulate,
@@ -156,8 +156,7 @@ namespace PommaLabs.KVLite.Core
                     ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
                     TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
                     TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
-                };
-                _serializer = new JsonSerializer(serializerSettings);
+                });
             }
 
             _settings.PropertyChanged += Settings_PropertyChanged;
@@ -740,7 +739,7 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
-            return DeserializeICacheItem<TVal>(tmpItem);
+            return DeserializeCacheItem<TVal>(tmpItem);
         }
 
         /// <summary>
@@ -760,7 +759,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     return MapDataReader(reader)
                         .ToArray()
-                        .Select(DeserializeICacheItem<TVal>)
+                        .Select(DeserializeCacheItem<TVal>)
                         .Where(i => i.HasValue)
                         .Select(i => i.Value)
                         .ToArray();
@@ -814,7 +813,7 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
-            return DeserializeICacheItem<TVal>(tmpItem);
+            return DeserializeCacheItem<TVal>(tmpItem);
         }
 
         /// <summary>
@@ -838,7 +837,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     return MapDataReader(reader)
                         .ToArray()
-                        .Select(DeserializeICacheItem<TVal>)
+                        .Select(DeserializeCacheItem<TVal>)
                         .Where(i => i.HasValue)
                         .Select(i => i.Value)
                         .ToArray();
@@ -892,7 +891,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private Option<ICacheItem<TVal>> DeserializeICacheItem<TVal>(DbCacheItem src)
+        private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(DbCacheItem src)
         {
             if (src == null)
             {

@@ -25,10 +25,12 @@ using Common.Logging;
 using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
+using Finsa.CodeServices.Common.Portability;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
+using Ionic.Zlib;
 using PommaLabs.KVLite.Core;
-using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -47,6 +49,20 @@ namespace PommaLabs.KVLite
     /// </summary>
     public sealed class MemoryCache : AbstractCache<MemoryCacheSettings>
     {
+        #region Constants
+
+        /// <summary>
+        ///   The string used to tag streams coming from <see cref="RecyclableMemoryStreamManager.Instance"/>.
+        /// </summary>
+        private const string StreamTag = nameof(KVLite);
+
+        /// <summary>
+        ///   The initial capacity of the streams retrieved from <see cref="RecyclableMemoryStreamManager.Instance"/>.
+        /// </summary>
+        private const int InitialStreamCapacity = 512;
+
+        #endregion Constants
+
         #region Default Instance
 
         /// <summary>
@@ -75,19 +91,39 @@ namespace PommaLabs.KVLite
         /// <param name="settings">Cache settings.</param>
         /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
-        public MemoryCache(MemoryCacheSettings settings, ILog log = null, ISerializer serializer = null)
+        /// <param name="compressor">The compressor.</param>
+        public MemoryCache(MemoryCacheSettings settings, ILog log = null, ISerializer serializer = null, ICompressor compressor = null)
         {
             Settings = settings;
             Log = log ?? LogManager.GetLogger(GetType());
-            Serializer = serializer ?? new JsonSerializer(new JsonSerializerSettings
+            Compressor = compressor ?? new DeflateCompressor(CompressionLevel.BestSpeed);
+
+            // We need to properly customize the default serializer settings in no custom serializer
+            // has been specified.
+            if (serializer != null)
             {
-                DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore,
-                Formatting = Newtonsoft.Json.Formatting.None,
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
-                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None
-            });
+                // Use the specified serializer.
+                Serializer = serializer;
+            }
+            else
+            {
+                // We apply many customizations to the JSON serializer, in order to achieve a small
+                // output size.
+                Serializer = new JsonSerializer(new JsonSerializerSettings
+                {
+                    DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
+                    DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.IgnoreAndPopulate,
+                    Encoding = PortableEncoding.UTF8WithoutBOM,
+                    FloatFormatHandling = Newtonsoft.Json.FloatFormatHandling.String,
+                    Formatting = Newtonsoft.Json.Formatting.None,
+                    MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,
+                    NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
+                    PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
+                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
+                    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
+                    TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
+                });
+            }
 
             InitSystemMemoryCache();
         }
@@ -151,11 +187,7 @@ namespace PommaLabs.KVLite
         ///   Gets the compressor used by the cache.
         /// </summary>
         /// <value>The compressor used by the cache.</value>
-        /// <remarks>
-        ///   Since compression is not used inside this kind of cache, then this property defaults to
-        ///   <see cref="NoOpCompressor"/>.
-        /// </remarks>
-        public override ICompressor Compressor { get; } = new NoOpCompressor();
+        public override ICompressor Compressor { get; }
 
         /// <summary>
         ///   Gets the log used by the cache.
@@ -163,8 +195,8 @@ namespace PommaLabs.KVLite
         /// <value>The log used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to what <see
-        ///   cref="M:Common.Logging.LogManager.GetLogger(System.Type)"/> returns.
+        ///   constructor. If not specified, it defaults to what
+        ///   <see cref="LogManager.GetLogger(System.Type)"/> returns.
         /// </remarks>
         public override ILog Log { get; }
 
@@ -212,16 +244,36 @@ namespace PommaLabs.KVLite
         /// </param>
         protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
+            byte[] serializedValue;
+            try
+            {
+                using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(StreamTag, InitialStreamCapacity))
+                {
+                    using (var compressionStream = Compressor.CreateCompressionStream(memoryStream))
+                    {
+                        Serializer.SerializeToStream(value, compressionStream);
+                    }
+                    serializedValue = memoryStream.ToArray();
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.ErrorFormat("Could not serialize given value '{0}'", ex, value.SafeToString());
+                throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
+            }
+
             var policy = (interval == TimeSpan.Zero)
                 ? new SystemCacheItemPolicy { AbsoluteExpiration = utcExpiry }
                 : new SystemCacheItemPolicy { SlidingExpiration = interval };
 
             if (parentKeys != null && parentKeys.Count > 0)
             {
-                policy.ChangeMonitors.Add(_store.CreateCacheEntryChangeMonitor(parentKeys.Select(pk => SerializeToCacheKey(partition, pk))));
+                policy.ChangeMonitors.Add(_store.CreateCacheEntryChangeMonitor(parentKeys.Select(pk => SerializeCacheKey(partition, pk))));
             }
 
-            _store.Set(SerializeToCacheKey(partition, key), value, policy);
+            var cacheValue = new CacheValue { SerializedValue = serializedValue, UtcCreation = Clock.UtcNow };
+            _store.Set(SerializeCacheKey(partition, key), cacheValue, policy);
         }
 
         /// <summary>
@@ -239,7 +291,7 @@ namespace PommaLabs.KVLite
             // Then, if a partition has been specified, we select only those keys that belong to that partition.
             if (partition != null)
             {
-                keys = keys.Where(k => DeserializeFromCacheKey(k).Partition == partition);
+                keys = keys.Where(k => DeserializeCacheKey(k).Partition == partition);
             }
 
             // Now we take the snapshot of the keys.
@@ -263,7 +315,7 @@ namespace PommaLabs.KVLite
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected override bool ContainsInternal(string partition, string key)
         {
-            var maybeCacheKey = SerializeToCacheKey(partition, key);
+            var maybeCacheKey = SerializeCacheKey(partition, key);
             return _store.Contains(maybeCacheKey);
         }
 
@@ -285,7 +337,7 @@ namespace PommaLabs.KVLite
 
             // Otherwise, we need to count items, which is surely slower. In fact, we also need to
             // deserialize the key in order to understand if the item belongs to the partition.
-            return _store.Count(x => DeserializeFromCacheKey(x.Key).Partition == partition);
+            return _store.Count(x => DeserializeCacheKey(x.Key).Partition == partition);
         }
 
         /// <summary>
@@ -298,17 +350,9 @@ namespace PommaLabs.KVLite
         /// <returns>The value with specified partition and key.</returns>
         protected override Option<TVal> GetInternal<TVal>(string partition, string key)
         {
-            var maybeCacheKey = SerializeToCacheKey(partition, key);
-            var maybeValue = _store.Get(maybeCacheKey);
-
-            // If item is not present or if it has the wrong type, return None.
-            if (maybeValue == null || !(maybeValue is TVal))
-            {
-                return Option.None<TVal>();
-            }
-
-            // Otherwise, cast the item and return it.
-            return Option.Some((TVal) maybeValue);
+            var maybeCacheKey = SerializeCacheKey(partition, key);
+            var maybeCacheValue = _store.Get(maybeCacheKey) as CacheValue;
+            return DeserializeCacheValue<TVal>(maybeCacheValue);
         }
 
         /// <summary>
@@ -321,23 +365,9 @@ namespace PommaLabs.KVLite
         /// <returns>The cache item with specified partition and key.</returns>
         protected override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
-            var maybeCacheKey = SerializeToCacheKey(partition, key);
-            var maybeCacheItem = _store.GetCacheItem(maybeCacheKey);
-
-            // If item is not present or if it has the wrong type, return None.
-            if (maybeCacheItem == null || !(maybeCacheItem.Value is TVal))
-            {
-                return Option.None<ICacheItem<TVal>>();
-            }
-
-            // Otherwise, generate the KVLite cache item and return it. Many properties available in
-            // the KVLite cache items cannot be filled due to missing information.
-            return Option.Some<ICacheItem<TVal>>(new CacheItem<TVal>
-            {
-                Partition = partition,
-                Key = key,
-                Value = (TVal) maybeCacheItem.Value
-            });
+            var maybeCacheKey = SerializeCacheKey(partition, key);
+            var maybeCacheValue = _store.Get(maybeCacheKey) as CacheValue;
+            return DeserializeCacheItem<TVal>(maybeCacheValue, partition, key);
         }
 
         /// <summary>
@@ -350,10 +380,10 @@ namespace PommaLabs.KVLite
         protected override IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition)
         {
             // Pick only the items with the right type.
-            var q = _store.Where(x => x.Value is TVal).Select(x => new
+            var q = _store.Where(x => x.Value is CacheValue).Select(x => new
             {
-                CacheKey = DeserializeFromCacheKey(x.Key),
-                Value = (TVal) x.Value
+                CacheKey = DeserializeCacheKey(x.Key),
+                CacheValue = x.Value as CacheValue
             });
 
             // If partition has been specified, then we shall also filter by it.
@@ -362,14 +392,8 @@ namespace PommaLabs.KVLite
                 q = q.Where(x => x.CacheKey.Partition == partition);
             }
 
-            // Project the items to proper KVLite cache items. Many properties available in the
-            // KVLite cache items cannot be filled due to missing information.
-            return q.Select(x => new CacheItem<TVal>
-            {
-                Partition = x.CacheKey.Partition,
-                Key = x.CacheKey.Key,
-                Value = x.Value
-            }).ToArray();
+            // Project the items to proper KVLite cache items.
+            return q.Select(x => DeserializeCacheItem<TVal>(x.CacheValue, x.CacheKey.Partition, x.CacheKey.Key).Value).ToArray();
         }
 
         /// <summary>
@@ -413,9 +437,9 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All values, without updating expiry dates.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="T:System.Object"/> as type parameter; that will work whether the required value
-        ///   is a class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="T:System.Object"/> as type parameter; that will work whether the required
+        ///   value is a class or not.
         /// </remarks>
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
@@ -432,7 +456,7 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         protected override void RemoveInternal(string partition, string key)
         {
-            var maybeCacheKey = SerializeToCacheKey(partition, key);
+            var maybeCacheKey = SerializeCacheKey(partition, key);
             _store.Remove(maybeCacheKey);
         }
 
@@ -481,27 +505,10 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <returns>Current cache size in kilobytes.</returns>
         [Pure]
-        public long CacheSizeInKB()
-        {
-            // Preconditions
-            RaiseObjectDisposedException.If(Disposed, ErrorMessages.CacheHasBeenDisposed);
-
-            try
-            {
-                var serializer = new BinarySerializer();
-                var cacheItems = _store.ToArray();
-                using (var stream = serializer.SerializeToStream(cacheItems))
-                {
-                    return stream.Length / 1024L;
-                }
-            }
-            catch (Exception ex)
-            {
-                LastError = ex;
-                Log.Error(ErrorMessages.InternalErrorOnReadAll, ex);
-                return 0L;
-            }
-        }
+        public long CacheSizeInKB() => _store
+            .Select(x => x.Value as CacheValue)
+            .Where(x => x != null)
+            .Sum(x => x.SerializedValue.LongLength) / 1024L;
 
         #endregion Cache size estimation
 
@@ -517,11 +524,21 @@ namespace PommaLabs.KVLite
             public string Key { get; set; }
         }
 
+        [Serializable, DataContract]
+        private sealed class CacheValue
+        {
+            [DataMember(Name = "v", Order = 0, EmitDefaultValue = false)]
+            public byte[] SerializedValue { get; set; }
+
+            [DataMember(Name = "c", Order = 1, EmitDefaultValue = false)]
+            public DateTime UtcCreation { get; set; }
+        }
+
 #if !NET40
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
 
-        private string SerializeToCacheKey(string partition, string key) => Serializer.SerializeToString(new CacheKey
+        private string SerializeCacheKey(string partition, string key) => Serializer.SerializeToString(new CacheKey
         {
             Partition = partition,
             Key = key
@@ -531,7 +548,74 @@ namespace PommaLabs.KVLite
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
 
-        private CacheKey DeserializeFromCacheKey(string cacheKey) => Serializer.DeserializeFromString<CacheKey>(cacheKey);
+        private CacheKey DeserializeCacheKey(string cacheKey) => Serializer.DeserializeFromString<CacheKey>(cacheKey);
+
+#if !NET40
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
+        private TVal UnsafeDeserializeCacheValue<TVal>(byte[] serializedValue)
+        {
+            using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(StreamTag, serializedValue, 0, serializedValue.Length))
+            using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
+            {
+                return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+            }
+        }
+
+#if !NET40
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
+        private Option<TVal> DeserializeCacheValue<TVal>(CacheValue cacheValue)
+        {
+            if (cacheValue == null || cacheValue.SerializedValue == null)
+            {
+                // Nothing to deserialize, return None.
+                return Option.None<TVal>();
+            }
+            try
+            {
+                return Option.Some(UnsafeDeserializeCacheValue<TVal>(cacheValue.SerializedValue));
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Warn("Something wrong happened during deserialization", ex);
+                return Option.None<TVal>();
+            }
+        }
+
+#if !NET40
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
+        private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(CacheValue cacheValue, string partition, string key)
+        {
+            if (cacheValue == null || cacheValue.SerializedValue == null)
+            {
+                // Nothing to deserialize, return None.
+                return Option.None<ICacheItem<TVal>>();
+            }
+            try
+            {
+                // Generate the KVLite cache item and return it. Many properties available in the
+                // KVLite cache items cannot be filled due to missing information.
+                return Option.Some<ICacheItem<TVal>>(new CacheItem<TVal>
+                {
+                    Partition = partition,
+                    Key = key,
+                    Value = UnsafeDeserializeCacheValue<TVal>(cacheValue.SerializedValue),
+                    UtcCreation = cacheValue.UtcCreation
+                });
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Warn("Something wrong happened during deserialization", ex);
+                return Option.None<ICacheItem<TVal>>();
+            }
+        }
 
         #endregion Cache key handling
     }
