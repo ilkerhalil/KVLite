@@ -36,7 +36,6 @@ using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using SystemCacheItemPolicy = System.Runtime.Caching.CacheItemPolicy;
 using SystemMemoryCache = System.Runtime.Caching.MemoryCache;
@@ -495,23 +494,33 @@ namespace PommaLabs.KVLite
         }
 
 #if !NET40
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 #endif
 
-        private string SerializeCacheKey(string partition, string key) => Serializer.SerializeToString(new CacheKey
+        private string SerializeCacheKey(string partition, string key)
         {
-            Partition = partition,
-            Key = key
-        });
+            var partitionLength = partition.Length;
+            return $"{partitionLength}${partition}${key}";
+        }
 
 #if !NET40
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 #endif
 
-        private CacheKey DeserializeCacheKey(string cacheKey) => Serializer.DeserializeFromString<CacheKey>(cacheKey);
+        private CacheKey DeserializeCacheKey(string cacheKey)
+        {
+            var partitionLengthEnd = cacheKey.IndexOf('$');
+            var partitionLengthPrefix = cacheKey.Substring(0, partitionLengthEnd);
+            var partitionLength = int.Parse(partitionLengthPrefix);
+            return new CacheKey
+            {
+                Partition = cacheKey.Substring(partitionLengthEnd + 1, partitionLength),
+                Key = cacheKey.Substring(partitionLengthEnd + partitionLength + 2)
+            };
+        }
 
 #if !NET40
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 #endif
 
         private TVal UnsafeDeserializeCacheValue<TVal>(byte[] serializedValue)
@@ -526,7 +535,7 @@ namespace PommaLabs.KVLite
         }
 
 #if !NET40
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 #endif
 
         private Option<TVal> DeserializeCacheValue<TVal>(CacheValue cacheValue)
@@ -549,7 +558,7 @@ namespace PommaLabs.KVLite
         }
 
 #if !NET40
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 #endif
 
         private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(CacheValue cacheValue, string partition, string key)
