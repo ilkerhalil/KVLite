@@ -60,16 +60,6 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         private const int PageSizeInBytes = 4096;
 
-        /// <summary>
-        ///   The string used to tag streams coming from <see cref="RecyclableMemoryStreamManager.Instance"/>.
-        /// </summary>
-        private const string StreamTag = nameof(KVLite);
-
-        /// <summary>
-        ///   The initial capacity of the streams retrieved from <see cref="RecyclableMemoryStreamManager.Instance"/>.
-        /// </summary>
-        private const int InitialStreamCapacity = 512;
-
         #endregion Constants
 
         #region Fields
@@ -128,9 +118,10 @@ namespace PommaLabs.KVLite.Core
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
 
             _settings = settings;
-            _clock = clock ?? new SystemClock();
             _log = log ?? LogManager.GetLogger(GetType());
-            _compressor = compressor ?? new DeflateCompressor(CompressionLevel.BestSpeed);
+            _compressor = compressor ?? Constants.DefaultCompressor;
+            _serializer = serializer ?? Constants.DefaultSerializer;
+            _clock = clock ?? Constants.DefaultClock;
 
             // We need to properly customize the default serializer settings in no custom serializer
             // has been specified.
@@ -564,7 +555,7 @@ namespace PommaLabs.KVLite.Core
             byte[] serializedValue;
             try
             {
-                using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(StreamTag, InitialStreamCapacity))
+                using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(Constants.StreamTag, Constants.InitialStreamCapacity))
                 {
                     using (var compressionStream = _compressor.CreateCompressionStream(memoryStream))
                     {
@@ -576,7 +567,7 @@ namespace PommaLabs.KVLite.Core
             catch (Exception ex)
             {
                 LastError = ex;
-                _log.ErrorFormat("Could not serialize given value '{0}'", ex, value.SafeToString());
+                _log.ErrorFormat(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
@@ -862,7 +853,7 @@ namespace PommaLabs.KVLite.Core
 
         private TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
         {
-            using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(StreamTag, serializedValue, 0, serializedValue.Length))
+            using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(Constants.StreamTag, serializedValue, 0, serializedValue.Length))
             using (var decompressionStream = _compressor.CreateDecompressionStream(memoryStream))
             {
                 return _serializer.DeserializeFromStream<TVal>(decompressionStream);
@@ -886,7 +877,7 @@ namespace PommaLabs.KVLite.Core
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
                 RemoveInternal(partition, key);
-                _log.Warn("Something wrong happened during deserialization", ex);
+                _log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
                 return Option.None<TVal>();
             }
         }
@@ -917,7 +908,7 @@ namespace PommaLabs.KVLite.Core
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
                 RemoveInternal(src.Partition, src.Key);
-                _log.Warn("Something wrong happened during deserialization", ex);
+                _log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
                 return Option.None<ICacheItem<TVal>>();
             }
         }
@@ -1298,11 +1289,8 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   Represents a row in the cache table.
         /// </summary>
-        [Serializable]
-        private sealed class DbCacheItem : EquatableObject<DbCacheItem>
+        private sealed class DbCacheItem
         {
-            #region Public Properties
-
             public string Partition { get; set; }
 
             public string Key { get; set; }
@@ -1316,32 +1304,6 @@ namespace PommaLabs.KVLite.Core
             public long Interval { get; set; }
 
             public string[] ParentKeys { get; set; }
-
-            #endregion Public Properties
-
-            #region EquatableObject<DbICacheItem> Members
-
-            /// <summary>
-            ///   Returns all property (or field) values, along with their names, so that they can be
-            ///   used to produce a meaningful <see cref="M:Finsa.CodeServices.Common.FormattableObject.ToString"/>.
-            /// </summary>
-            protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
-            {
-                yield return KeyValuePair.Create(nameof(Partition), Partition.SafeToString());
-                yield return KeyValuePair.Create(nameof(Key), Key.SafeToString());
-                yield return KeyValuePair.Create(nameof(UtcExpiry), UtcExpiry.SafeToString());
-            }
-
-            /// <summary>
-            ///   Gets the identifying members.
-            /// </summary>
-            protected override IEnumerable<object> GetIdentifyingMembers()
-            {
-                yield return Partition;
-                yield return Key;
-            }
-
-            #endregion EquatableObject<DbICacheItem> Members
         }
 
         #endregion Nested type: DbCacheItem

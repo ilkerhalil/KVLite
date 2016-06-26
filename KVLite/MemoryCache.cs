@@ -26,16 +26,15 @@ using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
-using Finsa.CodeServices.Common.Portability;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
-using Ionic.Zlib;
 using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
@@ -49,20 +48,6 @@ namespace PommaLabs.KVLite
     /// </summary>
     public sealed class MemoryCache : AbstractCache<MemoryCacheSettings>
     {
-        #region Constants
-
-        /// <summary>
-        ///   The string used to tag streams coming from <see cref="RecyclableMemoryStreamManager.Instance"/>.
-        /// </summary>
-        private const string StreamTag = nameof(KVLite);
-
-        /// <summary>
-        ///   The initial capacity of the streams retrieved from <see cref="RecyclableMemoryStreamManager.Instance"/>.
-        /// </summary>
-        private const int InitialStreamCapacity = 512;
-
-        #endregion Constants
-
         #region Default Instance
 
         /// <summary>
@@ -96,34 +81,9 @@ namespace PommaLabs.KVLite
         {
             Settings = settings;
             Log = log ?? LogManager.GetLogger(GetType());
-            Compressor = compressor ?? new DeflateCompressor(CompressionLevel.BestSpeed);
-
-            // We need to properly customize the default serializer settings in no custom serializer
-            // has been specified.
-            if (serializer != null)
-            {
-                // Use the specified serializer.
-                Serializer = serializer;
-            }
-            else
-            {
-                // We apply many customizations to the JSON serializer, in order to achieve a small
-                // output size.
-                Serializer = new JsonSerializer(new JsonSerializerSettings
-                {
-                    DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-                    DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.IgnoreAndPopulate,
-                    Encoding = PortableEncoding.UTF8WithoutBOM,
-                    FloatFormatHandling = Newtonsoft.Json.FloatFormatHandling.String,
-                    Formatting = Newtonsoft.Json.Formatting.None,
-                    MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,
-                    NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                    PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
-                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-                    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
-                    TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
-                });
-            }
+            Compressor = compressor ?? Constants.DefaultCompressor;
+            Serializer = serializer ?? Constants.DefaultSerializer;
+            Clock = Constants.DefaultClock;
 
             InitSystemMemoryCache();
         }
@@ -181,7 +141,7 @@ namespace PommaLabs.KVLite
         ///   Since <see cref="SystemMemoryCache"/> does not allow clock customisation, then this
         ///   property defaults to <see cref="T:Finsa.CodeServices.Clock.SystemClock"/>.
         /// </remarks>
-        public override IClock Clock { get; } = new SystemClock();
+        public override IClock Clock { get; }
 
         /// <summary>
         ///   Gets the compressor used by the cache.
@@ -247,7 +207,7 @@ namespace PommaLabs.KVLite
             byte[] serializedValue;
             try
             {
-                using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(StreamTag, InitialStreamCapacity))
+                using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(Constants.StreamTag, Constants.InitialStreamCapacity))
                 {
                     using (var compressionStream = Compressor.CreateCompressionStream(memoryStream))
                     {
@@ -259,7 +219,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorFormat("Could not serialize given value '{0}'", ex, value.SafeToString());
+                Log.ErrorFormat(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
@@ -556,7 +516,9 @@ namespace PommaLabs.KVLite
 
         private TVal UnsafeDeserializeCacheValue<TVal>(byte[] serializedValue)
         {
-            using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(StreamTag, serializedValue, 0, serializedValue.Length))
+            // Here we cannot safely use a recyclable stream because the byte array is still used by
+            // existing cache value.
+            using (var memoryStream = new MemoryStream(serializedValue))
             using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
             {
                 return Serializer.DeserializeFromStream<TVal>(decompressionStream);
@@ -581,7 +543,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.Warn("Something wrong happened during deserialization", ex);
+                Log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
                 return Option.None<TVal>();
             }
         }
@@ -612,7 +574,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.Warn("Something wrong happened during deserialization", ex);
+                Log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
                 return Option.None<ICacheItem<TVal>>();
             }
         }

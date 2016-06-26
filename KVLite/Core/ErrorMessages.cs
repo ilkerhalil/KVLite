@@ -31,6 +31,16 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   An error message.
         /// </summary>
+        public const string InternalErrorOnSerializationFormat = "Something wrong happened during serialization of given value '{0}'";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string InternalErrorOnDeserialization = "Something wrong happened during deserialization";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
         public const string InternalErrorOnClearAll = "An error occurred while clearing all cache partitions.";
 
         /// <summary>
@@ -86,7 +96,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
+        public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible, and ensure that current serializer can serialize and deserialize given value.";
 
         /// <summary>
         ///   An error message.
