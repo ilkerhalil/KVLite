@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite</id>
-        <version>5.2.5</version>
+        <version>5.2.6</version>
         <title>KVLite - Key-value store built on SQLite</title>
         <authors>Alessio Parma</authors>
         <owners>Alessio Parma</owners>
@@ -14,7 +14,8 @@ KVLite can be stored either in persistent or volatile fashion, and each key/valu
 This package contains the dependencies needed by KVLite at runtime.
         </description>
         <releaseNotes>
-* Updated System.Data.SQLite to version 1.0.101.0.
+* [UPD] Updated System.Data.SQLite to version 1.0.102.0.
+* [UPD] Moved interfaces and core classes to Finsa.CodeServices.Caching package.
         </releaseNotes>
         <summary>
 KVLite is a partition-based key-value store built on SQLite. This package contains the dependencies needed by KVLite at runtime.
@@ -28,7 +29,7 @@ KVLite is a partition-based key-value store built on SQLite. This package contai
         <dependencies>
             <dependency id="CodeProject.ObjectPool" version="1.10.1" />
             <dependency id="Finsa.CodeServices.Serialization.Json" version="4.1.6" />
-            <dependency id="PommaLabs.KVLite.Core" version="5.2.5" />
+            <dependency id="PommaLabs.KVLite.Core" version="5.2.6" />
             <dependency id="PommaLabs.KVLite.SQLite" version="1.0.102.0" />
             <dependency id="Thrower" version="2.2.4" />
         </dependencies>

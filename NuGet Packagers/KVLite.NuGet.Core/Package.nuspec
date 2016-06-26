@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.Core</id>
-        <version>5.2.5</version>
+        <version>5.2.6</version>
         <title>KVLite - Core library</title>
         <authors>Alessio Parma</authors>
         <owners>Alessio Parma</owners>
@@ -14,7 +14,8 @@ KVLite can be stored either in persistent or volatile fashion, and each key/valu
 This package contains the core interfaces and implementations for KVLite.
         </description>
         <releaseNotes>
-* Updated System.Data.SQLite to version 1.0.101.0.
+* [UPD] Updated System.Data.SQLite to version 1.0.102.0.
+* [UPD] Moved interfaces and core classes to Finsa.CodeServices.Caching package.
         </releaseNotes>
         <summary>
 KVLite is a partition-based key-value store built on SQLite. This package contains the core interfaces and implementations for KVLite.
