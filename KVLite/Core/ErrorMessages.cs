@@ -18,8 +18,8 @@
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 namespace PommaLabs.KVLite.Core
 {
@@ -31,8 +31,18 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   An error message.
         /// </summary>
+        public const string InternalErrorOnSerializationFormat = "Something wrong happened during serialization of given value '{0}'";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string InternalErrorOnDeserialization = "Something wrong happened during deserialization";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
         public const string InternalErrorOnClearAll = "An error occurred while clearing all cache partitions.";
-        
+
         /// <summary>
         ///   An error message.
         /// </summary>
@@ -72,7 +82,7 @@ namespace PommaLabs.KVLite.Core
         ///   An error message.
         /// </summary>
         public const string InternalErrorOnVacuum = "An error occurred while applying VACUUM on the SQLite cache.";
-        
+
         /// <summary>
         ///   An error message.
         /// </summary>
@@ -82,12 +92,12 @@ namespace PommaLabs.KVLite.Core
         ///   An error message.
         /// </summary>
         public const string InvalidCacheReadMode = "An invalid enum value was given for cache read mode.";
-        
+
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
-        
+        public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible, and ensure that current serializer can serialize and deserialize given value.";
+
         /// <summary>
         ///   An error message.
         /// </summary>
@@ -132,7 +142,7 @@ namespace PommaLabs.KVLite.Core
         ///   An error message.
         /// </summary>
         public const string NullValueGetter = @"Value getter function cannot be null, please specify one non-null function.";
-        
+
         /// <summary>
         ///   An error message.
         /// </summary>

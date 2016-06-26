@@ -1,4 +1,4 @@
-﻿using PommaLabs.KVLite;
+﻿using Finsa.CodeServices.Caching;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace RestService.WebApi.Controllers
 
         public ValuesController(ICache cache)
         {
-            RaiseArgumentNullException.IfIsNull(cache, nameof(cache));
+            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache));
             _cache = cache;
         }
 

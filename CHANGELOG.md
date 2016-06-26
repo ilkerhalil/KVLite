@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
+### v5.2.6 (2016-06-26) ###
+
+* [UPD] Updated System.Data.SQLite to version 1.0.102.0.
+* [UPD] Moved interfaces and core classes to Finsa.CodeServices.Caching package.
+
 ### v5.2.5 (2016-04-23) ###
 
 * [UPD] Updated System.Data.SQLite to version 1.0.101.0.

@@ -26,6 +26,7 @@ using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace PommaLabs.KVLite
@@ -33,8 +34,8 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   Settings used by <see cref="VolatileCache"/>.
     /// </summary>
-    [Serializable]
-    public sealed class VolatileCacheSettings : AbstractCacheSettings
+    [Serializable, DataContract]
+    public sealed class VolatileCacheSettings : AbstractSQLiteCacheSettings<VolatileCacheSettings>
     {
         #region Fields
 
@@ -74,6 +75,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The name of the in-memory SQLite DB used as the backend for the cache.
         /// </summary>
+        [DataMember]
         public string CacheName
         {
             get
@@ -99,6 +101,7 @@ namespace PommaLabs.KVLite
         ///   Gets the cache URI; used for logging.
         /// </summary>
         /// <value>The cache URI.</value>
+        [IgnoreDataMember]
         public override string CacheUri => CacheName;
 
         #endregion Settings

@@ -26,14 +26,15 @@ using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Runtime.Serialization;
 
 namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   Settings used by <see cref="PersistentCache"/>.
     /// </summary>
-    [Serializable]
-    public sealed class PersistentCacheSettings : AbstractCacheSettings
+    [Serializable, DataContract]
+    public sealed class PersistentCacheSettings : AbstractSQLiteCacheSettings<PersistentCacheSettings>
     {
         #region Fields
 
@@ -75,6 +76,7 @@ namespace PommaLabs.KVLite
         /// 
         ///   Default value is "PersistentCache.sqlite".
         /// </summary>
+        [DataMember]
         public string CacheFile
         {
             get
@@ -99,6 +101,7 @@ namespace PommaLabs.KVLite
         ///   Gets the cache URI; used for logging.
         /// </summary>
         /// <value>The cache URI.</value>
+        [IgnoreDataMember]
         public override string CacheUri => CacheFile;
 
         #endregion Settings

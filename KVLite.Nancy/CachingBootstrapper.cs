@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Common.Logging;
+using Finsa.CodeServices.Caching;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
@@ -170,16 +171,13 @@ namespace PommaLabs.KVLite.Nancy
                 }
             }
 
-            public Response ToResponse()
+            public Response ToResponse() => new Response
             {
-                return new Response
-                {
-                    ContentType = _contentType,
-                    Headers = _headers,
-                    StatusCode = _statusCode,
-                    Contents = stream => stream.Write(_contents, 0, _contents.Length)
-                };
-            }
+                ContentType = _contentType,
+                Headers = _headers,
+                StatusCode = _statusCode,
+                Contents = stream => stream.Write(_contents, 0, _contents.Length)
+            };
         }
     }
 }

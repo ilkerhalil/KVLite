@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using PommaLabs.KVLite.Core;
@@ -43,7 +44,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cache">The cache used by the Web API output cache.</param>
         protected AbstractCacheController(ICache cache)
         {
-            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
             Cache = cache;
         }
 
@@ -74,13 +75,10 @@ namespace PommaLabs.KVLite.WebApi
         [Route("items")]
 #endif
 
-        public virtual IEnumerable<CacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
+        public virtual IEnumerable<ICacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
-            var items = Cache.GetItems<object>();
-            foreach (var item in items)
-            {
-                item.Value = null; // Removes the value, as stated in the docs.
-            }
+            // Removes the value, as stated in the docs.
+            var items = Cache.GetItems<object>().Select(i => new CacheItem<object>(i.Partition, i.Key, null, i.UtcCreation, i.UtcExpiry, i.Interval, i.ParentKeys));
             return QueryCacheItems(items, partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
 
@@ -104,7 +102,7 @@ namespace PommaLabs.KVLite.WebApi
         [Route("items/withValues")]
 #endif
 
-        public virtual IEnumerable<CacheItem<object>> GetItemsWithValues(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
+        public virtual IEnumerable<ICacheItem<object>> GetItemsWithValues(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
             return QueryCacheItems(Cache.GetItems<object>(), partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
@@ -143,13 +141,10 @@ namespace PommaLabs.KVLite.WebApi
         [Route("items/{partition}")]
 #endif
 
-        public virtual IEnumerable<CacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
+        public virtual IEnumerable<ICacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
-            var items = Cache.GetItems<object>(partition);
-            foreach (var item in items)
-            {
-                item.Value = null; // Removes the value, as stated in the docs.
-            }
+            // Removes the value, as stated in the docs.
+            var items = Cache.GetItems<object>(partition).Select(i => new CacheItem<object>(i.Partition, i.Key, null, i.UtcCreation, i.UtcExpiry, i.Interval, i.ParentKeys));
             return QueryCacheItems(items, partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
 
@@ -173,7 +168,7 @@ namespace PommaLabs.KVLite.WebApi
         [Route("items/{partition}/withValues")]
 #endif
 
-        public virtual IEnumerable<CacheItem<object>> GetPartitionItemsWithValues(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
+        public virtual IEnumerable<ICacheItem<object>> GetPartitionItemsWithValues(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
             return QueryCacheItems(Cache.GetItems<object>(partition), partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
@@ -200,7 +195,7 @@ namespace PommaLabs.KVLite.WebApi
         [Route("items/{partition}/{key}")]
 #endif
 
-        public virtual Option<CacheItem<object>> GetItem(string partition, string key) => Cache.GetItem<object>(partition, key);
+        public virtual Option<ICacheItem<object>> GetItem(string partition, string key) => Cache.GetItem<object>(partition, key);
 
         /// <summary>
         ///   Deletes an item stored in the cache with given partition and key.
@@ -229,7 +224,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="fromCreation">Optional, the minimum creation date items should have.</param>
         /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
         /// <returns>The items extracted by the query.</returns>
-        static IEnumerable<CacheItem<object>> QueryCacheItems(IEnumerable<CacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
+        static IEnumerable<ICacheItem<object>> QueryCacheItems(IEnumerable<ICacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
         {
             if (fromExpiry.HasValue)
             {

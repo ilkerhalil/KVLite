@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Common;
 using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
@@ -45,7 +46,7 @@ namespace PommaLabs.KVLite.WebForms
         /// <param name="cache">The cache that will be used by the provider.</param>
         protected AbstractOutputCacheProvider(ICache cache)
         {
-            RaiseArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
             Cache = cache;
         }
 

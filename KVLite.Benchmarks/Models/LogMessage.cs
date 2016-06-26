@@ -1,4 +1,4 @@
-﻿// File name: CacheReadMode.cs
+﻿// File name: LogMessage.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,21 +21,31 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-namespace PommaLabs.KVLite
-{
-    /// <summary>
-    ///   Determines whether expired items should be included in lists or in queries.
-    /// </summary>
-    public enum CacheReadMode : byte
-    {
-        /// <summary>
-        ///   Considers expiry policy while retrieving items.
-        /// </summary>
-        ConsiderExpiryDate = 0,
+using Common.Logging;
+using NLipsum.Core;
+using System.Collections.Generic;
+using System.Linq;
+using Troschuetz.Random;
 
-        /// <summary>
-        ///   Ignores expiry policy while retrieving items.
-        /// </summary>
-        IgnoreExpiryDate = 1
+namespace PommaLabs.KVLite.Benchmarks.Models
+{
+    internal sealed class LogMessage
+    {
+        private static readonly TRandom Random = new TRandom();
+        private static readonly LogLevel[] LogLevels = { LogLevel.Debug, LogLevel.Error, LogLevel.Fatal, LogLevel.Info, LogLevel.Trace, LogLevel.Warn };
+        private static readonly LipsumGenerator LipsumGenerator = new LipsumGenerator();
+
+        public LogLevel Level { get; set; }
+
+        public string ShortMessage { get; set; }
+
+        public string LongMessage { get; set; }
+
+        public static IEnumerable<LogMessage> GenerateRandomLogMessages(int count) => Enumerable.Range(0, count).Select(_ => new LogMessage
+        {
+            Level = Random.Choice(LogLevels),
+            ShortMessage = LipsumGenerator.GenerateSentences(1)[0],
+            LongMessage = LipsumGenerator.GenerateHtml(Random.Next(5, 10))
+        });
     }
 }

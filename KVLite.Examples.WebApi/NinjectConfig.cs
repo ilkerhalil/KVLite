@@ -23,6 +23,7 @@
 
 using Common.Logging;
 using Common.Logging.Simple;
+using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;

@@ -1,5 +1,5 @@
-﻿using Finsa.CodeServices.Common;
-using PommaLabs.KVLite;
+﻿using Finsa.CodeServices.Caching;
+using Finsa.CodeServices.Common;
 using PommaLabs.KVLite.WebApi;
 using System;
 using System.Collections.Generic;
@@ -58,7 +58,7 @@ namespace RestService.WebApi.Controllers
         /// <param name="key">The key.</param>
         /// <returns>A _valid_ item stored in the cache for given partition and key.</returns>
         [Route("items/{partition}/{key}")]
-        public override Option<CacheItem<object>> GetItem(string partition, string key)
+        public override Option<ICacheItem<object>> GetItem(string partition, string key)
         {
             return base.GetItem(partition, key);
         }
@@ -80,7 +80,7 @@ namespace RestService.WebApi.Controllers
         /// <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
         /// <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
         [Route("items")]
-        public override IEnumerable<CacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = default(DateTime?), DateTime? toExpiry = default(DateTime?), DateTime? fromCreation = default(DateTime?), DateTime? toCreation = default(DateTime?))
+        public override IEnumerable<ICacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = default(DateTime?), DateTime? toExpiry = default(DateTime?), DateTime? fromCreation = default(DateTime?), DateTime? toCreation = default(DateTime?))
         {
             return base.GetItems(partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
@@ -101,7 +101,7 @@ namespace RestService.WebApi.Controllers
         /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
         /// <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
         [Route("items/withValues")]
-        public override IEnumerable<CacheItem<object>> GetItemsWithValues(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = default(DateTime?), DateTime? toExpiry = default(DateTime?), DateTime? fromCreation = default(DateTime?), DateTime? toCreation = default(DateTime?))
+        public override IEnumerable<ICacheItem<object>> GetItemsWithValues(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = default(DateTime?), DateTime? toExpiry = default(DateTime?), DateTime? fromCreation = default(DateTime?), DateTime? toCreation = default(DateTime?))
         {
             return base.GetItemsWithValues(partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
@@ -123,7 +123,7 @@ namespace RestService.WebApi.Controllers
         /// </returns>
         /// <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
         [Route("items/{partition}")]
-        public override IEnumerable<CacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTime? fromExpiry = default(DateTime?), DateTime? toExpiry = default(DateTime?), DateTime? fromCreation = default(DateTime?), DateTime? toCreation = default(DateTime?))
+        public override IEnumerable<ICacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTime? fromExpiry = default(DateTime?), DateTime? toExpiry = default(DateTime?), DateTime? fromCreation = default(DateTime?), DateTime? toCreation = default(DateTime?))
         {
             return base.GetPartitionItems(partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
@@ -144,7 +144,7 @@ namespace RestService.WebApi.Controllers
         ///   All _valid_ items stored in the cache for given partition which follow given search criteria.
         /// </returns>
         [Route("items/{partition}/withValues")]
-        public override IEnumerable<CacheItem<object>> GetPartitionItemsWithValues(string partition, string keyLike = null, DateTime? fromExpiry = default(DateTime?), DateTime? toExpiry = default(DateTime?), DateTime? fromCreation = default(DateTime?), DateTime? toCreation = default(DateTime?))
+        public override IEnumerable<ICacheItem<object>> GetPartitionItemsWithValues(string partition, string keyLike = null, DateTime? fromExpiry = default(DateTime?), DateTime? toExpiry = default(DateTime?), DateTime? fromCreation = default(DateTime?), DateTime? toCreation = default(DateTime?))
         {
             return base.GetPartitionItemsWithValues(partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }

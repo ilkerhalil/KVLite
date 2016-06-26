@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
 using Finsa.CodeServices.Common.Threading.Tasks;
@@ -40,11 +41,11 @@ using Task = System.Threading.Tasks.Task;
 namespace PommaLabs.KVLite.UnitTests
 {
     [TestFixture]
-    abstract class AbstractCacheTests<TCacheSettings> where TCacheSettings : AbstractCacheSettings
+    abstract class AbstractCacheTests<TSettings> where TSettings : AbstractSQLiteCacheSettings<TSettings>
     {
         #region Setup/Teardown
 
-        protected AbstractSQLiteCache<TCacheSettings> Cache;
+        protected AbstractSQLiteCache<TSettings> Cache;
 
         [SetUp]
         public virtual void SetUp()
@@ -236,7 +237,7 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.IsNotNull(info.UtcExpiry);
             Assert.AreEqual(i, info.Interval);
 
-            Assert.That(info.ParentKeys.Length, Is.EqualTo(1));
+            Assert.That(info.ParentKeys.Count, Is.EqualTo(1));
             Assert.That(info.ParentKeys, Contains.Item(t));
         }
 
@@ -444,7 +445,7 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.IsNotNull(info.UtcExpiry);
             Assert.AreEqual(TimeSpan.FromDays(Cache.Settings.StaticIntervalInDays), info.Interval);
 
-            Assert.That(info.ParentKeys.Length, Is.EqualTo(1));
+            Assert.That(info.ParentKeys.Count, Is.EqualTo(1));
             Assert.That(info.ParentKeys, Contains.Item(t));
         }
 
@@ -599,7 +600,7 @@ namespace PommaLabs.KVLite.UnitTests
 
             Assert.AreEqual(TimeSpan.Zero, info.Interval);
 
-            Assert.That(info.ParentKeys.Length, Is.EqualTo(1));
+            Assert.That(info.ParentKeys.Count, Is.EqualTo(1));
             Assert.That(info.ParentKeys, Contains.Item(t));
         }
 
@@ -670,6 +671,36 @@ namespace PommaLabs.KVLite.UnitTests
             var l = TimeSpan.FromMinutes(10);
 
             var r = Cache.GetOrAddTimed(p, k, () => Tuple.Create(v1, v2), l);
+
+            var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
+            Assert.IsNotNull(info);
+            Assert.AreEqual(p, info.Partition);
+            Assert.AreEqual(k, info.Key);
+            Assert.AreEqual(v1, info.Value.Item1);
+            Assert.AreEqual(v2, info.Value.Item2);
+            Assert.AreEqual(v1, r.Item1);
+            Assert.AreEqual(v2, r.Item2);
+
+            var e = Cache.Clock.UtcNow.Add(l);
+            Assert.IsNotNull(info.UtcExpiry);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
+
+            Assert.AreEqual(TimeSpan.Zero, info.Interval);
+        }
+
+        [Test]
+        public async Task GetOrAddTimedAsync_WithTimeSpan_MissingItem_RightInfo()
+        {
+            var p = StringItems[0];
+            var k = StringItems[1];
+            var v1 = StringItems[2];
+            var v2 = StringItems[3];
+            var l = TimeSpan.FromMinutes(10);
+
+            var r = await Cache.GetOrAddTimedAsync(p, k, () => Task.FromResult(Tuple.Create(v1, v2)), l);
 
             var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
             Assert.IsNotNull(info);
@@ -889,7 +920,6 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache[Cache.Settings.DefaultPartition, StringItems[i]].HasValue);
-                Assert.IsFalse(Cache[StringItems[i]].HasValue);
             }
         }
 

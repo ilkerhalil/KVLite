@@ -22,19 +22,20 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Common.Logging;
+using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
-using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using SystemCacheItemPolicy = System.Runtime.Caching.CacheItemPolicy;
 using SystemMemoryCache = System.Runtime.Caching.MemoryCache;
@@ -74,19 +75,14 @@ namespace PommaLabs.KVLite
         /// <param name="settings">Cache settings.</param>
         /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
-        public MemoryCache(MemoryCacheSettings settings, ILog log = null, ISerializer serializer = null)
+        /// <param name="compressor">The compressor.</param>
+        public MemoryCache(MemoryCacheSettings settings, ILog log = null, ISerializer serializer = null, ICompressor compressor = null)
         {
             Settings = settings;
             Log = log ?? LogManager.GetLogger(GetType());
-            Serializer = serializer ?? new JsonSerializer(new JsonSerializerSettings
-            {
-                DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore,
-                Formatting = Newtonsoft.Json.Formatting.None,
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
-                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None
-            });
+            Compressor = compressor ?? Constants.DefaultCompressor;
+            Serializer = serializer ?? Constants.DefaultSerializer;
+            Clock = Constants.DefaultClock;
 
             InitSystemMemoryCache();
         }
@@ -144,17 +140,13 @@ namespace PommaLabs.KVLite
         ///   Since <see cref="SystemMemoryCache"/> does not allow clock customisation, then this
         ///   property defaults to <see cref="T:Finsa.CodeServices.Clock.SystemClock"/>.
         /// </remarks>
-        public override IClock Clock { get; } = new SystemClock();
+        public override IClock Clock { get; }
 
         /// <summary>
         ///   Gets the compressor used by the cache.
         /// </summary>
         /// <value>The compressor used by the cache.</value>
-        /// <remarks>
-        ///   Since compression is not used inside this kind of cache, then this property defaults to
-        ///   <see cref="NoOpCompressor"/>.
-        /// </remarks>
-        public override ICompressor Compressor { get; } = new NoOpCompressor();
+        public override ICompressor Compressor { get; }
 
         /// <summary>
         ///   Gets the log used by the cache.
@@ -162,8 +154,8 @@ namespace PommaLabs.KVLite
         /// <value>The log used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to what <see
-        ///   cref="M:Common.Logging.LogManager.GetLogger(System.Type)"/> returns.
+        ///   constructor. If not specified, it defaults to what
+        ///   <see cref="LogManager.GetLogger(System.Type)"/> returns.
         /// </remarks>
         public override ILog Log { get; }
 
@@ -193,7 +185,7 @@ namespace PommaLabs.KVLite
         public override MemoryCacheSettings Settings { get; }
 
         /// <summary>
-        ///   True if the Peek methods are implemented, false otherwise.
+        ///   <c>true</c> if the Peek methods are implemented, <c>false</c> otherwise.
         /// </summary>
         public override bool CanPeek => false;
 
@@ -211,16 +203,36 @@ namespace PommaLabs.KVLite
         /// </param>
         protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
+            byte[] serializedValue;
+            try
+            {
+                using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(Constants.StreamTag, Constants.InitialStreamCapacity))
+                {
+                    using (var compressionStream = Compressor.CreateCompressionStream(memoryStream))
+                    {
+                        Serializer.SerializeToStream(value, compressionStream);
+                    }
+                    serializedValue = memoryStream.ToArray();
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.ErrorFormat(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
+                throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
+            }
+
             var policy = (interval == TimeSpan.Zero)
                 ? new SystemCacheItemPolicy { AbsoluteExpiration = utcExpiry }
                 : new SystemCacheItemPolicy { SlidingExpiration = interval };
 
             if (parentKeys != null && parentKeys.Count > 0)
             {
-                policy.ChangeMonitors.Add(_store.CreateCacheEntryChangeMonitor(parentKeys.Select(pk => SerializeToCacheKey(partition, pk))));
+                policy.ChangeMonitors.Add(_store.CreateCacheEntryChangeMonitor(parentKeys.Select(pk => SerializeCacheKey(partition, pk))));
             }
 
-            _store.Set(SerializeToCacheKey(partition, key), value, policy);
+            var cacheValue = new CacheValue { SerializedValue = serializedValue, UtcCreation = Clock.UtcNow };
+            _store.Set(SerializeCacheKey(partition, key), cacheValue, policy);
         }
 
         /// <summary>
@@ -238,7 +250,7 @@ namespace PommaLabs.KVLite
             // Then, if a partition has been specified, we select only those keys that belong to that partition.
             if (partition != null)
             {
-                keys = keys.Where(k => DeserializeFromCacheKey(k).Partition == partition);
+                keys = keys.Where(k => DeserializeCacheKey(k).Partition == partition);
             }
 
             // Now we take the snapshot of the keys.
@@ -262,7 +274,7 @@ namespace PommaLabs.KVLite
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected override bool ContainsInternal(string partition, string key)
         {
-            var maybeCacheKey = SerializeToCacheKey(partition, key);
+            var maybeCacheKey = SerializeCacheKey(partition, key);
             return _store.Contains(maybeCacheKey);
         }
 
@@ -284,7 +296,7 @@ namespace PommaLabs.KVLite
 
             // Otherwise, we need to count items, which is surely slower. In fact, we also need to
             // deserialize the key in order to understand if the item belongs to the partition.
-            return _store.Count(x => DeserializeFromCacheKey(x.Key).Partition == partition);
+            return _store.Count(x => DeserializeCacheKey(x.Key).Partition == partition);
         }
 
         /// <summary>
@@ -297,17 +309,9 @@ namespace PommaLabs.KVLite
         /// <returns>The value with specified partition and key.</returns>
         protected override Option<TVal> GetInternal<TVal>(string partition, string key)
         {
-            var maybeCacheKey = SerializeToCacheKey(partition, key);
-            var maybeValue = _store.Get(maybeCacheKey);
-
-            // If item is not present or if it has the wrong type, return None.
-            if (maybeValue == null || !(maybeValue is TVal))
-            {
-                return Option.None<TVal>();
-            }
-
-            // Otherwise, cast the item and return it.
-            return Option.Some((TVal) maybeValue);
+            var maybeCacheKey = SerializeCacheKey(partition, key);
+            var maybeCacheValue = _store.Get(maybeCacheKey) as CacheValue;
+            return DeserializeCacheValue<TVal>(maybeCacheValue);
         }
 
         /// <summary>
@@ -318,25 +322,11 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        protected override Option<CacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
+        protected override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
-            var maybeCacheKey = SerializeToCacheKey(partition, key);
-            var maybeCacheItem = _store.GetCacheItem(maybeCacheKey);
-
-            // If item is not present or if it has the wrong type, return None.
-            if (maybeCacheItem == null || !(maybeCacheItem.Value is TVal))
-            {
-                return Option.None<CacheItem<TVal>>();
-            }
-
-            // Otherwise, generate the KVLite cache item and return it. Many properties available in
-            // the KVLite cache items cannot be filled due to missing information.
-            return Option.Some(new CacheItem<TVal>
-            {
-                Partition = partition,
-                Key = key,
-                Value = (TVal) maybeCacheItem.Value
-            });
+            var maybeCacheKey = SerializeCacheKey(partition, key);
+            var maybeCacheValue = _store.Get(maybeCacheKey) as CacheValue;
+            return DeserializeCacheItem<TVal>(maybeCacheValue, partition, key);
         }
 
         /// <summary>
@@ -346,13 +336,13 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The optional partition.</param>
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
-        protected override CacheItem<TVal>[] GetItemsInternal<TVal>(string partition)
+        protected override IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition)
         {
             // Pick only the items with the right type.
-            var q = _store.Where(x => x.Value is TVal).Select(x => new
+            var q = _store.Where(x => x.Value is CacheValue).Select(x => new
             {
-                CacheKey = DeserializeFromCacheKey(x.Key),
-                Value = (TVal) x.Value
+                CacheKey = DeserializeCacheKey(x.Key),
+                CacheValue = x.Value as CacheValue
             });
 
             // If partition has been specified, then we shall also filter by it.
@@ -361,14 +351,8 @@ namespace PommaLabs.KVLite
                 q = q.Where(x => x.CacheKey.Partition == partition);
             }
 
-            // Project the items to proper KVLite cache items. Many properties available in the
-            // KVLite cache items cannot be filled due to missing information.
-            return q.Select(x => new CacheItem<TVal>
-            {
-                Partition = x.CacheKey.Partition,
-                Key = x.CacheKey.Key,
-                Value = x.Value
-            }).ToArray();
+            // Project the items to proper KVLite cache items.
+            return q.Select(x => DeserializeCacheItem<TVal>(x.CacheValue, x.CacheKey.Partition, x.CacheKey.Key).Value).ToArray();
         }
 
         /// <summary>
@@ -400,7 +384,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected override Option<CacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
+        protected override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
         }
@@ -412,14 +396,14 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All values, without updating expiry dates.</returns>
         /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass <see
-        ///   cref="T:System.Object"/> as type parameter; that will work whether the required value
-        ///   is a class or not.
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="T:System.Object"/> as type parameter; that will work whether the required
+        ///   value is a class or not.
         /// </remarks>
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected override CacheItem<TVal>[] PeekItemsInternal<TVal>(string partition)
+        protected override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
         {
             throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
         }
@@ -431,7 +415,7 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         protected override void RemoveInternal(string partition, string key)
         {
-            var maybeCacheKey = SerializeToCacheKey(partition, key);
+            var maybeCacheKey = SerializeCacheKey(partition, key);
             _store.Remove(maybeCacheKey);
         }
 
@@ -480,27 +464,10 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <returns>Current cache size in kilobytes.</returns>
         [Pure]
-        public long CacheSizeInKB()
-        {
-            // Preconditions
-            RaiseObjectDisposedException.If(Disposed, ErrorMessages.CacheHasBeenDisposed);
-
-            try
-            {
-                var serializer = new BinarySerializer();
-                var cacheItems = _store.ToArray();
-                using (var stream = serializer.SerializeToStream(cacheItems))
-                {
-                    return stream.Length / 1024L;
-                }
-            }
-            catch (Exception ex)
-            {
-                LastError = ex;
-                Log.Error(ErrorMessages.InternalErrorOnReadAll, ex);
-                return 0L;
-            }
-        }
+        public long CacheSizeInKB() => _store
+            .Select(x => x.Value as CacheValue)
+            .Where(x => x != null)
+            .Sum(x => x.SerializedValue.LongLength) / 1024L;
 
         #endregion Cache size estimation
 
@@ -516,21 +483,110 @@ namespace PommaLabs.KVLite
             public string Key { get; set; }
         }
 
-#if !NET40
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-
-        private string SerializeToCacheKey(string partition, string key) => Serializer.SerializeToString(new CacheKey
+        [Serializable, DataContract]
+        private sealed class CacheValue
         {
-            Partition = partition,
-            Key = key
-        });
+            [DataMember(Name = "v", Order = 0, EmitDefaultValue = false)]
+            public byte[] SerializedValue { get; set; }
+
+            [DataMember(Name = "c", Order = 1, EmitDefaultValue = false)]
+            public DateTime UtcCreation { get; set; }
+        }
 
 #if !NET40
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 #endif
 
-        private CacheKey DeserializeFromCacheKey(string cacheKey) => Serializer.DeserializeFromString<CacheKey>(cacheKey);
+        private string SerializeCacheKey(string partition, string key)
+        {
+            var partitionLength = partition.Length;
+            return $"{partitionLength}${partition}${key}";
+        }
+
+#if !NET40
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+#endif
+
+        private CacheKey DeserializeCacheKey(string cacheKey)
+        {
+            var partitionLengthEnd = cacheKey.IndexOf('$');
+            var partitionLengthPrefix = cacheKey.Substring(0, partitionLengthEnd);
+            var partitionLength = int.Parse(partitionLengthPrefix);
+            return new CacheKey
+            {
+                Partition = cacheKey.Substring(partitionLengthEnd + 1, partitionLength),
+                Key = cacheKey.Substring(partitionLengthEnd + partitionLength + 2)
+            };
+        }
+
+#if !NET40
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+#endif
+
+        private TVal UnsafeDeserializeCacheValue<TVal>(byte[] serializedValue)
+        {
+            // Here we cannot safely use a recyclable stream because the byte array is still used by
+            // existing cache value.
+            using (var memoryStream = new MemoryStream(serializedValue))
+            using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
+            {
+                return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+            }
+        }
+
+#if !NET40
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+#endif
+
+        private Option<TVal> DeserializeCacheValue<TVal>(CacheValue cacheValue)
+        {
+            if (cacheValue == null || cacheValue.SerializedValue == null)
+            {
+                // Nothing to deserialize, return None.
+                return Option.None<TVal>();
+            }
+            try
+            {
+                return Option.Some(UnsafeDeserializeCacheValue<TVal>(cacheValue.SerializedValue));
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
+                return Option.None<TVal>();
+            }
+        }
+
+#if !NET40
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+#endif
+
+        private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(CacheValue cacheValue, string partition, string key)
+        {
+            if (cacheValue == null || cacheValue.SerializedValue == null)
+            {
+                // Nothing to deserialize, return None.
+                return Option.None<ICacheItem<TVal>>();
+            }
+            try
+            {
+                // Generate the KVLite cache item and return it. Many properties available in the
+                // KVLite cache items cannot be filled due to missing information.
+                return Option.Some<ICacheItem<TVal>>(new CacheItem<TVal>
+                {
+                    Partition = partition,
+                    Key = key,
+                    Value = UnsafeDeserializeCacheValue<TVal>(cacheValue.SerializedValue),
+                    UtcCreation = cacheValue.UtcCreation
+                });
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
+                return Option.None<ICacheItem<TVal>>();
+            }
+        }
 
         #endregion Cache key handling
     }

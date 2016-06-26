@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.Nancy</id>
-        <version>5.2.5</version>
+        <version>5.2.6</version>
         <title>KVLite - Nancy caching bootstrapper</title>
         <authors>Alessio Parma</authors>
         <owners>Alessio Parma</owners>
@@ -14,7 +14,8 @@ KVLite can be stored either in persistent or volatile fashion, and each key/valu
 This package contains the code and the references required to use the Nancy caching bootstrapper.
         </description>
         <releaseNotes>
-* Updated System.Data.SQLite to version 1.0.101.0.
+* [UPD] Updated System.Data.SQLite to version 1.0.102.0.
+* [UPD] Moved interfaces and core classes to Finsa.CodeServices.Caching package.
         </releaseNotes>
         <summary>
 KVLite is a partition-based key-value store built on SQLite. This package contains the code and the references required to use the Nancy caching bootstrapper.
@@ -27,7 +28,7 @@ KVLite is a partition-based key-value store built on SQLite. This package contai
         <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <dependency id="Nancy" version="1.4.3" />
-            <dependency id="PommaLabs.KVLite.Core" version="5.2.5" />
+            <dependency id="PommaLabs.KVLite.Core" version="5.2.6" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>

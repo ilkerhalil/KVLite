@@ -77,7 +77,7 @@ namespace PommaLabs.KVLite.WebForms
             }
             set
             {
-                RaiseArgumentNullException.IfIsNull(value, nameof(value));
+                Raise.ArgumentNullException.IfIsNull(value, nameof(value));
                 _persistentCache = value;
             }
         }
@@ -102,7 +102,7 @@ namespace PommaLabs.KVLite.WebForms
             }
             set
             {
-                RaiseArgumentNullException.IfIsNull(value, nameof(value));
+                Raise.ArgumentNullException.IfIsNull(value, nameof(value));
                 _volatileCache = value;
             }
         }
