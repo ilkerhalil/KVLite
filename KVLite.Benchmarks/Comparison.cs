@@ -34,27 +34,16 @@ namespace PommaLabs.KVLite.Benchmarks
 {
     public class Comparison
     {
-        private readonly Dictionary<string, Dictionary<string, ICache>> _caches;
+        private Dictionary<string, Dictionary<string, ICache>> _caches;
 
         public Comparison()
         {
-            Directory.CreateDirectory("x86");
-            Directory.CreateDirectory("x64");
-            var src86 = Path.GetFullPath("x86\\SQLite.Interop.dll");
-            var src64 = Path.GetFullPath("x64\\SQLite.Interop.dll");
-            var dst86 = Path.Combine(Environment.CurrentDirectory, "x86\\SQLite.Interop.dll");
-            File.Copy(src86, dst86);
-            File.Copy(src64, "x64\\SQLite.Interop.dll");
+            
 
-            _caches = new Dictionary<string, Dictionary<string, ICache>>
-            {
-                ["json"] = new Dictionary<string, ICache>
-                {
-                    ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+deflate" }, serializer: new JsonSerializer(), compressor: new DeflateCompressor()),
-                    ["lz4"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+lz4" }, serializer: new JsonSerializer(), compressor: new DeflateCompressor())
-                }
-            };
-        }
+            //Console.WriteLine($"PreLoadSQLite_BaseDirectory: {Environment.CurrentDirectory}");
+            //Environment.SetEnvironmentVariable("PreLoadSQLite_BaseDirectory", Path.Combine(Environment.CurrentDirectory, @"BenchmarkDotNet.Artifacts\\bin\\BDN.Auto"));
+
+           }
 
         [Params(1, 10, 100)]
         public int Count { get; set; }
@@ -68,12 +57,31 @@ namespace PommaLabs.KVLite.Benchmarks
         [Setup]
         public void ClearCache()
         {
+            Directory.CreateDirectory("BenchmarkDotNet.Artifacts\\bin\\BDN.Auto\\x86");
+            Directory.CreateDirectory("BenchmarkDotNet.Artifacts\\bin\\BDN.Auto\\x64");
+            var src86 = Path.GetFullPath("x86\\SQLite.Interop.dll");
+            var src64 = Path.GetFullPath("x64\\SQLite.Interop.dll");
+            var dst86 = Path.Combine(Environment.CurrentDirectory, "BenchmarkDotNet.Artifacts\\bin\\BDN.Auto\\x86\\SQLite.Interop.dll");
+            var dst64 = Path.Combine(Environment.CurrentDirectory, "BenchmarkDotNet.Artifacts\\bin\\BDN.Auto\\x64\\SQLite.Interop.dll");
+            File.Copy(src86, dst86, true);
+            File.Copy(src64, dst64, true);
+
+            _caches = new Dictionary<string, Dictionary<string, ICache>>
+            {
+                ["json"] = new Dictionary<string, ICache>
+                {
+                    ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+deflate" }, serializer: new JsonSerializer(), compressor: new DeflateCompressor()),
+                    ["lz4"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+lz4" }, serializer: new JsonSerializer(), compressor: new DeflateCompressor())
+                }
+            };
+
+
             (_caches[Serializer][Compressor] as VolatileCache).Clear(CacheReadMode.IgnoreExpiryDate);
         }
 
         [Benchmark]
         public void AddManyLogMessages()
-        {
+        {            
             var k = Guid.NewGuid().ToString();
             _caches[Serializer][Compressor].AddStaticToDefaultPartition(k, LogMessage.GenerateRandomLogMessages(Count));
         }
