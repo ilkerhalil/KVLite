@@ -29,7 +29,7 @@ using Troschuetz.Random;
 
 namespace PommaLabs.KVLite.Benchmarks.Models
 {
-    internal sealed class LogMessage
+    public sealed class LogMessage
     {
         private static readonly TRandom Random = new TRandom();
         private static readonly LogLevel[] LogLevels = { LogLevel.Debug, LogLevel.Error, LogLevel.Fatal, LogLevel.Info, LogLevel.Trace, LogLevel.Warn };
