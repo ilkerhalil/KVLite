@@ -90,7 +90,7 @@ namespace PommaLabs.KVLite
             set
             {
                 // Preconditions
-                RaiseArgumentException.IfIsNullOrWhiteSpace(value, nameof(CacheFile), ErrorMessages.NullOrEmptyCacheFile);
+                Raise.ArgumentException.IfIsNullOrWhiteSpace(value, nameof(CacheFile), ErrorMessages.NullOrEmptyCacheFile);
 
                 _cacheFile = value;
                 OnPropertyChanged();

@@ -46,7 +46,7 @@ namespace PommaLabs.KVLite.UnitTests
         public RandomDataTableGenerator(params string[] columnNames)
         {
             Raise.ArgumentNullException.IfIsNull(columnNames, nameof(columnNames));
-            RaiseArgumentException.If(columnNames.Any(string.IsNullOrEmpty), nameof(columnNames), "Each column name cannot be null or empty");
+            Raise.ArgumentException.If(columnNames.Any(string.IsNullOrEmpty), nameof(columnNames), "Each column name cannot be null or empty");
 
             _columnNames = columnNames.Clone() as string[];
         }
@@ -58,7 +58,7 @@ namespace PommaLabs.KVLite.UnitTests
         /// <returns>A new random data table, with given row count.</returns>
         public DataTable GenerateDataTable(int rowCount)
         {
-            RaiseArgumentOutOfRangeException.If(rowCount < 0);
+            Raise.ArgumentOutOfRangeException.If(rowCount < 0);
 
             var dt = new DataTable("RANDOMLY_GENERATED_DATA_TABLE_" + _random.Next());
             foreach (var columnName in _columnNames)

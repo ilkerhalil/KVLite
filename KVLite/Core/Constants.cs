@@ -22,11 +22,11 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
+using Finsa.CodeServices.Common.IO;
 using Finsa.CodeServices.Common.Portability;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
-using Ionic.Zlib;
+using System.IO.Compression;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -36,12 +36,12 @@ namespace PommaLabs.KVLite.Core
     internal static class Constants
     {
         /// <summary>
-        ///   The string used to tag streams coming from <see cref="RecyclableMemoryStreamManager.Instance"/>.
+        ///   The string used to tag streams coming from <see cref="IMemoryStreamManager"/>.
         /// </summary>
         public const string StreamTag = nameof(KVLite);
 
         /// <summary>
-        ///   The initial capacity of the streams retrieved from <see cref="RecyclableMemoryStreamManager.Instance"/>.
+        ///   The initial capacity of the streams retrieved from <see cref="IMemoryStreamManager"/>.
         /// </summary>
         public const int InitialStreamCapacity = 512;
 
@@ -53,7 +53,11 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   Default compressor.
         /// </summary>
-        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.BestSpeed);
+#if NET40
+        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.Optimal);
+#else
+        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.Fastest);
+#endif
 
         /// <summary>
         ///   Default serializer.

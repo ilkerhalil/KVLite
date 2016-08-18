@@ -63,7 +63,7 @@ namespace PommaLabs.KVLite.Core
             set
             {
                 // Preconditions
-                RaiseArgumentOutOfRangeException.If(value <= 0);
+                Raise.ArgumentOutOfRangeException.If(value <= 0);
 
                 _insertionCountBeforeCleanup = value;
                 OnPropertyChanged();
@@ -87,7 +87,7 @@ namespace PommaLabs.KVLite.Core
             set
             {
                 // Preconditions
-                RaiseArgumentOutOfRangeException.If(value <= 0);
+                Raise.ArgumentOutOfRangeException.If(value <= 0);
 
                 _maxCacheSizeInMB = value;
                 OnPropertyChanged();
@@ -111,7 +111,7 @@ namespace PommaLabs.KVLite.Core
             set
             {
                 // Preconditions
-                RaiseArgumentOutOfRangeException.If(value <= 0);
+                Raise.ArgumentOutOfRangeException.If(value <= 0);
 
                 _maxJournalSizeInMB = value;
                 OnPropertyChanged();

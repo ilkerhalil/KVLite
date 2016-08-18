@@ -25,7 +25,6 @@ using Common.Logging;
 using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.IO.RecyclableMemoryStream;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
@@ -493,21 +492,13 @@ namespace PommaLabs.KVLite
             public DateTime UtcCreation { get; set; }
         }
 
-#if !NET40
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-#endif
-
-        private string SerializeCacheKey(string partition, string key)
+        private static string SerializeCacheKey(string partition, string key)
         {
             var partitionLength = partition.Length;
             return $"{partitionLength}${partition}${key}";
         }
 
-#if !NET40
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-#endif
-
-        private CacheKey DeserializeCacheKey(string cacheKey)
+        private static CacheKey DeserializeCacheKey(string cacheKey)
         {
             var partitionLengthEnd = cacheKey.IndexOf('$');
             var partitionLengthPrefix = cacheKey.Substring(0, partitionLengthEnd);
@@ -519,10 +510,6 @@ namespace PommaLabs.KVLite
             };
         }
 
-#if !NET40
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-#endif
-
         private TVal UnsafeDeserializeCacheValue<TVal>(byte[] serializedValue)
         {
             // Here we cannot safely use a recyclable stream because the byte array is still used by
@@ -533,10 +520,6 @@ namespace PommaLabs.KVLite
                 return Serializer.DeserializeFromStream<TVal>(decompressionStream);
             }
         }
-
-#if !NET40
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-#endif
 
         private Option<TVal> DeserializeCacheValue<TVal>(CacheValue cacheValue)
         {
@@ -556,10 +539,6 @@ namespace PommaLabs.KVLite
                 return Option.None<TVal>();
             }
         }
-
-#if !NET40
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-#endif
 
         private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(CacheValue cacheValue, string partition, string key)
         {

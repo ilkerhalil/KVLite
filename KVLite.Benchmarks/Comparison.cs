@@ -25,11 +25,11 @@ using BenchmarkDotNet.Attributes;
 using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
-using Ionic.Zlib;
 using PommaLabs.KVLite.Benchmarks.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 
 namespace PommaLabs.KVLite.Benchmarks
 {
@@ -55,22 +55,22 @@ namespace PommaLabs.KVLite.Benchmarks
                 {
                     ["json"] = new Dictionary<string, ICache>
                     {
-                        ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+deflate" }, serializer: new JsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.BestSpeed)),
-                        ["zlib"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+zlib" }, serializer: new JsonSerializer(), compressor: new ZlibCompressor(CompressionLevel.BestSpeed)),
+                        ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+deflate" }, serializer: new JsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.Fastest)),
+                        ["gzip"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+gzip" }, serializer: new JsonSerializer(), compressor: new GZipCompressor(CompressionLevel.Fastest)),
                         ["lz4"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+lz4" }, serializer: new JsonSerializer(), compressor: new LZ4Compressor()),
                         ["snappy"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+snappy" }, serializer: new JsonSerializer(), compressor: new SnappyCompressor()),
                     },
                     ["bson"] = new Dictionary<string, ICache>
                     {
-                        ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new BsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.BestSpeed)),
-                        ["zlib"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+zlib" }, serializer: new BsonSerializer(), compressor: new ZlibCompressor(CompressionLevel.BestSpeed)),
+                        ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new BsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.Fastest)),
+                        ["gzip"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+gzip" }, serializer: new BsonSerializer(), compressor: new GZipCompressor(CompressionLevel.Fastest)),
                         ["lz4"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+lz4" }, serializer: new BsonSerializer(), compressor: new LZ4Compressor()),
                         ["snappy"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+snappy" }, serializer: new BsonSerializer(), compressor: new SnappyCompressor()),
                     },
                     ["msgpack"] = new Dictionary<string, ICache>
                     {
-                        ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new MsgPackSerializer(), compressor: new DeflateCompressor(CompressionLevel.BestSpeed)),
-                        ["zlib"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+zlib" }, serializer: new MsgPackSerializer(), compressor: new ZlibCompressor(CompressionLevel.BestSpeed)),
+                        ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new MsgPackSerializer(), compressor: new DeflateCompressor(CompressionLevel.Fastest)),
+                        ["gzip"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+gzip" }, serializer: new MsgPackSerializer(), compressor: new GZipCompressor(CompressionLevel.Fastest)),
                         ["lz4"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+lz4" }, serializer: new MsgPackSerializer(), compressor: new LZ4Compressor()),
                         ["snappy"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+snappy" }, serializer: new MsgPackSerializer(), compressor: new SnappyCompressor()),
                     }
@@ -79,22 +79,22 @@ namespace PommaLabs.KVLite.Benchmarks
                 {
                     ["json"] = new Dictionary<string, ICache>
                     {
-                        ["deflate"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "json+deflate" }, serializer: new JsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.BestSpeed)),
-                        ["zlib"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "json+zlib" }, serializer: new JsonSerializer(), compressor: new ZlibCompressor(CompressionLevel.BestSpeed)),
+                        ["deflate"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "json+deflate" }, serializer: new JsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.Fastest)),
+                        ["gzip"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "json+gzip" }, serializer: new JsonSerializer(), compressor: new GZipCompressor(CompressionLevel.Fastest)),
                         ["lz4"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "json+lz4" }, serializer: new JsonSerializer(), compressor: new LZ4Compressor()),
                         ["snappy"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "json+snappy" }, serializer: new JsonSerializer(), compressor: new SnappyCompressor()),
                     },
                     ["bson"] = new Dictionary<string, ICache>
                     {
-                        ["deflate"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new BsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.BestSpeed)),
-                        ["zlib"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+zlib" }, serializer: new BsonSerializer(), compressor: new ZlibCompressor(CompressionLevel.BestSpeed)),
+                        ["deflate"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new BsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.Fastest)),
+                        ["gzip"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+gzip" }, serializer: new BsonSerializer(), compressor: new GZipCompressor(CompressionLevel.Fastest)),
                         ["lz4"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+lz4" }, serializer: new BsonSerializer(), compressor: new LZ4Compressor()),
                         ["snappy"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+snappy" }, serializer: new BsonSerializer(), compressor: new SnappyCompressor()),
                     },
                     ["msgpack"] = new Dictionary<string, ICache>
                     {
-                        ["deflate"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new MsgPackSerializer(), compressor: new DeflateCompressor(CompressionLevel.BestSpeed)),
-                        ["zlib"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+zlib" }, serializer: new MsgPackSerializer(), compressor: new ZlibCompressor(CompressionLevel.BestSpeed)),
+                        ["deflate"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new MsgPackSerializer(), compressor: new DeflateCompressor(CompressionLevel.Fastest)),
+                        ["gzip"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+gzip" }, serializer: new MsgPackSerializer(), compressor: new GZipCompressor(CompressionLevel.Fastest)),
                         ["lz4"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+lz4" }, serializer: new MsgPackSerializer(), compressor: new LZ4Compressor()),
                         ["snappy"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+snappy" }, serializer: new MsgPackSerializer(), compressor: new SnappyCompressor()),
                     }
@@ -103,22 +103,22 @@ namespace PommaLabs.KVLite.Benchmarks
                 {
                     ["json"] = new Dictionary<string, ICache>
                     {
-                        ["deflate"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "json+deflate" }, serializer: new JsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.BestSpeed)),
-                        ["zlib"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "json+zlib" }, serializer: new JsonSerializer(), compressor: new ZlibCompressor(CompressionLevel.BestSpeed)),
+                        ["deflate"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "json+deflate" }, serializer: new JsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.Fastest)),
+                        ["gzip"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "json+gzip" }, serializer: new JsonSerializer(), compressor: new GZipCompressor(CompressionLevel.Fastest)),
                         ["lz4"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "json+lz4" }, serializer: new JsonSerializer(), compressor: new LZ4Compressor()),
                         ["snappy"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "json+snappy" }, serializer: new JsonSerializer(), compressor: new SnappyCompressor()),
                     },
                     ["bson"] = new Dictionary<string, ICache>
                     {
-                        ["deflate"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new BsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.BestSpeed)),
-                        ["zlib"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+zlib" }, serializer: new BsonSerializer(), compressor: new ZlibCompressor(CompressionLevel.BestSpeed)),
+                        ["deflate"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new BsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.Fastest)),
+                        ["gzip"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+gzip" }, serializer: new BsonSerializer(), compressor: new GZipCompressor(CompressionLevel.Fastest)),
                         ["lz4"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+lz4" }, serializer: new BsonSerializer(), compressor: new LZ4Compressor()),
                         ["snappy"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+snappy" }, serializer: new BsonSerializer(), compressor: new SnappyCompressor()),
                     },
                     ["msgpack"] = new Dictionary<string, ICache>
                     {
-                        ["deflate"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new MsgPackSerializer(), compressor: new DeflateCompressor(CompressionLevel.BestSpeed)),
-                        ["zlib"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+zlib" }, serializer: new MsgPackSerializer(), compressor: new ZlibCompressor(CompressionLevel.BestSpeed)),
+                        ["deflate"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new MsgPackSerializer(), compressor: new DeflateCompressor(CompressionLevel.Fastest)),
+                        ["gzip"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+gzip" }, serializer: new MsgPackSerializer(), compressor: new GZipCompressor(CompressionLevel.Fastest)),
                         ["lz4"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+lz4" }, serializer: new MsgPackSerializer(), compressor: new LZ4Compressor()),
                         ["snappy"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+snappy" }, serializer: new MsgPackSerializer(), compressor: new SnappyCompressor()),
                     }
@@ -135,7 +135,7 @@ namespace PommaLabs.KVLite.Benchmarks
         [Params("json", "bson", "msgpack")]
         public string Serializer { get; set; }
 
-        [Params("deflate", "zlib", "lz4", "snappy")]
+        [Params("deflate", "gzip", "lz4", "snappy")]
         public string Compressor { get; set; }
 
         [Setup]
