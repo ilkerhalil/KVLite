@@ -26,6 +26,7 @@ using Common.Logging;
 using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Common.IO;
 using Finsa.CodeServices.Common.Portability;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
@@ -37,6 +38,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 
 namespace PommaLabs.KVLite.Core
@@ -110,7 +112,8 @@ namespace PommaLabs.KVLite.Core
         /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
-        internal AbstractSQLiteCache(TSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor)
+        /// <param name="memoryStreamManager">The memory stream manager.</param>
+        internal AbstractSQLiteCache(TSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamManager memoryStreamManager)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -119,6 +122,7 @@ namespace PommaLabs.KVLite.Core
             _log = log ?? LogManager.GetLogger(GetType());
             _compressor = compressor ?? Constants.DefaultCompressor;
             _serializer = serializer ?? Constants.DefaultSerializer;
+            MemoryStreamManager = memoryStreamManager ?? DefaultMemoryStreamManager.Instance;
             _clock = clock ?? Constants.DefaultClock;
 
             // We need to properly customize the default serializer settings in no custom serializer
@@ -490,6 +494,15 @@ namespace PommaLabs.KVLite.Core
         public sealed override int MaxParentKeyCountPerItem { get; } = 5;
 
         /// <summary>
+        ///   The manager used to retrieve <see cref="MemoryStream"/> instances.
+        /// </summary>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="DefaultMemoryStreamManager.Instance"/>.
+        /// </remarks>
+        public sealed override IMemoryStreamManager MemoryStreamManager { get; }
+
+        /// <summary>
         ///   Gets the serializer used by the cache.
         /// </summary>
         /// <value>The serializer used by the cache.</value>
@@ -553,7 +566,7 @@ namespace PommaLabs.KVLite.Core
             byte[] serializedValue;
             try
             {
-                using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(Constants.StreamTag, Constants.InitialStreamCapacity))
+                using (var memoryStream = MemoryStreamManager.GetStream(Constants.StreamTag, Constants.InitialStreamCapacity).Stream)
                 {
                     using (var compressionStream = _compressor.CreateCompressionStream(memoryStream))
                     {
@@ -851,7 +864,7 @@ namespace PommaLabs.KVLite.Core
 
         private TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
         {
-            using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(Constants.StreamTag, serializedValue, 0, serializedValue.Length))
+            using (var memoryStream = MemoryStreamManager.GetStream(Constants.StreamTag, serializedValue).Stream)
             using (var decompressionStream = _compressor.CreateDecompressionStream(memoryStream))
             {
                 return _serializer.DeserializeFromStream<TVal>(decompressionStream);

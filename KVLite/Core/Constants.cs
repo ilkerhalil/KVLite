@@ -54,9 +54,9 @@ namespace PommaLabs.KVLite.Core
         ///   Default compressor.
         /// </summary>
 #if NET40
-        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.Optimal);
+        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.Optimal, DefaultMemoryStreamManager.Instance);
 #else
-        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.Fastest);
+        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.Fastest, DefaultMemoryStreamManager.Instance);
 #endif
 
         /// <summary>
@@ -78,6 +78,6 @@ namespace PommaLabs.KVLite.Core
             ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
             TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
             TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
-        });
+        }, DefaultMemoryStreamManager.Instance);
     }
 }

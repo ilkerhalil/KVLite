@@ -25,6 +25,7 @@ using Common.Logging;
 using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
+using Finsa.CodeServices.Common.IO;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
@@ -75,12 +76,14 @@ namespace PommaLabs.KVLite
         /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
-        public MemoryCache(MemoryCacheSettings settings, ILog log = null, ISerializer serializer = null, ICompressor compressor = null)
+        /// <param name="memoryStreamManager">The memory stream manager.</param>
+        public MemoryCache(MemoryCacheSettings settings, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamManager memoryStreamManager = null)
         {
             Settings = settings;
             Log = log ?? LogManager.GetLogger(GetType());
             Compressor = compressor ?? Constants.DefaultCompressor;
             Serializer = serializer ?? Constants.DefaultSerializer;
+            MemoryStreamManager = memoryStreamManager ?? DefaultMemoryStreamManager.Instance;
             Clock = Constants.DefaultClock;
 
             InitSystemMemoryCache();
@@ -165,6 +168,15 @@ namespace PommaLabs.KVLite
         public override int MaxParentKeyCountPerItem { get; } = int.MaxValue;
 
         /// <summary>
+        ///   The manager used to retrieve <see cref="MemoryStream"/> instances.
+        /// </summary>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="DefaultMemoryStreamManager.Instance"/>.
+        /// </remarks>
+        public override IMemoryStreamManager MemoryStreamManager { get; }
+
+        /// <summary>
         ///   Gets the serializer used by the cache.
         /// </summary>
         /// <value>The serializer used by the cache.</value>
@@ -205,7 +217,7 @@ namespace PommaLabs.KVLite
             byte[] serializedValue;
             try
             {
-                using (var memoryStream = RecyclableMemoryStreamManager.Instance.GetStream(Constants.StreamTag, Constants.InitialStreamCapacity))
+                using (var memoryStream = MemoryStreamManager.GetStream(Constants.StreamTag, Constants.InitialStreamCapacity).Stream)
                 {
                     using (var compressionStream = Compressor.CreateCompressionStream(memoryStream))
                     {

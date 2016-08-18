@@ -16,6 +16,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -60,39 +61,39 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Caching, Version=5.0.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Caching.5.0.1\lib\net46\Finsa.CodeServices.Caching.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Caching.5.0.2\lib\net46\Finsa.CodeServices.Caching.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Clock, Version=5.0.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Clock.5.0.1\lib\net46\Finsa.CodeServices.Clock.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Clock.5.0.2\lib\net46\Finsa.CodeServices.Clock.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Common, Version=5.0.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Common.5.0.1\lib\net46\Finsa.CodeServices.Common.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Common.5.0.2\lib\net46\Finsa.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Compression, Version=5.0.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Compression.5.0.1\lib\net46\Finsa.CodeServices.Compression.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Compression.5.0.2\lib\net46\Finsa.CodeServices.Compression.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Compression.LZ4, Version=5.0.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Compression.LZ4.5.0.1\lib\net46\Finsa.CodeServices.Compression.LZ4.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Compression.LZ4.5.0.2\lib\net46\Finsa.CodeServices.Compression.LZ4.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Compression.Snappy, Version=5.0.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Compression.Snappy.5.0.1\lib\net46\Finsa.CodeServices.Compression.Snappy.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Compression.Snappy.5.0.2\lib\net46\Finsa.CodeServices.Compression.Snappy.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization, Version=5.0.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Serialization.5.0.1\lib\net46\Finsa.CodeServices.Serialization.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.5.0.2\lib\net46\Finsa.CodeServices.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Serialization.Json.5.0.1\lib\net46\Finsa.CodeServices.Serialization.Json.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.Json.5.0.2\lib\net46\Finsa.CodeServices.Serialization.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Finsa.CodeServices.Serialization.MsgPack, Version=5.0.0.0, Culture=neutral, PublicKeyToken=db894830fb4e4dbb, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsa.CodeServices.Serialization.MsgPack.5.0.1\lib\net46\Finsa.CodeServices.Serialization.MsgPack.dll</HintPath>
+      <HintPath>..\packages\Finsa.CodeServices.Serialization.MsgPack.5.0.2\lib\net46\Finsa.CodeServices.Serialization.MsgPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LZ4, Version=1.0.10.93, Culture=neutral, PublicKeyToken=62e1b5ec1eec9bdd, processorArchitecture=MSIL">
