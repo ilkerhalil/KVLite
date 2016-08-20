@@ -24,6 +24,7 @@
 using Common.Logging;
 using Common.Logging.Simple;
 using Finsa.CodeServices.Clock;
+using Finsa.CodeServices.Common.IO;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using Ninject.Modules;
@@ -37,11 +38,29 @@ namespace PommaLabs.KVLite.UnitTests
     {
         public override void Load()
         {
-            Bind<IClock>().To<MockClock>().InSingletonScope();
-            Bind<ICompressor>().To<DeflateCompressor>().InSingletonScope();
-            Bind<ILog>().To<NoOpLogger>().InSingletonScope();
-            Bind<ISerializer>().To<JsonSerializer>().InSingletonScope();
-            Bind<JsonSerializerSettings>().ToMethod(ctx => new JsonSerializerSettings());
+            Bind<IMemoryStreamManager>()
+                .To<RecyclableMemoryStreamManager>()
+                .InSingletonScope();
+
+            Bind<IClock>()
+                .To<MockClock>()
+                .InSingletonScope();
+
+            Bind<ICompressor>()
+                .To<DeflateCompressor>()
+                .InSingletonScope();
+
+            Bind<ILog>()
+                .To<NoOpLogger>()
+                .InSingletonScope();
+
+            Bind<ISerializer>()
+                .To<JsonSerializer>()
+                .InSingletonScope();
+
+            Bind<JsonSerializerSettings>()
+                .ToConstant(new JsonSerializerSettings())
+                .InSingletonScope();
         }
     }
 }
