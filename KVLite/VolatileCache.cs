@@ -21,10 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using CodeProject.ObjectPool;
+using CodeProject.ObjectPool.Specialized;
 using Common.Logging;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.IO;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
@@ -63,9 +64,9 @@ namespace PommaLabs.KVLite
         /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
-        /// <param name="memoryStreamManager">The memory stream manager.</param>
-        public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamManager memoryStreamManager = null)
-            : base(settings, clock, log, serializer, compressor, memoryStreamManager)
+        /// <param name="memoryStreamPool">The memory stream pool.</param>
+        public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IObjectPool<PooledMemoryStream> memoryStreamPool = null)
+            : base(settings, clock, log, serializer, compressor, memoryStreamPool)
         {
         }
 

@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Common.IO;
 using Finsa.CodeServices.Common.Portability;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
@@ -36,16 +35,6 @@ namespace PommaLabs.KVLite.Core
     internal static class Constants
     {
         /// <summary>
-        ///   The string used to tag streams coming from <see cref="IMemoryStreamManager"/>.
-        /// </summary>
-        public const string StreamTag = nameof(KVLite);
-
-        /// <summary>
-        ///   The initial capacity of the streams retrieved from <see cref="IMemoryStreamManager"/>.
-        /// </summary>
-        public const int InitialStreamCapacity = 512;
-
-        /// <summary>
         ///   Default clock.
         /// </summary>
         public static IClock DefaultClock { get; } = new SystemClock();
@@ -54,9 +43,9 @@ namespace PommaLabs.KVLite.Core
         ///   Default compressor.
         /// </summary>
 #if NET40
-        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.Optimal, DefaultMemoryStreamManager.Instance);
+        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.Optimal, CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance);
 #else
-        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.Fastest, DefaultMemoryStreamManager.Instance);
+        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.Fastest, CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance);
 #endif
 
         /// <summary>
@@ -78,6 +67,6 @@ namespace PommaLabs.KVLite.Core
             ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
             TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
             TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
-        }, DefaultMemoryStreamManager.Instance);
+        }, CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance);
     }
 }

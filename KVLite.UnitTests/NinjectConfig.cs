@@ -21,10 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using CodeProject.ObjectPool;
+using CodeProject.ObjectPool.Specialized;
 using Common.Logging;
 using Common.Logging.Simple;
 using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Common.IO;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using Ninject.Modules;
@@ -38,8 +39,8 @@ namespace PommaLabs.KVLite.UnitTests
     {
         public override void Load()
         {
-            Bind<IMemoryStreamManager>()
-                .To<RecyclableMemoryStreamManager>()
+            Bind<IObjectPool<PooledMemoryStream>>()
+                .ToConstant(MemoryStreamPool.Instance)
                 .InSingletonScope();
 
             Bind<IClock>()

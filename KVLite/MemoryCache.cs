@@ -21,11 +21,12 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using CodeProject.ObjectPool;
+using CodeProject.ObjectPool.Specialized;
 using Common.Logging;
 using Finsa.CodeServices.Caching;
 using Finsa.CodeServices.Clock;
 using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.IO;
 using Finsa.CodeServices.Compression;
 using Finsa.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
@@ -76,14 +77,14 @@ namespace PommaLabs.KVLite
         /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
-        /// <param name="memoryStreamManager">The memory stream manager.</param>
-        public MemoryCache(MemoryCacheSettings settings, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamManager memoryStreamManager = null)
+        /// <param name="memoryStreamPool">The memory stream pool.</param>
+        public MemoryCache(MemoryCacheSettings settings, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IObjectPool<PooledMemoryStream> memoryStreamPool = null)
         {
             Settings = settings;
             Log = log ?? LogManager.GetLogger(GetType());
             Compressor = compressor ?? Constants.DefaultCompressor;
             Serializer = serializer ?? Constants.DefaultSerializer;
-            MemoryStreamManager = memoryStreamManager ?? DefaultMemoryStreamManager.Instance;
+            MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
             Clock = Constants.DefaultClock;
 
             InitSystemMemoryCache();
@@ -168,13 +169,13 @@ namespace PommaLabs.KVLite
         public override int MaxParentKeyCountPerItem { get; } = int.MaxValue;
 
         /// <summary>
-        ///   The manager used to retrieve <see cref="MemoryStream"/> instances.
+        ///   The pool used to retrieve <see cref="MemoryStream"/> instances.
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="DefaultMemoryStreamManager.Instance"/>.
+        ///   constructor. If not specified, it defaults to <see cref="CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance"/>.
         /// </remarks>
-        public override IMemoryStreamManager MemoryStreamManager { get; }
+        public override IObjectPool<PooledMemoryStream> MemoryStreamPool { get; }
 
         /// <summary>
         ///   Gets the serializer used by the cache.
@@ -217,7 +218,7 @@ namespace PommaLabs.KVLite
             byte[] serializedValue;
             try
             {
-                using (var memoryStream = MemoryStreamManager.GetStream(Constants.StreamTag, Constants.InitialStreamCapacity).Stream)
+                using (var memoryStream = MemoryStreamPool.GetObject().MemoryStream)
                 {
                     using (var compressionStream = Compressor.CreateCompressionStream(memoryStream))
                     {
