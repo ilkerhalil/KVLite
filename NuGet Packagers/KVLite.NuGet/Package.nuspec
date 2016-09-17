@@ -28,9 +28,9 @@ KVLite is a partition-based key-value store built on SQLite. This package contai
         <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <dependency id="CodeProject.ObjectPool" version="2.0.5" />
-            <dependency id="PommaLabs.CodeServices.Serialization.Json" version="5.0.3" />
+            <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.1" />
             <dependency id="PommaLabs.KVLite.Core" version="5.2.6.2" />
-            <dependency id="PommaLabs.KVLite.SQLite" version="1.0.102.0" />
+            <dependency id="PommaLabs.KVLite.SQLite" version="1.0.103.0" />
             <dependency id="Thrower" version="3.0.4" />
         </dependencies>
         <references></references>
