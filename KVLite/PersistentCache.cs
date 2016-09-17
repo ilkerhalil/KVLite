@@ -24,11 +24,12 @@
 using CodeProject.ObjectPool;
 using CodeProject.ObjectPool.Specialized;
 using Common.Logging;
-using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.Portability;
-using Finsa.CodeServices.Compression;
-using Finsa.CodeServices.Serialization;
+using PommaLabs.CodeServices.Clock;
+using PommaLabs.CodeServices.Common;
+using PommaLabs.CodeServices.Common.Collections.Generic;
+using PommaLabs.CodeServices.Common.Portability;
+using PommaLabs.CodeServices.Compression;
+using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using System.Collections.Generic;
 using System.Data.SQLite;

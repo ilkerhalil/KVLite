@@ -16,7 +16,7 @@ The driver is re-packaged in order to ensure maximum compatibility with KVLite.
         </description>
         <releaseNotes>
 * [UPD] Updated System.Data.SQLite to version 1.0.102.0.
-* [UPD] Moved interfaces and core classes to Finsa.CodeServices.Caching package.
+* [UPD] Moved interfaces and core classes to PommaLabs.CodeServices.Caching package.
         </releaseNotes>
         <summary>
 KVLite is a partition-based key-value store built on SQLite. This package contains the SQLite driver used by KVLite.

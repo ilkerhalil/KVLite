@@ -1,50 +1,50 @@
 ﻿// File name: Program.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using BenchmarkDotNet.Running;
+using PommaLabs.CodeServices.Caching;
+using PommaLabs.CodeServices.Common;
+using PommaLabs.CodeServices.Common.Threading.Tasks;
+using PommaLabs.CodeServices.Serialization;
+using PommaLabs.KVLite.UnitTests;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Finsa.CodeServices.Common;
-using PommaLabs.KVLite.UnitTests;
-using Finsa.CodeServices.Serialization;
-using Finsa.CodeServices.Common.Threading.Tasks;
-using BenchmarkDotNet.Running;
-using Finsa.CodeServices.Caching;
 
 namespace PommaLabs.KVLite.Benchmarks
 {
     public static class Program
     {
-        const int RowCount = 1000;
-        const int IterationCount = 5;
-        const int RandomDataTablesCount = 1000;
+        private const int RowCount = 1000;
+        private const int IterationCount = 5;
+        private const int RandomDataTablesCount = 1000;
 
-        static readonly string[] ColumnNames = { "A", "B", "C", "D", "E" };
+        private static readonly string[] ColumnNames = { "A", "B", "C", "D", "E" };
 
-        static double _tableListSize;
+        private static double _tableListSize;
 
         public static void Main(string[] args)
         {
@@ -120,7 +120,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.Read();
         }
 
-        static IList<DataTable> GenerateRandomDataTables()
+        private static IList<DataTable> GenerateRandomDataTables()
         {
             var gen = new RandomDataTableGenerator(ColumnNames);
             var list = new List<DataTable>();
@@ -131,7 +131,7 @@ namespace PommaLabs.KVLite.Benchmarks
             return list;
         }
 
-        static void FullyCleanCache()
+        private static void FullyCleanCache()
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Fully cleaning cache...");
@@ -141,7 +141,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Cache cleaned!");
         }
 
-        static void StoreDataTableList(ICollection<DataTable> tables, int iteration)
+        private static void StoreDataTableList(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Storing data table list, iteration {0}...", iteration);
@@ -159,7 +159,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void StoreEachDataTable(ICollection<DataTable> tables, int iteration)
+        private static void StoreEachDataTable(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Storing each data table, iteration {0}...", iteration);
@@ -180,7 +180,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void StoreEachDataTable_Volatile(ICollection<DataTable> tables, int iteration)
+        private static void StoreEachDataTable_Volatile(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"[Volatile] Storing each data table, iteration {0}...", iteration);
@@ -201,7 +201,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void StoreEachDataTable_Memory(ICollection<DataTable> tables, int iteration)
+        private static void StoreEachDataTable_Memory(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"[Memory] Storing each data table, iteration {0}...", iteration);
@@ -222,7 +222,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"[Memory] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void StoreEachDataTableAsync(ICollection<DataTable> tables, int iteration)
+        private static void StoreEachDataTableAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Storing each data table asynchronously, iteration {0}...", iteration);
@@ -248,7 +248,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void StoreEachDataTableAsync_Volatile(ICollection<DataTable> tables, int iteration)
+        private static void StoreEachDataTableAsync_Volatile(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"[Volatile] Storing each data table asynchronously, iteration {0}...", iteration);
@@ -274,7 +274,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void StoreEachDataTableAsync_Memory(ICollection<DataTable> tables, int iteration)
+        private static void StoreEachDataTableAsync_Memory(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"[Memory] Storing each data table asynchronously, iteration {0}...", iteration);
@@ -300,7 +300,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"[Memory] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void StoreEachDataTableTwoTimesAsync(ICollection<DataTable> tables, int iteration)
+        private static void StoreEachDataTableTwoTimesAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Storing each data table (two times, asynchronously), iteration {0}...", iteration);
@@ -330,7 +330,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void RetrieveEachDataTable(ICollection<DataTable> tables, int iteration)
+        private static void RetrieveEachDataTable(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Retrieving each data table, iteration {0}...", iteration);
@@ -357,7 +357,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void RetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
+        private static void RetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Retrieving each data table asynchronously, iteration {0}...", iteration);
@@ -390,7 +390,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void StoreAndRetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
+        private static void StoreAndRetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Storing and retrieving each data table asynchronously, iteration {0}...", iteration);
@@ -426,7 +426,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void StoreAndRetrieveEachDataTableAsync_Volatile(ICollection<DataTable> tables, int iteration)
+        private static void StoreAndRetrieveEachDataTableAsync_Volatile(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"[Volatile] Storing and retrieving each data table asynchronously, iteration {0}...", iteration);
@@ -462,7 +462,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:.0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void RemoveEachDataTable(ICollection<DataTable> tables, int iteration)
+        private static void RemoveEachDataTable(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Removing each data table, iteration {0}...", iteration);
@@ -488,7 +488,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static void RemoveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
+        private static void RemoveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
             Console.WriteLine(@"Removing each data table asynchronously, iteration {0}...", iteration);
@@ -519,7 +519,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
-        static double GetObjectSizeInMB(object obj)
+        private static double GetObjectSizeInMB(object obj)
         {
             using (var s = new BinarySerializer().SerializeToStream(obj))
             {

@@ -24,11 +24,12 @@
 using CodeProject.ObjectPool;
 using CodeProject.ObjectPool.Specialized;
 using Common.Logging;
-using Finsa.CodeServices.Caching;
-using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Compression;
-using Finsa.CodeServices.Serialization;
+using PommaLabs.CodeServices.Caching;
+using PommaLabs.CodeServices.Clock;
+using PommaLabs.CodeServices.Common;
+using PommaLabs.CodeServices.Common.Collections.Generic;
+using PommaLabs.CodeServices.Compression;
+using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
@@ -96,7 +97,7 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="M:Finsa.CodeServices.Common.FormattableObject.ToString"/>.
+        ///   used to produce a meaningful <see cref="M:PommaLabs.CodeServices.Common.FormattableObject.ToString"/>.
         /// </summary>
         protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
@@ -141,7 +142,7 @@ namespace PommaLabs.KVLite
         /// <value>The clock used by the cache.</value>
         /// <remarks>
         ///   Since <see cref="SystemMemoryCache"/> does not allow clock customisation, then this
-        ///   property defaults to <see cref="T:Finsa.CodeServices.Clock.SystemClock"/>.
+        ///   property defaults to <see cref="T:PommaLabs.CodeServices.Clock.SystemClock"/>.
         /// </remarks>
         public override IClock Clock { get; }
 

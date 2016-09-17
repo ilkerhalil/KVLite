@@ -21,10 +21,10 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Common.Portability;
-using Finsa.CodeServices.Compression;
-using Finsa.CodeServices.Serialization;
+using PommaLabs.CodeServices.Clock;
+using PommaLabs.CodeServices.Common.Portability;
+using PommaLabs.CodeServices.Compression;
+using PommaLabs.CodeServices.Serialization;
 using System.IO.Compression;
 
 namespace PommaLabs.KVLite.Core

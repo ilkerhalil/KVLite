@@ -23,7 +23,7 @@
 
 using EntityFramework.Caching;
 using EntityFramework.Extensions;
-using Finsa.CodeServices.Caching;
+using PommaLabs.CodeServices.Caching;
 using NUnit.Framework;
 using PommaLabs.KVLite.EntityFramework;
 using System;

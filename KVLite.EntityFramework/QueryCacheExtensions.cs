@@ -1,25 +1,25 @@
 ﻿// File name: QueryCacheExtensions.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using EntityFramework.Caching;
 using System;
@@ -40,7 +40,7 @@ namespace EntityFramework.Extensions
         /// <summary>
         ///   Returns the result of the query; if possible from the cache, otherwise the query is
         ///   materialized and the result cached before being returned.
-        /// 
+        ///
         ///   Query is cached as a "timed" value, that is, value will last until the specified time
         ///   and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
@@ -59,7 +59,7 @@ namespace EntityFramework.Extensions
         /// <summary>
         ///   Returns the result of the query; if possible from the cache, otherwise the query is
         ///   materialized and the result cached before being returned.
-        /// 
+        ///
         ///   Query is cached as a "timed" value, that is, value will last until the specified time
         ///   and, if accessed before expiry, its lifetime will _not_ be extended.s
         /// </summary>
@@ -78,9 +78,9 @@ namespace EntityFramework.Extensions
         /// <summary>
         ///   Returns the result of the query; if possible from the cache, otherwise the query is
         ///   materialized and the result cached before being returned.
-        /// 
-        ///   Query is cached as a "timed" value, that is, value will last for the specified
-        ///   lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
+        ///
+        ///   Query is cached as a "timed" value, that is, value will last for the specified lifetime
+        ///   and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
         /// <typeparam name="TEntity">The type of the data in the data source.</typeparam>
         /// <param name="query">The query to be materialized.</param>
@@ -97,7 +97,7 @@ namespace EntityFramework.Extensions
         /// <summary>
         ///   Returns the result of the query; if possible from the cache, otherwise the query is
         ///   materialized and the result cached before being returned.
-        /// 
+        ///
         ///   Query is cached as a "sliding" value, that is, value will last as much as specified in
         ///   given interval and, if accessed before expiry, its lifetime will be extended by the
         ///   interval itself.
@@ -115,9 +115,9 @@ namespace EntityFramework.Extensions
         }
 
         /// <summary>
-        ///   Returns the first element of the query; if possible from the cache, otherwise the
-        ///   query is materialized and the result cached before being returned.
-        /// 
+        ///   Returns the first element of the query; if possible from the cache, otherwise the query
+        ///   is materialized and the result cached before being returned.
+        ///
         ///   Query is cached as a "timed" value, that is, value will last until the specified time
         ///   and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
@@ -134,9 +134,9 @@ namespace EntityFramework.Extensions
         }
 
         /// <summary>
-        ///   Returns the first element of the query; if possible from the cache, otherwise the
-        ///   query is materialized and the result cached before being returned.
-        /// 
+        ///   Returns the first element of the query; if possible from the cache, otherwise the query
+        ///   is materialized and the result cached before being returned.
+        ///
         ///   Query is cached as a "timed" value, that is, value will last until the specified time
         ///   and, if accessed before expiry, its lifetime will _not_ be extended.s
         /// </summary>
@@ -153,11 +153,11 @@ namespace EntityFramework.Extensions
         }
 
         /// <summary>
-        ///   Returns the first element of the query; if possible from the cache, otherwise the
-        ///   query is materialized and the result cached before being returned.
-        /// 
-        ///   Query is cached as a "timed" value, that is, value will last for the specified
-        ///   lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
+        ///   Returns the first element of the query; if possible from the cache, otherwise the query
+        ///   is materialized and the result cached before being returned.
+        ///
+        ///   Query is cached as a "timed" value, that is, value will last for the specified lifetime
+        ///   and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
         /// <typeparam name="TEntity">The type of the data in the data source.</typeparam>
         /// <param name="query">The query to be materialized.</param>
@@ -172,9 +172,9 @@ namespace EntityFramework.Extensions
         }
 
         /// <summary>
-        ///   Returns the first element of the query; if possible from the cache, otherwise the
-        ///   query is materialized and the result cached before being returned.
-        /// 
+        ///   Returns the first element of the query; if possible from the cache, otherwise the query
+        ///   is materialized and the result cached before being returned.
+        ///
         ///   Query is cached as a "sliding" value, that is, value will last as much as specified in
         ///   given interval and, if accessed before expiry, its lifetime will be extended by the
         ///   interval itself.
@@ -200,7 +200,7 @@ namespace EntityFramework.Extensions
         /// <summary>
         ///   Returns the result of the query; if possible from the cache, otherwise the query is
         ///   materialized and the result cached before being returned.
-        /// 
+        ///
         ///   Query is cached as a "timed" value, that is, value will last until the specified time
         ///   and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
@@ -219,7 +219,7 @@ namespace EntityFramework.Extensions
         /// <summary>
         ///   Returns the result of the query; if possible from the cache, otherwise the query is
         ///   materialized and the result cached before being returned.
-        /// 
+        ///
         ///   Query is cached as a "timed" value, that is, value will last until the specified time
         ///   and, if accessed before expiry, its lifetime will _not_ be extended.s
         /// </summary>
@@ -238,9 +238,9 @@ namespace EntityFramework.Extensions
         /// <summary>
         ///   Returns the result of the query; if possible from the cache, otherwise the query is
         ///   materialized and the result cached before being returned.
-        /// 
-        ///   Query is cached as a "timed" value, that is, value will last for the specified
-        ///   lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
+        ///
+        ///   Query is cached as a "timed" value, that is, value will last for the specified lifetime
+        ///   and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
         /// <typeparam name="TEntity">The type of the data in the data source.</typeparam>
         /// <param name="query">The query to be materialized.</param>
@@ -257,7 +257,7 @@ namespace EntityFramework.Extensions
         /// <summary>
         ///   Returns the result of the query; if possible from the cache, otherwise the query is
         ///   materialized and the result cached before being returned.
-        /// 
+        ///
         ///   Query is cached as a "sliding" value, that is, value will last as much as specified in
         ///   given interval and, if accessed before expiry, its lifetime will be extended by the
         ///   interval itself.
@@ -275,9 +275,9 @@ namespace EntityFramework.Extensions
         }
 
         /// <summary>
-        ///   Returns the first element of the query; if possible from the cache, otherwise the
-        ///   query is materialized and the result cached before being returned.
-        /// 
+        ///   Returns the first element of the query; if possible from the cache, otherwise the query
+        ///   is materialized and the result cached before being returned.
+        ///
         ///   Query is cached as a "timed" value, that is, value will last until the specified time
         ///   and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
@@ -294,9 +294,9 @@ namespace EntityFramework.Extensions
         }
 
         /// <summary>
-        ///   Returns the first element of the query; if possible from the cache, otherwise the
-        ///   query is materialized and the result cached before being returned.
-        /// 
+        ///   Returns the first element of the query; if possible from the cache, otherwise the query
+        ///   is materialized and the result cached before being returned.
+        ///
         ///   Query is cached as a "timed" value, that is, value will last until the specified time
         ///   and, if accessed before expiry, its lifetime will _not_ be extended.s
         /// </summary>
@@ -313,11 +313,11 @@ namespace EntityFramework.Extensions
         }
 
         /// <summary>
-        ///   Returns the first element of the query; if possible from the cache, otherwise the
-        ///   query is materialized and the result cached before being returned.
-        /// 
-        ///   Query is cached as a "timed" value, that is, value will last for the specified
-        ///   lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
+        ///   Returns the first element of the query; if possible from the cache, otherwise the query
+        ///   is materialized and the result cached before being returned.
+        ///
+        ///   Query is cached as a "timed" value, that is, value will last for the specified lifetime
+        ///   and, if accessed before expiry, its lifetime will _not_ be extended.
         /// </summary>
         /// <typeparam name="TEntity">The type of the data in the data source.</typeparam>
         /// <param name="query">The query to be materialized.</param>
@@ -332,9 +332,9 @@ namespace EntityFramework.Extensions
         }
 
         /// <summary>
-        ///   Returns the first element of the query; if possible from the cache, otherwise the
-        ///   query is materialized and the result cached before being returned.
-        /// 
+        ///   Returns the first element of the query; if possible from the cache, otherwise the query
+        ///   is materialized and the result cached before being returned.
+        ///
         ///   Query is cached as a "sliding" value, that is, value will last as much as specified in
         ///   given interval and, if accessed before expiry, its lifetime will be extended by the
         ///   interval itself.
@@ -360,7 +360,7 @@ namespace EntityFramework.Extensions
         /// <summary>
         ///   Temporarily configures the given <see cref="DbContext"/> so that caching can work. For
         ///   example, in order to make caching work we need to disable lazy loading and proxy creation.
-        /// 
+        ///
         ///   Once the returned object is disposed, the given <see cref="DbContext"/> is restored to
         ///   its original state. We strongly suggest to use this method with a "using" statement.
         /// </summary>

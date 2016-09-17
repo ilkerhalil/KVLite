@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Common.Logging;
-using Finsa.CodeServices.Caching;
+using PommaLabs.CodeServices.Caching;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;

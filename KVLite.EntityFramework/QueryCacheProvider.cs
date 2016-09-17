@@ -1,30 +1,30 @@
 ﻿// File name: QueryCacheProvider.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using EntityFramework;
 using EntityFramework.Caching;
-using Finsa.CodeServices.Caching;
-using Finsa.CodeServices.Common;
+using PommaLabs.CodeServices.Caching;
+using PommaLabs.CodeServices.Common;
 using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
@@ -43,7 +43,7 @@ namespace PommaLabs.KVLite.EntityFramework
         /// <summary>
         ///   The partition used by EF cache provider items.
         /// </summary>
-        const string EfCachePartition = "KVL.EF.QCP";
+        private const string EfCachePartition = "KVL.EF.QCP";
 
         #endregion Constants
 
@@ -143,8 +143,8 @@ namespace PommaLabs.KVLite.EntityFramework
         public object Get(CacheKey cacheKey) => Cache.Get<object>(EfCachePartition, cacheKey.Key).ValueOrDefault();
 
         /// <summary>
-        ///   Gets the cache value for the specified key that is already in the dictionary or the
-        ///   new value for the key as returned by <paramref name="valueFactory"/>.
+        ///   Gets the cache value for the specified key that is already in the dictionary or the new
+        ///   value for the key as returned by <paramref name="valueFactory"/>.
         /// </summary>
         /// <param name="cacheKey">A unique identifier for the cache entry.</param>
         /// <param name="valueFactory">
@@ -155,8 +155,8 @@ namespace PommaLabs.KVLite.EntityFramework
         ///   for the cache entry.
         /// </param>
         /// <returns>
-        ///   The value for the key. This will be either the existing value for the key if the key
-        ///   is already in the cache, or the new value for the key as returned by
+        ///   The value for the key. This will be either the existing value for the key if the key is
+        ///   already in the cache, or the new value for the key as returned by
         ///   <paramref name="valueFactory"/> if the key was not in the cache.
         /// </returns>
         public object GetOrAdd(CacheKey cacheKey, Func<CacheKey, object> valueFactory, CachePolicy cachePolicy)
@@ -191,8 +191,8 @@ namespace PommaLabs.KVLite.EntityFramework
         }
 
         /// <summary>
-        ///   Gets the cache value for the specified key that is already in the dictionary or the
-        ///   new value for the key as returned asynchronously by <paramref name="valueFactory"/>.
+        ///   Gets the cache value for the specified key that is already in the dictionary or the new
+        ///   value for the key as returned asynchronously by <paramref name="valueFactory"/>.
         /// </summary>
         /// <param name="cacheKey">A unique identifier for the cache entry.</param>
         /// <param name="valueFactory">
@@ -203,8 +203,8 @@ namespace PommaLabs.KVLite.EntityFramework
         ///   for the cache entry.
         /// </param>
         /// <returns>
-        ///   The value for the key. This will be either the existing value for the key if the key
-        ///   is already in the cache, or the new value for the key as returned by
+        ///   The value for the key. This will be either the existing value for the key if the key is
+        ///   already in the cache, or the new value for the key as returned by
         ///   <paramref name="valueFactory"/> if the key was not in the cache.
         /// </returns>
         public Task<object> GetOrAddAsync(CacheKey cacheKey, Func<CacheKey, Task<object>> valueFactory, CachePolicy cachePolicy)
@@ -273,7 +273,7 @@ namespace PommaLabs.KVLite.EntityFramework
             return true;
         }
 
-#endregion ICacheProvider members
+        #endregion ICacheProvider members
 
         #region Private methods
 
@@ -291,7 +291,8 @@ namespace PommaLabs.KVLite.EntityFramework
                 var parentKey = tag.ToString();
                 parentKeys[index] = parentKey;
 
-                // Adds the tag as a static item, so that it will not be deleted in a reasonable amount of time.
+                // Adds the tag as a static item, so that it will not be deleted in a reasonable
+                // amount of time.
                 Cache.AddStatic(EfCachePartition, parentKey, parentKey);
 
                 index++;
@@ -299,6 +300,6 @@ namespace PommaLabs.KVLite.EntityFramework
             return parentKeys;
         }
 
-        #endregion
+        #endregion Private methods
     }
 }

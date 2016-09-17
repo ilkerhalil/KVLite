@@ -3,7 +3,7 @@
 ### v5.2.6 (2016-06-26) ###
 
 * [UPD] Updated System.Data.SQLite to version 1.0.102.0.
-* [UPD] Moved interfaces and core classes to Finsa.CodeServices.Caching package.
+* [UPD] Moved interfaces and core classes to PommaLabs.CodeServices.Caching package.
 
 ### v5.2.5 (2016-04-23) ###
 

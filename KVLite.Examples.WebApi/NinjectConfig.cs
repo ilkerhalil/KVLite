@@ -23,10 +23,10 @@
 
 using Common.Logging;
 using Common.Logging.Simple;
-using Finsa.CodeServices.Caching;
-using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Compression;
-using Finsa.CodeServices.Serialization;
+using PommaLabs.CodeServices.Caching;
+using PommaLabs.CodeServices.Clock;
+using PommaLabs.CodeServices.Compression;
+using PommaLabs.CodeServices.Serialization;
 using Ninject.Modules;
 using PommaLabs.KVLite;
 

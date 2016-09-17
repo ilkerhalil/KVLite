@@ -17,8 +17,8 @@
  *                                                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-using Finsa.CodeServices.Caching;
-using Finsa.CodeServices.Common;
+using PommaLabs.CodeServices.Caching;
+using PommaLabs.CodeServices.Common;
 using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;

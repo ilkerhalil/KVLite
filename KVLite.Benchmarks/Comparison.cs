@@ -22,9 +22,9 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using BenchmarkDotNet.Attributes;
-using Finsa.CodeServices.Caching;
-using Finsa.CodeServices.Compression;
-using Finsa.CodeServices.Serialization;
+using PommaLabs.CodeServices.Caching;
+using PommaLabs.CodeServices.Compression;
+using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Benchmarks.Models;
 using System;
 using System.Collections.Generic;
@@ -147,7 +147,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
         [Benchmark]
         public void AddManyLogMessages()
-        {            
+        {
             var k = Guid.NewGuid().ToString();
             _cache.AddStaticToDefaultPartition(k, LogMessage.GenerateRandomLogMessages(Count));
         }

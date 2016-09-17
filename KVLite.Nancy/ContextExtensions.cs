@@ -24,7 +24,7 @@
 using System;
 using System.IO;
 using Nancy;
-using Finsa.CodeServices.Serialization;
+using PommaLabs.CodeServices.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 

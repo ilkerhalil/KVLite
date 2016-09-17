@@ -21,10 +21,10 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Finsa.CodeServices.Caching;
-using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.Threading.Tasks;
-using Finsa.CodeServices.Serialization;
+using PommaLabs.CodeServices.Caching;
+using PommaLabs.CodeServices.Common;
+using PommaLabs.CodeServices.Common.Threading.Tasks;
+using PommaLabs.CodeServices.Serialization;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;

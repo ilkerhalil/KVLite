@@ -15,7 +15,7 @@ This package contains the code and the references required to use the Nancy cach
         </description>
         <releaseNotes>
 * [UPD] Updated System.Data.SQLite to version 1.0.102.0.
-* [UPD] Moved interfaces and core classes to Finsa.CodeServices.Caching package.
+* [UPD] Moved interfaces and core classes to PommaLabs.CodeServices.Caching package.
         </releaseNotes>
         <summary>
 KVLite is a partition-based key-value store built on SQLite. This package contains the code and the references required to use the Nancy caching bootstrapper.

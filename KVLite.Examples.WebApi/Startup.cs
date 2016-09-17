@@ -1,5 +1,5 @@
-﻿using Finsa.CodeServices.Caching;
-using Finsa.CodeServices.Common.Portability;
+﻿using PommaLabs.CodeServices.Caching;
+using PommaLabs.CodeServices.Common.Portability;
 using Microsoft.Owin;
 using Ninject;
 using Ninject.Web.Common.OwinHost;
