@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite.EntityFramework</id>
-        <version>5.2.6.2</version>
+        <version>5.2.7</version>
         <title>KVLite - Entity Framework query cache provider</title>
         <authors>Alessio Parma</authors>
         <owners>Alessio Parma</owners>
@@ -22,14 +22,14 @@ KVLite is a partition-based key-value store built on SQLite. This package contai
         </summary>
         <language>en-US</language>
         <projectUrl>https://github.com/pomma89/KVLite</projectUrl>
-        <iconUrl>https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-128.png</iconUrl>
+        <iconUrl>http://pomma89.altervista.org/kvlite/logo-128.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
         <dependencies>
             <dependency id="EntityFramework" version="6.1.3" />
             <dependency id="EntityFramework.Extended" version="6.1.0.168" />
-            <dependency id="PommaLabs.KVLite.Core" version="5.2.6.2" />
+            <dependency id="PommaLabs.KVLite.Core" version="5.2.7" />
         </dependencies>
         <references></references>
         <frameworkAssemblies></frameworkAssemblies>
