@@ -29,6 +29,8 @@ using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using Ninject.Modules;
 using PommaLabs.KVLite;
+using CodeProject.ObjectPool;
+using CodeProject.ObjectPool.Specialized;
 
 namespace RestService.WebApi
 {
@@ -36,12 +38,33 @@ namespace RestService.WebApi
     {
         public override void Load()
         {
-            Bind<IClock>().To<SystemClock>().InSingletonScope();
-            Bind<ICompressor>().To<DeflateCompressor>().InSingletonScope();
-            Bind<ILog>().To<NoOpLogger>().InSingletonScope();
-            Bind<ICache>().To<PersistentCache>().InSingletonScope();
-            Bind<ISerializer>().To<JsonSerializer>().InSingletonScope();
-            Bind<JsonSerializerSettings>().ToMethod(ctx => new JsonSerializerSettings());
+            Bind<IClock>()
+                .To<SystemClock>()
+                .InSingletonScope();
+
+            Bind<ICompressor>()
+                .To<DeflateCompressor>()
+                .InSingletonScope();
+
+            Bind<ILog>()
+                .To<NoOpLogger>()
+                .InSingletonScope();
+
+            Bind<ICache>()
+                .To<PersistentCache>()
+                .InSingletonScope();
+
+            Bind<ISerializer>()
+                .To<JsonSerializer>()
+                .InSingletonScope();
+
+            Bind<JsonSerializerSettings>()
+                .ToConstant(new JsonSerializerSettings())
+                .InSingletonScope();
+
+            Bind<IObjectPool<PooledMemoryStream>>()
+                .ToConstant(MemoryStreamPool.Instance)
+                .InSingletonScope();
         }
     }
 }

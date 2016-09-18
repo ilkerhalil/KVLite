@@ -122,5 +122,17 @@
               Redirects to Swagger help pages.
             </summary>
         </member>
+        <member name="M:RestService.WebApi.Controllers.HelpController.GetProcessWorkingSet64">
+            <summary>
+              Working set memory for current process.
+            </summary>
+            <returns>Working set memory for current process.</returns>
+        </member>
+        <member name="M:RestService.WebApi.Controllers.HelpController.GetGcTotalMemory">
+            <summary>
+              Total memory used by GC.
+            </summary>
+            <returns>Total memory used by GC.</returns>
+        </member>
     </members>
 </doc>

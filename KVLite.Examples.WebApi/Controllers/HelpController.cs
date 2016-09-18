@@ -21,6 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
+using System.Diagnostics;
 using System.Web.Http;
 
 namespace RestService.WebApi.Controllers
@@ -32,6 +34,8 @@ namespace RestService.WebApi.Controllers
     [RoutePrefix("")]
     public sealed class HelpController : ApiController
     {
+        private static readonly long Offset = Process.GetCurrentProcess().WorkingSet64 - GC.GetTotalMemory(false);
+
         /// <summary>
         ///   Redirects to Swagger help pages.
         /// </summary>
@@ -42,5 +46,19 @@ namespace RestService.WebApi.Controllers
             var uriWithoutQuery = uri.Substring(0, uri.Length - Request.RequestUri.Query.Length);
             return Redirect(uriWithoutQuery + "swagger");
         }
+
+        /// <summary>
+        ///   Working set memory for current process.
+        /// </summary>
+        /// <returns>Working set memory for current process.</returns>
+        [Route("help/diagnostics/procWkSet64")]
+        public long GetProcessWorkingSet64() => Process.GetCurrentProcess().WorkingSet64 / (1024L * 1024L);
+
+        /// <summary>
+        ///   Total memory used by GC.
+        /// </summary>
+        /// <returns>Total memory used by GC.</returns>
+        [Route("help/diagnostics/gcTotalMemory")]
+        public long GetGcTotalMemory() => (Offset + GC.GetTotalMemory(false)) / (1024L * 1024L);
     }
 }
