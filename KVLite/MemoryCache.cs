@@ -79,7 +79,7 @@ namespace PommaLabs.KVLite
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public MemoryCache(MemoryCacheSettings settings, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IObjectPool<PooledMemoryStream> memoryStreamPool = null)
+        public MemoryCache(MemoryCacheSettings settings, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
         {
             Settings = settings;
             Log = log ?? LogManager.GetLogger(GetType());
@@ -176,7 +176,7 @@ namespace PommaLabs.KVLite
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance"/>.
         /// </remarks>
-        public override IObjectPool<PooledMemoryStream> MemoryStreamPool { get; }
+        public override IMemoryStreamPool MemoryStreamPool { get; }
 
         /// <summary>
         ///   Gets the serializer used by the cache.

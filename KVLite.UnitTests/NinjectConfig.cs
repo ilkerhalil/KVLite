@@ -39,7 +39,7 @@ namespace PommaLabs.KVLite.UnitTests
     {
         public override void Load()
         {
-            Bind<IObjectPool<PooledMemoryStream>>()
+            Bind<IMemoryStreamPool>()
                 .ToConstant(MemoryStreamPool.Instance)
                 .InSingletonScope();
 

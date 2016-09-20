@@ -113,7 +113,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        internal AbstractSQLiteCache(TSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IObjectPool<PooledMemoryStream> memoryStreamPool)
+        internal AbstractSQLiteCache(TSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -500,7 +500,7 @@ namespace PommaLabs.KVLite.Core
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance"/>.
         /// </remarks>
-        public sealed override IObjectPool<PooledMemoryStream> MemoryStreamPool { get; }
+        public sealed override IMemoryStreamPool MemoryStreamPool { get; }
 
         /// <summary>
         ///   Gets the serializer used by the cache.

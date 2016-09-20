@@ -62,7 +62,7 @@ namespace RestService.WebApi
                 .ToConstant(new JsonSerializerSettings())
                 .InSingletonScope();
 
-            Bind<IObjectPool<PooledMemoryStream>>()
+            Bind<IMemoryStreamPool>()
                 .ToConstant(MemoryStreamPool.Instance)
                 .InSingletonScope();
         }
