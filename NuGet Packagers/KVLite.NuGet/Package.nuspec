@@ -3,7 +3,7 @@
 <package>
     <metadata>
         <id>PommaLabs.KVLite</id>
-        <version>5.2.7</version>
+        <version>5.2.8</version>
         <title>KVLite - Key-value store built on SQLite</title>
         <authors>Alessio Parma</authors>
         <owners>Alessio Parma</owners>
@@ -29,7 +29,7 @@ KVLite is a partition-based key-value store built on SQLite. This package contai
         <dependencies>
             <dependency id="CodeProject.ObjectPool" version="2.1.1" />
             <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.3" />
-            <dependency id="PommaLabs.KVLite.Core" version="5.2.7" />
+            <dependency id="PommaLabs.KVLite.Core" version="5.2.8" />
             <dependency id="PommaLabs.KVLite.SQLite" version="1.0.103.0" />
             <dependency id="Thrower" version="3.0.4" />
         </dependencies>
