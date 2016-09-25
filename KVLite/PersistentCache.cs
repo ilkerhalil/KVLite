@@ -35,6 +35,8 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System;
+using System.Text;
 
 namespace PommaLabs.KVLite
 {

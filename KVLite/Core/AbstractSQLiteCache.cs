@@ -40,6 +40,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -98,6 +99,8 @@ namespace PommaLabs.KVLite.Core
         ///   The compressor used by the cache.
         /// </summary>
         private readonly ICompressor _compressor;
+
+        private readonly IFileSystem _commentFs = new StandardFileSystem();
 
         #endregion Fields
 
@@ -572,6 +575,10 @@ namespace PommaLabs.KVLite.Core
                     {
                         _serializer.SerializeToStream(value, compressionStream);
                     }
+
+                    memoryStream.Position = 0L;
+                    _commentFs.Write(partition, key, memoryStream);
+
                     serializedValue = memoryStream.ToArray();
                 }
             }
@@ -1318,5 +1325,50 @@ namespace PommaLabs.KVLite.Core
         }
 
         #endregion Nested type: DbCacheItem
+
+        public interface IFileSystem
+        {
+            string Write(string partition, string key, Stream value);
+        }
+
+        public sealed class StandardFileSystem : IFileSystem
+        {
+            private readonly string _root;
+            private readonly string _data;
+
+            public StandardFileSystem()
+            {
+                _root = PortableEnvironment.MapPath("~/App_Data/PersistentCache");
+                _data = Path.Combine(_root, "Data");
+            }
+
+            public string Write(string partition, string key, Stream value)
+            {
+                var hashedPartition = Hash(partition);
+                var partitionDir = Path.Combine(_data, hashedPartition);
+
+                if (!Directory.Exists(partitionDir))
+                {
+                    Directory.CreateDirectory(partitionDir);
+                }
+
+                var hashedKey = Hash(key);
+                var keyFile = Path.Combine(partitionDir, hashedKey);
+
+                using (var fs = File.OpenWrite(keyFile))
+                {
+                    value.CopyTo(fs);
+                }
+
+                return keyFile;
+            }
+
+            private static string Hash(string s)
+            {
+                var bytes = Encoding.Default.GetBytes(s);
+                var hash = XXHash.XXH32(bytes);
+                return $"{hash:0000000000}";
+            }
+        }
     }
 }
