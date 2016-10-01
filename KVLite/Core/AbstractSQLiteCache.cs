@@ -1361,7 +1361,7 @@ namespace PommaLabs.KVLite.Core
             private static readonly byte[] ReservedBytes = new byte[64 - sizeof(long)];
 
             [ThreadStatic]
-            private static readonly byte[] ReservedBytesHelper = new byte[ReservedBytes.Length];
+            private static readonly byte[] ReservedBytesHelper = new byte[64];
 
             private readonly IClock _clock;
             private readonly IHashFunction _hashFunction;
@@ -1441,7 +1441,10 @@ namespace PommaLabs.KVLite.Core
                     using (var fs = File.Open(keyFile, FileMode.Open))
                     {
                         fs.Read(ReservedBytesHelper, 0, ReservedBytesHelper.Length);
+
                         fs.CopyTo(ms);
+                        ms.Position = 0L;
+
                         return ms;
                     }
                 }
