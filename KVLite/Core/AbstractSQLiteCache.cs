@@ -100,7 +100,7 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         private readonly ICompressor _compressor;
 
-        private readonly IFileSystem _commentFs = new StandardFileSystem();
+        private readonly IFileSystem _commentFs;
 
         #endregion Fields
 
@@ -127,6 +127,7 @@ namespace PommaLabs.KVLite.Core
             _serializer = serializer ?? Constants.DefaultSerializer;
             MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
             _clock = clock ?? Constants.DefaultClock;
+            _commentFs = new StandardFileSystem(_clock);
 
             // We need to properly customize the default serializer settings in no custom serializer
             // has been specified.
@@ -577,7 +578,7 @@ namespace PommaLabs.KVLite.Core
                     }
 
                     memoryStream.Position = 0L;
-                    _commentFs.Write(partition, key, memoryStream);
+                    _commentFs.Write(partition, key, memoryStream, utcExpiry, interval);
 
                     serializedValue = memoryStream.ToArray();
                 }
@@ -675,16 +676,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <returns>Whether cache contains the specified partition and key.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        protected sealed override bool ContainsInternal(string partition, string key)
-        {
-            using (var db = _connectionPool.GetObject())
-            {
-                db.Contains_Partition.Value = partition;
-                db.Contains_Key.Value = key;
-                db.Contains_UtcNow.Value = _clock.UnixTime;
-                return (long) db.Contains_Command.ExecuteScalar() > 0L;
-            }
-        }
+        protected sealed override bool ContainsInternal(string partition, string key) => _commentFs.Exists(partition, key);
 
         /// <summary>
         ///   The number of items in the cache or in a partition, if specified.
@@ -1328,21 +1320,57 @@ namespace PommaLabs.KVLite.Core
 
         public interface IFileSystem
         {
-            string Write(string partition, string key, Stream value);
+            bool Exists(string partition, string key);
+
+            string Write(string partition, string key, Stream value, DateTime utcExpiry, TimeSpan interval);
         }
 
         public sealed class StandardFileSystem : IFileSystem
         {
+            /// <summary>
+            ///   Reserved bytes which might be used in future releases of KVLite.
+            /// </summary>
+            private static readonly byte[] ReservedBytes = new byte[64 - sizeof(long)];
+
+            private readonly IClock _clock;
             private readonly string _root;
             private readonly string _data;
 
-            public StandardFileSystem()
+            public StandardFileSystem(IClock clock)
             {
+                // Preconditions
+                Raise.ArgumentNullException.IfIsNull(clock, nameof(clock));
+
                 _root = PortableEnvironment.MapPath("~/App_Data/PersistentCache");
                 _data = Path.Combine(_root, "Data");
             }
 
-            public string Write(string partition, string key, Stream value)
+            public bool Exists(string partition, string key)
+            {
+                var hashedPartition = Hash(partition);
+                var partitionDir = Path.Combine(_data, hashedPartition);
+
+                if (!Directory.Exists(partitionDir))
+                {
+                    return false;
+                }
+
+                var hashedKey = Hash(key);
+                var keyFile = Path.Combine(partitionDir, hashedKey);
+
+                try
+                {
+                    var lastWriteTimeUtc = File.GetLastWriteTimeUtc(keyFile);
+                    return lastWriteTimeUtc > _clock.UtcNow;
+                }
+                catch (IOException)
+                {
+                    // File not found.
+                    return false;
+                }
+            }
+
+            public string Write(string partition, string key, Stream value, DateTime utcExpiry, TimeSpan interval)
             {
                 var hashedPartition = Hash(partition);
                 var partitionDir = Path.Combine(_data, hashedPartition);
@@ -1354,11 +1382,20 @@ namespace PommaLabs.KVLite.Core
 
                 var hashedKey = Hash(key);
                 var keyFile = Path.Combine(partitionDir, hashedKey);
+                
+                var intervalBytes = IntervalToBytes(interval);
 
-                using (var fs = File.OpenWrite(keyFile))
+                using (var fs = File.Open(keyFile, FileMode.Create))
                 {
+                    // Header
+                    fs.Write(intervalBytes, 0, intervalBytes.Length);
+                    fs.Write(ReservedBytes, 0, ReservedBytes.Length);
+
+                    // Body
                     value.CopyTo(fs);
                 }
+
+                File.SetLastWriteTimeUtc(keyFile, utcExpiry);
 
                 return keyFile;
             }
@@ -1369,6 +1406,8 @@ namespace PommaLabs.KVLite.Core
                 var hash = XXHash.XXH32(bytes);
                 return $"{hash:0000000000}";
             }
+
+            private static byte[] IntervalToBytes(TimeSpan interval) => BitConverter.GetBytes((long) interval.TotalSeconds);
         }
     }
 }
