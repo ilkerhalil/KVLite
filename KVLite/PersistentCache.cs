@@ -37,6 +37,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System;
 using System.Text;
+using System.Data.HashFunction;
 
 namespace PommaLabs.KVLite
 {
@@ -70,8 +71,9 @@ namespace PommaLabs.KVLite
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
-            : base(settings, clock, log, serializer, compressor, memoryStreamPool)
+        /// <param name="hashFunction">The hash function.</param>
+        public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IHashFunction hashFunction = null)
+            : base(settings, clock, log, serializer, compressor, memoryStreamPool, hashFunction)
         {
         }
 

@@ -14,7 +14,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\SQLiteQueries.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\XXHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PersistentCache.cs" />

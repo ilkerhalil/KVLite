@@ -25,6 +25,7 @@ using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
+using System.Data.HashFunction;
 using System.IO.Compression;
 
 namespace PommaLabs.KVLite.Core
@@ -38,6 +39,11 @@ namespace PommaLabs.KVLite.Core
         ///   Default clock.
         /// </summary>
         public static IClock DefaultClock { get; } = new SystemClock();
+
+        /// <summary>
+        ///   Default hash function.
+        /// </summary>
+        public static IHashFunction DefaultHashFunction { get; } = new xxHash();
 
         /// <summary>
         ///   Default compressor.

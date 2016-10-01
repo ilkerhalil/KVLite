@@ -35,6 +35,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.HashFunction;
+using System.Data.HashFunction.Utilities;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -116,7 +118,8 @@ namespace PommaLabs.KVLite.Core
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        internal AbstractSQLiteCache(TSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool)
+        /// <param name="hashFunction">The hash function.</param>
+        internal AbstractSQLiteCache(TSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool, IHashFunction hashFunction)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -127,7 +130,7 @@ namespace PommaLabs.KVLite.Core
             _serializer = serializer ?? Constants.DefaultSerializer;
             MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
             _clock = clock ?? Constants.DefaultClock;
-            _commentFs = new StandardFileSystem(_clock);
+            _commentFs = new StandardFileSystem(_clock, hashFunction ?? Constants.DefaultHashFunction, MemoryStreamPool);
 
             // We need to properly customize the default serializer settings in no custom serializer
             // has been specified.
@@ -779,15 +782,7 @@ namespace PommaLabs.KVLite.Core
         /// </returns>
         protected sealed override Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
-            byte[] serializedValue;
-            using (var db = _connectionPool.GetObject())
-            {
-                db.PeekOne_Partition.Value = partition;
-                db.PeekOne_Key.Value = key;
-                db.PeekOne_UtcNow.Value = _clock.UnixTime;
-                serializedValue = (byte[]) db.PeekOne_Command.ExecuteScalar();
-            }
-
+            var serializedValue = _commentFs.Read(partition, key);
             return DeserializeValue<TVal>(serializedValue, partition, key);
         }
 
@@ -861,12 +856,43 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+        private TVal UnsafeDeserializeValue<TVal>(Stream serializedValue)
+        {
+            using (serializedValue)
+            using (var decompressionStream = _compressor.CreateDecompressionStream(serializedValue))
+            {
+                return _serializer.DeserializeFromStream<TVal>(decompressionStream);
+            }
+        }
+
         private TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
         {
             using (var memoryStream = new MemoryStream(serializedValue))
             using (var decompressionStream = _compressor.CreateDecompressionStream(memoryStream))
             {
                 return _serializer.DeserializeFromStream<TVal>(decompressionStream);
+            }
+        }
+
+        private Option<TVal> DeserializeValue<TVal>(Option<Stream> serializedValue, string partition, string key)
+        {
+            if (!serializedValue.HasValue)
+            {
+                // Nothing to deserialize, return None.
+                return Option.None<TVal>();
+            }
+            try
+            {
+                return Option.Some(UnsafeDeserializeValue<TVal>(serializedValue.Value));
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                // Something wrong happened during deserialization. Therefore, we remove the old
+                // element (in order to avoid future errors) and we return None.
+                RemoveInternal(partition, key);
+                _log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
+                return Option.None<TVal>();
             }
         }
 
@@ -1323,6 +1349,8 @@ namespace PommaLabs.KVLite.Core
             bool Exists(string partition, string key);
 
             string Write(string partition, string key, Stream value, DateTime utcExpiry, TimeSpan interval);
+
+            Option<Stream> Read(string partition, string key);
         }
 
         public sealed class StandardFileSystem : IFileSystem
@@ -1332,57 +1360,54 @@ namespace PommaLabs.KVLite.Core
             /// </summary>
             private static readonly byte[] ReservedBytes = new byte[64 - sizeof(long)];
 
+            [ThreadStatic]
+            private static readonly byte[] ReservedBytesHelper = new byte[ReservedBytes.Length];
+
             private readonly IClock _clock;
+            private readonly IHashFunction _hashFunction;
+            private readonly IMemoryStreamPool _memoryStreamPool;
             private readonly string _root;
             private readonly string _data;
 
-            public StandardFileSystem(IClock clock)
+            public StandardFileSystem(IClock clock, IHashFunction hashFunction, IMemoryStreamPool memoryStreamPool)
             {
                 // Preconditions
                 Raise.ArgumentNullException.IfIsNull(clock, nameof(clock));
+                Raise.ArgumentNullException.IfIsNull(hashFunction, nameof(hashFunction));
 
+                _clock = clock;
+                _hashFunction = hashFunction;
+                _memoryStreamPool = memoryStreamPool;
                 _root = PortableEnvironment.MapPath("~/App_Data/PersistentCache");
                 _data = Path.Combine(_root, "Data");
             }
 
             public bool Exists(string partition, string key)
             {
-                var hashedPartition = Hash(partition);
-                var partitionDir = Path.Combine(_data, hashedPartition);
-
-                if (!Directory.Exists(partitionDir))
-                {
-                    return false;
-                }
-
-                var hashedKey = Hash(key);
-                var keyFile = Path.Combine(partitionDir, hashedKey);
+                var keyFile = HashPartitionAndKey(partition, key);
 
                 try
                 {
-                    var lastWriteTimeUtc = File.GetLastWriteTimeUtc(keyFile);
-                    return lastWriteTimeUtc > _clock.UtcNow;
+                    // If last write time is in the future, then cache item is fresh.
+                    return IsFresh(keyFile);
                 }
                 catch (IOException)
                 {
-                    // File not found.
+                    // File not found or locked.
                     return false;
                 }
             }
 
             public string Write(string partition, string key, Stream value, DateTime utcExpiry, TimeSpan interval)
             {
-                var hashedPartition = Hash(partition);
-                var partitionDir = Path.Combine(_data, hashedPartition);
+                var partitionDir = HashPartition(partition);
 
                 if (!Directory.Exists(partitionDir))
                 {
                     Directory.CreateDirectory(partitionDir);
                 }
-
-                var hashedKey = Hash(key);
-                var keyFile = Path.Combine(partitionDir, hashedKey);
                 
+                var keyFile = HashKey(key, partitionDir);                
                 var intervalBytes = IntervalToBytes(interval);
 
                 using (var fs = File.Open(keyFile, FileMode.Create))
@@ -1400,12 +1425,42 @@ namespace PommaLabs.KVLite.Core
                 return keyFile;
             }
 
-            private static string Hash(string s)
+            public Option<Stream> Read(string partition, string key)
             {
-                var bytes = Encoding.Default.GetBytes(s);
-                var hash = XXHash.XXH32(bytes);
-                return $"{hash:0000000000}";
+                var keyFile = HashPartitionAndKey(partition, key);
+
+                try
+                {
+                    if (!IsFresh(keyFile))
+                    {
+                        return Option.None<Stream>();
+                    }
+
+                    var ms = _memoryStreamPool.GetObject().MemoryStream;
+
+                    using (var fs = File.Open(keyFile, FileMode.Open))
+                    {
+                        fs.Read(ReservedBytesHelper, 0, ReservedBytesHelper.Length);
+                        fs.CopyTo(ms);
+                        return ms;
+                    }
+                }
+                catch (IOException)
+                {
+                    // File not found or locked.
+                    return Option.None<Stream>();
+                }
             }
+
+            private bool IsFresh(string keyFile) => File.GetLastWriteTimeUtc(keyFile) > _clock.UtcNow;
+
+            private string HashPartitionAndKey(string partition, string key) => Path.Combine(_data, Hash(partition), Hash(key));
+
+            private string HashPartition(string partition) => Path.Combine(_data, Hash(partition));
+
+            private string HashKey(string key, string partitionDir) => Path.Combine(partitionDir, Hash(key));
+
+            private string Hash(string s) => BitConverter.ToString(_hashFunction.ComputeHash(Encoding.Default.GetBytes(s)));
 
             private static byte[] IntervalToBytes(TimeSpan interval) => BitConverter.GetBytes((long) interval.TotalSeconds);
         }

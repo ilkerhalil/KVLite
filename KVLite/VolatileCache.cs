@@ -31,6 +31,7 @@ using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using System.Collections.Generic;
+using System.Data.HashFunction;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 
@@ -66,8 +67,9 @@ namespace PommaLabs.KVLite
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
-            : base(settings, clock, log, serializer, compressor, memoryStreamPool)
+        /// <param name="hashFunction">The hash function.</param>
+        public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IHashFunction hashFunction = null)
+            : base(settings, clock, log, serializer, compressor, memoryStreamPool, hashFunction)
         {
         }
 

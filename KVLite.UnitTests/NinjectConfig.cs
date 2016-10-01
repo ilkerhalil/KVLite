@@ -29,6 +29,7 @@ using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using Ninject.Modules;
+using System.Data.HashFunction;
 
 namespace PommaLabs.KVLite.UnitTests
 {
@@ -61,6 +62,10 @@ namespace PommaLabs.KVLite.UnitTests
 
             Bind<JsonSerializerSettings>()
                 .ToConstant(new JsonSerializerSettings())
+                .InSingletonScope();
+
+            Bind<IHashFunction>()
+                .ToConstant(new xxHash())
                 .InSingletonScope();
         }
     }
