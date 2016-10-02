@@ -797,19 +797,8 @@ namespace PommaLabs.KVLite.Core
         /// </returns>
         protected sealed override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
-            DbCacheItem tmpItem;
-            using (var db = _connectionPool.GetObject())
-            {
-                db.PeekOneItem_Partition.Value = partition;
-                db.PeekOneItem_Key.Value = key;
-                db.PeekOneItem_UtcNow.Value = _clock.UnixTime;
-                using (var reader = db.PeekOneItem_Command.ExecuteReader())
-                {
-                    tmpItem = MapDataReader(reader).FirstOrDefault();
-                }
-            }
-
-            return DeserializeCacheItem<TVal>(tmpItem);
+            var fsCacheItem = _commentFs.ReadItem(partition, key);
+            return DeserializeCacheItem<TVal>(fsCacheItem);
         }
 
         /// <summary>
@@ -915,6 +904,38 @@ namespace PommaLabs.KVLite.Core
                 RemoveInternal(partition, key);
                 _log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
                 return Option.None<TVal>();
+            }
+        }
+
+        private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(Option<FsCacheItem> maybeSrc)
+        {
+            if (!maybeSrc.HasValue)
+            {
+                // Nothing to deserialize, return None.
+                return Option.None<ICacheItem<TVal>>();
+            }
+            var src = maybeSrc.Value;
+            try
+            {
+                return Option.Some<ICacheItem<TVal>>(new CacheItem<TVal>
+                {
+                    Partition = src.Partition,
+                    Key = src.Key,
+                    Value = UnsafeDeserializeValue<TVal>(src.SerializedValue),
+                    UtcCreation = src.UtcCreation,
+                    UtcExpiry = src.UtcExpiry,
+                    Interval = src.Interval,
+                    ParentKeys = src.ParentKeys
+                });
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                // Something wrong happened during deserialization. Therefore, we remove the old
+                // element (in order to avoid future errors) and we return None.
+                RemoveInternal(src.Partition, src.Key);
+                _log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
+                return Option.None<ICacheItem<TVal>>();
             }
         }
 
@@ -1154,20 +1175,6 @@ namespace PommaLabs.KVLite.Core
                 GetManyItems_Command.Parameters.Add(GetManyItems_Partition = new SQLiteParameter("partition"));
                 GetManyItems_Command.Parameters.Add(GetManyItems_UtcNow = new SQLiteParameter("utcNow"));
 
-                // PeekOne
-                PeekOne_Command = Connection.CreateCommand();
-                PeekOne_Command.CommandText = SQLiteQueries.PeekOne;
-                PeekOne_Command.Parameters.Add(PeekOne_Partition = new SQLiteParameter("partition"));
-                PeekOne_Command.Parameters.Add(PeekOne_Key = new SQLiteParameter("key"));
-                PeekOne_Command.Parameters.Add(PeekOne_UtcNow = new SQLiteParameter("utcNow"));
-
-                // PeekOneItem
-                PeekOneItem_Command = Connection.CreateCommand();
-                PeekOneItem_Command.CommandText = SQLiteQueries.PeekOneItem;
-                PeekOneItem_Command.Parameters.Add(PeekOneItem_Partition = new SQLiteParameter("partition"));
-                PeekOneItem_Command.Parameters.Add(PeekOneItem_Key = new SQLiteParameter("key"));
-                PeekOneItem_Command.Parameters.Add(PeekOneItem_UtcNow = new SQLiteParameter("utcNow"));
-
                 // PeekManyItems
                 PeekManyItems_Command = Connection.CreateCommand();
                 PeekManyItems_Command.CommandText = SQLiteQueries.PeekManyItems;
@@ -1194,8 +1201,6 @@ namespace PommaLabs.KVLite.Core
                 GetOne_Command.Dispose();
                 GetOneItem_Command.Dispose();
                 GetManyItems_Command.Dispose();
-                PeekOne_Command.Dispose();
-                PeekOneItem_Command.Dispose();
                 PeekManyItems_Command.Dispose();
                 Remove_Command.Dispose();
                 IncrementalVacuum_Command.Dispose();
@@ -1277,24 +1282,6 @@ namespace PommaLabs.KVLite.Core
 
             #endregion GetManyItems
 
-            #region PeekOne
-
-            public SQLiteCommand PeekOne_Command { get; }
-            public SQLiteParameter PeekOne_Partition { get; }
-            public SQLiteParameter PeekOne_Key { get; }
-            public SQLiteParameter PeekOne_UtcNow { get; }
-
-            #endregion PeekOne
-
-            #region PeekOneItem
-
-            public SQLiteCommand PeekOneItem_Command { get; }
-            public SQLiteParameter PeekOneItem_Partition { get; }
-            public SQLiteParameter PeekOneItem_Key { get; }
-            public SQLiteParameter PeekOneItem_UtcNow { get; }
-
-            #endregion PeekOneItem
-
             #region PeekManyItems
 
             public SQLiteCommand PeekManyItems_Command { get; }
@@ -1351,14 +1338,36 @@ namespace PommaLabs.KVLite.Core
             string Write(string partition, string key, Stream value, DateTime utcExpiry, TimeSpan interval);
 
             Option<Stream> Read(string partition, string key);
+
+            Option<FsCacheItem> ReadItem(string partition, string key);
+        }
+
+        public sealed class FsCacheItem
+        {
+            public string Partition { get; set; }
+
+            public string Key { get; set; }
+
+            public Stream SerializedValue { get; set; }
+
+            public DateTime UtcCreation { get; set; }
+
+            public DateTime UtcExpiry { get; set; }
+
+            public TimeSpan Interval { get; set; }
+
+            public string[] ParentKeys { get; set; }
         }
 
         public sealed class StandardFileSystem : IFileSystem
         {
+            private const int IntervalOffset = 0;
+            private const int UtcCreationOffset = 8;
+
             /// <summary>
             ///   Reserved bytes which might be used in future releases of KVLite.
             /// </summary>
-            private static readonly byte[] ReservedBytes = new byte[64 - sizeof(long)];
+            private static readonly byte[] ReservedBytes = new byte[64 - sizeof(long) * 2];
 
             [ThreadStatic]
             private static readonly byte[] ReservedBytesHelper = new byte[64];
@@ -1407,19 +1416,21 @@ namespace PommaLabs.KVLite.Core
                     Directory.CreateDirectory(partitionDir);
                 }
                 
-                var keyFile = HashKey(key, partitionDir);                
-                var intervalBytes = IntervalToBytes(interval);
+                var keyFile = HashKey(key, partitionDir);
+                var intervalBytes = TimeSpanToBytes(interval);
+                var utcCreationBytes = DateTimeToBytes(_clock.UtcNow);
 
-                using (var fs = File.Open(keyFile, FileMode.Create))
+                using (var fs = OpenWrite(keyFile))
                 {
                     // Header
                     fs.Write(intervalBytes, 0, intervalBytes.Length);
+                    fs.Write(utcCreationBytes, 0, utcCreationBytes.Length);
                     fs.Write(ReservedBytes, 0, ReservedBytes.Length);
 
                     // Body
                     value.CopyTo(fs);
                 }
-
+                
                 File.SetLastWriteTimeUtc(keyFile, utcExpiry);
 
                 return keyFile;
@@ -1431,22 +1442,15 @@ namespace PommaLabs.KVLite.Core
 
                 try
                 {
-                    if (!IsFresh(keyFile))
+                    DateTime utcExpiry;
+                    var ms = ReadAndGetExpiry(keyFile, out utcExpiry);
+
+                    if (!IsFresh(utcExpiry))
                     {
                         return Option.None<Stream>();
                     }
 
-                    var ms = _memoryStreamPool.GetObject().MemoryStream;
-
-                    using (var fs = File.Open(keyFile, FileMode.Open))
-                    {
-                        fs.Read(ReservedBytesHelper, 0, ReservedBytesHelper.Length);
-
-                        fs.CopyTo(ms);
-                        ms.Position = 0L;
-
-                        return ms;
-                    }
+                    return ms;
                 }
                 catch (IOException)
                 {
@@ -1455,7 +1459,62 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
+            public Option<FsCacheItem> ReadItem(string partition, string key)
+            {
+                var keyFile = HashPartitionAndKey(partition, key);
+
+                try
+                {
+                    DateTime utcExpiry;
+                    var ms = ReadAndGetExpiry(keyFile, out utcExpiry);
+
+                    if (!IsFresh(utcExpiry))
+                    {
+                        return Option.None<FsCacheItem>();
+                    }                    
+                    
+                    return new FsCacheItem
+                    {
+                        Partition = partition,
+                        Key = key,
+                        SerializedValue = ms,
+                        UtcCreation = DateTimeFromBytes(ReservedBytesHelper, UtcCreationOffset),
+                        UtcExpiry = utcExpiry,
+                        Interval = TimeSpanFromBytes(ReservedBytesHelper, IntervalOffset),
+                        ParentKeys = null
+                    };
+                }
+                catch (IOException)
+                {
+                    // File not found or locked.
+                    return Option.None<FsCacheItem>();
+                }
+            }
+
+            private MemoryStream ReadAndGetExpiry(string keyFile, out DateTime utcExpiry)
+            {
+                var ms = _memoryStreamPool.GetObject().MemoryStream;
+
+                using (var fs = OpenRead(keyFile))
+                {
+                    fs.Read(ReservedBytesHelper, 0, ReservedBytesHelper.Length);
+                    fs.CopyTo(ms);
+
+                    // While file is read-locked, get UTC expiry.
+                    utcExpiry = File.GetLastWriteTimeUtc(keyFile);
+                }
+
+                ms.Position = 0L;
+                return ms;
+            }
+
+            private bool IsFresh(DateTime utcExpiry) => utcExpiry > _clock.UtcNow;
+
             private bool IsFresh(string keyFile) => File.GetLastWriteTimeUtc(keyFile) > _clock.UtcNow;
+
+            private static FileStream OpenRead(string f) => File.Open(f, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            private static FileStream OpenWrite(string f) => File.Open(f, FileMode.Create, FileAccess.Write, FileShare.None);
 
             private string HashPartitionAndKey(string partition, string key) => Path.Combine(_data, Hash(partition), Hash(key));
 
@@ -1465,7 +1524,13 @@ namespace PommaLabs.KVLite.Core
 
             private string Hash(string s) => BitConverter.ToString(_hashFunction.ComputeHash(Encoding.Default.GetBytes(s)));
 
-            private static byte[] IntervalToBytes(TimeSpan interval) => BitConverter.GetBytes((long) interval.TotalSeconds);
+            private static byte[] DateTimeToBytes(DateTime dt) => BitConverter.GetBytes(dt.ToUnixTime());
+
+            private static DateTime DateTimeFromBytes(byte[] b, int idx) => DateTimeExtensions.UnixTimeStart.AddSeconds(BitConverter.ToInt64(b, idx));
+
+            private static byte[] TimeSpanToBytes(TimeSpan ts) => BitConverter.GetBytes((long) ts.TotalSeconds);
+
+            private static TimeSpan TimeSpanFromBytes(byte[] b, int idx) => TimeSpan.FromSeconds(BitConverter.ToInt64(b, idx));
         }
     }
 }
