@@ -709,15 +709,7 @@ namespace PommaLabs.KVLite.Core
         /// <returns>The value with specified partition and key.</returns>
         protected sealed override Option<TVal> GetInternal<TVal>(string partition, string key)
         {
-            byte[] serializedValue;
-            using (var db = _connectionPool.GetObject())
-            {
-                db.GetOne_Partition.Value = partition;
-                db.GetOne_Key.Value = key;
-                db.GetOne_UtcNow.Value = _clock.UnixTime;
-                serializedValue = (byte[]) db.GetOne_Command.ExecuteScalar();
-            }
-
+            var serializedValue = _commentFs.Read(partition, key, FsReadMode.Get);
             return DeserializeValue<TVal>(serializedValue, partition, key);
         }
 
@@ -731,19 +723,8 @@ namespace PommaLabs.KVLite.Core
         /// <returns>The cache item with specified partition and key.</returns>
         protected sealed override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
-            DbCacheItem tmpItem;
-            using (var db = _connectionPool.GetObject())
-            {
-                db.GetOneItem_Partition.Value = partition;
-                db.GetOneItem_Key.Value = key;
-                db.GetOneItem_UtcNow.Value = _clock.UnixTime;
-                using (var reader = db.GetOneItem_Command.ExecuteReader())
-                {
-                    tmpItem = MapDataReader(reader).FirstOrDefault();
-                }
-            }
-
-            return DeserializeCacheItem<TVal>(tmpItem);
+            var fsCacheItem = _commentFs.ReadItem(partition, key, FsReadMode.Get);
+            return DeserializeCacheItem<TVal>(fsCacheItem);
         }
 
         /// <summary>
@@ -782,7 +763,7 @@ namespace PommaLabs.KVLite.Core
         /// </returns>
         protected sealed override Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
-            var serializedValue = _commentFs.Read(partition, key);
+            var serializedValue = _commentFs.Read(partition, key, FsReadMode.Peek);
             return DeserializeValue<TVal>(serializedValue, partition, key);
         }
 
@@ -797,7 +778,7 @@ namespace PommaLabs.KVLite.Core
         /// </returns>
         protected sealed override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
-            var fsCacheItem = _commentFs.ReadItem(partition, key);
+            var fsCacheItem = _commentFs.ReadItem(partition, key, FsReadMode.Peek);
             return DeserializeCacheItem<TVal>(fsCacheItem);
         }
 
@@ -1337,9 +1318,9 @@ namespace PommaLabs.KVLite.Core
 
             string Write(string partition, string key, Stream value, DateTime utcExpiry, TimeSpan interval);
 
-            Option<Stream> Read(string partition, string key);
+            Option<Stream> Read(string partition, string key, FsReadMode readMode);
 
-            Option<FsCacheItem> ReadItem(string partition, string key);
+            Option<FsCacheItem> ReadItem(string partition, string key, FsReadMode readMode);
         }
 
         public sealed class FsCacheItem
@@ -1359,18 +1340,26 @@ namespace PommaLabs.KVLite.Core
             public string[] ParentKeys { get; set; }
         }
 
+        public enum FsReadMode
+        {
+            Peek,
+
+            Get
+        }
+
         public sealed class StandardFileSystem : IFileSystem
         {
+            private const int ReservedBytesLength = 64;
+            private const int ReservedInt64Fields = 2;
             private const int IntervalOffset = 0;
             private const int UtcCreationOffset = 8;
+
+            private static readonly IObjectPool<PooledObjectWrapper<byte[]>> ReservedBytesPool = new ObjectPool<PooledObjectWrapper<byte[]>>(() => new PooledObjectWrapper<byte[]>(new byte[ReservedBytesLength]));
 
             /// <summary>
             ///   Reserved bytes which might be used in future releases of KVLite.
             /// </summary>
-            private static readonly byte[] ReservedBytes = new byte[64 - sizeof(long) * 2];
-
-            [ThreadStatic]
-            private static readonly byte[] ReservedBytesHelper = new byte[64];
+            private static readonly byte[] ReservedBytesStub = new byte[ReservedBytesLength - sizeof(long) * ReservedInt64Fields];
 
             private readonly IClock _clock;
             private readonly IHashFunction _hashFunction;
@@ -1398,7 +1387,7 @@ namespace PommaLabs.KVLite.Core
                 try
                 {
                     // If last write time is in the future, then cache item is fresh.
-                    return IsFresh(keyFile);
+                    return File.GetLastWriteTimeUtc(keyFile) >= _clock.UtcNow;
                 }
                 catch (IOException)
                 {
@@ -1425,7 +1414,7 @@ namespace PommaLabs.KVLite.Core
                     // Header
                     fs.Write(intervalBytes, 0, intervalBytes.Length);
                     fs.Write(utcCreationBytes, 0, utcCreationBytes.Length);
-                    fs.Write(ReservedBytes, 0, ReservedBytes.Length);
+                    fs.Write(ReservedBytesStub, 0, ReservedBytesStub.Length);
 
                     // Body
                     value.CopyTo(fs);
@@ -1436,21 +1425,19 @@ namespace PommaLabs.KVLite.Core
                 return keyFile;
             }
 
-            public Option<Stream> Read(string partition, string key)
+            public Option<Stream> Read(string partition, string key, FsReadMode readMode)
             {
                 var keyFile = HashPartitionAndKey(partition, key);
 
                 try
                 {
-                    DateTime utcExpiry;
-                    var ms = ReadAndGetExpiry(keyFile, out utcExpiry);
+                    MemoryStream serializedValue;
+                    DateTime utcCreation, utcExpiry;
+                    TimeSpan interval;
 
-                    if (!IsFresh(utcExpiry))
-                    {
-                        return Option.None<Stream>();
-                    }
-
-                    return ms;
+                    return TryReadAndGetExpiry(keyFile, readMode, out serializedValue, out utcCreation, out utcExpiry, out interval)
+                        ? Option.Some<Stream>(serializedValue)
+                        : Option.None<Stream>();
                 }
                 catch (IOException)
                 {
@@ -1459,16 +1446,17 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
-            public Option<FsCacheItem> ReadItem(string partition, string key)
+            public Option<FsCacheItem> ReadItem(string partition, string key, FsReadMode readMode)
             {
                 var keyFile = HashPartitionAndKey(partition, key);
 
                 try
                 {
-                    DateTime utcExpiry;
-                    var ms = ReadAndGetExpiry(keyFile, out utcExpiry);
+                    MemoryStream serializedValue;
+                    DateTime utcCreation, utcExpiry;
+                    TimeSpan interval;
 
-                    if (!IsFresh(utcExpiry))
+                    if (!TryReadAndGetExpiry(keyFile, readMode, out serializedValue, out utcCreation, out utcExpiry, out interval))
                     {
                         return Option.None<FsCacheItem>();
                     }                    
@@ -1477,10 +1465,10 @@ namespace PommaLabs.KVLite.Core
                     {
                         Partition = partition,
                         Key = key,
-                        SerializedValue = ms,
-                        UtcCreation = DateTimeFromBytes(ReservedBytesHelper, UtcCreationOffset),
+                        SerializedValue = serializedValue,
+                        UtcCreation = utcCreation,
                         UtcExpiry = utcExpiry,
-                        Interval = TimeSpanFromBytes(ReservedBytesHelper, IntervalOffset),
+                        Interval = interval,
                         ParentKeys = null
                     };
                 }
@@ -1491,26 +1479,46 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
-            private MemoryStream ReadAndGetExpiry(string keyFile, out DateTime utcExpiry)
+            private bool TryReadAndGetExpiry(string keyFile, FsReadMode readMode, out MemoryStream serializedValue, out DateTime utcCreation, out DateTime utcExpiry, out TimeSpan interval)
             {
-                var ms = _memoryStreamPool.GetObject().MemoryStream;
+                serializedValue = _memoryStreamPool.GetObject().MemoryStream;
 
-                using (var fs = OpenRead(keyFile))
+                using (var rb = ReservedBytesPool.GetObject())
                 {
-                    fs.Read(ReservedBytesHelper, 0, ReservedBytesHelper.Length);
-                    fs.CopyTo(ms);
+                    using (var fs = OpenRead(keyFile))
+                    {
+                        fs.Read(rb.InternalResource, 0, ReservedBytesLength);
+                        fs.CopyTo(serializedValue);
 
-                    // While file is read-locked, get UTC expiry.
-                    utcExpiry = File.GetLastWriteTimeUtc(keyFile);
-                }
+                        // While file is read-locked, get UTC expiry.
+                        utcExpiry = File.GetLastWriteTimeUtc(keyFile);
+                    }
 
-                ms.Position = 0L;
-                return ms;
+                    if (utcExpiry < _clock.UtcNow)
+                    {
+                        // Dispose resources and clear variables.
+                        serializedValue.Dispose();
+                        serializedValue = null;
+                        utcCreation = default(DateTime);
+                        utcExpiry = default(DateTime);
+                        interval = default(TimeSpan);
+
+                        return false;
+                    }
+
+                    interval = TimeSpanFromBytes(rb.InternalResource, IntervalOffset);
+                    if (readMode == FsReadMode.Get && interval != TimeSpan.Zero)
+                    {
+                        utcExpiry = _clock.UtcNow + interval;
+                        File.SetLastWriteTimeUtc(keyFile, utcExpiry);
+                    }
+
+                    utcCreation = DateTimeFromBytes(rb.InternalResource, UtcCreationOffset);
+                }           
+
+                serializedValue.Position = 0L;
+                return true;
             }
-
-            private bool IsFresh(DateTime utcExpiry) => utcExpiry > _clock.UtcNow;
-
-            private bool IsFresh(string keyFile) => File.GetLastWriteTimeUtc(keyFile) > _clock.UtcNow;
 
             private static FileStream OpenRead(string f) => File.Open(f, FileMode.Open, FileAccess.Read, FileShare.Read);
 
