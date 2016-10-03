@@ -24,6 +24,7 @@
 using CodeProject.ObjectPool;
 using CodeProject.ObjectPool.Specialized;
 using Common.Logging;
+using LiteDB;
 using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
@@ -143,7 +144,7 @@ namespace PommaLabs.KVLite.Core
             {
                 // We apply many customizations to the JSON serializer, in order to achieve a small
                 // output size.
-                _serializer = new JsonSerializer(new JsonSerializerSettings
+                _serializer = new CodeServices.Serialization.JsonSerializer(new JsonSerializerSettings
                 {
                     DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
                     DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.IgnoreAndPopulate,
@@ -584,6 +585,15 @@ namespace PommaLabs.KVLite.Core
                     _commentFs.Write(partition, key, memoryStream, utcExpiry, interval);
 
                     serializedValue = memoryStream.ToArray();
+
+                    using (var db = CreateTemp())
+                    {
+                        db.GetCollection<CacheLite>("test").Insert(new CacheLite
+                        {
+                            Id = HashTemp(partition, key),
+                            Partition = partition
+                        });
+                    }
                 }
             }
             catch (Exception ex)
@@ -1311,6 +1321,25 @@ namespace PommaLabs.KVLite.Core
         }
 
         #endregion Nested type: DbCacheItem
+
+        private static LiteDatabase CreateTemp()
+        {
+            return new LiteDatabase(Path.Combine(PortableEnvironment.MapPath("~/App_Data/PersistentCache"), "PersistentCache.db"));
+        }
+
+        private static long HashTemp(string p, string k)
+        {
+            var ph = (long) XXHash.XXH32(Encoding.Default.GetBytes(p));
+            var kh = (long) XXHash.XXH32(Encoding.Default.GetBytes(k));
+            return (ph << 32) + kh;
+        }
+
+        public class CacheLite
+        {
+            public long Id { get; set; }
+
+            public string Partition { get; set; }
+        }
 
         public interface IFileSystem
         {
