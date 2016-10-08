@@ -472,6 +472,11 @@ namespace PommaLabs.KVLite.Core
             var parentKeyCount = parentKeys?.Count ?? 0;
             if (parentKeyCount != 0)
             {
+                dbCacheItem.ParentKey0 = parentKeyCount > 0 ? parentKeys[0].Truncate(MaxTagLength) : null;
+                dbCacheItem.ParentKey1 = parentKeyCount > 1 ? parentKeys[1].Truncate(MaxTagLength) : null;
+                dbCacheItem.ParentKey2 = parentKeyCount > 2 ? parentKeys[2].Truncate(MaxTagLength) : null;
+                dbCacheItem.ParentKey3 = parentKeyCount > 3 ? parentKeys[3].Truncate(MaxTagLength) : null;
+                dbCacheItem.ParentKey4 = parentKeyCount > 4 ? parentKeys[4].Truncate(MaxTagLength) : null;
             }
 
             using (var db = new DbCacheConnection(ConnectionFactory))
