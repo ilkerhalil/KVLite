@@ -21,12 +21,13 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using CodeProject.ObjectPool.Specialized;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
-using System.Data.HashFunction;
 using System.IO.Compression;
+using System.Runtime.Serialization.Formatters;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -39,11 +40,6 @@ namespace PommaLabs.KVLite.Core
         ///   Default clock.
         /// </summary>
         public static IClock DefaultClock { get; } = new SystemClock();
-
-        /// <summary>
-        ///   Default hash function.
-        /// </summary>
-        public static IHashFunction DefaultHashFunction { get; } = new xxHash();
 
         /// <summary>
         ///   Default compressor.
@@ -62,6 +58,7 @@ namespace PommaLabs.KVLite.Core
         /// </remarks>
         public static ISerializer DefaultSerializer { get; } = new JsonSerializer(new JsonSerializerSettings
         {
+            ContractResolver = CodeServices.Serialization.Json.Resolvers.DefaultContractResolver.Instance,
             DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
             DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.IgnoreAndPopulate,
             Encoding = PortableEncoding.UTF8WithoutBOM,
@@ -72,7 +69,7 @@ namespace PommaLabs.KVLite.Core
             PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
             ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
             TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
-            TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
-        }, CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance);
+            TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+        }, MemoryStreamPool.Instance);
     }
 }

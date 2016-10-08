@@ -36,11 +36,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.HashFunction;
-using System.Data.HashFunction.Utilities;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -119,8 +118,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        /// <param name="hashFunction">The hash function.</param>
-        internal AbstractSQLiteCache(TSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool, IHashFunction hashFunction)
+        internal AbstractSQLiteCache(TSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -131,7 +129,7 @@ namespace PommaLabs.KVLite.Core
             _serializer = serializer ?? Constants.DefaultSerializer;
             MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
             _clock = clock ?? Constants.DefaultClock;
-            _commentFs = new StandardFileSystem(_clock, hashFunction ?? Constants.DefaultHashFunction, MemoryStreamPool);
+            _commentFs = new StandardFileSystem(_clock, MemoryStreamPool);
 
             // We need to properly customize the default serializer settings in no custom serializer
             // has been specified.
@@ -581,18 +579,24 @@ namespace PommaLabs.KVLite.Core
                         _serializer.SerializeToStream(value, compressionStream);
                     }
 
-                    memoryStream.Position = 0L;
-                    _commentFs.Write(partition, key, memoryStream, utcExpiry, interval);
-
                     serializedValue = memoryStream.ToArray();
+
+                    var cacheItem = new CacheLite
+                    {
+                        Id = HashTemp(partition, key),
+                        Partition = partition,
+                        Key = key,
+                        Value = serializedValue,
+                        UtcCreation = _clock.UtcNow
+                    };
 
                     using (var db = CreateTemp())
                     {
-                        db.GetCollection<CacheLite>("test").Insert(new CacheLite
+                        var cacheItems = db.GetCollection<CacheLite>(CacheItemsCollection);                        
+                        if (!cacheItems.Update(cacheItem))
                         {
-                            Id = HashTemp(partition, key),
-                            Partition = partition
-                        });
+                            cacheItems.Insert(cacheItem);
+                        }
                     }
                 }
             }
@@ -1322,9 +1326,14 @@ namespace PommaLabs.KVLite.Core
 
         #endregion Nested type: DbCacheItem
 
+        private const string CacheItemsCollection = "CacheItemsV1";
+
+        private static readonly CultureInfo AmericanCultureInfo = new CultureInfo("en-US");
+
         private static LiteDatabase CreateTemp()
         {
-            return new LiteDatabase(Path.Combine(PortableEnvironment.MapPath("~/App_Data/PersistentCache"), "PersistentCache.db"));
+            var filename = Path.Combine(PortableEnvironment.MapPath("~/App_Data/PersistentCache"), "PersistentCache.db");
+            return new LiteDatabase($"filename={filename}; journal=true; initial size=16mb");
         }
 
         private static long HashTemp(string p, string k)
@@ -1339,6 +1348,12 @@ namespace PommaLabs.KVLite.Core
             public long Id { get; set; }
 
             public string Partition { get; set; }
+
+            public string Key { get; set; }
+
+            public byte[] Value { get; set; }
+
+            public DateTime UtcCreation { get; set; }
         }
 
         public interface IFileSystem
@@ -1391,19 +1406,16 @@ namespace PommaLabs.KVLite.Core
             private static readonly byte[] ReservedBytesStub = new byte[ReservedBytesLength - sizeof(long) * ReservedInt64Fields];
 
             private readonly IClock _clock;
-            private readonly IHashFunction _hashFunction;
             private readonly IMemoryStreamPool _memoryStreamPool;
             private readonly string _root;
             private readonly string _data;
 
-            public StandardFileSystem(IClock clock, IHashFunction hashFunction, IMemoryStreamPool memoryStreamPool)
+            public StandardFileSystem(IClock clock, IMemoryStreamPool memoryStreamPool)
             {
                 // Preconditions
                 Raise.ArgumentNullException.IfIsNull(clock, nameof(clock));
-                Raise.ArgumentNullException.IfIsNull(hashFunction, nameof(hashFunction));
 
                 _clock = clock;
-                _hashFunction = hashFunction;
                 _memoryStreamPool = memoryStreamPool;
                 _root = PortableEnvironment.MapPath("~/App_Data/PersistentCache");
                 _data = Path.Combine(_root, "Data");
@@ -1559,7 +1571,7 @@ namespace PommaLabs.KVLite.Core
 
             private string HashKey(string key, string partitionDir) => Path.Combine(partitionDir, Hash(key));
 
-            private string Hash(string s) => BitConverter.ToString(_hashFunction.ComputeHash(Encoding.Default.GetBytes(s)));
+            private string Hash(string s) => BitConverter.ToString(Encoding.Default.GetBytes(s));
 
             private static byte[] DateTimeToBytes(DateTime dt) => BitConverter.GetBytes(dt.ToUnixTime());
 
