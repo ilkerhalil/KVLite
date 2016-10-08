@@ -50,7 +50,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         public VolatileCacheSettings()
         {
-            DefaultPartition = "KVLite.DefaultPartition";
+            DefaultPartition = "kvl.default";
             StaticIntervalInDays = 30;
             InsertionCountBeforeAutoClean = 64;
             MaxCacheSizeInMB = 256;

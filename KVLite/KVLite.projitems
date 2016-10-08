@@ -9,8 +9,8 @@
     <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DbCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\AbstractSQLiteCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\AbstractSQLiteCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheItem.cs" />
@@ -20,10 +20,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)IDbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PersistentCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PersistentCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)VolatileCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)doxyfile.txt" />

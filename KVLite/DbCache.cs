@@ -1,4 +1,4 @@
-﻿// File name: AbstractSQLiteCache.cs
+﻿// File name: DbCache.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -29,26 +29,26 @@ using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
+using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SQLite;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Transactions;
 
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.KVLite
 {
     /// <summary>
-    ///   Base class for caches, implements common functionalities.
+    ///   Base class for SQL caches, implements common functionalities.
     /// </summary>
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
     [Serializable]
-    public abstract class AbstractSQLiteCache<TSettings> : AbstractCache<TSettings>
+    public abstract class DbCache<TSettings> : AbstractCache<TSettings>
         where TSettings : AbstractSQLiteCacheSettings<TSettings>
     {
         #region Constants
@@ -63,7 +63,7 @@ namespace PommaLabs.KVLite.Core
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="AbstractSQLiteCache{TCacheSettings}"/>
+        ///   Initializes a new instance of the <see cref="DbCache{TCacheSettings}"/>
         ///   class with given settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
@@ -73,7 +73,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        internal AbstractSQLiteCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool)
+        internal DbCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);

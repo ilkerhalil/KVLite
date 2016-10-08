@@ -45,7 +45,7 @@ namespace PommaLabs.KVLite.UnitTests
     {
         #region Setup/Teardown
 
-        protected AbstractSQLiteCache<TSettings> Cache;
+        protected DbCache<TSettings> Cache;
 
         [SetUp]
         public virtual void SetUp()

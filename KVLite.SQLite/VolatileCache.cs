@@ -1,4 +1,4 @@
-﻿// File name: PersistentCache.cs
+﻿// File name: VolatileCache.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -25,22 +25,20 @@ using CodeProject.ObjectPool.Specialized;
 using Common.Logging;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common.Collections.Generic;
-using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
-using System.IO;
 
 namespace PommaLabs.KVLite
 {
     /// <summary>
-    ///   An SQLite-based persistent cache.
+    ///   An SQLite-based in-memory cache.
     /// </summary>
     /// <remarks>SQLite-based caches do not allow more than ten parent keys per item.</remarks>
-    public sealed class PersistentCache : AbstractSQLiteCache<PersistentCacheSettings>
+    public sealed class VolatileCache : DbCache<VolatileCacheSettings>
     {
         #region Default Instance
 
@@ -50,7 +48,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         [Pure]
 #pragma warning disable CC0022 // Should dispose object
-        public static PersistentCache DefaultInstance { get; } = new PersistentCache(new PersistentCacheSettings(), null);
+        public static VolatileCache DefaultInstance { get; } = new VolatileCache(new VolatileCacheSettings(), null);
 
 #pragma warning restore CC0022 // Should dispose object
 
@@ -59,7 +57,7 @@ namespace PommaLabs.KVLite
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.
+        ///   Initializes a new instance of the <see cref="VolatileCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="connectionFactory">The DB connection factory.</param>
@@ -68,7 +66,7 @@ namespace PommaLabs.KVLite
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public PersistentCache(PersistentCacheSettings settings, IDbCacheConnectionFactory connectionFactory = null, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
+        public VolatileCache(VolatileCacheSettings settings, IDbCacheConnectionFactory connectionFactory = null, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
             : base(settings, connectionFactory, clock, log, serializer, compressor, memoryStreamPool)
         {
         }
@@ -84,7 +82,7 @@ namespace PommaLabs.KVLite
         /// <returns>Whether the changed property is the data source.</returns>
         protected override bool DataSourceHasChanged(string changedPropertyName)
         {
-            return changedPropertyName.ToLower().Equals("cachefile");
+            return changedPropertyName.ToLower().Equals("cachename");
         }
 
         /// <summary>
@@ -95,19 +93,8 @@ namespace PommaLabs.KVLite
         /// <returns>The SQLite data source that will be used by the cache.</returns>
         protected override string GetDataSource(out SQLiteJournalModeEnum journalMode)
         {
-            // Map cache path, since it may be an IIS relative path.
-            var mappedPath = PortableEnvironment.MapPath(Settings.CacheFile);
-
-            // If the directory which should contain the cache does not exist, then we create it.
-            // SQLite will take care of creating the DB itself.
-            var cacheDir = Path.GetDirectoryName(mappedPath);
-            if (cacheDir != null && !Directory.Exists(cacheDir))
-            {
-                Directory.CreateDirectory(cacheDir);
-            }
-
-            journalMode = SQLiteJournalModeEnum.Wal;
-            return mappedPath;
+            journalMode = SQLiteJournalModeEnum.Off;
+            return string.Format("file:{0}?mode=memory&cache=shared", Settings.CacheName);
         }
 
         /// <summary>
@@ -120,7 +107,7 @@ namespace PommaLabs.KVLite
         /// </returns>
         protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return KeyValuePair.Create("CacheFile", Settings.CacheFile);
+            yield return KeyValuePair.Create("CacheName", Settings.CacheName);
         }
 
         #endregion AbstractCache Members
