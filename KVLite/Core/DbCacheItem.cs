@@ -50,18 +50,18 @@ namespace PommaLabs.KVLite.Core
         public long Interval { get; set; }
 
         [Column(Name = "KVLI_PARENT0")]
-        public string ParentId0 { get; set; }
+        public string ParentKey0 { get; set; }
 
         [Column(Name = "KVLI_PARENT1")]
-        public string ParentId1 { get; set; }
+        public string ParentKey1 { get; set; }
 
         [Column(Name = "KVLI_PARENT2")]
-        public string ParentId2 { get; set; }
+        public string ParentKey2 { get; set; }
 
         [Column(Name = "KVLI_PARENT3")]
-        public string ParentId3 { get; set; }
+        public string ParentKey3 { get; set; }
 
         [Column(Name = "KVLI_PARENT4")]
-        public string ParentId4 { get; set; }
+        public string ParentKey4 { get; set; }
     }
 }
