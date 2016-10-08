@@ -59,7 +59,7 @@ namespace PommaLabs.KVLite.Benchmarks
             VolatileCache.DefaultInstance.ConnectionFactory = MySqlDbCacheConnectionFactory.Instance;
 
             Console.WriteLine(@"Running vacuum on DB...");
-            PersistentCache.DefaultInstance.Vacuum();
+            //PersistentCache.DefaultInstance.Vacuum();
             Console.WriteLine(@"Vacuum completed.");
 
             Console.WriteLine();
