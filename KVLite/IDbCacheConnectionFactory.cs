@@ -1,4 +1,4 @@
-﻿// File name: NinjectConfig.cs
+﻿// File name: IDbCacheConnectionFactory.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,46 +21,30 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Specialized;
-using Common.Logging;
-using Common.Logging.Simple;
-using PommaLabs.CodeServices.Clock;
-using PommaLabs.CodeServices.Compression;
-using PommaLabs.CodeServices.Serialization;
-using Ninject.Modules;
+using System.Data;
 
-namespace PommaLabs.KVLite.UnitTests
+namespace PommaLabs.KVLite
 {
     /// <summary>
-    ///   Bindings for KVLite.
+    ///   Creates new connections to a specified SQL provider.
     /// </summary>
-    sealed class NinjectConfig : NinjectModule
+    public interface IDbCacheConnectionFactory
     {
-        public override void Load()
-        {
-            Bind<IMemoryStreamPool>()
-                .ToConstant(MemoryStreamPool.Instance)
-                .InSingletonScope();
+        string CacheSchemaName { get; }
 
-            Bind<IClock>()
-                .To<MockClock>()
-                .InSingletonScope();
+        string CacheItemsTableName { get; }
 
-            Bind<ICompressor>()
-                .To<DeflateCompressor>()
-                .InSingletonScope();
+        string CacheSettingsTableName { get; }
 
-            Bind<ILog>()
-                .To<NoOpLogger>()
-                .InSingletonScope();
+        /// <summary>
+        ///   The provider for which connections are opened.
+        /// </summary>
+        DbCacheConnectionProvider Provider { get; }
 
-            Bind<ISerializer>()
-                .To<JsonSerializer>()
-                .InSingletonScope();
-
-            Bind<JsonSerializerSettings>()
-                .ToConstant(new JsonSerializerSettings())
-                .InSingletonScope();
-        }
+        /// <summary>
+        ///   Creates a new connection to specified provider.
+        /// </summary>
+        /// <returns>A connection which might be opened.</returns>
+        IDbConnection Create();
     }
 }

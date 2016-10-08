@@ -24,7 +24,7 @@
 using CodeProject.ObjectPool;
 using CodeProject.ObjectPool.Specialized;
 using Common.Logging;
-using LiteDB;
+using LinqToDB;
 using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
@@ -113,17 +113,19 @@ namespace PommaLabs.KVLite.Core
         ///   class with given settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
+        /// <param name="dbCacheConnectionFactory">The DB connection factory.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        internal AbstractSQLiteCache(TSettings settings, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool)
+        internal AbstractSQLiteCache(TSettings settings, IDbCacheConnectionFactory dbCacheConnectionFactory, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
 
             _settings = settings;
+            ConnectionFactory = dbCacheConnectionFactory;
             _log = log ?? LogManager.GetLogger(GetType());
             _compressor = compressor ?? Constants.DefaultCompressor;
             _serializer = serializer ?? Constants.DefaultSerializer;
@@ -160,6 +162,8 @@ namespace PommaLabs.KVLite.Core
         #endregion Construction
 
         #region Public Members
+
+        public IDbCacheConnectionFactory ConnectionFactory { get; set; }
 
         /// <summary>
         ///   Returns current cache size in kilobytes.
@@ -551,26 +555,7 @@ namespace PommaLabs.KVLite.Core
                     {
                         _serializer.SerializeToStream(value, compressionStream);
                     }
-
                     serializedValue = memoryStream.ToArray();
-
-                    var cacheItem = new CacheLite
-                    {
-                        Id = HashTemp(partition, key),
-                        Partition = partition,
-                        Key = key,
-                        Value = serializedValue,
-                        UtcCreation = _clock.UtcNow
-                    };
-
-                    using (var db = CreateTemp())
-                    {
-                        var cacheItems = db.GetCollection<CacheLite>(CacheItemsCollection);                        
-                        if (!cacheItems.Update(cacheItem))
-                        {
-                            cacheItems.Insert(cacheItem);
-                        }
-                    }
                 }
             }
             catch (Exception ex)
@@ -580,17 +565,48 @@ namespace PommaLabs.KVLite.Core
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
-            long insertionCount;
+            var dbCacheItem = new DbCacheItem
+            {
+                Id = HashTemp(partition, key),
+                Partition = partition,
+                Key = key,
+                Value = serializedValue,
+                UtcCreation = _clock.UnixTime,
+                UtcExpiry = utcExpiry.ToUnixTime(),
+                Interval = (long) interval.TotalSeconds
+            };
+
+            using (var db = new DbCacheConnection(ConnectionFactory))
+            {
+                // At first, we try to update the item, since it usually exists. It is not necessary to update
+                // PARTITION and KEY, since they must already have the proper values (otherwise,
+                // hashes should not have matched).
+                var updatedRows = db.CacheItems
+                    .Where(x => x.Id == dbCacheItem.Id)
+                    .Set(x => x.Value, dbCacheItem.Value)
+                    .Update();
+
+                if (updatedRows == 0)
+                {
+                    try
+                    {
+                        db.Insert(dbCacheItem);
+                    }
+#pragma warning disable CC0004 // Catch block cannot be empty
+#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
+                    catch
+                    {
+                        // Insert will fail if item already exists, but we do not care.
+                    }
+#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+#pragma warning restore CC0004 // Catch block cannot be empty
+                }
+
+            }
+
+            long insertionCount = 0L;
             using (var db = _connectionPool.GetObject())
             {
-                db.Add_Partition.Value = partition;
-                db.Add_Key.Value = key;
-                db.Add_SerializedValue.Value = serializedValue;
-                db.Add_UtcExpiry.Value = utcExpiry.ToUnixTime();
-                db.Add_Interval.Value = (long) interval.TotalSeconds;
-                db.Add_UtcNow.Value = _clock.UnixTime;
-                db.Add_MaxInsertionCount.Value = Settings.InsertionCountBeforeAutoClean;
-
                 // Also add the parent keys, if any.
                 var parentKeyCount = parentKeys?.Count ?? 0;
                 if (parentKeyCount != 0)
@@ -609,11 +625,6 @@ namespace PommaLabs.KVLite.Core
                     db.Add_ParentKey3.Value = null;
                     db.Add_ParentKey4.Value = null;
                 }
-
-                insertionCount = (long) db.Add_Command.ExecuteScalar();
-
-                // We have to clear the serialized value parameter, in order to free some memory up.
-                db.Add_SerializedValue.Value = null;
             }
 
             // Insertion has concluded successfully, therefore we increment the operation counter. If
@@ -666,7 +677,18 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         /// <returns>Whether cache contains the specified partition and key.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        protected sealed override bool ContainsInternal(string partition, string key) => _commentFs.Exists(partition, key);
+        protected sealed override bool ContainsInternal(string partition, string key)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var dbCacheItemId = HashTemp(partition, key);
+            var utcNow = _clock.UnixTime;
+
+            using (var db = new DbCacheConnection(ConnectionFactory))
+            {
+                // Search for at least one valid item.
+                return db.CacheItems.Any(x => x.Id == dbCacheItemId && x.UtcExpiry >= utcNow);
+            }
+        }
 
         /// <summary>
         ///   The number of items in the cache or in a partition, if specified.
@@ -907,7 +929,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(DbCacheItem src)
+        private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(OldDbCacheItem src)
         {
             if (src == null)
             {
@@ -938,7 +960,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private static IEnumerable<DbCacheItem> MapDataReader(SQLiteDataReader dataReader)
+        private static IEnumerable<OldDbCacheItem> MapDataReader(SQLiteDataReader dataReader)
         {
             const int valueCount = 16;
             var values = new object[valueCount];
@@ -946,7 +968,7 @@ namespace PommaLabs.KVLite.Core
             while (dataReader.Read())
             {
                 dataReader.GetValues(values);
-                var dbICacheItem = new DbCacheItem
+                var dbICacheItem = new OldDbCacheItem
                 {
                     Partition = values[0] as string,
                     Key = values[1] as string,
@@ -1280,7 +1302,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   Represents a row in the cache table.
         /// </summary>
-        private sealed class DbCacheItem
+        private sealed class OldDbCacheItem
         {
             public string Partition { get; set; }
 
@@ -1299,34 +1321,11 @@ namespace PommaLabs.KVLite.Core
 
         #endregion Nested type: DbCacheItem
 
-        private const string CacheItemsCollection = "CacheItemsV1";
-
-        private static readonly CultureInfo AmericanCultureInfo = new CultureInfo("en-US");
-
-        private static LiteDatabase CreateTemp()
-        {
-            var filename = Path.Combine(PortableEnvironment.MapPath("~/App_Data/PersistentCache"), "PersistentCache.db");
-            return new LiteDatabase($"filename={filename}; journal=true; initial size=16mb");
-        }
-
         private static long HashTemp(string p, string k)
         {
             var ph = (long) XXHash.XXH32(Encoding.Default.GetBytes(p));
             var kh = (long) XXHash.XXH32(Encoding.Default.GetBytes(k));
             return (ph << 32) + kh;
-        }
-
-        public class CacheLite
-        {
-            public long Id { get; set; }
-
-            public string Partition { get; set; }
-
-            public string Key { get; set; }
-
-            public byte[] Value { get; set; }
-
-            public DateTime UtcCreation { get; set; }
         }
 
         public interface IFileSystem
@@ -1418,7 +1417,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     Directory.CreateDirectory(partitionDir);
                 }
-                
+
                 var keyFile = HashKey(key, partitionDir);
                 var intervalBytes = TimeSpanToBytes(interval);
                 var utcCreationBytes = DateTimeToBytes(_clock.UtcNow);
@@ -1433,7 +1432,7 @@ namespace PommaLabs.KVLite.Core
                     // Body
                     value.CopyTo(fs);
                 }
-                
+
                 File.SetLastWriteTimeUtc(keyFile, utcExpiry);
 
                 return keyFile;
@@ -1473,8 +1472,8 @@ namespace PommaLabs.KVLite.Core
                     if (!TryReadAndGetExpiry(keyFile, readMode, out serializedValue, out utcCreation, out utcExpiry, out interval))
                     {
                         return Option.None<FsCacheItem>();
-                    }                    
-                    
+                    }
+
                     return new FsCacheItem
                     {
                         Partition = partition,
@@ -1528,7 +1527,7 @@ namespace PommaLabs.KVLite.Core
                     }
 
                     utcCreation = DateTimeFromBytes(rb.InternalResource, UtcCreationOffset);
-                }           
+                }
 
                 serializedValue.Position = 0L;
                 return true;

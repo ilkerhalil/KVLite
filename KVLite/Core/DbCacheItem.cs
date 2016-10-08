@@ -1,4 +1,4 @@
-﻿// File name: NinjectConfig.cs
+﻿// File name: DbCacheItem.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,46 +21,34 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Specialized;
-using Common.Logging;
-using Common.Logging.Simple;
-using PommaLabs.CodeServices.Clock;
-using PommaLabs.CodeServices.Compression;
-using PommaLabs.CodeServices.Serialization;
-using Ninject.Modules;
+using LinqToDB.Mapping;
 
-namespace PommaLabs.KVLite.UnitTests
+namespace PommaLabs.KVLite.Core
 {
     /// <summary>
-    ///   Bindings for KVLite.
+    ///   Represents an item stored inside the cache.
     /// </summary>
-    sealed class NinjectConfig : NinjectModule
+    internal sealed class DbCacheItem
     {
-        public override void Load()
-        {
-            Bind<IMemoryStreamPool>()
-                .ToConstant(MemoryStreamPool.Instance)
-                .InSingletonScope();
+        [Column(Name = "KVLI_ID"), PrimaryKey]
+        public long Id { get; set; }
 
-            Bind<IClock>()
-                .To<MockClock>()
-                .InSingletonScope();
+        [Column(Name = "KVLI_PARTITION"), NotNull]
+        public string Partition { get; set; }
 
-            Bind<ICompressor>()
-                .To<DeflateCompressor>()
-                .InSingletonScope();
+        [Column(Name = "KVLI_KEY"), NotNull]
+        public string Key { get; set; }
 
-            Bind<ILog>()
-                .To<NoOpLogger>()
-                .InSingletonScope();
+        [Column(Name = "KVLI_VALUE"), NotNull]
+        public byte[] Value { get; set; }
 
-            Bind<ISerializer>()
-                .To<JsonSerializer>()
-                .InSingletonScope();
+        [Column(Name = "KVLI_CREATION"), NotNull]
+        public long UtcCreation { get; set; }
 
-            Bind<JsonSerializerSettings>()
-                .ToConstant(new JsonSerializerSettings())
-                .InSingletonScope();
-        }
+        [Column(Name = "KVLI_EXPIRY"), NotNull]
+        public long UtcExpiry { get; set; }
+
+        [Column(Name = "KVLI_INTERVAL"), NotNull]
+        public long Interval { get; set; }
     }
 }

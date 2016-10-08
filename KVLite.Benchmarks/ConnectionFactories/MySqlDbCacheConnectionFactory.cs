@@ -1,4 +1,4 @@
-﻿// File name: NinjectConfig.cs
+﻿// File name: MySqlDbCacheConnectionFactory.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,46 +21,30 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Specialized;
-using Common.Logging;
-using Common.Logging.Simple;
-using PommaLabs.CodeServices.Clock;
-using PommaLabs.CodeServices.Compression;
-using PommaLabs.CodeServices.Serialization;
-using Ninject.Modules;
+using System.Configuration;
+using System.Data;
 
-namespace PommaLabs.KVLite.UnitTests
+namespace PommaLabs.KVLite.Benchmarks.ConnectionFactories
 {
-    /// <summary>
-    ///   Bindings for KVLite.
-    /// </summary>
-    sealed class NinjectConfig : NinjectModule
+    internal sealed class MySqlDbCacheConnectionFactory : IDbCacheConnectionFactory
     {
-        public override void Load()
+        private static readonly string ConnectionString = ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString;
+
+        public static MySqlDbCacheConnectionFactory Instance { get; } = new MySqlDbCacheConnectionFactory();
+
+        public string CacheSchemaName { get; } = "kvlite";
+
+        public string CacheItemsTableName { get; } = "kvl_cache_items";
+
+        public string CacheSettingsTableName { get; } = "kvl_cache_settings";
+
+        public DbCacheConnectionProvider Provider { get; } = DbCacheConnectionProvider.MySQL;
+
+        public IDbConnection Create()
         {
-            Bind<IMemoryStreamPool>()
-                .ToConstant(MemoryStreamPool.Instance)
-                .InSingletonScope();
-
-            Bind<IClock>()
-                .To<MockClock>()
-                .InSingletonScope();
-
-            Bind<ICompressor>()
-                .To<DeflateCompressor>()
-                .InSingletonScope();
-
-            Bind<ILog>()
-                .To<NoOpLogger>()
-                .InSingletonScope();
-
-            Bind<ISerializer>()
-                .To<JsonSerializer>()
-                .InSingletonScope();
-
-            Bind<JsonSerializerSettings>()
-                .ToConstant(new JsonSerializerSettings())
-                .InSingletonScope();
+            var connection = MySql.Data.MySqlClient.MySqlClientFactory.Instance.CreateConnection();
+            connection.ConnectionString = ConnectionString;
+            return connection;
         }
     }
 }

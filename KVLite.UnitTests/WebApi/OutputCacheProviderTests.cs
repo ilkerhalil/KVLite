@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite.UnitTests.WebApi
         [SetUp]
         public void SetUp()
         {
-            _outputCache = new OutputCacheProvider(new PersistentCache(new PersistentCacheSettings(), new MockClock()));
+            _outputCache = new OutputCacheProvider(new PersistentCache(new PersistentCacheSettings(), clock: new MockClock()));
         }
 
         [TearDown]

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet", "NuGet Packagers\KVLite.NuGet\KVLite.NuGet.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
 EndProject
@@ -130,30 +130,32 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet.SQLite", "NuGe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.WebForms", "KVLite.Examples.WebForms\KVLite.Examples.WebForms.csproj", "{02AE0BEA-762D-4034-AB7C-F7A165E282F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.SqlScripts", "KVLite.SqlScripts\KVLite.SqlScripts.csproj", "{CB1C5E97-FE27-4182-813C-89087A82BDE8}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{20b7f10e-aa70-4de6-839a-00978375d290}*SharedItemsImports = 13
-		KVLite.Nancy\KVLite.Nancy.projitems*{6f8516a0-5e50-44b2-aa8f-a3ab285f513e}*SharedItemsImports = 4
-		KVLite\KVLite.projitems*{0fc92c9c-b90c-4d2f-9ee7-2f3c4b06fdd2}*SharedItemsImports = 13
-		KVLite.WebForms\KVLite.WebForms.projitems*{3183fee9-f71c-48b6-b485-64ae2f208c73}*SharedItemsImports = 4
-		KVLite.WebForms\KVLite.WebForms.projitems*{2b0dfd0c-5762-46d2-bbdb-da11d31a3acc}*SharedItemsImports = 13
-		KVLite\KVLite.projitems*{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}*SharedItemsImports = 4
-		KVLite.WebApi\KVLite.WebApi.projitems*{23b87a0b-df68-432b-b75c-4d73aecfa6e3}*SharedItemsImports = 4
-		KVLite.WebApi\KVLite.WebApi.projitems*{cc96ea69-dcc3-4d9e-bb6a-aced0c479ef3}*SharedItemsImports = 4
-		KVLite.WebForms\KVLite.WebForms.projitems*{6de6294a-ced3-4e53-85fb-60b9fead1fe7}*SharedItemsImports = 4
-		KVLite.WebForms\KVLite.WebForms.projitems*{130b3de5-0e0f-440d-982e-cfc1fc4ac4fa}*SharedItemsImports = 4
-		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{0aa94325-2bfb-449a-a6a6-c10e9c0fa65b}*SharedItemsImports = 4
-		KVLite\KVLite.projitems*{b81fca47-a533-4ffb-b202-f6e07668eb66}*SharedItemsImports = 4
-		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{bc14baf7-bbb6-4fbc-b472-0517ac48881c}*SharedItemsImports = 4
 		KVLite.WebApi\KVLite.WebApi.projitems*{09d76014-4670-4977-b9db-6445649c862b}*SharedItemsImports = 13
-		KVLite.Nancy\KVLite.Nancy.projitems*{7f11c0e7-f781-4543-a013-b129a72646a4}*SharedItemsImports = 13
+		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{0aa94325-2bfb-449a-a6a6-c10e9c0fa65b}*SharedItemsImports = 4
+		KVLite\KVLite.projitems*{0fc92c9c-b90c-4d2f-9ee7-2f3c4b06fdd2}*SharedItemsImports = 13
+		KVLite.WebForms\KVLite.WebForms.projitems*{130b3de5-0e0f-440d-982e-cfc1fc4ac4fa}*SharedItemsImports = 4
+		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{20b7f10e-aa70-4de6-839a-00978375d290}*SharedItemsImports = 13
+		KVLite.WebApi\KVLite.WebApi.projitems*{23b87a0b-df68-432b-b75c-4d73aecfa6e3}*SharedItemsImports = 4
+		KVLite.WebForms\KVLite.WebForms.projitems*{2b0dfd0c-5762-46d2-bbdb-da11d31a3acc}*SharedItemsImports = 13
+		KVLite.WebForms\KVLite.WebForms.projitems*{3183fee9-f71c-48b6-b485-64ae2f208c73}*SharedItemsImports = 4
 		KVLite.WebApi\KVLite.WebApi.projitems*{3463d66a-bac1-4e3c-ae69-b3d1cd12c13d}*SharedItemsImports = 4
-		KVLite.Nancy\KVLite.Nancy.projitems*{64145a81-f369-4863-b02b-d4c14adb883e}*SharedItemsImports = 4
-		KVLite.UnitTests\KVLite.UnitTests.projitems*{bbe6492a-198e-499e-add5-e8c904ec8182}*SharedItemsImports = 4
 		KVLite\KVLite.projitems*{3768ff1c-ade5-4c9d-9c00-cacb0ce40809}*SharedItemsImports = 4
-		KVLite.UnitTests\KVLite.UnitTests.projitems*{50e7c4c0-0723-41aa-bd2d-0b31ca2cc67d}*SharedItemsImports = 13
-		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{d3f95e04-5400-46b2-af46-d8809fb8bcb0}*SharedItemsImports = 4
 		KVLite.Nancy\KVLite.Nancy.projitems*{442146be-4713-4d3f-be9d-635fd50d70bb}*SharedItemsImports = 4
+		KVLite.UnitTests\KVLite.UnitTests.projitems*{50e7c4c0-0723-41aa-bd2d-0b31ca2cc67d}*SharedItemsImports = 13
+		KVLite.Nancy\KVLite.Nancy.projitems*{64145a81-f369-4863-b02b-d4c14adb883e}*SharedItemsImports = 4
+		KVLite.WebForms\KVLite.WebForms.projitems*{6de6294a-ced3-4e53-85fb-60b9fead1fe7}*SharedItemsImports = 4
+		KVLite.Nancy\KVLite.Nancy.projitems*{6f8516a0-5e50-44b2-aa8f-a3ab285f513e}*SharedItemsImports = 4
+		KVLite.Nancy\KVLite.Nancy.projitems*{7f11c0e7-f781-4543-a013-b129a72646a4}*SharedItemsImports = 13
+		KVLite\KVLite.projitems*{b81fca47-a533-4ffb-b202-f6e07668eb66}*SharedItemsImports = 4
+		KVLite.UnitTests\KVLite.UnitTests.projitems*{bbe6492a-198e-499e-add5-e8c904ec8182}*SharedItemsImports = 4
+		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{bc14baf7-bbb6-4fbc-b472-0517ac48881c}*SharedItemsImports = 4
+		KVLite.WebApi\KVLite.WebApi.projitems*{cc96ea69-dcc3-4d9e-bb6a-aced0c479ef3}*SharedItemsImports = 4
+		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{d3f95e04-5400-46b2-af46-d8809fb8bcb0}*SharedItemsImports = 4
+		KVLite\KVLite.projitems*{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -457,6 +459,18 @@ Global
 		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|x86.ActiveCfg = Release|Any CPU
 		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|x86.Build.0 = Release|Any CPU
+		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Debug|x86.Build.0 = Debug|Any CPU
+		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Publish|Any CPU.Build.0 = Release|Any CPU
+		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Publish|x86.ActiveCfg = Release|Any CPU
+		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Publish|x86.Build.0 = Release|Any CPU
+		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Release|x86.ActiveCfg = Release|Any CPU
+		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -48,7 +48,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         [Pure]
 #pragma warning disable CC0022 // Should dispose object
-        public static VolatileCache DefaultInstance { get; } = new VolatileCache(new VolatileCacheSettings());
+        public static VolatileCache DefaultInstance { get; } = new VolatileCache(new VolatileCacheSettings(), null);
 
 #pragma warning restore CC0022 // Should dispose object
 
@@ -60,13 +60,14 @@ namespace PommaLabs.KVLite
         ///   Initializes a new instance of the <see cref="VolatileCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
+        /// <param name="dbCacheConnectionFactory">The DB connection factory.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
-            : base(settings, clock, log, serializer, compressor, memoryStreamPool)
+        public VolatileCache(VolatileCacheSettings settings, IDbCacheConnectionFactory dbCacheConnectionFactory = null, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
+            : base(settings, dbCacheConnectionFactory, clock, log, serializer, compressor, memoryStreamPool)
         {
         }
 

@@ -1,4 +1,4 @@
-﻿// File name: NinjectConfig.cs
+﻿// File name: DbCacheSetting.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,46 +21,12 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Specialized;
-using Common.Logging;
-using Common.Logging.Simple;
-using PommaLabs.CodeServices.Clock;
-using PommaLabs.CodeServices.Compression;
-using PommaLabs.CodeServices.Serialization;
-using Ninject.Modules;
-
-namespace PommaLabs.KVLite.UnitTests
+namespace PommaLabs.KVLite.Core
 {
     /// <summary>
-    ///   Bindings for KVLite.
+    ///   Represents a cache setting or state value.
     /// </summary>
-    sealed class NinjectConfig : NinjectModule
+    internal sealed class DbCacheSetting
     {
-        public override void Load()
-        {
-            Bind<IMemoryStreamPool>()
-                .ToConstant(MemoryStreamPool.Instance)
-                .InSingletonScope();
-
-            Bind<IClock>()
-                .To<MockClock>()
-                .InSingletonScope();
-
-            Bind<ICompressor>()
-                .To<DeflateCompressor>()
-                .InSingletonScope();
-
-            Bind<ILog>()
-                .To<NoOpLogger>()
-                .InSingletonScope();
-
-            Bind<ISerializer>()
-                .To<JsonSerializer>()
-                .InSingletonScope();
-
-            Bind<JsonSerializerSettings>()
-                .ToConstant(new JsonSerializerSettings())
-                .InSingletonScope();
-        }
     }
 }

@@ -60,7 +60,7 @@ namespace PommaLabs.KVLite.UnitTests
             try
             {
 #pragma warning disable CC0022 // Should dispose object
-                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = BlankPath }, Kernel.Get<IClock>());
+                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = BlankPath }, clock: Kernel.Get<IClock>());
 #pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)
@@ -77,7 +77,7 @@ namespace PommaLabs.KVLite.UnitTests
             try
             {
 #pragma warning disable CC0022 // Should dispose object
-                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = string.Empty }, Kernel.Get<IClock>());
+                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = string.Empty }, clock: Kernel.Get<IClock>());
 #pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)
@@ -94,7 +94,7 @@ namespace PommaLabs.KVLite.UnitTests
             try
             {
 #pragma warning disable CC0022 // Should dispose object
-                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = null }, Kernel.Get<IClock>());
+                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = null }, clock: Kernel.Get<IClock>());
 #pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)

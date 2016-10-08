@@ -60,7 +60,7 @@ namespace PommaLabs.KVLite.UnitTests
             try
             {
 #pragma warning disable CC0022 // Should dispose object
-                cache = new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
+                cache = new VolatileCache(new VolatileCacheSettings { CacheName = name }, clock: Kernel.Get<IClock>());
 #pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)
@@ -81,7 +81,7 @@ namespace PommaLabs.KVLite.UnitTests
             try
             {
 #pragma warning disable CC0022 // Should dispose object
-                cache = new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
+                cache = new VolatileCache(new VolatileCacheSettings { CacheName = name }, clock: Kernel.Get<IClock>());
 #pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)
@@ -103,7 +103,7 @@ namespace PommaLabs.KVLite.UnitTests
         [TestCase("a...b")]
         public void NewCache_GoodName(string name)
         {
-            ICache cache = new VolatileCache(new VolatileCacheSettings { CacheName = name }, Kernel.Get<IClock>());
+            ICache cache = new VolatileCache(new VolatileCacheSettings { CacheName = name }, clock: Kernel.Get<IClock>());
             Assert.That(cache, Is.Not.Null);
             cache.Dispose();
             Assert.That(cache.Disposed, Is.True);
@@ -175,7 +175,7 @@ namespace PommaLabs.KVLite.UnitTests
         public void AddStatic_TwoCaches_NoMix()
         {
             const string key = "key";
-            using (var another = new VolatileCache(new VolatileCacheSettings { CacheName = "another" }, Kernel.Get<IClock>()))
+            using (var another = new VolatileCache(new VolatileCacheSettings { CacheName = "another" }, clock: Kernel.Get<IClock>()))
             {
                 Cache.AddStaticToDefaultPartition(key, 1);
                 another.AddStaticToDefaultPartition(key, 2);

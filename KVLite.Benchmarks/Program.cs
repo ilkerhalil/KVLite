@@ -26,6 +26,7 @@ using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
 using PommaLabs.CodeServices.Serialization;
+using PommaLabs.KVLite.Benchmarks.ConnectionFactories;
 using PommaLabs.KVLite.UnitTests;
 using System;
 using System.Collections.Generic;
@@ -67,6 +68,9 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Table Count: {0}", RandomDataTablesCount);
             Console.WriteLine(@"Row Count: {0}", RowCount);
             Console.WriteLine(@"Total Size: {0:.0} MB", _tableListSize);
+
+            PersistentCache.DefaultInstance.ConnectionFactory = MySqlDbCacheConnectionFactory.Instance;
+            VolatileCache.DefaultInstance.ConnectionFactory = MySqlDbCacheConnectionFactory.Instance;
 
             for (var i = 0; i < IterationCount; ++i)
             {
