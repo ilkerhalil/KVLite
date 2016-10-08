@@ -474,7 +474,6 @@ namespace PommaLabs.KVLite.Core
 
             var dbCacheItem = new DbCacheItem
             {
-                Id = DbCacheItem.Hash(partition, key),
                 Partition = partition,
                 Key = key,
                 Value = serializedValue,
@@ -487,11 +486,11 @@ namespace PommaLabs.KVLite.Core
             var parentKeyCount = parentKeys?.Count ?? 0;
             if (parentKeyCount != 0)
             {
-                dbCacheItem.ParentId0 = parentKeyCount > 0 ? DbCacheItem.Hash(partition, parentKeys[0]) : new long?();
-                dbCacheItem.ParentId1 = parentKeyCount > 1 ? DbCacheItem.Hash(partition, parentKeys[1]) : new long?();
-                dbCacheItem.ParentId2 = parentKeyCount > 2 ? DbCacheItem.Hash(partition, parentKeys[2]) : new long?();
-                dbCacheItem.ParentId3 = parentKeyCount > 3 ? DbCacheItem.Hash(partition, parentKeys[3]) : new long?();
-                dbCacheItem.ParentId4 = parentKeyCount > 4 ? DbCacheItem.Hash(partition, parentKeys[4]) : new long?();
+                dbCacheItem.ParentId0 = parentKeyCount > 0 ? parentKeys[0] : null;
+                dbCacheItem.ParentId1 = parentKeyCount > 1 ? parentKeys[1] : null;
+                dbCacheItem.ParentId2 = parentKeyCount > 2 ? parentKeys[2] : null;
+                dbCacheItem.ParentId3 = parentKeyCount > 3 ? parentKeys[3] : null;
+                dbCacheItem.ParentId4 = parentKeyCount > 4 ? parentKeys[4] : null;
             }
 
             using (var db = new DbCacheConnection(ConnectionFactory))
@@ -500,7 +499,7 @@ namespace PommaLabs.KVLite.Core
                 // to update PARTITION and KEY, since they must already have the proper values
                 // (otherwise, hashes should not have matched).
                 var updatedRows = db.CacheItems
-                    .Where(x => x.Id == dbCacheItem.Id)
+                    .Where(x => x.Partition == partition && x.Key == key)
                     .Set(x => x.Value, dbCacheItem.Value)
                     .Set(x => x.UtcCreation, dbCacheItem.UtcCreation)
                     .Set(x => x.UtcExpiry, dbCacheItem.UtcExpiry)
@@ -575,13 +574,12 @@ namespace PommaLabs.KVLite.Core
         protected sealed override bool ContainsInternal(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var dbCacheItemId = DbCacheItem.Hash(partition, key);
             var utcNow = _clock.UnixTime;
 
             using (var db = new DbCacheConnection(ConnectionFactory))
             {
                 // Search for at least one valid item.
-                return db.CacheItems.Any(x => x.Id == dbCacheItemId && x.UtcExpiry >= utcNow);
+                return db.CacheItems.Any(x => x.Partition == partition && x.Key == key && x.UtcExpiry >= utcNow);
             }
         }
 
@@ -618,14 +616,13 @@ namespace PommaLabs.KVLite.Core
         protected sealed override Option<TVal> GetInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var dbCacheItemId = DbCacheItem.Hash(partition, key);
             var utcNow = _clock.UnixTime;
 
             byte[] serializedValue;
             using (var db = new DbCacheConnection(ConnectionFactory))
             {
                 var dbCacheItem = db.CacheItems
-                    .Where(x => x.Id == dbCacheItemId && x.UtcExpiry >= utcNow)
+                    .Where(x => x.Partition == partition && x.Key == key && x.UtcExpiry >= utcNow)
                     .Select(x => new { x.Value, OldUtcExpiry = x.UtcExpiry, NewUtcExpiry = utcNow + x.Interval })
                     .FirstOrDefault();
 
@@ -639,7 +636,7 @@ namespace PommaLabs.KVLite.Core
                 if (dbCacheItem.NewUtcExpiry > utcNow)
                 {
                     db.CacheItems
-                        .Where(x => x.Id == dbCacheItemId && x.UtcExpiry == dbCacheItem.OldUtcExpiry)
+                        .Where(x => x.Partition == partition && x.Key == key && x.UtcExpiry == dbCacheItem.OldUtcExpiry)
                         .Set(x => x.UtcExpiry, dbCacheItem.NewUtcExpiry)
                         .Update();
                 }
@@ -662,14 +659,13 @@ namespace PommaLabs.KVLite.Core
         protected sealed override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var dbCacheItemId = DbCacheItem.Hash(partition, key);
             var utcNow = _clock.UnixTime;
 
             DbCacheItem dbCacheItem;
             using (var db = new DbCacheConnection(ConnectionFactory))
             {
                 dbCacheItem = db.CacheItems
-                    .FirstOrDefault(x => x.Id == dbCacheItemId && x.UtcExpiry >= utcNow);
+                    .FirstOrDefault(x => x.Partition == partition && x.Key == key && x.UtcExpiry >= utcNow);
 
                 if (dbCacheItem == null)
                 {
@@ -681,7 +677,7 @@ namespace PommaLabs.KVLite.Core
                 if (dbCacheItem.Interval > 0L)
                 {
                     db.CacheItems
-                        .Where(x => x.Id == dbCacheItemId && x.UtcExpiry == dbCacheItem.UtcExpiry)
+                        .Where(x => x.Partition == partition && x.Key == key && x.UtcExpiry == dbCacheItem.UtcExpiry)
                         .Set(x => x.UtcExpiry, utcNow + dbCacheItem.Interval)
                         .Update();
                 }
@@ -716,7 +712,7 @@ namespace PommaLabs.KVLite.Core
                 foreach (var dbCacheItem in dbCacheItems.Where(x => x.Interval > 0L))
                 {
                     db.CacheItems
-                        .Where(x => x.Id == dbCacheItem.Id && x.UtcExpiry == dbCacheItem.UtcExpiry)
+                        .Where(x => x.Partition == dbCacheItem.Partition && x.Key == dbCacheItem.Key && x.UtcExpiry == dbCacheItem.UtcExpiry)
                         .Set(x => x.UtcExpiry, utcNow + dbCacheItem.Interval)
                         .Update();
                 }
@@ -744,14 +740,13 @@ namespace PommaLabs.KVLite.Core
         protected sealed override Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var dbCacheItemId = DbCacheItem.Hash(partition, key);
             var utcNow = _clock.UnixTime;
 
             byte[] serializedValue;
             using (var db = new DbCacheConnection(ConnectionFactory))
             {
                 var dbCacheItem = db.CacheItems
-                    .Where(x => x.Id == dbCacheItemId && x.UtcExpiry >= utcNow)
+                    .Where(x => x.Partition == partition && x.Key == key && x.UtcExpiry >= utcNow)
                     .Select(x => new { x.Value, OldUtcExpiry = x.UtcExpiry, NewUtcExpiry = utcNow + x.Interval })
                     .FirstOrDefault();
 
@@ -780,14 +775,13 @@ namespace PommaLabs.KVLite.Core
         protected sealed override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var dbCacheItemId = DbCacheItem.Hash(partition, key);
             var utcNow = _clock.UnixTime;
 
             DbCacheItem dbCacheItem;
             using (var db = new DbCacheConnection(ConnectionFactory))
             {
                 dbCacheItem = db.CacheItems
-                    .FirstOrDefault(x => x.Id == dbCacheItemId && x.UtcExpiry >= utcNow);
+                    .FirstOrDefault(x => x.Partition == partition && x.Key == key && x.UtcExpiry >= utcNow);
 
                 if (dbCacheItem == null)
                 {
@@ -840,13 +834,10 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         protected sealed override void RemoveInternal(string partition, string key)
         {
-            // Compute all parameters _before_ opening the connection.
-            var dbCacheItemId = DbCacheItem.Hash(partition, key);
-
             using (var db = new DbCacheConnection(ConnectionFactory))
             {
                 db.CacheItems
-                    .Where(x => x.Id == dbCacheItemId)
+                    .Where(x => x.Partition == partition && x.Key == key)
                     .Delete();
             }
         }

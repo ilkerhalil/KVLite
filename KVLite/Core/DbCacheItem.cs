@@ -31,13 +31,10 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     internal sealed class DbCacheItem
     {
-        [Column(Name = "KVLI_ID"), PrimaryKey]
-        public long Id { get; set; }
-
-        [Column(Name = "KVLI_PARTITION"), NotNull]
+        [Column(Name = "KVLI_PARTITION"), PrimaryKey(Order = 0)]
         public string Partition { get; set; }
 
-        [Column(Name = "KVLI_KEY"), NotNull]
+        [Column(Name = "KVLI_KEY"), PrimaryKey(Order = 1)]
         public string Key { get; set; }
 
         [Column(Name = "KVLI_VALUE"), NotNull]
@@ -53,25 +50,18 @@ namespace PommaLabs.KVLite.Core
         public long Interval { get; set; }
 
         [Column(Name = "KVLI_PARENT0")]
-        public long? ParentId0 { get; set; }
+        public string ParentId0 { get; set; }
 
         [Column(Name = "KVLI_PARENT1")]
-        public long? ParentId1 { get; set; }
+        public string ParentId1 { get; set; }
 
         [Column(Name = "KVLI_PARENT2")]
-        public long? ParentId2 { get; set; }
+        public string ParentId2 { get; set; }
 
         [Column(Name = "KVLI_PARENT3")]
-        public long? ParentId3 { get; set; }
+        public string ParentId3 { get; set; }
 
         [Column(Name = "KVLI_PARENT4")]
-        public long? ParentId4 { get; set; }
-
-        public static long Hash(string p, string k)
-        {
-            var ph = (long) XXHash.XXH32(Encoding.Default.GetBytes(p));
-            var kh = (long) XXHash.XXH32(Encoding.Default.GetBytes(k));
-            return (ph << 32) + kh;
-        }
+        public string ParentId4 { get; set; }
     }
 }

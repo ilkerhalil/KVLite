@@ -55,12 +55,16 @@ namespace PommaLabs.KVLite.Benchmarks.ConnectionFactories
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = $@"
-                    select round(sum(length(kvli_value)) / 1024)) as result 
+                    select round(sum(length(kvli_value)) / 1024) as result 
                     from {CacheSchemaName}.{CacheItemsTableName};
                 ";
 
                 connection.Open();
-                return Convert.ToInt64(command.ExecuteScalar());
+                using (var reader = command.ExecuteReader())
+                {
+                    reader.Read();
+                    return reader.GetInt64(0);
+                }
             }
         }
     }
