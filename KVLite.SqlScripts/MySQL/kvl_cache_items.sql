@@ -14,21 +14,24 @@
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `kvl_cache_items`
-	ADD CONSTRAINT `fk_kvl_cache_items_parent0` FOREIGN KEY (`kvli_partition`, `kvli_parent0`) 
-    REFERENCES `kvl_cache_items` (`kvli_partition`, `kvli_key`) ON UPDATE CASCADE ON DELETE CASCADE;
+  ADD INDEX `fk_kvl_cache_items_expiry_partition` (`kvli_expiry`, `kvli_partition`);
 
 ALTER TABLE `kvl_cache_items`
-	ADD CONSTRAINT `fk_kvl_cache_items_parent1` FOREIGN KEY (`kvli_partition`, `kvli_parent1`) 
-    REFERENCES `kvl_cache_items` (`kvli_partition`, `kvli_key`) ON UPDATE CASCADE ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_kvl_cache_items_parent0` FOREIGN KEY (`kvli_partition`, `kvli_parent0`) 
+  REFERENCES `kvl_cache_items` (`kvli_partition`, `kvli_key`) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE `kvl_cache_items`
-	ADD CONSTRAINT `fk_kvl_cache_items_parent2` FOREIGN KEY (`kvli_partition`, `kvli_parent2`) 
-    REFERENCES `kvl_cache_items` (`kvli_partition`, `kvli_key`) ON UPDATE CASCADE ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_kvl_cache_items_parent1` FOREIGN KEY (`kvli_partition`, `kvli_parent1`) 
+  REFERENCES `kvl_cache_items` (`kvli_partition`, `kvli_key`) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE `kvl_cache_items`
-	ADD CONSTRAINT `fk_kvl_cache_items_parent3` FOREIGN KEY (`kvli_partition`, `kvli_parent3`) 
-    REFERENCES `kvl_cache_items` (`kvli_partition`, `kvli_key`) ON UPDATE CASCADE ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_kvl_cache_items_parent2` FOREIGN KEY (`kvli_partition`, `kvli_parent2`) 
+  REFERENCES `kvl_cache_items` (`kvli_partition`, `kvli_key`) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE `kvl_cache_items`
-	ADD CONSTRAINT `fk_kvl_cache_items_parent4` FOREIGN KEY (`kvli_partition`, `kvli_parent4`) 
-    REFERENCES `kvl_cache_items` (`kvli_partition`, `kvli_key`) ON UPDATE CASCADE ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_kvl_cache_items_parent3` FOREIGN KEY (`kvli_partition`, `kvli_parent3`) 
+  REFERENCES `kvl_cache_items` (`kvli_partition`, `kvli_key`) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE `kvl_cache_items`
+  ADD CONSTRAINT `fk_kvl_cache_items_parent4` FOREIGN KEY (`kvli_partition`, `kvli_parent4`) 
+  REFERENCES `kvl_cache_items` (`kvli_partition`, `kvli_key`) ON UPDATE CASCADE ON DELETE CASCADE;
