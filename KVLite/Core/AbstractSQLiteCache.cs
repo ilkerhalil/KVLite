@@ -131,33 +131,6 @@ namespace PommaLabs.KVLite.Core
             _clock = clock ?? Constants.DefaultClock;
             _commentFs = new StandardFileSystem(_clock, MemoryStreamPool);
 
-            // We need to properly customize the default serializer settings in no custom serializer
-            // has been specified.
-            if (serializer != null)
-            {
-                // Use the specified serializer.
-                _serializer = serializer;
-            }
-            else
-            {
-                // We apply many customizations to the JSON serializer, in order to achieve a small
-                // output size.
-                _serializer = new CodeServices.Serialization.JsonSerializer(new JsonSerializerSettings
-                {
-                    DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-                    DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.IgnoreAndPopulate,
-                    Encoding = PortableEncoding.UTF8WithoutBOM,
-                    FloatFormatHandling = Newtonsoft.Json.FloatFormatHandling.String,
-                    Formatting = Newtonsoft.Json.Formatting.None,
-                    MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,
-                    NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                    PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
-                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-                    TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
-                    TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full
-                });
-            }
-
             _settings.PropertyChanged += Settings_PropertyChanged;
 
             // Connection string must be customized by each cache.
