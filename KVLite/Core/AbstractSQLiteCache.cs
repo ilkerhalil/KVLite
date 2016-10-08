@@ -156,7 +156,10 @@ namespace PommaLabs.KVLite.Core
             }
 
             // Initial cleanup.
-            ClearInternal(null, CacheReadMode.ConsiderExpiryDate);
+            if (ConnectionFactory != null)
+            {
+                ClearInternal(null, CacheReadMode.ConsiderExpiryDate);
+            }
         }
 
         #endregion Construction

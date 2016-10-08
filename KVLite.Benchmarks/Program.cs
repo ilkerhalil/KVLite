@@ -55,6 +55,9 @@ namespace PommaLabs.KVLite.Benchmarks
                 return;
             }
 
+            PersistentCache.DefaultInstance.ConnectionFactory = MySqlDbCacheConnectionFactory.Instance;
+            VolatileCache.DefaultInstance.ConnectionFactory = MySqlDbCacheConnectionFactory.Instance;
+
             Console.WriteLine(@"Running vacuum on DB...");
             PersistentCache.DefaultInstance.Vacuum();
             Console.WriteLine(@"Vacuum completed.");
@@ -68,10 +71,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Table Count: {0}", RandomDataTablesCount);
             Console.WriteLine(@"Row Count: {0}", RowCount);
             Console.WriteLine(@"Total Size: {0:.0} MB", _tableListSize);
-
-            PersistentCache.DefaultInstance.ConnectionFactory = MySqlDbCacheConnectionFactory.Instance;
-            VolatileCache.DefaultInstance.ConnectionFactory = MySqlDbCacheConnectionFactory.Instance;
-
+            
             for (var i = 0; i < IterationCount; ++i)
             {
                 FullyCleanCache();
