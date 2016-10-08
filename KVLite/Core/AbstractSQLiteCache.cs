@@ -584,6 +584,9 @@ namespace PommaLabs.KVLite.Core
                 var updatedRows = db.CacheItems
                     .Where(x => x.Id == dbCacheItem.Id)
                     .Set(x => x.Value, dbCacheItem.Value)
+                    .Set(x => x.UtcCreation, dbCacheItem.UtcCreation)
+                    .Set(x => x.UtcExpiry, dbCacheItem.UtcExpiry)
+                    .Set(x => x.Interval, dbCacheItem.Interval)
                     .Update();
 
                 if (updatedRows == 0)
@@ -648,25 +651,16 @@ namespace PommaLabs.KVLite.Core
         /// <returns>The number of items that have been removed.</returns>
         protected sealed override long ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
-            using (var db = _connectionPool.GetObject())
+            // Compute all parameters _before_ opening the connection.
+            var ignoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate);
+            var utcNow = _clock.UnixTime;
+
+            using (var db = new DbCacheConnection(ConnectionFactory))
             {
-                db.Clear_Partition.Value = partition;
-                db.Clear_IgnoreExpiryDate.Value = (cacheReadMode == CacheReadMode.IgnoreExpiryDate);
-                db.Clear_UtcNow.Value = _clock.UnixTime;
-                var removedItemCount = db.Clear_Command.ExecuteNonQuery();
-
-                // Now we should perform a quick incremental vacuum.
-                db.IncrementalVacuum_Command.ExecuteNonQuery();
-
-                if (removedItemCount > 0 && partition == null)
-                {
-                    // If we are performing a full cache cleanup, then we also remove the items
-                    // related to KVLite cache variables. Therefore, we have to remove the count of
-                    // that variables from the number of deleted rows.
-                    return removedItemCount - 1;
-                }
-                // In this case, the number is OK and can be returned.
-                return removedItemCount;
+                return db.CacheItems
+                    .Where(x => partition == null || x.Partition == partition)
+                    .Where(x => ignoreExpiryDate || x.UtcExpiry < utcNow)
+                    .Delete();
             }
         }
 
@@ -699,12 +693,16 @@ namespace PommaLabs.KVLite.Core
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected sealed override long CountInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate)
         {
-            using (var db = _connectionPool.GetObject())
+            // Compute all parameters _before_ opening the connection.
+            var ignoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate);
+            var utcNow = _clock.UnixTime;
+
+            using (var db = new DbCacheConnection(ConnectionFactory))
             {
-                db.Count_Partition.Value = partition;
-                db.Count_IgnoreExpiryDate.Value = (cacheReadMode == CacheReadMode.IgnoreExpiryDate);
-                db.Count_UtcNow.Value = _clock.UnixTime;
-                return (long) db.Count_Command.ExecuteScalar();
+                return db.CacheItems
+                    .Where(x => partition == null || x.Partition == partition)
+                    .Where(x => ignoreExpiryDate || x.UtcExpiry >= utcNow)
+                    .LongCount();
             }
         }
 
@@ -1124,27 +1122,6 @@ namespace PommaLabs.KVLite.Core
                 Add_Command.Parameters.Add(Add_ParentKey3 = new SQLiteParameter("parentKey3"));
                 Add_Command.Parameters.Add(Add_ParentKey4 = new SQLiteParameter("parentKey4"));
 
-                // Clear
-                Clear_Command = Connection.CreateCommand();
-                Clear_Command.CommandText = SQLiteQueries.Clear;
-                Clear_Command.Parameters.Add(Clear_Partition = new SQLiteParameter("partition"));
-                Clear_Command.Parameters.Add(Clear_IgnoreExpiryDate = new SQLiteParameter("ignoreExpiryDate"));
-                Clear_Command.Parameters.Add(Clear_UtcNow = new SQLiteParameter("utcNow"));
-
-                // Contains
-                Contains_Command = Connection.CreateCommand();
-                Contains_Command.CommandText = SQLiteQueries.Contains;
-                Contains_Command.Parameters.Add(Contains_Partition = new SQLiteParameter("partition"));
-                Contains_Command.Parameters.Add(Contains_Key = new SQLiteParameter("key"));
-                Contains_Command.Parameters.Add(Contains_UtcNow = new SQLiteParameter("utcNow"));
-
-                // Count
-                Count_Command = Connection.CreateCommand();
-                Count_Command.CommandText = SQLiteQueries.Count;
-                Count_Command.Parameters.Add(Count_Partition = new SQLiteParameter("partition"));
-                Count_Command.Parameters.Add(Count_IgnoreExpiryDate = new SQLiteParameter("ignoreExpiryDate"));
-                Count_Command.Parameters.Add(Count_UtcNow = new SQLiteParameter("utcNow"));
-
                 // GetOne
                 GetOne_Command = Connection.CreateCommand();
                 GetOne_Command.CommandText = SQLiteQueries.GetOne;
@@ -1185,9 +1162,6 @@ namespace PommaLabs.KVLite.Core
             protected override void OnReleaseResources()
             {
                 Add_Command.Dispose();
-                Clear_Command.Dispose();
-                Contains_Command.Dispose();
-                Count_Command.Dispose();
                 GetOne_Command.Dispose();
                 GetOneItem_Command.Dispose();
                 GetManyItems_Command.Dispose();
@@ -1218,33 +1192,6 @@ namespace PommaLabs.KVLite.Core
             public SQLiteParameter Add_ParentKey4 { get; }
 
             #endregion Add
-
-            #region Clear
-
-            public SQLiteCommand Clear_Command { get; }
-            public SQLiteParameter Clear_Partition { get; }
-            public SQLiteParameter Clear_IgnoreExpiryDate { get; }
-            public SQLiteParameter Clear_UtcNow { get; }
-
-            #endregion Clear
-
-            #region Contains
-
-            public SQLiteCommand Contains_Command { get; }
-            public SQLiteParameter Contains_Partition { get; }
-            public SQLiteParameter Contains_Key { get; }
-            public SQLiteParameter Contains_UtcNow { get; }
-
-            #endregion Contains
-
-            #region Count
-
-            public SQLiteCommand Count_Command { get; }
-            public SQLiteParameter Count_Partition { get; }
-            public SQLiteParameter Count_IgnoreExpiryDate { get; }
-            public SQLiteParameter Count_UtcNow { get; }
-
-            #endregion Count
 
             #region GetOne
 
