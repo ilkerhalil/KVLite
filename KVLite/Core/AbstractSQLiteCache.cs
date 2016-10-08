@@ -28,7 +28,6 @@ using LinqToDB;
 using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
-using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.Thrower;
@@ -39,10 +38,8 @@ using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -102,8 +99,6 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         private readonly ICompressor _compressor;
 
-        private readonly IFileSystem _commentFs;
-
         #endregion Fields
 
         #region Construction
@@ -131,7 +126,6 @@ namespace PommaLabs.KVLite.Core
             _serializer = serializer ?? Constants.DefaultSerializer;
             MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
             _clock = clock ?? Constants.DefaultClock;
-            _commentFs = new StandardFileSystem(_clock, MemoryStreamPool);
 
             _settings.PropertyChanged += Settings_PropertyChanged;
 
@@ -570,7 +564,7 @@ namespace PommaLabs.KVLite.Core
 
             var dbCacheItem = new DbCacheItem
             {
-                Id = HashTemp(partition, key),
+                Id = DbCacheItem.Hash(partition, key),
                 Partition = partition,
                 Key = key,
                 Value = serializedValue,
@@ -581,9 +575,9 @@ namespace PommaLabs.KVLite.Core
 
             using (var db = new DbCacheConnection(ConnectionFactory))
             {
-                // At first, we try to update the item, since it usually exists. It is not necessary to update
-                // PARTITION and KEY, since they must already have the proper values (otherwise,
-                // hashes should not have matched).
+                // At first, we try to update the item, since it usually exists. It is not necessary
+                // to update PARTITION and KEY, since they must already have the proper values
+                // (otherwise, hashes should not have matched).
                 var updatedRows = db.CacheItems
                     .Where(x => x.Id == dbCacheItem.Id)
                     .Set(x => x.Value, dbCacheItem.Value)
@@ -607,7 +601,6 @@ namespace PommaLabs.KVLite.Core
 #pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
 #pragma warning restore CC0004 // Catch block cannot be empty
                 }
-
             }
 
             long insertionCount = 0L;
@@ -677,7 +670,7 @@ namespace PommaLabs.KVLite.Core
         protected sealed override bool ContainsInternal(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var dbCacheItemId = HashTemp(partition, key);
+            var dbCacheItemId = DbCacheItem.Hash(partition, key);
             var utcNow = _clock.UnixTime;
 
             using (var db = new DbCacheConnection(ConnectionFactory))
@@ -719,7 +712,37 @@ namespace PommaLabs.KVLite.Core
         /// <returns>The value with specified partition and key.</returns>
         protected sealed override Option<TVal> GetInternal<TVal>(string partition, string key)
         {
-            var serializedValue = _commentFs.Read(partition, key, FsReadMode.Get);
+            // Compute all parameters _before_ opening the connection.
+            var dbCacheItemId = DbCacheItem.Hash(partition, key);
+            var utcNow = _clock.UnixTime;
+
+            byte[] serializedValue;
+            using (var db = new DbCacheConnection(ConnectionFactory))
+            {
+                var dbCacheItem = db.CacheItems
+                    .Where(x => x.Id == dbCacheItemId && x.UtcExpiry >= utcNow)
+                    .Select(x => new { x.Value, OldUtcExpiry = x.UtcExpiry, NewUtcExpiry = utcNow + x.Interval })
+                    .FirstOrDefault();
+
+                if (dbCacheItem == null)
+                {
+                    // Nothing to deserialize, return None.
+                    return Option.None<TVal>();
+                }
+
+                // Since we are in a "get" operation, we should also update the expiry.
+                if (dbCacheItem.NewUtcExpiry > utcNow)
+                {
+                    db.CacheItems
+                        .Where(x => x.Id == dbCacheItemId && x.UtcExpiry == dbCacheItem.OldUtcExpiry)
+                        .Set(x => x.UtcExpiry, dbCacheItem.NewUtcExpiry)
+                        .Update();
+                }
+
+                serializedValue = dbCacheItem.Value;
+            }
+
+            // Deserialize operation is expensive and it should be performed outside the connection.
             return DeserializeValue<TVal>(serializedValue, partition, key);
         }
 
@@ -733,8 +756,34 @@ namespace PommaLabs.KVLite.Core
         /// <returns>The cache item with specified partition and key.</returns>
         protected sealed override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
-            var fsCacheItem = _commentFs.ReadItem(partition, key, FsReadMode.Get);
-            return DeserializeCacheItem<TVal>(fsCacheItem);
+            // Compute all parameters _before_ opening the connection.
+            var dbCacheItemId = DbCacheItem.Hash(partition, key);
+            var utcNow = _clock.UnixTime;
+
+            DbCacheItem dbCacheItem;
+            using (var db = new DbCacheConnection(ConnectionFactory))
+            {
+                dbCacheItem = db.CacheItems
+                    .FirstOrDefault(x => x.Id == dbCacheItemId && x.UtcExpiry >= utcNow);
+
+                if (dbCacheItem == null)
+                {
+                    // Nothing to deserialize, return None.
+                    return Option.None<ICacheItem<TVal>>();
+                }
+
+                // Since we are in a "get" operation, we should also update the expiry.
+                if (dbCacheItem.Interval > 0L)
+                {
+                    db.CacheItems
+                        .Where(x => x.Id == dbCacheItemId && x.UtcExpiry == dbCacheItem.UtcExpiry)
+                        .Set(x => x.UtcExpiry, utcNow + dbCacheItem.Interval)
+                        .Update();
+                }
+            }
+
+            // Deserialize operation is expensive and it should be performed outside the connection.
+            return DeserializeCacheItem<TVal>(dbCacheItem);
         }
 
         /// <summary>
@@ -746,20 +795,33 @@ namespace PommaLabs.KVLite.Core
         /// <returns>All cache items.</returns>
         protected sealed override IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition)
         {
-            using (var db = _connectionPool.GetObject())
+            // Compute all parameters _before_ opening the connection.
+            var utcNow = _clock.UnixTime;
+
+            DbCacheItem[] dbCacheItems;
+            using (var db = new DbCacheConnection(ConnectionFactory))
             {
-                db.GetManyItems_Partition.Value = partition;
-                db.GetManyItems_UtcNow.Value = _clock.UnixTime;
-                using (var reader = db.GetManyItems_Command.ExecuteReader())
+                dbCacheItems = db.CacheItems
+                    .Where(x => partition == null || x.Partition == partition)
+                    .Where(x => x.UtcExpiry >= utcNow)
+                    .ToArray();
+
+                // Since we are in a "get" operation, we should also update the expiry.
+                foreach (var dbCacheItem in dbCacheItems.Where(x => x.Interval > 0L))
                 {
-                    return MapDataReader(reader)
-                        .ToArray()
-                        .Select(DeserializeCacheItem<TVal>)
-                        .Where(i => i.HasValue)
-                        .Select(i => i.Value)
-                        .ToArray();
+                    db.CacheItems
+                        .Where(x => x.Id == dbCacheItem.Id && x.UtcExpiry == dbCacheItem.UtcExpiry)
+                        .Set(x => x.UtcExpiry, utcNow + dbCacheItem.Interval)
+                        .Update();
                 }
             }
+
+            // Deserialize operation is expensive and it should be performed outside the connection.
+            return dbCacheItems
+                .Select(DeserializeCacheItem<TVal>)
+                .Where(i => i.HasValue)
+                .Select(i => i.Value)
+                .ToArray();
         }
 
         /// <summary>
@@ -773,7 +835,28 @@ namespace PommaLabs.KVLite.Core
         /// </returns>
         protected sealed override Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
-            var serializedValue = _commentFs.Read(partition, key, FsReadMode.Peek);
+            // Compute all parameters _before_ opening the connection.
+            var dbCacheItemId = DbCacheItem.Hash(partition, key);
+            var utcNow = _clock.UnixTime;
+
+            byte[] serializedValue;
+            using (var db = new DbCacheConnection(ConnectionFactory))
+            {
+                var dbCacheItem = db.CacheItems
+                    .Where(x => x.Id == dbCacheItemId && x.UtcExpiry >= utcNow)
+                    .Select(x => new { x.Value, OldUtcExpiry = x.UtcExpiry, NewUtcExpiry = utcNow + x.Interval })
+                    .FirstOrDefault();
+
+                if (dbCacheItem == null)
+                {
+                    // Nothing to deserialize, return None.
+                    return Option.None<TVal>();
+                }
+
+                serializedValue = dbCacheItem.Value;
+            }
+
+            // Deserialize operation is expensive and it should be performed outside the connection.
             return DeserializeValue<TVal>(serializedValue, partition, key);
         }
 
@@ -788,8 +871,25 @@ namespace PommaLabs.KVLite.Core
         /// </returns>
         protected sealed override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
-            var fsCacheItem = _commentFs.ReadItem(partition, key, FsReadMode.Peek);
-            return DeserializeCacheItem<TVal>(fsCacheItem);
+            // Compute all parameters _before_ opening the connection.
+            var dbCacheItemId = DbCacheItem.Hash(partition, key);
+            var utcNow = _clock.UnixTime;
+
+            DbCacheItem dbCacheItem;
+            using (var db = new DbCacheConnection(ConnectionFactory))
+            {
+                dbCacheItem = db.CacheItems
+                    .FirstOrDefault(x => x.Id == dbCacheItemId && x.UtcExpiry >= utcNow);
+
+                if (dbCacheItem == null)
+                {
+                    // Nothing to deserialize, return None.
+                    return Option.None<ICacheItem<TVal>>();
+                }
+            }
+
+            // Deserialize operation is expensive and it should be performed outside the connection.
+            return DeserializeCacheItem<TVal>(dbCacheItem);
         }
 
         /// <summary>
@@ -805,20 +905,24 @@ namespace PommaLabs.KVLite.Core
         /// </remarks>
         protected sealed override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
         {
-            using (var db = _connectionPool.GetObject())
+            // Compute all parameters _before_ opening the connection.
+            var utcNow = _clock.UnixTime;
+
+            DbCacheItem[] dbCacheItems;
+            using (var db = new DbCacheConnection(ConnectionFactory))
             {
-                db.PeekManyItems_Partition.Value = partition;
-                db.PeekManyItems_UtcNow.Value = _clock.UnixTime;
-                using (var reader = db.PeekManyItems_Command.ExecuteReader())
-                {
-                    return MapDataReader(reader)
-                        .ToArray()
-                        .Select(DeserializeCacheItem<TVal>)
-                        .Where(i => i.HasValue)
-                        .Select(i => i.Value)
-                        .ToArray();
-                }
+                dbCacheItems = db.CacheItems
+                    .Where(x => partition == null || x.Partition == partition)
+                    .Where(x => x.UtcExpiry >= utcNow)
+                    .ToArray();
             }
+
+            // Deserialize operation is expensive and it should be performed outside the connection.
+            return dbCacheItems
+                .Select(DeserializeCacheItem<TVal>)
+                .Where(i => i.HasValue)
+                .Select(i => i.Value)
+                .ToArray();
         }
 
         /// <summary>
@@ -828,20 +932,14 @@ namespace PommaLabs.KVLite.Core
         /// <param name="key">The key.</param>
         protected sealed override void RemoveInternal(string partition, string key)
         {
-            using (var db = _connectionPool.GetObject())
-            {
-                db.Remove_Partition.Value = partition;
-                db.Remove_Key.Value = key;
-                db.Remove_Command.ExecuteNonQuery();
-            }
-        }
+            // Compute all parameters _before_ opening the connection.
+            var dbCacheItemId = DbCacheItem.Hash(partition, key);
 
-        private TVal UnsafeDeserializeValue<TVal>(Stream serializedValue)
-        {
-            using (serializedValue)
-            using (var decompressionStream = _compressor.CreateDecompressionStream(serializedValue))
+            using (var db = new DbCacheConnection(ConnectionFactory))
             {
-                return _serializer.DeserializeFromStream<TVal>(decompressionStream);
+                db.CacheItems
+                    .Where(x => x.Id == dbCacheItemId)
+                    .Delete();
             }
         }
 
@@ -854,35 +952,8 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private Option<TVal> DeserializeValue<TVal>(Option<Stream> serializedValue, string partition, string key)
-        {
-            if (!serializedValue.HasValue)
-            {
-                // Nothing to deserialize, return None.
-                return Option.None<TVal>();
-            }
-            try
-            {
-                return Option.Some(UnsafeDeserializeValue<TVal>(serializedValue.Value));
-            }
-            catch (Exception ex)
-            {
-                LastError = ex;
-                // Something wrong happened during deserialization. Therefore, we remove the old
-                // element (in order to avoid future errors) and we return None.
-                RemoveInternal(partition, key);
-                _log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
-                return Option.None<TVal>();
-            }
-        }
-
         private Option<TVal> DeserializeValue<TVal>(byte[] serializedValue, string partition, string key)
         {
-            if (serializedValue == null)
-            {
-                // Nothing to deserialize, return None.
-                return Option.None<TVal>();
-            }
             try
             {
                 return Option.Some(UnsafeDeserializeValue<TVal>(serializedValue));
@@ -890,111 +961,43 @@ namespace PommaLabs.KVLite.Core
             catch (Exception ex)
             {
                 LastError = ex;
+
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
                 RemoveInternal(partition, key);
+
                 _log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
+
                 return Option.None<TVal>();
             }
         }
 
-        private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(Option<FsCacheItem> maybeSrc)
+        private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(DbCacheItem src)
         {
-            if (!maybeSrc.HasValue)
-            {
-                // Nothing to deserialize, return None.
-                return Option.None<ICacheItem<TVal>>();
-            }
-            var src = maybeSrc.Value;
             try
             {
                 return Option.Some<ICacheItem<TVal>>(new CacheItem<TVal>
                 {
                     Partition = src.Partition,
                     Key = src.Key,
-                    Value = UnsafeDeserializeValue<TVal>(src.SerializedValue),
-                    UtcCreation = src.UtcCreation,
-                    UtcExpiry = src.UtcExpiry,
-                    Interval = src.Interval,
-                    ParentKeys = src.ParentKeys
-                });
-            }
-            catch (Exception ex)
-            {
-                LastError = ex;
-                // Something wrong happened during deserialization. Therefore, we remove the old
-                // element (in order to avoid future errors) and we return None.
-                RemoveInternal(src.Partition, src.Key);
-                _log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
-                return Option.None<ICacheItem<TVal>>();
-            }
-        }
-
-        private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(OldDbCacheItem src)
-        {
-            if (src == null)
-            {
-                // Nothing to deserialize, return None.
-                return Option.None<ICacheItem<TVal>>();
-            }
-            try
-            {
-                return Option.Some<ICacheItem<TVal>>(new CacheItem<TVal>
-                {
-                    Partition = src.Partition,
-                    Key = src.Key,
-                    Value = UnsafeDeserializeValue<TVal>(src.SerializedValue),
+                    Value = UnsafeDeserializeValue<TVal>(src.Value),
                     UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcCreation),
                     UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry),
                     Interval = TimeSpan.FromSeconds(src.Interval),
-                    ParentKeys = src.ParentKeys
+                    //ParentKeys = src.ParentKeys
                 });
             }
             catch (Exception ex)
             {
                 LastError = ex;
+
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
                 RemoveInternal(src.Partition, src.Key);
+
                 _log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
+
                 return Option.None<ICacheItem<TVal>>();
-            }
-        }
-
-        private static IEnumerable<OldDbCacheItem> MapDataReader(SQLiteDataReader dataReader)
-        {
-            const int valueCount = 16;
-            var values = new object[valueCount];
-
-            while (dataReader.Read())
-            {
-                dataReader.GetValues(values);
-                var dbICacheItem = new OldDbCacheItem
-                {
-                    Partition = values[0] as string,
-                    Key = values[1] as string,
-                    SerializedValue = values[2] as byte[],
-                    UtcCreation = (long) values[3],
-                    UtcExpiry = (long) values[4],
-                    Interval = (long) values[5]
-                };
-
-                // Quickly read the parent keys, if any.
-                const int parentKeysStartIndex = 6;
-                var firstNullIndex = parentKeysStartIndex;
-                while (firstNullIndex < valueCount && !(values[firstNullIndex] is DBNull)) { ++firstNullIndex; }
-                var parentKeyCount = firstNullIndex - parentKeysStartIndex;
-                if (parentKeyCount == 0)
-                {
-                    dbICacheItem.ParentKeys = CacheExtensions.NoParentKeys;
-                }
-                else
-                {
-                    dbICacheItem.ParentKeys = new string[parentKeyCount];
-                    Array.Copy(values, parentKeysStartIndex, dbICacheItem.ParentKeys, 0, dbICacheItem.ParentKeys.Length);
-                }
-
-                yield return dbICacheItem;
             }
         }
 
@@ -1125,38 +1128,6 @@ namespace PommaLabs.KVLite.Core
                 Add_Command.Parameters.Add(Add_ParentKey3 = new SQLiteParameter("parentKey3"));
                 Add_Command.Parameters.Add(Add_ParentKey4 = new SQLiteParameter("parentKey4"));
 
-                // GetOne
-                GetOne_Command = Connection.CreateCommand();
-                GetOne_Command.CommandText = SQLiteQueries.GetOne;
-                GetOne_Command.Parameters.Add(GetOne_Partition = new SQLiteParameter("partition"));
-                GetOne_Command.Parameters.Add(GetOne_Key = new SQLiteParameter("key"));
-                GetOne_Command.Parameters.Add(GetOne_UtcNow = new SQLiteParameter("utcNow"));
-
-                // GetOneItem
-                GetOneItem_Command = Connection.CreateCommand();
-                GetOneItem_Command.CommandText = SQLiteQueries.GetOneItem;
-                GetOneItem_Command.Parameters.Add(GetOneItem_Partition = new SQLiteParameter("partition"));
-                GetOneItem_Command.Parameters.Add(GetOneItem_Key = new SQLiteParameter("key"));
-                GetOneItem_Command.Parameters.Add(GetOneItem_UtcNow = new SQLiteParameter("utcNow"));
-
-                // GetManyItems
-                GetManyItems_Command = Connection.CreateCommand();
-                GetManyItems_Command.CommandText = SQLiteQueries.GetManyItems;
-                GetManyItems_Command.Parameters.Add(GetManyItems_Partition = new SQLiteParameter("partition"));
-                GetManyItems_Command.Parameters.Add(GetManyItems_UtcNow = new SQLiteParameter("utcNow"));
-
-                // PeekManyItems
-                PeekManyItems_Command = Connection.CreateCommand();
-                PeekManyItems_Command.CommandText = SQLiteQueries.PeekManyItems;
-                PeekManyItems_Command.Parameters.Add(PeekManyItems_Partition = new SQLiteParameter("partition"));
-                PeekManyItems_Command.Parameters.Add(PeekManyItems_UtcNow = new SQLiteParameter("utcNow"));
-
-                // Remove
-                Remove_Command = Connection.CreateCommand();
-                Remove_Command.CommandText = SQLiteQueries.Remove;
-                Remove_Command.Parameters.Add(Remove_Partition = new SQLiteParameter("partition"));
-                Remove_Command.Parameters.Add(Remove_Key = new SQLiteParameter("key"));
-
                 // Vacuum
                 IncrementalVacuum_Command = Connection.CreateCommand();
                 IncrementalVacuum_Command.CommandText = SQLiteQueries.IncrementalVacuum;
@@ -1165,11 +1136,6 @@ namespace PommaLabs.KVLite.Core
             protected override void OnReleaseResources()
             {
                 Add_Command.Dispose();
-                GetOne_Command.Dispose();
-                GetOneItem_Command.Dispose();
-                GetManyItems_Command.Dispose();
-                PeekManyItems_Command.Dispose();
-                Remove_Command.Dispose();
                 IncrementalVacuum_Command.Dispose();
                 Connection.Dispose();
 
@@ -1196,48 +1162,6 @@ namespace PommaLabs.KVLite.Core
 
             #endregion Add
 
-            #region GetOne
-
-            public SQLiteCommand GetOne_Command { get; }
-            public SQLiteParameter GetOne_Partition { get; }
-            public SQLiteParameter GetOne_Key { get; }
-            public SQLiteParameter GetOne_UtcNow { get; }
-
-            #endregion GetOne
-
-            #region GetOneItem
-
-            public SQLiteCommand GetOneItem_Command { get; }
-            public SQLiteParameter GetOneItem_Partition { get; }
-            public SQLiteParameter GetOneItem_Key { get; }
-            public SQLiteParameter GetOneItem_UtcNow { get; }
-
-            #endregion GetOneItem
-
-            #region GetManyItems
-
-            public SQLiteCommand GetManyItems_Command { get; }
-            public SQLiteParameter GetManyItems_Partition { get; }
-            public SQLiteParameter GetManyItems_UtcNow { get; }
-
-            #endregion GetManyItems
-
-            #region PeekManyItems
-
-            public SQLiteCommand PeekManyItems_Command { get; }
-            public SQLiteParameter PeekManyItems_Partition { get; }
-            public SQLiteParameter PeekManyItems_UtcNow { get; }
-
-            #endregion PeekManyItems
-
-            #region Remove
-
-            public SQLiteCommand Remove_Command { get; }
-            public SQLiteParameter Remove_Partition { get; }
-            public SQLiteParameter Remove_Key { get; }
-
-            #endregion Remove
-
             #region Vacuum
 
             public SQLiteCommand IncrementalVacuum_Command { get; }
@@ -1245,263 +1169,6 @@ namespace PommaLabs.KVLite.Core
             #endregion Vacuum
         }
 
-        #endregion Nested type: DbInterface
-
-        #region Nested type: DbCacheItem
-
-        /// <summary>
-        ///   Represents a row in the cache table.
-        /// </summary>
-        private sealed class OldDbCacheItem
-        {
-            public string Partition { get; set; }
-
-            public string Key { get; set; }
-
-            public byte[] SerializedValue { get; set; }
-
-            public long UtcCreation { get; set; }
-
-            public long UtcExpiry { get; set; }
-
-            public long Interval { get; set; }
-
-            public string[] ParentKeys { get; set; }
-        }
-
-        #endregion Nested type: DbCacheItem
-
-        private static long HashTemp(string p, string k)
-        {
-            var ph = (long) XXHash.XXH32(Encoding.Default.GetBytes(p));
-            var kh = (long) XXHash.XXH32(Encoding.Default.GetBytes(k));
-            return (ph << 32) + kh;
-        }
-
-        public interface IFileSystem
-        {
-            bool Exists(string partition, string key);
-
-            string Write(string partition, string key, Stream value, DateTime utcExpiry, TimeSpan interval);
-
-            Option<Stream> Read(string partition, string key, FsReadMode readMode);
-
-            Option<FsCacheItem> ReadItem(string partition, string key, FsReadMode readMode);
-        }
-
-        public sealed class FsCacheItem
-        {
-            public string Partition { get; set; }
-
-            public string Key { get; set; }
-
-            public Stream SerializedValue { get; set; }
-
-            public DateTime UtcCreation { get; set; }
-
-            public DateTime UtcExpiry { get; set; }
-
-            public TimeSpan Interval { get; set; }
-
-            public string[] ParentKeys { get; set; }
-        }
-
-        public enum FsReadMode
-        {
-            Peek,
-
-            Get
-        }
-
-        public sealed class StandardFileSystem : IFileSystem
-        {
-            private const int ReservedBytesLength = 64;
-            private const int ReservedInt64Fields = 2;
-            private const int IntervalOffset = 0;
-            private const int UtcCreationOffset = 8;
-
-            private static readonly IObjectPool<PooledObjectWrapper<byte[]>> ReservedBytesPool = new ObjectPool<PooledObjectWrapper<byte[]>>(() => new PooledObjectWrapper<byte[]>(new byte[ReservedBytesLength]));
-
-            /// <summary>
-            ///   Reserved bytes which might be used in future releases of KVLite.
-            /// </summary>
-            private static readonly byte[] ReservedBytesStub = new byte[ReservedBytesLength - sizeof(long) * ReservedInt64Fields];
-
-            private readonly IClock _clock;
-            private readonly IMemoryStreamPool _memoryStreamPool;
-            private readonly string _root;
-            private readonly string _data;
-
-            public StandardFileSystem(IClock clock, IMemoryStreamPool memoryStreamPool)
-            {
-                // Preconditions
-                Raise.ArgumentNullException.IfIsNull(clock, nameof(clock));
-
-                _clock = clock;
-                _memoryStreamPool = memoryStreamPool;
-                _root = PortableEnvironment.MapPath("~/App_Data/PersistentCache");
-                _data = Path.Combine(_root, "Data");
-            }
-
-            public bool Exists(string partition, string key)
-            {
-                var keyFile = HashPartitionAndKey(partition, key);
-
-                try
-                {
-                    // If last write time is in the future, then cache item is fresh.
-                    return File.GetLastWriteTimeUtc(keyFile) >= _clock.UtcNow;
-                }
-                catch (IOException)
-                {
-                    // File not found or locked.
-                    return false;
-                }
-            }
-
-            public string Write(string partition, string key, Stream value, DateTime utcExpiry, TimeSpan interval)
-            {
-                var partitionDir = HashPartition(partition);
-
-                if (!Directory.Exists(partitionDir))
-                {
-                    Directory.CreateDirectory(partitionDir);
-                }
-
-                var keyFile = HashKey(key, partitionDir);
-                var intervalBytes = TimeSpanToBytes(interval);
-                var utcCreationBytes = DateTimeToBytes(_clock.UtcNow);
-
-                using (var fs = OpenWrite(keyFile))
-                {
-                    // Header
-                    fs.Write(intervalBytes, 0, intervalBytes.Length);
-                    fs.Write(utcCreationBytes, 0, utcCreationBytes.Length);
-                    fs.Write(ReservedBytesStub, 0, ReservedBytesStub.Length);
-
-                    // Body
-                    value.CopyTo(fs);
-                }
-
-                File.SetLastWriteTimeUtc(keyFile, utcExpiry);
-
-                return keyFile;
-            }
-
-            public Option<Stream> Read(string partition, string key, FsReadMode readMode)
-            {
-                var keyFile = HashPartitionAndKey(partition, key);
-
-                try
-                {
-                    MemoryStream serializedValue;
-                    DateTime utcCreation, utcExpiry;
-                    TimeSpan interval;
-
-                    return TryReadAndGetExpiry(keyFile, readMode, out serializedValue, out utcCreation, out utcExpiry, out interval)
-                        ? Option.Some<Stream>(serializedValue)
-                        : Option.None<Stream>();
-                }
-                catch (IOException)
-                {
-                    // File not found or locked.
-                    return Option.None<Stream>();
-                }
-            }
-
-            public Option<FsCacheItem> ReadItem(string partition, string key, FsReadMode readMode)
-            {
-                var keyFile = HashPartitionAndKey(partition, key);
-
-                try
-                {
-                    MemoryStream serializedValue;
-                    DateTime utcCreation, utcExpiry;
-                    TimeSpan interval;
-
-                    if (!TryReadAndGetExpiry(keyFile, readMode, out serializedValue, out utcCreation, out utcExpiry, out interval))
-                    {
-                        return Option.None<FsCacheItem>();
-                    }
-
-                    return new FsCacheItem
-                    {
-                        Partition = partition,
-                        Key = key,
-                        SerializedValue = serializedValue,
-                        UtcCreation = utcCreation,
-                        UtcExpiry = utcExpiry,
-                        Interval = interval,
-                        ParentKeys = null
-                    };
-                }
-                catch (IOException)
-                {
-                    // File not found or locked.
-                    return Option.None<FsCacheItem>();
-                }
-            }
-
-            private bool TryReadAndGetExpiry(string keyFile, FsReadMode readMode, out MemoryStream serializedValue, out DateTime utcCreation, out DateTime utcExpiry, out TimeSpan interval)
-            {
-                serializedValue = _memoryStreamPool.GetObject().MemoryStream;
-
-                using (var rb = ReservedBytesPool.GetObject())
-                {
-                    using (var fs = OpenRead(keyFile))
-                    {
-                        fs.Read(rb.InternalResource, 0, ReservedBytesLength);
-                        fs.CopyTo(serializedValue);
-
-                        // While file is read-locked, get UTC expiry.
-                        utcExpiry = File.GetLastWriteTimeUtc(keyFile);
-                    }
-
-                    if (utcExpiry < _clock.UtcNow)
-                    {
-                        // Dispose resources and clear variables.
-                        serializedValue.Dispose();
-                        serializedValue = null;
-                        utcCreation = default(DateTime);
-                        utcExpiry = default(DateTime);
-                        interval = default(TimeSpan);
-
-                        return false;
-                    }
-
-                    interval = TimeSpanFromBytes(rb.InternalResource, IntervalOffset);
-                    if (readMode == FsReadMode.Get && interval != TimeSpan.Zero)
-                    {
-                        utcExpiry = _clock.UtcNow + interval;
-                        File.SetLastWriteTimeUtc(keyFile, utcExpiry);
-                    }
-
-                    utcCreation = DateTimeFromBytes(rb.InternalResource, UtcCreationOffset);
-                }
-
-                serializedValue.Position = 0L;
-                return true;
-            }
-
-            private static FileStream OpenRead(string f) => File.Open(f, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-            private static FileStream OpenWrite(string f) => File.Open(f, FileMode.Create, FileAccess.Write, FileShare.None);
-
-            private string HashPartitionAndKey(string partition, string key) => Path.Combine(_data, Hash(partition), Hash(key));
-
-            private string HashPartition(string partition) => Path.Combine(_data, Hash(partition));
-
-            private string HashKey(string key, string partitionDir) => Path.Combine(partitionDir, Hash(key));
-
-            private string Hash(string s) => BitConverter.ToString(Encoding.Default.GetBytes(s));
-
-            private static byte[] DateTimeToBytes(DateTime dt) => BitConverter.GetBytes(dt.ToUnixTime());
-
-            private static DateTime DateTimeFromBytes(byte[] b, int idx) => DateTimeExtensions.UnixTimeStart.AddSeconds(BitConverter.ToInt64(b, idx));
-
-            private static byte[] TimeSpanToBytes(TimeSpan ts) => BitConverter.GetBytes((long) ts.TotalSeconds);
-
-            private static TimeSpan TimeSpanFromBytes(byte[] b, int idx) => TimeSpan.FromSeconds(BitConverter.ToInt64(b, idx));
-        }
+        #endregion Nested type: DbInterface     
     }
 }
