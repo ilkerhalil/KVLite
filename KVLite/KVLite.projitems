@@ -16,7 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\SQLiteQueries.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\SqliteQueries.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\XXHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DbCacheConnectionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IDbCacheConnectionFactory.cs" />

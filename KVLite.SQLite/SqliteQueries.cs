@@ -24,7 +24,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.KVLite.SQLite
 {
     /// <summary>
     ///   All queries used inside the <see cref="PersistentCache"/> class.

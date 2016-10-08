@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using LinqToDB.Mapping;
+using System.Text;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -50,5 +51,27 @@ namespace PommaLabs.KVLite.Core
 
         [Column(Name = "KVLI_INTERVAL"), NotNull]
         public long Interval { get; set; }
+
+        [Column(Name = "KVLI_PARENT0")]
+        public long? ParentId0 { get; set; }
+
+        [Column(Name = "KVLI_PARENT1")]
+        public long? ParentId1 { get; set; }
+
+        [Column(Name = "KVLI_PARENT2")]
+        public long? ParentId2 { get; set; }
+
+        [Column(Name = "KVLI_PARENT3")]
+        public long? ParentId3 { get; set; }
+
+        [Column(Name = "KVLI_PARENT4")]
+        public long? ParentId4 { get; set; }
+
+        public static long Hash(string p, string k)
+        {
+            var ph = (long) XXHash.XXH32(Encoding.Default.GetBytes(p));
+            var kh = (long) XXHash.XXH32(Encoding.Default.GetBytes(k));
+            return (ph << 32) + kh;
+        }
     }
 }

@@ -46,5 +46,11 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <returns>A connection which might be opened.</returns>
         IDbConnection Create();
+
+        /// <summary>
+        ///   Returns current cache size in kilobytes.
+        /// </summary>
+        /// <returns>Current cache size in kilobytes.</returns>
+        long GetCacheSizeInKB();
     }
 }

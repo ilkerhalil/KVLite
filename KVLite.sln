@@ -132,6 +132,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.WebForms", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.SqlScripts", "KVLite.SqlScripts\KVLite.SqlScripts.csproj", "{CB1C5E97-FE27-4182-813C-89087A82BDE8}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KVLite.SQLite", "KVLite.SQLite\KVLite.SQLite.shproj", "{A8DB2A6A-6B57-457A-996F-5519FCB51862}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.SQLite.NET45", "Platform Specific\KVLite.SQLite.NET45\KVLite.SQLite.NET45.csproj", "{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		KVLite.WebApi\KVLite.WebApi.projitems*{09d76014-4670-4977-b9db-6445649c862b}*SharedItemsImports = 13
@@ -149,7 +153,9 @@ Global
 		KVLite.Nancy\KVLite.Nancy.projitems*{64145a81-f369-4863-b02b-d4c14adb883e}*SharedItemsImports = 4
 		KVLite.WebForms\KVLite.WebForms.projitems*{6de6294a-ced3-4e53-85fb-60b9fead1fe7}*SharedItemsImports = 4
 		KVLite.Nancy\KVLite.Nancy.projitems*{6f8516a0-5e50-44b2-aa8f-a3ab285f513e}*SharedItemsImports = 4
+		KVLite.SQLite\KVLite.SQLite.projitems*{7adaa28f-e4ab-41ef-a29c-8de4e1e7a429}*SharedItemsImports = 4
 		KVLite.Nancy\KVLite.Nancy.projitems*{7f11c0e7-f781-4543-a013-b129a72646a4}*SharedItemsImports = 13
+		KVLite.SQLite\KVLite.SQLite.projitems*{a8db2a6a-6b57-457a-996f-5519fcb51862}*SharedItemsImports = 13
 		KVLite\KVLite.projitems*{b81fca47-a533-4ffb-b202-f6e07668eb66}*SharedItemsImports = 4
 		KVLite.UnitTests\KVLite.UnitTests.projitems*{bbe6492a-198e-499e-add5-e8c904ec8182}*SharedItemsImports = 4
 		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{bc14baf7-bbb6-4fbc-b472-0517ac48881c}*SharedItemsImports = 4
@@ -471,6 +477,18 @@ Global
 		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Release|x86.ActiveCfg = Release|Any CPU
 		{CB1C5E97-FE27-4182-813C-89087A82BDE8}.Release|x86.Build.0 = Release|Any CPU
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}.Debug|x86.Build.0 = Debug|Any CPU
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}.Publish|Any CPU.Build.0 = Release|Any CPU
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}.Publish|x86.ActiveCfg = Release|Any CPU
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}.Publish|x86.Build.0 = Release|Any CPU
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}.Release|x86.ActiveCfg = Release|Any CPU
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -499,5 +517,6 @@ Global
 		{6DE6294A-CED3-4E53-85FB-60B9FEAD1FE7} = {58F3B79E-836C-4A4C-B993-DF9983AEF5AA}
 		{E40332D9-D540-4582-825C-008E2F125D42} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
 		{3A60BAC5-2B90-4749-8D49-0CEFB2D2054D} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
+		{7ADAA28F-E4AB-41EF-A29C-8DE4E1E7A429} = {58F3B79E-836C-4A4C-B993-DF9983AEF5AA}
 	EndGlobalSection
 EndGlobal

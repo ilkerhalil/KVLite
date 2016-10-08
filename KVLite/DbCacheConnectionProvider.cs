@@ -26,11 +26,16 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   The type of SQL provider that will store cache data.
     /// </summary>
-    public enum DbCacheConnectionProvider
+    public enum DbCacheConnectionProvider : byte
     {
         /// <summary>
         ///   Cache will be backed by MySQL.
         /// </summary>
-        MySQL
+        MySQL = 1,
+
+        /// <summary>
+        ///   Cache will be backed by SQLite.
+        /// </summary>
+        SQLite = 2,
     }
 }

@@ -25,6 +25,7 @@ using LinqToDB;
 using LinqToDB.Data;
 using LinqToDB.DataProvider;
 using LinqToDB.DataProvider.MySql;
+using LinqToDB.DataProvider.SQLite;
 using System;
 
 namespace PommaLabs.KVLite.Core
@@ -57,6 +58,8 @@ namespace PommaLabs.KVLite.Core
             {
                 case DbCacheConnectionProvider.MySQL:
                     return new MySqlDataProvider();
+                case DbCacheConnectionProvider.SQLite:
+                    return new SQLiteDataProvider();
                 default:
                     throw new InvalidOperationException("Invalid DB cache provider");
             }

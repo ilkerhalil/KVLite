@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Configuration;
 using System.Data;
 
@@ -45,6 +46,22 @@ namespace PommaLabs.KVLite.Benchmarks.ConnectionFactories
             var connection = MySql.Data.MySqlClient.MySqlClientFactory.Instance.CreateConnection();
             connection.ConnectionString = ConnectionString;
             return connection;
+        }
+
+        public long GetCacheSizeInKB()
+        {
+            using (var connection = Create())
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandType = CommandType.Text;
+                command.CommandText = $@"
+                    select round(sum(length(kvli_value)) / 1024)) as result 
+                    from {CacheSchemaName}.{CacheItemsTableName};
+                ";
+
+                connection.Open();
+                return Convert.ToInt64(command.ExecuteScalar());
+            }
         }
     }
 }
