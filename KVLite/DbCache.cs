@@ -24,6 +24,7 @@
 using CodeProject.ObjectPool.Specialized;
 using Common.Logging;
 using LinqToDB;
+using LinqToDB.Mapping;
 using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
@@ -84,6 +85,11 @@ namespace PommaLabs.KVLite
             Serializer = serializer ?? Constants.DefaultSerializer;
             Compressor = compressor ?? Constants.DefaultCompressor;
             MemoryStreamPool = memoryStreamPool ?? Constants.DefaultMemoryStreamPool;
+
+            MappingSchema.Default.GetFluentMappingBuilder()
+                .Entity<DbCacheItem>()
+                .HasTableName(connectionFactory.CacheItemsTableName)
+                .HasSchemaName(connectionFactory.CacheSchemaName);
         }
 
         #endregion Construction

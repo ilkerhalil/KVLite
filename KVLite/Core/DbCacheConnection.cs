@@ -31,13 +31,9 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     internal sealed class DbCacheConnection : DataConnection
     {
-        public DbCacheConnection(IDbCacheConnectionFactory dbCacheConnectionFactory)
-            : base(dbCacheConnectionFactory.DataProvider, dbCacheConnectionFactory.Create())
-        {
-            MappingSchema.GetFluentMappingBuilder()
-                .Entity<DbCacheItem>()
-                .HasTableName(dbCacheConnectionFactory.CacheItemsTableName)
-                .HasSchemaName(dbCacheConnectionFactory.CacheSchemaName);
+        public DbCacheConnection(IDbCacheConnectionFactory connectionFactory)
+            : base(connectionFactory.DataProvider, connectionFactory.Create())
+        {            
         }
 
         /// <summary>
