@@ -34,36 +34,36 @@ namespace PommaLabs.KVLite.SQLite
 
         public static readonly string CacheSchema = MinifyQuery(@"
             PRAGMA auto_vacuum = INCREMENTAL;
-            DROP TABLE IF EXISTS CacheItem;
-            CREATE TABLE CacheItem (
-                partition TEXT NOT NULL,
-                key TEXT NOT NULL,
-                serializedValue BLOB NOT NULL,
-                utcCreation BIGINT NOT NULL,
-                utcExpiry BIGINT NOT NULL,
-                interval BIGINT NOT NULL,
-                parentKey0 TEXT,
-                parentKey1 TEXT,
-                parentKey2 TEXT,
-                parentKey3 TEXT,
-                parentKey4 TEXT,
-                CONSTRAINT CacheItem_PK PRIMARY KEY (partition, key),
-                CONSTRAINT CacheItem_FK0 FOREIGN KEY (partition, parentKey0) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
-                CONSTRAINT CacheItem_FK1 FOREIGN KEY (partition, parentKey1) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
-                CONSTRAINT CacheItem_FK2 FOREIGN KEY (partition, parentKey2) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
-                CONSTRAINT CacheItem_FK3 FOREIGN KEY (partition, parentKey3) REFERENCES CacheItem (partition, key) ON DELETE CASCADE,
-                CONSTRAINT CacheItem_FK4 FOREIGN KEY (partition, parentKey4) REFERENCES CacheItem (partition, key) ON DELETE CASCADE
+            DROP TABLE IF EXISTS kvl_cache_items;
+            CREATE TABLE kvl_cache_items (
+                kvli_partition TEXT NOT NULL,
+                kvli_key TEXT NOT NULL,
+                kvli_value BLOB NOT NULL,
+                kvli_creation BIGINT NOT NULL,
+                kvli_expiry BIGINT NOT NULL,
+                kvli_interval BIGINT NOT NULL,
+                kvli_parent0 TEXT,
+                kvli_parent1 TEXT,
+                kvli_parent2 TEXT,
+                kvli_parent3 TEXT,
+                kvli_parent4 TEXT,
+                CONSTRAINT pk_kvl_cache_items PRIMARY KEY (kvli_partition, kvli_key),
+                CONSTRAINT fk_kvl_cache_items_parent0 FOREIGN KEY (kvli_partition, kvli_parent0) REFERENCES kvl_cache_items (kvli_partition, kvli_key) ON DELETE CASCADE,
+                CONSTRAINT fk_kvl_cache_items_parent1 FOREIGN KEY (kvli_partition, kvli_parent1) REFERENCES kvl_cache_items (kvli_partition, kvli_key) ON DELETE CASCADE,
+                CONSTRAINT fk_kvl_cache_items_parent2 FOREIGN KEY (kvli_partition, kvli_parent2) REFERENCES kvl_cache_items (kvli_partition, kvli_key) ON DELETE CASCADE,
+                CONSTRAINT fk_kvl_cache_items_parent3 FOREIGN KEY (kvli_partition, kvli_parent3) REFERENCES kvl_cache_items (kvli_partition, kvli_key) ON DELETE CASCADE,
+                CONSTRAINT fk_kvl_cache_items_parent4 FOREIGN KEY (kvli_partition, kvli_parent4) REFERENCES kvl_cache_items (kvli_partition, kvli_key) ON DELETE CASCADE
             );
-            CREATE INDEX CacheItem_UtcExpiry_Idx ON CacheItem (utcExpiry ASC);
-            CREATE INDEX CacheItem_ParentKey0_Idx ON CacheItem (partition, parentKey0);
-            CREATE INDEX CacheItem_ParentKey1_Idx ON CacheItem (partition, parentKey1);
-            CREATE INDEX CacheItem_ParentKey2_Idx ON CacheItem (partition, parentKey2);
-            CREATE INDEX CacheItem_ParentKey3_Idx ON CacheItem (partition, parentKey3);
-            CREATE INDEX CacheItem_ParentKey4_Idx ON CacheItem (partition, parentKey4);
+            CREATE INDEX ix_kvl_cache_items_expiry_partition ON kvl_cache_items (kvli_expiry ASC, kvli_partition ASC);
+            CREATE INDEX ix_kvl_cache_items_parent0 ON kvl_cache_items (kvli_partition, kvli_parent0);
+            CREATE INDEX ix_kvl_cache_items_parent1 ON kvl_cache_items (kvli_partition, kvli_parent1);
+            CREATE INDEX ix_kvl_cache_items_parent2 ON kvl_cache_items (kvli_partition, kvli_parent2);
+            CREATE INDEX ix_kvl_cache_items_parent3 ON kvl_cache_items (kvli_partition, kvli_parent3);
+            CREATE INDEX ix_kvl_cache_items_parent4 ON kvl_cache_items (kvli_partition, kvli_parent4);
         ");
 
         public static readonly string IsSchemaReady = MinifyQuery(@"
-            PRAGMA table_info(CacheItem)
+            PRAGMA table_info(kvl_cache_items)
         ");
 
         public static readonly string SetPragmas = MinifyQuery(@"

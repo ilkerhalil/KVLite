@@ -217,17 +217,17 @@ namespace PommaLabs.KVLite.SQLite
             }
 
             return columns.Count == 11
-                && columns.Contains("partition")
-                && columns.Contains("key")
-                && columns.Contains("serializedValue")
-                && columns.Contains("utcCreation")
-                && columns.Contains("utcExpiry")
-                && columns.Contains("interval")
-                && columns.Contains("parentKey0")
-                && columns.Contains("parentKey1")
-                && columns.Contains("parentKey2")
-                && columns.Contains("parentKey3")
-                && columns.Contains("parentKey4");
+                && columns.Contains("kvli_partition")
+                && columns.Contains("kvli_key")
+                && columns.Contains("kvli_value")
+                && columns.Contains("kvli_creation")
+                && columns.Contains("kvli_expiry")
+                && columns.Contains("kvli_interval")
+                && columns.Contains("kvli_parent0")
+                && columns.Contains("kvli_parent1")
+                && columns.Contains("kvli_parent2")
+                && columns.Contains("kvli_parent3")
+                && columns.Contains("kvli_parent4");
         }
 
         #region Nested type: PooledConnection

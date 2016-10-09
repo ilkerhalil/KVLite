@@ -14,7 +14,7 @@
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `kvl_cache_items`
-  ADD INDEX `fk_kvl_cache_items_expiry_partition` (`kvli_expiry`, `kvli_partition`);
+  ADD INDEX `ix_kvl_cache_items_expiry_partition` (`kvli_expiry`, `kvli_partition`);
 
 ALTER TABLE `kvl_cache_items`
   ADD CONSTRAINT `fk_kvl_cache_items_parent0` FOREIGN KEY (`kvli_partition`, `kvli_parent0`) 
