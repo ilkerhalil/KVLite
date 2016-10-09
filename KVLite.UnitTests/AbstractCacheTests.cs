@@ -41,7 +41,7 @@ using Task = System.Threading.Tasks.Task;
 namespace PommaLabs.KVLite.UnitTests
 {
     [TestFixture]
-    abstract class AbstractCacheTests<TSettings> where TSettings : AbstractSQLiteCacheSettings<TSettings>
+    abstract class AbstractCacheTests<TSettings> where TSettings : DbCacheSettings<TSettings>
     {
         #region Setup/Teardown
 

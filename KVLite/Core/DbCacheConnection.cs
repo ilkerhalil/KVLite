@@ -23,10 +23,6 @@
 
 using LinqToDB;
 using LinqToDB.Data;
-using LinqToDB.DataProvider;
-using LinqToDB.DataProvider.MySql;
-using LinqToDB.DataProvider.SQLite;
-using System;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -36,7 +32,7 @@ namespace PommaLabs.KVLite.Core
     internal sealed class DbCacheConnection : DataConnection
     {
         public DbCacheConnection(IDbCacheConnectionFactory dbCacheConnectionFactory)
-            : base(GetDataProvider(dbCacheConnectionFactory.Provider), dbCacheConnectionFactory.Create())
+            : base(dbCacheConnectionFactory.DataProvider, dbCacheConnectionFactory.Create())
         {
             var fluentMappingBuilder = MappingSchema.GetFluentMappingBuilder();
 
@@ -49,22 +45,5 @@ namespace PommaLabs.KVLite.Core
         ///   Cache items.
         /// </summary>
         public ITable<DbCacheItem> CacheItems => GetTable<DbCacheItem>();
-
-        #region Data provider management
-
-        private static IDataProvider GetDataProvider(DbCacheConnectionProvider provider)
-        {
-            switch (provider)
-            {
-                case DbCacheConnectionProvider.MySQL:
-                    return new MySqlDataProvider();
-                case DbCacheConnectionProvider.SQLite:
-                    return new SQLiteDataProvider();
-                default:
-                    throw new InvalidOperationException("Invalid DB cache provider");
-            }
-        }
-
-        #endregion
     }
 }

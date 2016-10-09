@@ -21,17 +21,23 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Configuration;
+using LinqToDB.DataProvider;
+using LinqToDB.DataProvider.MySql;
+using MySql.Data.MySqlClient;
+using PommaLabs.Thrower;
 using System.Data;
 
 namespace PommaLabs.KVLite.Benchmarks.ConnectionFactories
 {
-    internal sealed class MySqlDbCacheConnectionFactory : IDbCacheConnectionFactory
+    internal sealed class MySqlCacheConnectionFactory : IDbCacheConnectionFactory
     {
-        private static readonly string ConnectionString = ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString;
+        public MySqlCacheConnectionFactory(string connectionString)
+        {
+            // Preconditions
+            Raise.ArgumentException.IfIsNullOrWhiteSpace(connectionString, nameof(connectionString));
 
-        public static MySqlDbCacheConnectionFactory Instance { get; } = new MySqlDbCacheConnectionFactory();
+            ConnectionString = connectionString;
+        }
 
         public string CacheSchemaName { get; } = "kvlite";
 
@@ -39,11 +45,13 @@ namespace PommaLabs.KVLite.Benchmarks.ConnectionFactories
 
         public string CacheSettingsTableName { get; } = "kvl_cache_settings";
 
-        public DbCacheConnectionProvider Provider { get; } = DbCacheConnectionProvider.MySQL;
+        public string ConnectionString { get; }
+
+        public IDataProvider DataProvider { get; } = new MySqlDataProvider();
 
         public IDbConnection Create()
         {
-            var connection = MySql.Data.MySqlClient.MySqlClientFactory.Instance.CreateConnection();
+            var connection = MySqlClientFactory.Instance.CreateConnection();
             connection.ConnectionString = ConnectionString;
             return connection;
         }
@@ -55,7 +63,7 @@ namespace PommaLabs.KVLite.Benchmarks.ConnectionFactories
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = $@"
-                    select round(sum(length(kvli_value)) / 1024) as result 
+                    select round(sum(length(kvli_value)) / 1024) as result
                     from {CacheSchemaName}.{CacheItemsTableName};
                 ";
 

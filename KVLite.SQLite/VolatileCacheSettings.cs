@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite
     ///   Settings used by <see cref="VolatileCache"/>.
     /// </summary>
     [Serializable, DataContract]
-    public sealed class VolatileCacheSettings : AbstractSQLiteCacheSettings<VolatileCacheSettings>
+    public sealed class VolatileCacheSettings : DbCacheSettings<VolatileCacheSettings>
     {
         #region Fields
 
@@ -50,9 +50,6 @@ namespace PommaLabs.KVLite
         /// </summary>
         public VolatileCacheSettings()
         {
-            DefaultPartition = "kvl.default";
-            StaticIntervalInDays = 30;
-            InsertionCountBeforeAutoClean = 64;
             MaxCacheSizeInMB = 256;
             MaxJournalSizeInMB = 64;
         }
@@ -96,13 +93,6 @@ namespace PommaLabs.KVLite
                 OnPropertyChanged();
             }
         }
-
-        /// <summary>
-        ///   Gets the cache URI; used for logging.
-        /// </summary>
-        /// <value>The cache URI.</value>
-        [IgnoreDataMember]
-        public override string CacheUri => CacheName;
 
         #endregion Settings
     }

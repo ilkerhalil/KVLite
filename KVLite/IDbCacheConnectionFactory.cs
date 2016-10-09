@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using LinqToDB.DataProvider;
 using System.Data;
 
 namespace PommaLabs.KVLite
@@ -37,12 +38,17 @@ namespace PommaLabs.KVLite
         string CacheSettingsTableName { get; }
 
         /// <summary>
-        ///   The provider for which connections are opened.
+        ///   The connection string used to connect to the specified data provider.
         /// </summary>
-        DbCacheConnectionProvider Provider { get; }
+        string ConnectionString { get; }
 
         /// <summary>
-        ///   Creates a new connection to specified provider.
+        ///   The provider for which connections are opened.
+        /// </summary>
+        IDataProvider DataProvider { get; }
+
+        /// <summary>
+        ///   Creates a new connection to the specified data provider.
         /// </summary>
         /// <returns>A connection which might be opened.</returns>
         IDbConnection Create();

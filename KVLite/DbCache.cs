@@ -27,13 +27,13 @@ using LinqToDB;
 using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
+using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -47,9 +47,8 @@ namespace PommaLabs.KVLite
     ///   Base class for SQL caches, implements common functionalities.
     /// </summary>
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
-    [Serializable]
-    public abstract class DbCache<TSettings> : AbstractCache<TSettings>
-        where TSettings : AbstractSQLiteCacheSettings<TSettings>
+    public class DbCache<TSettings> : AbstractCache<TSettings>
+        where TSettings : DbCacheSettings<TSettings>
     {
         #region Constants
 
@@ -63,8 +62,8 @@ namespace PommaLabs.KVLite
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="DbCache{TCacheSettings}"/>
-        ///   class with given settings.
+        ///   Initializes a new instance of the <see cref="DbCache{TSettings}"/> class with
+        ///   given settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="connectionFactory">The DB connection factory.</param>
@@ -73,7 +72,7 @@ namespace PommaLabs.KVLite
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        internal DbCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool)
+        public DbCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -84,13 +83,13 @@ namespace PommaLabs.KVLite
             Log = log ?? LogManager.GetLogger(GetType());
             Serializer = serializer ?? Constants.DefaultSerializer;
             Compressor = compressor ?? Constants.DefaultCompressor;
-            MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
+            MemoryStreamPool = memoryStreamPool ?? Constants.DefaultMemoryStreamPool;
 
-            Settings.PropertyChanged += Settings_PropertyChanged;
-
-            // Initial cleanup.
             if (ConnectionFactory != null)
             {
+                Settings.SetCacheUri(ConnectionFactory.ConnectionString);
+
+                // Initial cleanup.
                 ClearInternal(null, CacheReadMode.ConsiderExpiryDate);
             }
         }
@@ -308,6 +307,23 @@ namespace PommaLabs.KVLite
 
         #endregion Public Members
 
+        #region FormattableObject members
+
+        /// <summary>
+        ///   Returns all property (or field) values, along with their names, so that they can be
+        ///   used to produce a meaningful <see cref="FormattableObject.ToString"/>.
+        /// </summary>
+        /// <returns>
+        ///   Returns all property (or field) values, along with their names, so that they can be
+        ///   used to produce a meaningful <see cref="FormattableObject.ToString"/>.
+        /// </returns>
+        protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
+        {
+            yield return KeyValuePair.Create("CacheUri", Settings.CacheUri);
+        }
+
+        #endregion FormattableObject members
+
         #region IDisposable members
 
         /// <summary>
@@ -398,25 +414,6 @@ namespace PommaLabs.KVLite
         public override bool CanPeek => true;
 
         #endregion ICache Members
-
-        #region Abstract Methods
-
-        /// <summary>
-        ///   Returns whether the changed property is the data source.
-        /// </summary>
-        /// <param name="changedPropertyName">Name of the changed property.</param>
-        /// <returns>Whether the changed property is the data source.</returns>
-        protected abstract bool DataSourceHasChanged(string changedPropertyName);
-
-        /// <summary>
-        ///   Gets the data source, that is, the location of the SQLite store (it may be a file path
-        ///   or a memory URI).
-        /// </summary>
-        /// <param name="journalMode">The journal mode.</param>
-        /// <returns>The SQLite data source that will be used by the cache.</returns>
-        protected abstract string GetDataSource(out SQLiteJournalModeEnum journalMode);
-
-        #endregion Abstract Methods
 
         #region Private Methods
 
@@ -943,14 +940,6 @@ namespace PommaLabs.KVLite
                 Log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
 
                 return Option.None<ICacheItem<TVal>>();
-            }
-        }
-
-        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (DataSourceHasChanged(e.PropertyName))
-            {
-                //InitConnectionString();
             }
         }
 

@@ -72,7 +72,7 @@ namespace PommaLabs.KVLite
         private SystemMemoryCache _store;
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.
+        ///   Initializes a new instance of the <see cref="MemoryCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="log">The log.</param>

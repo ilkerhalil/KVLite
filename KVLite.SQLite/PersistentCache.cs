@@ -30,6 +30,7 @@ using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -71,6 +72,7 @@ namespace PommaLabs.KVLite
         public PersistentCache(PersistentCacheSettings settings, IDbCacheConnectionFactory connectionFactory = null, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
             : base(settings, connectionFactory, clock, log, serializer, compressor, memoryStreamPool)
         {
+            Settings.PropertyChanged += Settings_PropertyChanged;
         }
 
         #endregion Construction
@@ -110,17 +112,12 @@ namespace PommaLabs.KVLite
             return mappedPath;
         }
 
-        /// <summary>
-        ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
-        /// </summary>
-        /// <returns>
-        ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
-        /// </returns>
-        protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            yield return KeyValuePair.Create("CacheFile", Settings.CacheFile);
+            if (DataSourceHasChanged(e.PropertyName))
+            {
+                //InitConnectionString();
+            }
         }
 
         #endregion AbstractCache Members

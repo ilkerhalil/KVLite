@@ -27,24 +27,61 @@ using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   Base class for cache settings. Contains settings shared among different caches.
     /// </summary>
     [Serializable, DataContract]
-    public abstract class AbstractSQLiteCacheSettings<TSettings> : AbstractCacheSettings<TSettings>
-        where TSettings : AbstractSQLiteCacheSettings<TSettings>
+    public class DbCacheSettings<TSettings> : AbstractCacheSettings<TSettings>
+        where TSettings : DbCacheSettings<TSettings>
     {
         #region Fields
 
+        private string _cacheUri;
         private int _insertionCountBeforeCleanup;
-        private int _maxCacheSizeInMB;
-        private int _maxJournalSizeInMB;
 
         #endregion Fields
 
+        #region Construction
+
+        /// <summary>
+        ///   Sets default values for SQL cache settings.
+        /// </summary>
+        public DbCacheSettings()
+        {
+            DefaultPartition = "kvl.default";
+            StaticIntervalInDays = 30;
+            InsertionCountBeforeAutoClean = 64;
+        }
+
+        internal void SetCacheUri(string cacheUri)
+        {
+            // Preconditions
+            Raise.ArgumentException.IfIsNullOrWhiteSpace(cacheUri, nameof(cacheUri));
+
+            _cacheUri = cacheUri;
+        }
+
+        #endregion
+
         #region Settings
+
+        /// <summary>
+        ///   Gets the cache URI; used for logging.
+        /// </summary>
+        [IgnoreDataMember]
+        public override string CacheUri
+        {
+            get
+            {
+                var result = _cacheUri;
+
+                // Postconditions
+                Debug.Assert(!string.IsNullOrWhiteSpace(result));
+                return result;
+            }
+        }
 
         /// <summary>
         ///   Number of inserts before a cache cleanup is issued.
@@ -66,54 +103,6 @@ namespace PommaLabs.KVLite.Core
                 Raise.ArgumentOutOfRangeException.If(value <= 0);
 
                 _insertionCountBeforeCleanup = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        ///   Max size in megabytes for the cache.
-        /// </summary>
-        [DataMember]
-        public int MaxCacheSizeInMB
-        {
-            get
-            {
-                var result = _maxCacheSizeInMB;
-
-                // Postconditions
-                Debug.Assert(result > 0);
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                Raise.ArgumentOutOfRangeException.If(value <= 0);
-
-                _maxCacheSizeInMB = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        ///   Max size in megabytes for the SQLite journal log.
-        /// </summary>
-        [DataMember]
-        public int MaxJournalSizeInMB
-        {
-            get
-            {
-                var result = _maxJournalSizeInMB;
-
-                // Postconditions
-                Debug.Assert(result > 0);
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                Raise.ArgumentOutOfRangeException.If(value <= 0);
-
-                _maxJournalSizeInMB = value;
                 OnPropertyChanged();
             }
         }

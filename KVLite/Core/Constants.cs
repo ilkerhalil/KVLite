@@ -1,4 +1,4 @@
-﻿// File name: AbstractSQLiteCache.cs
+﻿// File name: Constants.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -36,6 +36,11 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     internal static class Constants
     {
+        /// <summary>
+        ///   Default memory stream pool.
+        /// </summary>
+        public static IMemoryStreamPool DefaultMemoryStreamPool { get; } = MemoryStreamPool.Instance;
+
         /// <summary>
         ///   Default clock.
         /// </summary>
