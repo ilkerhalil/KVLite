@@ -62,8 +62,7 @@ namespace PommaLabs.KVLite
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="DbCache{TSettings}"/> class with
-        ///   given settings.
+        ///   Initializes a new instance of the <see cref="DbCache{TSettings}"/> class with given settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="connectionFactory">The DB connection factory.</param>
@@ -471,36 +470,28 @@ namespace PommaLabs.KVLite
 
             using (var db = new DbCacheConnection(ConnectionFactory))
             {
-                // At first, we try to update the item, since it usually exists. It is not necessary
-                // to update PARTITION and KEY, since they must already have the proper values
-                // (otherwise, hashes should not have matched).
-                var updatedRows = db.CacheItems
-                    .Where(x => x.Partition == partition && x.Key == key)
-                    .Set(x => x.Value, dbCacheItem.Value)
-                    .Set(x => x.UtcCreation, dbCacheItem.UtcCreation)
-                    .Set(x => x.UtcExpiry, dbCacheItem.UtcExpiry)
-                    .Set(x => x.Interval, dbCacheItem.Interval)
-                    .Set(x => x.ParentKey0, dbCacheItem.ParentKey0)
-                    .Set(x => x.ParentKey1, dbCacheItem.ParentKey1)
-                    .Set(x => x.ParentKey2, dbCacheItem.ParentKey2)
-                    .Set(x => x.ParentKey3, dbCacheItem.ParentKey3)
-                    .Set(x => x.ParentKey4, dbCacheItem.ParentKey4)
-                    .Update();
-
-                if (updatedRows == 0)
+                try
                 {
-                    try
-                    {
-                        db.Insert(dbCacheItem);
-                    }
-#pragma warning disable CC0004 // Catch block cannot be empty
-#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
-                    catch
-                    {
-                        // Insert will fail if item already exists, but we do not care.
-                    }
-#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
-#pragma warning restore CC0004 // Catch block cannot be empty
+                    db.Insert(dbCacheItem);
+                }
+                catch (Exception)
+                {
+                    // Insert will fail if item already exists; therefore, we try to update the item.
+                    // It is not necessary to update PARTITION and KEY, since they must already have
+                    // the proper values (otherwise, hashes should not have matched).
+                    db.CacheItems
+                        .Where(x => x.Partition == partition)
+                        .Where(x => x.Key == key)
+                        .Set(x => x.Value, dbCacheItem.Value)
+                        .Set(x => x.UtcCreation, dbCacheItem.UtcCreation)
+                        .Set(x => x.UtcExpiry, dbCacheItem.UtcExpiry)
+                        .Set(x => x.Interval, dbCacheItem.Interval)
+                        .Set(x => x.ParentKey0, dbCacheItem.ParentKey0)
+                        .Set(x => x.ParentKey1, dbCacheItem.ParentKey1)
+                        .Set(x => x.ParentKey2, dbCacheItem.ParentKey2)
+                        .Set(x => x.ParentKey3, dbCacheItem.ParentKey3)
+                        .Set(x => x.ParentKey4, dbCacheItem.ParentKey4)
+                        .Update();
                 }
             }
 
