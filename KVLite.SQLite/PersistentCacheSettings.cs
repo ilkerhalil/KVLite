@@ -51,7 +51,6 @@ namespace PommaLabs.KVLite
         public PersistentCacheSettings()
         {            
             MaxCacheSizeInMB = 1024;
-            MaxJournalSizeInMB = 64;
         }
 
         #endregion Construction

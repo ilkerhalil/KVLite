@@ -75,37 +75,25 @@ namespace PommaLabs.KVLite.SQLite
         /// </summary>
         public IDataProvider DataProvider { get; } = new SQLiteDataProvider();
 
+        /// <summary>
+        ///   Creates a new connection to the specified data provider.
+        /// </summary>
+        /// <returns>A connection which might be opened.</returns>
         public IDbConnection Create()
         {
-#pragma warning disable CC0022 // Should dispose object
-
-            // Create and open the connection.
-            var connection = new SQLiteConnection(_connectionString);
-            connection.Open();
-
-#pragma warning restore CC0022 // Should dispose object
-
-            // Sets PRAGMAs for this new connection.
-            using (var cmd = connection.CreateCommand())
-            {
-                var journalSizeLimitInBytes = _settings.MaxJournalSizeInMB * 1024 * 1024;
-                cmd.CommandText = string.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes);
-                cmd.ExecuteNonQuery();
-            }
-
-#pragma warning disable CC0022 // Should dispose object
-
+            var connection = SQLiteFactory.Instance.CreateConnection();
+            connection.ConnectionString = _connectionString;
             return connection;
-
-#pragma warning restore CC0022 // Should dispose object
         }
 
         public long GetCacheSizeInKB()
         {
             // No need for a transaction, since it is just a select.
-            using (var db = Create())
-            using (var cmd = db.CreateCommand())
+            using (var conn = Create())
+            using (var cmd = conn.CreateCommand())
             {
+                conn.Open();
+
                 cmd.CommandText = "PRAGMA page_count;";
                 var pageCount = (long) cmd.ExecuteScalar();
 
@@ -127,9 +115,11 @@ namespace PommaLabs.KVLite.SQLite
         public void Vacuum()
         {
             // Vacuum cannot be run within a transaction.
-            using (var db = Create())
-            using (var cmd = db.CreateCommand())
+            using (var conn = Create())
+            using (var cmd = conn.CreateCommand())
             {
+                conn.Open();
+
                 cmd.CommandText = SQLiteQueries.Vacuum;
                 cmd.ExecuteNonQuery();
             }
@@ -157,7 +147,7 @@ namespace PommaLabs.KVLite.SQLite
                 PrepareRetries = 3,
 
                 /* Transaction handling */
-                Enlist = false,
+                Enlist = true,
                 DefaultIsolationLevel = IsolationLevel.ReadCommitted,
 
                 /* Required by parent keys */
@@ -169,8 +159,8 @@ namespace PommaLabs.KVLite.SQLite
                 PageSize = PageSizeInBytes,
                 CacheSize = -2000,
 
-                /* We use a custom object pool */
-                Pooling = false,
+                /* We need pooling to improve performance */
+                Pooling = true,
             };
 
             _connectionString = builder.ToString();
@@ -178,15 +168,18 @@ namespace PommaLabs.KVLite.SQLite
 
         internal void EnsureSchemaIsReady()
         {
-            using (var db = Create())
-            using (var cmd = db.CreateCommand() as SQLiteCommand)
+            using (var conn = Create())
+            using (var cmd = conn.CreateCommand())
             {
+                conn.Open();
+
                 bool isSchemaReady;
                 cmd.CommandText = SQLiteQueries.IsSchemaReady;
                 using (var dataReader = cmd.ExecuteReader())
                 {
                     isSchemaReady = IsSchemaReady(dataReader);
                 }
+
                 if (!isSchemaReady)
                 {
                     // Creates the cache items table and the required indexes.
@@ -196,7 +189,7 @@ namespace PommaLabs.KVLite.SQLite
             }
         }
 
-        private static bool IsSchemaReady(SQLiteDataReader dataReader)
+        private static bool IsSchemaReady(IDataReader dataReader)
         {
             var columns = new HashSet<string>();
 

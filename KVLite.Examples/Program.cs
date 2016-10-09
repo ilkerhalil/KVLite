@@ -95,7 +95,6 @@ namespace PommaLabs.KVLite.Examples
                 CacheFile = "CustomCache.sqlite", // The SQLite DB used as the backend for the cache.
                 InsertionCountBeforeAutoClean = 10, // Number of inserts before a cache cleanup is issued.
                 MaxCacheSizeInMB = 64, // Max size in megabytes for the cache.
-                MaxJournalSizeInMB = 16, // Max size in megabytes for the SQLite journal log.
                 StaticIntervalInDays = 10 // How many days static values will last.
             };
 

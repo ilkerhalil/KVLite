@@ -67,29 +67,6 @@ namespace PommaLabs.KVLite.SQLite
             }
         }
 
-        /// <summary>
-        ///   Max size in megabytes for the SQLite journal log.
-        /// </summary>
-        public int MaxJournalSizeInMB
-        {
-            get
-            {
-                var result = _maxJournalSizeInMB;
-
-                // Postconditions
-                Debug.Assert(result > 0);
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                Raise.ArgumentOutOfRangeException.If(value <= 0);
-
-                _maxJournalSizeInMB = value;
-                OnPropertyChanged();
-            }
-        }
-
         #endregion
     }
 }

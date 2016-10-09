@@ -66,11 +66,6 @@ namespace PommaLabs.KVLite.SQLite
             PRAGMA table_info(kvl_cache_items)
         ");
 
-        public static readonly string SetPragmas = MinifyQuery(@"
-            PRAGMA journal_size_limit = {0}; -- Size in bytes
-            PRAGMA temp_store = MEMORY;
-        ");
-
         public static readonly string Vacuum = MinifyQuery(@"
             vacuum; -- Clears free list and makes DB file smaller
         ");

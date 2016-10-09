@@ -52,7 +52,6 @@ namespace PommaLabs.KVLite
         public VolatileCacheSettings()
         {
             MaxCacheSizeInMB = 256;
-            MaxJournalSizeInMB = 64;
         }
 
         #endregion Construction
