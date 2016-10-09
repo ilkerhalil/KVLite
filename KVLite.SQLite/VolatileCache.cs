@@ -28,6 +28,7 @@ using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.SQLite;
 using System;
+using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 
@@ -53,6 +54,16 @@ namespace PommaLabs.KVLite
 #pragma warning restore CC0022 // Should dispose object
 
         #endregion Default Instance
+
+        #region Fields
+
+        /// <summary>
+        ///   Since in-memory SQLite instances are deleted as soon as the connection is closed, then
+        ///   we keep one dangling connection open, so that the store does not disappear.
+        /// </summary>
+        private IDbConnection _keepAliveConnection;
+
+        #endregion Fields
 
         #region Construction
 
@@ -90,6 +101,10 @@ namespace PommaLabs.KVLite
             var dataSource = GetDataSource(Settings.CacheName);
             sqliteConnFactory.InitConnectionString(dataSource);
             sqliteConnFactory.EnsureSchemaIsReady();
+
+            _keepAliveConnection?.Dispose();
+            _keepAliveConnection = sqliteConnFactory.Create();
+            _keepAliveConnection.Open();
         }
 
         /// <summary>
