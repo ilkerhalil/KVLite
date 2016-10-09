@@ -167,6 +167,10 @@
       <Project>{b81fca47-a533-4ffb-b202-f6e07668eb66}</Project>
       <Name>KVLite.NET40</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Platform Specific\KVLite.SQLite.NET40\KVLite.SQLite.NET40.csproj">
+      <Project>{6283e69e-3528-4f3a-ba93-c04962137d85}</Project>
+      <Name>KVLite.SQLite.NET40</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Platform Specific\KVLite.WebForms.NET40\KVLite.WebForms.NET40.csproj">
       <Project>{130b3de5-0e0f-440d-982e-cfc1fc4ac4fa}</Project>
       <Name>KVLite.WebForms.NET40</Name>

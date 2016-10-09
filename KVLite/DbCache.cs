@@ -76,22 +76,15 @@ namespace PommaLabs.KVLite
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
+            Raise.ArgumentNullException.IfIsNull(connectionFactory, nameof(connectionFactory));
 
             Settings = settings;
-            ConnectionFactory = connectionFactory;
+            Settings.ConnectionFactory = connectionFactory;
             Clock = clock ?? Constants.DefaultClock;
             Log = log ?? LogManager.GetLogger(GetType());
             Serializer = serializer ?? Constants.DefaultSerializer;
             Compressor = compressor ?? Constants.DefaultCompressor;
             MemoryStreamPool = memoryStreamPool ?? Constants.DefaultMemoryStreamPool;
-
-            if (ConnectionFactory != null)
-            {
-                Settings.SetCacheUri(ConnectionFactory.ConnectionString);
-
-                // Initial cleanup.
-                ClearInternal(null, CacheReadMode.ConsiderExpiryDate);
-            }
         }
 
         #endregion Construction
@@ -101,7 +94,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The connection factory used to retrieve connections to the cache data store.
         /// </summary>
-        public IDbCacheConnectionFactory ConnectionFactory { get; set; }
+        public IDbCacheConnectionFactory ConnectionFactory => Settings.ConnectionFactory;
 
         /// <summary>
         ///   Returns current cache size in kilobytes.
@@ -319,7 +312,7 @@ namespace PommaLabs.KVLite
         /// </returns>
         protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return KeyValuePair.Create("CacheUri", Settings.CacheUri);
+            yield return KeyValuePair.Create(nameof(Settings.CacheUri), Settings.CacheUri);
         }
 
         #endregion FormattableObject members

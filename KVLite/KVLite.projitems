@@ -14,7 +14,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IDbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryCache.cs" />

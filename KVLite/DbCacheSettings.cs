@@ -37,8 +37,7 @@ namespace PommaLabs.KVLite
         where TSettings : DbCacheSettings<TSettings>
     {
         #region Fields
-
-        private string _cacheUri;
+        
         private int _insertionCountBeforeCleanup;
 
         #endregion Fields
@@ -50,18 +49,13 @@ namespace PommaLabs.KVLite
         /// </summary>
         public DbCacheSettings()
         {
+            // Default values.
             DefaultPartition = "kvl.default";
             StaticIntervalInDays = 30;
             InsertionCountBeforeAutoClean = 64;
         }
 
-        internal void SetCacheUri(string cacheUri)
-        {
-            // Preconditions
-            Raise.ArgumentException.IfIsNullOrWhiteSpace(cacheUri, nameof(cacheUri));
-
-            _cacheUri = cacheUri;
-        }
+        internal IDbCacheConnectionFactory ConnectionFactory { get; set; }
 
         #endregion
 
@@ -71,17 +65,7 @@ namespace PommaLabs.KVLite
         ///   Gets the cache URI; used for logging.
         /// </summary>
         [IgnoreDataMember]
-        public override string CacheUri
-        {
-            get
-            {
-                var result = _cacheUri;
-
-                // Postconditions
-                Debug.Assert(!string.IsNullOrWhiteSpace(result));
-                return result;
-            }
-        }
+        public override sealed string CacheUri => ConnectionFactory.ConnectionString;
 
         /// <summary>
         ///   Number of inserts before a cache cleanup is issued.

@@ -31,19 +31,17 @@ namespace PommaLabs.KVLite
     /// </summary>
     public interface IDbCacheConnectionFactory
     {
-        string CacheSchemaName { get; }
+        string CacheSchemaName { get; set; }
 
-        string CacheItemsTableName { get; }
-
-        string CacheSettingsTableName { get; }
+        string CacheItemsTableName { get; set; }
 
         /// <summary>
-        ///   The connection string used to connect to the specified data provider.
+        ///   The connection string used to connect to the cache data provider.
         /// </summary>
         string ConnectionString { get; }
 
         /// <summary>
-        ///   The provider for which connections are opened.
+        ///   The data provider for which connections are opened.
         /// </summary>
         IDataProvider DataProvider { get; }
 

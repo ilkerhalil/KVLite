@@ -26,7 +26,6 @@ using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
 using PommaLabs.CodeServices.Serialization;
-using PommaLabs.KVLite.Benchmarks.ConnectionFactories;
 using PommaLabs.KVLite.UnitTests;
 using System;
 using System.Collections.Generic;
@@ -56,11 +55,11 @@ namespace PommaLabs.KVLite.Benchmarks
                 return;
             }
 
-            PersistentCache.DefaultInstance.ConnectionFactory = new MySqlCacheConnectionFactory(ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString);
-            VolatileCache.DefaultInstance.ConnectionFactory = new MySqlCacheConnectionFactory(ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString);
+            //PersistentCache.DefaultInstance.ConnectionFactory = new MySqlCacheConnectionFactory(ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString);
+            //VolatileCache.DefaultInstance.ConnectionFactory = new MySqlCacheConnectionFactory(ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString);
 
             Console.WriteLine(@"Running vacuum on DB...");
-            //PersistentCache.DefaultInstance.Vacuum();
+            PersistentCache.DefaultInstance.Vacuum();
             Console.WriteLine(@"Vacuum completed.");
 
             Console.WriteLine();

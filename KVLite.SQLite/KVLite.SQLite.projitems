@@ -12,8 +12,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)PersistentCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PersistentCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteQueries.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VolatileCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheSettings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Scripts\" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿// File name: MySqlDbCacheConnectionFactory.cs
+﻿// File name: MySqlCacheConnectionFactory.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -24,29 +24,24 @@
 using LinqToDB.DataProvider;
 using LinqToDB.DataProvider.MySql;
 using MySql.Data.MySqlClient;
-using PommaLabs.Thrower;
 using System.Data;
 
-namespace PommaLabs.KVLite.Benchmarks.ConnectionFactories
+namespace PommaLabs.KVLite.MySql
 {
     internal sealed class MySqlCacheConnectionFactory : IDbCacheConnectionFactory
     {
-        public MySqlCacheConnectionFactory(string connectionString)
-        {
-            // Preconditions
-            Raise.ArgumentException.IfIsNullOrWhiteSpace(connectionString, nameof(connectionString));
+        public string CacheSchemaName { get; set; } = "kvlite";
 
-            ConnectionString = connectionString;
-        }
+        public string CacheItemsTableName { get; set; } = "kvl_cache_items";
 
-        public string CacheSchemaName { get; } = "kvlite";
+        /// <summary>
+        ///   The connection string used to connect to the cache data provider.
+        /// </summary>
+        public string ConnectionString { get; set; }
 
-        public string CacheItemsTableName { get; } = "kvl_cache_items";
-
-        public string CacheSettingsTableName { get; } = "kvl_cache_settings";
-
-        public string ConnectionString { get; }
-
+        /// <summary>
+        ///   The data provider for which connections are opened.
+        /// </summary>
         public IDataProvider DataProvider { get; } = new MySqlDataProvider();
 
         public IDbConnection Create()

@@ -24,12 +24,10 @@
 using CodeProject.ObjectPool.Specialized;
 using Common.Logging;
 using PommaLabs.CodeServices.Clock;
-using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
-using PommaLabs.KVLite.Core;
-using System.Collections.Generic;
-using System.ComponentModel;
+using PommaLabs.KVLite.SQLite;
+using System;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 
@@ -49,7 +47,8 @@ namespace PommaLabs.KVLite
         /// </summary>
         [Pure]
 #pragma warning disable CC0022 // Should dispose object
-        public static VolatileCache DefaultInstance { get; } = new VolatileCache(new VolatileCacheSettings(), null);
+
+        public static VolatileCache DefaultInstance { get; } = new VolatileCache(new VolatileCacheSettings());
 
 #pragma warning restore CC0022 // Should dispose object
 
@@ -61,52 +60,53 @@ namespace PommaLabs.KVLite
         ///   Initializes a new instance of the <see cref="VolatileCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
-        /// <param name="connectionFactory">The DB connection factory.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public VolatileCache(VolatileCacheSettings settings, IDbCacheConnectionFactory connectionFactory = null, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
-            : base(settings, connectionFactory, clock, log, serializer, compressor, memoryStreamPool)
+        public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
+            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, SQLiteJournalModeEnum.Memory), clock, log, serializer, compressor, memoryStreamPool)
         {
-            Settings.PropertyChanged += Settings_PropertyChanged;
+            // Connection string must be customized by each cache.
+            UpdateConnectionString();
+
+            Settings.PropertyChanged += (sender, args) =>
+            {
+                if (DataSourceHasChanged(args.PropertyName))
+                {
+                    UpdateConnectionString();
+                }
+            };
         }
 
         #endregion Construction
 
-        #region AbstractCache Members
+        #region Private members
+
+        private void UpdateConnectionString()
+        {
+            var sqliteConnFactory = (ConnectionFactory as SQLiteCacheConnectionFactory<VolatileCacheSettings>);
+            var dataSource = GetDataSource(Settings.CacheName);
+            sqliteConnFactory.InitConnectionString(dataSource);
+            sqliteConnFactory.EnsureSchemaIsReady();
+        }
 
         /// <summary>
         ///   Returns whether the changed property is the data source.
         /// </summary>
         /// <param name="changedPropertyName">Name of the changed property.</param>
         /// <returns>Whether the changed property is the data source.</returns>
-        protected override bool DataSourceHasChanged(string changedPropertyName)
-        {
-            return changedPropertyName.ToLower().Equals("cachename");
-        }
+        private static bool DataSourceHasChanged(string changedPropertyName) => string.Equals(changedPropertyName, nameof(VolatileCacheSettings.CacheName), StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
-        ///   Gets the data source, that is, the location of the SQLite store (it may be a file path
-        ///   or a memory URI).
+        ///   Gets the data source, that is, the location of the SQLite store (it might be a file
+        ///   path or a memory URI).
         /// </summary>
-        /// <param name="journalMode">The journal mode.</param>
+        /// <param name="cacheName">User specified cache name.</param>
         /// <returns>The SQLite data source that will be used by the cache.</returns>
-        protected override string GetDataSource(out SQLiteJournalModeEnum journalMode)
-        {
-            journalMode = SQLiteJournalModeEnum.Off;
-            return string.Format("file:{0}?mode=memory&cache=shared", Settings.CacheName);
-        }
+        private static string GetDataSource(string cacheName) => string.Format("file:{0}?mode=memory&cache=shared", cacheName);
 
-        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (DataSourceHasChanged(e.PropertyName))
-            {
-                //InitConnectionString();
-            }
-        }
-
-        #endregion AbstractCache Members
+        #endregion Private members
     }
 }

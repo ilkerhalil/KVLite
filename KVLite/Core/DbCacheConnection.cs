@@ -34,9 +34,8 @@ namespace PommaLabs.KVLite.Core
         public DbCacheConnection(IDbCacheConnectionFactory dbCacheConnectionFactory)
             : base(dbCacheConnectionFactory.DataProvider, dbCacheConnectionFactory.Create())
         {
-            var fluentMappingBuilder = MappingSchema.GetFluentMappingBuilder();
-
-            fluentMappingBuilder.Entity<DbCacheItem>()
+            MappingSchema.GetFluentMappingBuilder()
+                .Entity<DbCacheItem>()
                 .HasTableName(dbCacheConnectionFactory.CacheItemsTableName)
                 .HasSchemaName(dbCacheConnectionFactory.CacheSchemaName);
         }

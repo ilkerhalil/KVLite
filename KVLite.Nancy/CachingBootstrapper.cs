@@ -29,6 +29,8 @@ using Nancy.TinyIoc;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using PommaLabs.Thrower;
+using PommaLabs.KVLite.Core;
 
 namespace PommaLabs.KVLite.Nancy
 {
@@ -53,17 +55,18 @@ namespace PommaLabs.KVLite.Nancy
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="CachingBootstrapper"/> class. You can
-        ///   optionally instruct the bootstrapper on which cache instance it should use; by
-        ///   default, it uses <see cref="PersistentCache.DefaultInstance"/>.
+        ///   Initializes a new instance of the <see cref="CachingBootstrapper"/> class. You need
+        ///   to instruct the bootstrapper on which cache instance it should use.
         /// </summary>
         /// <param name="cache">
-        ///   The cache that will be used as entry container. If <paramref name="cache"/> is null,
-        ///   then <see cref="PersistentCache.DefaultInstance"/> will be used instead.
+        ///   The cache that will be used as entry container.
         /// </param>
-        protected CachingBootstrapper(ICache cache = null)
+        protected CachingBootstrapper(ICache cache)
         {
-            _cache = cache ?? PersistentCache.DefaultInstance;
+            // Preconditions
+            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+
+            _cache = cache;
         }
 
         #endregion Construction

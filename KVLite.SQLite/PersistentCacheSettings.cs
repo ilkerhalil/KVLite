@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.SQLite;
 using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
@@ -34,7 +35,7 @@ namespace PommaLabs.KVLite
     ///   Settings used by <see cref="PersistentCache"/>.
     /// </summary>
     [Serializable, DataContract]
-    public sealed class PersistentCacheSettings : DbCacheSettings<PersistentCacheSettings>
+    public sealed class PersistentCacheSettings : SQLiteCacheSettings<PersistentCacheSettings>
     {
         #region Fields
 

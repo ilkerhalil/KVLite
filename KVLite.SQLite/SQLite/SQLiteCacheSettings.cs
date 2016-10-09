@@ -1,4 +1,4 @@
-﻿// File name: VolatileCacheSettings.cs
+﻿// File name: SQLiteCacheSettings.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,80 +21,75 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.SQLite;
 using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
 
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.SQLite
 {
     /// <summary>
-    ///   Settings used by <see cref="VolatileCache"/>.
+    ///   Settings used by SQLite caches.
     /// </summary>
     [Serializable, DataContract]
-    public sealed class VolatileCacheSettings : SQLiteCacheSettings<VolatileCacheSettings>
+    public abstract class SQLiteCacheSettings<TSettings> : DbCacheSettings<TSettings>
+        where TSettings : SQLiteCacheSettings<TSettings>
     {
         #region Fields
 
-        string _cacheName = nameof(VolatileCache);
+        private int _maxCacheSizeInMB;
+        private int _maxJournalSizeInMB;
 
-        #endregion Fields
-
-        #region Construction
-
-        /// <summary>
-        ///   Sets default values for volatile cache settings.
-        /// </summary>
-        public VolatileCacheSettings()
-        {
-            MaxCacheSizeInMB = 256;
-            MaxJournalSizeInMB = 64;
-        }
-
-        #endregion Construction
-
-        #region Properties
-
-        /// <summary>
-        ///   Gets the default settings for <see cref="VolatileCache"/>.
-        /// </summary>
-        /// <value>The default settings for <see cref="VolatileCache"/>.</value>
-        [Pure]
-        public static VolatileCacheSettings Default { get; } = new VolatileCacheSettings();
-
-        #endregion Properties
+        #endregion
 
         #region Settings
 
         /// <summary>
-        ///   The name of the in-memory SQLite DB used as the backend for the cache.
+        ///   Max size in megabytes for the cache.
         /// </summary>
-        [DataMember]
-        public string CacheName
+        public int MaxCacheSizeInMB
         {
             get
             {
-                var result = _cacheName;
+                var result = _maxCacheSizeInMB;
 
                 // Postconditions
-                Debug.Assert(!string.IsNullOrWhiteSpace(result));
+                Debug.Assert(result > 0);
                 return result;
             }
             set
             {
                 // Preconditions
-                Raise.ArgumentException.IfIsNullOrWhiteSpace(value, nameof(CacheName), ErrorMessages.NullOrEmptyCacheName);
-                Raise.ArgumentException.IfNot(Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$"), nameof(CacheName), ErrorMessages.InvalidCacheName);
+                Raise.ArgumentOutOfRangeException.If(value <= 0);
 
-                _cacheName = value;
+                _maxCacheSizeInMB = value;
                 OnPropertyChanged();
             }
         }
 
-        #endregion Settings
+        /// <summary>
+        ///   Max size in megabytes for the SQLite journal log.
+        /// </summary>
+        public int MaxJournalSizeInMB
+        {
+            get
+            {
+                var result = _maxJournalSizeInMB;
+
+                // Postconditions
+                Debug.Assert(result > 0);
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                Raise.ArgumentOutOfRangeException.If(value <= 0);
+
+                _maxJournalSizeInMB = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
     }
 }

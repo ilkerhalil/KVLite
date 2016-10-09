@@ -27,12 +27,14 @@ using LinqToDB.DataProvider.SQLite;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
 
 namespace PommaLabs.KVLite.SQLite
 {
-    public sealed class SQLiteCacheConnectionFactory
+    internal sealed class SQLiteCacheConnectionFactory<TSettings> : IDbCacheConnectionFactory
+        where TSettings : SQLiteCacheSettings<TSettings>
     {
         #region Constants
 
@@ -55,83 +57,33 @@ namespace PommaLabs.KVLite.SQLite
         /// </summary>
         private ObjectPool<PooledConnection> _connectionPool;
 
-        public SQLiteCacheConnectionFactory()
-        {
-            // Connection string must be customized by each cache.
-            InitConnectionString();
+        private readonly TSettings _settings;
 
-            using (var db = _connectionPool.GetObject())
-            using (var cmd = db.Connection.CreateCommand())
-            {
-                bool isSchemaReady;
-                cmd.CommandText = SQLiteQueries.IsSchemaReady;
-                using (var dataReader = cmd.ExecuteReader())
-                {
-                    isSchemaReady = IsSchemaReady(dataReader);
-                }
-                if (!isSchemaReady)
-                {
-                    // Creates the ICacheItem table and the required indexes.
-                    cmd.CommandText = SQLiteQueries.CacheSchema;
-                    cmd.ExecuteNonQuery();
-                }
-            }
+        private readonly SQLiteJournalModeEnum _journalMode;
+
+        public SQLiteCacheConnectionFactory(TSettings settings, SQLiteJournalModeEnum journalMode)
+        {
+            _settings = settings;
+            _journalMode = journalMode;
         }
 
-        #region Settings
+        #region IDbCacheConnectionFactory members
 
-        private int _maxCacheSizeInMB;
-        private int _maxJournalSizeInMB;
+        public string CacheSchemaName { get; set; } = "kvlite";
+
+        public string CacheItemsTableName { get; set; } = "kvl_cache_items";
 
         /// <summary>
-        ///   Max size in megabytes for the cache.
+        ///   The connection string used to connect to the cache data provider.
         /// </summary>
-        public int MaxCacheSizeInMB
-        {
-            get
-            {
-                var result = _maxCacheSizeInMB;
-
-                // Postconditions
-                Debug.Assert(result > 0);
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                Raise.ArgumentOutOfRangeException.If(value <= 0);
-
-                _maxCacheSizeInMB = value;
-                OnPropertyChanged();
-            }
-        }
+        public string ConnectionString => _connectionString;
 
         /// <summary>
-        ///   Max size in megabytes for the SQLite journal log.
+        ///   The data provider for which connections are opened.
         /// </summary>
-        public int MaxJournalSizeInMB
-        {
-            get
-            {
-                var result = _maxJournalSizeInMB;
-
-                // Postconditions
-                Debug.Assert(result > 0);
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                Raise.ArgumentOutOfRangeException.If(value <= 0);
-
-                _maxJournalSizeInMB = value;
-                OnPropertyChanged();
-            }
-        }
-
-        #endregion
-
         public IDataProvider DataProvider { get; } = new SQLiteDataProvider();
+
+        public IDbConnection Create() => _connectionPool.GetObject();
 
         public long GetCacheSizeInKB()
         {
@@ -152,65 +104,29 @@ namespace PommaLabs.KVLite.SQLite
             }
         }
 
+        #endregion
+
         /// <summary>
         ///   Runs VACUUM on the underlying SQLite database.
         /// </summary>
         public void Vacuum()
         {
-            try
+            // Vacuum cannot be run within a transaction.
+            using (var db = _connectionPool.GetObject())
+            using (var cmd = db.Connection.CreateCommand())
             {
-                _log.Info($"Vacuuming the SQLite DB '{Settings.CacheUri}'...");
-
-                // Vacuum cannot be run within a transaction.
-                using (var db = _connectionPool.GetObject())
-                using (var cmd = db.Connection.CreateCommand())
-                {
-                    cmd.CommandText = SQLiteQueries.Vacuum;
-                    cmd.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
-            {
-                LastError = ex;
-                Log.Error(ErrorMessages.InternalErrorOnVacuum, ex);
-            }
-        }
-
-        private PooledConnection CreateDbInterface()
-        {
-#pragma warning disable CC0022 // Should dispose object
-
-            // Create and open the connection.
-            var connection = new SQLiteConnection(_connectionString);
-            connection.Open();
-
-#pragma warning restore CC0022 // Should dispose object
-
-            // Sets PRAGMAs for this new connection.
-            using (var cmd = connection.CreateCommand())
-            {
-                var journalSizeLimitInBytes = MaxJournalSizeInMB * 1024 * 1024;
-                cmd.CommandText = string.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes);
+                cmd.CommandText = SQLiteQueries.Vacuum;
                 cmd.ExecuteNonQuery();
             }
-
-#pragma warning disable CC0022 // Should dispose object
-
-            return new PooledConnection(connection);
-
-#pragma warning restore CC0022 // Should dispose object
         }
 
-        private void InitConnectionString()
+        internal void InitConnectionString(string dataSource)
         {
-            SQLiteJournalModeEnum journalMode;
-            var cacheUri = GetDataSource(out journalMode);
-
             var builder = new SQLiteConnectionStringBuilder
             {
                 BaseSchemaName = "kvlite",
-                FullUri = cacheUri,
-                JournalMode = journalMode,
+                FullUri = dataSource,
+                JournalMode = _journalMode,
                 FailIfMissing = false,
                 LegacyFormat = false,
                 ReadOnly = false,
@@ -234,7 +150,7 @@ namespace PommaLabs.KVLite.SQLite
                 RecursiveTriggers = true,
 
                 /* Each page is 4KB large - Multiply by 1024*1024/PageSizeInBytes */
-                MaxPageCount = MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes,
+                MaxPageCount = _settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes,
                 PageSize = PageSizeInBytes,
                 CacheSize = -2000,
 
@@ -243,7 +159,52 @@ namespace PommaLabs.KVLite.SQLite
             };
 
             _connectionString = builder.ToString();
-            _connectionPool = new ObjectPool<PooledConnection>(1, 10, CreateDbInterface);
+            _connectionPool = new ObjectPool<PooledConnection>(1, 10, CreatePooledConnection);
+        }
+
+        internal void EnsureSchemaIsReady()
+        {
+            using (var db = _connectionPool.GetObject())
+            using (var cmd = db.Connection.CreateCommand())
+            {
+                bool isSchemaReady;
+                cmd.CommandText = SQLiteQueries.IsSchemaReady;
+                using (var dataReader = cmd.ExecuteReader())
+                {
+                    isSchemaReady = IsSchemaReady(dataReader);
+                }
+                if (!isSchemaReady)
+                {
+                    // Creates the cache items table and the required indexes.
+                    cmd.CommandText = SQLiteQueries.CacheSchema;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private PooledConnection CreatePooledConnection()
+        {
+#pragma warning disable CC0022 // Should dispose object
+
+            // Create and open the connection.
+            var connection = new SQLiteConnection(_connectionString);
+            connection.Open();
+
+#pragma warning restore CC0022 // Should dispose object
+
+            // Sets PRAGMAs for this new connection.
+            using (var cmd = connection.CreateCommand())
+            {
+                var journalSizeLimitInBytes = _settings.MaxJournalSizeInMB * 1024 * 1024;
+                cmd.CommandText = string.Format(SQLiteQueries.SetPragmas, journalSizeLimitInBytes);
+                cmd.ExecuteNonQuery();
+            }
+
+#pragma warning disable CC0022 // Should dispose object
+
+            return new PooledConnection(connection);
+
+#pragma warning restore CC0022 // Should dispose object
         }
 
         private static bool IsSchemaReady(SQLiteDataReader dataReader)
@@ -271,7 +232,7 @@ namespace PommaLabs.KVLite.SQLite
 
         #region Nested type: PooledConnection
 
-        private sealed class PooledConnection : PooledObject
+        private sealed class PooledConnection : PooledObject, IDbConnection
         {
             public PooledConnection(SQLiteConnection connection)
             {
@@ -285,6 +246,34 @@ namespace PommaLabs.KVLite.SQLite
             }
 
             public SQLiteConnection Connection { get; }
+
+            #region IDbConnection members
+
+            public IDbTransaction BeginTransaction() => Connection.BeginTransaction();
+
+            public IDbTransaction BeginTransaction(IsolationLevel il) => Connection.BeginTransaction(il);
+
+            public void Close() => Connection.Close();
+
+            public void ChangeDatabase(string databaseName) => Connection.ChangeDatabase(databaseName);
+
+            public IDbCommand CreateCommand() => Connection.CreateCommand();
+
+            public void Open() => Connection.Open();
+
+            public string ConnectionString
+            {
+                get { return Connection.ConnectionString; }
+                set { Connection.ConnectionString = value; }
+            }
+
+            public int ConnectionTimeout => Connection.ConnectionTimeout;
+
+            public string Database => Connection.Database;
+
+            public ConnectionState State => Connection.State;
+
+            #endregion
         }
 
         #endregion Nested type: PooledConnection 

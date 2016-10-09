@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("KVLite.SqlScripts")]
+[assembly: AssemblyTitle("KVLite.MySql.NET46")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Hewlett-Packard")]
-[assembly: AssemblyProduct("KVLite.SqlScripts")]
+[assembly: AssemblyProduct("KVLite.MySql.NET46")]
 [assembly: AssemblyCopyright("Copyright © Hewlett-Packard 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("cb1c5e97-fe27-4182-813c-89087a82bde8")]
+[assembly: Guid("0ca0c2e8-19df-43d5-b7d7-1d3817e3b90a")]
 
 // Version information for an assembly consists of the following four values:
 //
