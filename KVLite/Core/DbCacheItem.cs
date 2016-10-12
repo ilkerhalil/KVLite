@@ -29,7 +29,7 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Represents an item stored inside the cache.
     /// </summary>
-    internal sealed class DbCacheItem
+    public sealed class DbCacheItem
     {
         [Column(Name = "KVLI_PARTITION"), PrimaryKey(Order = 0)]
         public string Partition { get; set; }

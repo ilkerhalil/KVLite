@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using LinqToDB.DataProvider;
+using LinqToDB.Mapping;
 using System.Data;
 
 namespace PommaLabs.KVLite
@@ -44,6 +45,8 @@ namespace PommaLabs.KVLite
         ///   The data provider for which connections are opened.
         /// </summary>
         IDataProvider DataProvider { get; }
+
+        MappingSchema MappingSchema { get; }
 
         /// <summary>
         ///   Creates a new connection to the specified data provider.

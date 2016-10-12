@@ -23,6 +23,8 @@
 
 using LinqToDB.DataProvider;
 using LinqToDB.DataProvider.SQLite;
+using LinqToDB.Mapping;
+using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -57,6 +59,12 @@ namespace PommaLabs.KVLite.SQLite
         {
             _settings = settings;
             _journalMode = journalMode;
+
+            MappingSchema = new MappingSchema();                
+            MappingSchema.GetFluentMappingBuilder()
+                .Entity<DbCacheItem>()
+                .HasTableName(CacheItemsTableName)
+                .HasSchemaName(CacheSchemaName);
         }
 
         #region IDbCacheConnectionFactory members
@@ -73,7 +81,9 @@ namespace PommaLabs.KVLite.SQLite
         /// <summary>
         ///   The data provider for which connections are opened.
         /// </summary>
-        public IDataProvider DataProvider { get; } = new SQLiteDataProvider();
+        public IDataProvider DataProvider => new SQLiteDataProvider();
+
+        public MappingSchema MappingSchema { get; }
 
         /// <summary>
         ///   Creates a new connection to the specified data provider.

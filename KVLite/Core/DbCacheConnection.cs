@@ -33,7 +33,8 @@ namespace PommaLabs.KVLite.Core
     {
         public DbCacheConnection(IDbCacheConnectionFactory connectionFactory)
             : base(connectionFactory.DataProvider, connectionFactory.Create())
-        {            
+        {
+            AddMappingSchema(connectionFactory.MappingSchema);
         }
 
         /// <summary>

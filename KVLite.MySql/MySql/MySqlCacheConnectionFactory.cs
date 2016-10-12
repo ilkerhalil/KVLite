@@ -23,13 +23,24 @@
 
 using LinqToDB.DataProvider;
 using LinqToDB.DataProvider.MySql;
+using LinqToDB.Mapping;
 using MySql.Data.MySqlClient;
+using PommaLabs.KVLite.Core;
 using System.Data;
 
 namespace PommaLabs.KVLite.MySql
 {
     internal sealed class MySqlCacheConnectionFactory : IDbCacheConnectionFactory
     {
+        public MySqlCacheConnectionFactory()
+        {
+            MappingSchema = new MappingSchema();
+            MappingSchema.GetFluentMappingBuilder()
+                .Entity<DbCacheItem>()
+                .HasTableName(CacheItemsTableName)
+                .HasSchemaName(CacheSchemaName);
+        }
+
         public string CacheSchemaName { get; set; } = "kvlite";
 
         public string CacheItemsTableName { get; set; } = "kvl_cache_items";
@@ -43,6 +54,8 @@ namespace PommaLabs.KVLite.MySql
         ///   The data provider for which connections are opened.
         /// </summary>
         public IDataProvider DataProvider { get; } = new MySqlDataProvider();
+
+        public MappingSchema MappingSchema { get; }
 
         public IDbConnection Create()
         {
