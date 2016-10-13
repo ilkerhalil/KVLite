@@ -21,9 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using LinqToDB.DataProvider;
-using LinqToDB.Mapping;
-using System.Data;
+using System.Data.Common;
 
 namespace PommaLabs.KVLite
 {
@@ -36,23 +34,20 @@ namespace PommaLabs.KVLite
 
         string CacheItemsTableName { get; set; }
 
+        int MaxPartitionNameLength { get; set; }
+
+        int MaxKeyNameLenght { get; set; }
+
         /// <summary>
         ///   The connection string used to connect to the cache data provider.
         /// </summary>
         string ConnectionString { get; }
 
         /// <summary>
-        ///   The data provider for which connections are opened.
-        /// </summary>
-        IDataProvider DataProvider { get; }
-
-        MappingSchema MappingSchema { get; }
-
-        /// <summary>
         ///   Creates a new connection to the specified data provider.
         /// </summary>
         /// <returns>A connection which might be opened.</returns>
-        IDbConnection Create();
+        DbConnection Create();
 
         /// <summary>
         ///   Returns current cache size in kilobytes.

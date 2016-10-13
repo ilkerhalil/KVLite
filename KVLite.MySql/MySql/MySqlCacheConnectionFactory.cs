@@ -30,15 +30,16 @@ using System.Data;
 
 namespace PommaLabs.KVLite.MySql
 {
-    internal sealed class MySqlCacheConnectionFactory : IDbCacheConnectionFactory
+    internal sealed class MySqlCacheConnectionFactory : DbCacheConnectionFactory<MySqlConnection>
     {
         public MySqlCacheConnectionFactory()
+            : base(MySqlClientFactory.Instance)
         {
-            MappingSchema = new MappingSchema();
-            MappingSchema.GetFluentMappingBuilder()
-                .Entity<DbCacheItem>()
-                .HasTableName(CacheItemsTableName)
-                .HasSchemaName(CacheSchemaName);
+            RetrieveOneItemByHash = MinifyQuery($@"
+                select x.kvli_partition
+                  from {CacheSchemaName}.{CacheItemsTableName} x
+                 where x.kvli_hash = @hash
+            ");
         }
 
         public string CacheSchemaName { get; set; } = "kvlite";
@@ -46,23 +47,11 @@ namespace PommaLabs.KVLite.MySql
         public string CacheItemsTableName { get; set; } = "kvl_cache_items";
 
         /// <summary>
-        ///   The connection string used to connect to the cache data provider.
-        /// </summary>
-        public string ConnectionString { get; set; }
-
-        /// <summary>
         ///   The data provider for which connections are opened.
         /// </summary>
         public IDataProvider DataProvider { get; } = new MySqlDataProvider();
 
         public MappingSchema MappingSchema { get; }
-
-        public IDbConnection Create()
-        {
-            var connection = MySqlClientFactory.Instance.CreateConnection();
-            connection.ConnectionString = ConnectionString;
-            return connection;
-        }
 
         public long GetCacheSizeInKB()
         {
@@ -83,5 +72,11 @@ namespace PommaLabs.KVLite.MySql
                 }
             }
         }
+
+        #region Queries
+
+        public string RetrieveOneItemByHash { get; }
+
+        #endregion
     }
 }

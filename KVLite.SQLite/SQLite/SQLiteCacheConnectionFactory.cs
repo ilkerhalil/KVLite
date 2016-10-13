@@ -33,7 +33,6 @@ using System.Data.SQLite;
 namespace PommaLabs.KVLite.SQLite
 {
     internal sealed class SQLiteCacheConnectionFactory<TSettings> : IDbCacheConnectionFactory
-        where TSettings : SQLiteCacheSettings<TSettings>
     {
         #region Constants
 
@@ -59,12 +58,6 @@ namespace PommaLabs.KVLite.SQLite
         {
             _settings = settings;
             _journalMode = journalMode;
-
-            MappingSchema = new MappingSchema();                
-            MappingSchema.GetFluentMappingBuilder()
-                .Entity<DbCacheItem>()
-                .HasTableName(CacheItemsTableName)
-                .HasSchemaName(CacheSchemaName);
         }
 
         #region IDbCacheConnectionFactory members
@@ -79,19 +72,12 @@ namespace PommaLabs.KVLite.SQLite
         public string ConnectionString => _connectionString;
 
         /// <summary>
-        ///   The data provider for which connections are opened.
-        /// </summary>
-        public IDataProvider DataProvider => new SQLiteDataProvider();
-
-        public MappingSchema MappingSchema { get; }
-
-        /// <summary>
         ///   Creates a new connection to the specified data provider.
         /// </summary>
         /// <returns>A connection which might be opened.</returns>
-        public IDbConnection Create()
+        public SQLiteConnection Create()
         {
-            var connection = SQLiteFactory.Instance.CreateConnection();
+            var connection = SQLiteFactory.Instance.CreateConnection() as SQLiteConnection;
             connection.ConnectionString = _connectionString;
             return connection;
         }

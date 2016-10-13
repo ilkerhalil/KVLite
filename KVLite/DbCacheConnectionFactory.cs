@@ -1,4 +1,4 @@
-﻿// File name: DbCacheConnection.cs
+﻿// File name: DbCacheConnectionFactory.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,25 +21,34 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using LinqToDB;
-using LinqToDB.Data;
+using PommaLabs.Thrower;
+using System.Data;
+using System.Data.Common;
 
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.KVLite
 {
-    /// <summary>
-    ///   Data connection for persistent cache.
-    /// </summary>
-    internal sealed class DbCacheConnection : DataConnection
+    public abstract class DbCacheConnectionFactory : IDbCacheConnectionFactory
     {
-        public DbCacheConnection(IDbCacheConnectionFactory connectionFactory)
-            : base(connectionFactory.DataProvider, connectionFactory.Create())
+        private readonly DbProviderFactory _dbProviderFactory;
+
+        protected DbCacheConnectionFactory(DbProviderFactory dbProviderFactory)
         {
-            AddMappingSchema(connectionFactory.MappingSchema);
+            // Preconditions
+            Raise.ArgumentNullException.IfIsNull(dbProviderFactory, nameof(dbProviderFactory));
+
+            _dbProviderFactory = dbProviderFactory;
         }
 
         /// <summary>
-        ///   Cache items.
+        ///   The connection string used to connect to the cache data provider.
         /// </summary>
-        public ITable<DbCacheItem> CacheItems => GetTable<DbCacheItem>();
+        public virtual string ConnectionString { get; set; }
+
+        public virtual DbConnection Create()
+        {
+            var connection = _dbProviderFactory.CreateConnection() as TDbConnection;
+            connection.ConnectionString = ConnectionString;
+            return connection;
+        }
     }
 }

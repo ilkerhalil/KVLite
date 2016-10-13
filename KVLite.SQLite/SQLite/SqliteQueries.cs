@@ -71,21 +71,5 @@ namespace PommaLabs.KVLite.SQLite
         ");
 
         #endregion Queries
-
-        #region Private Methods
-
-        private static string MinifyQuery(string query)
-        {
-            // Removes all SQL comments. Multiline excludes '/n' from '.' matches.
-            query = Regex.Replace(query, @"--.*", string.Empty, RegexOptions.Multiline | RegexOptions.Compiled);
-
-            // Removes all multiple blanks.
-            query = Regex.Replace(query, @"\s+", " ", RegexOptions.Compiled);
-
-            // Removes initial and ending blanks.
-            return query.Trim();
-        }
-
-        #endregion Private Methods
     }
 }
