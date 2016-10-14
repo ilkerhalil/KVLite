@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -31,57 +32,75 @@ namespace PommaLabs.KVLite
     /// </summary>
     public class DbCacheItem
     {
-        [Column("KVLI_HASH"), Key]
+        [Column("KVLI_HASH", Order = 0), Key]
         public virtual long Hash { get; set; }
 
-        [Column("KVLI_PARTITION"), Index("UK_KVLI_PART_KEY", IsUnique = true, Order = 0)]
+        [Column("KVLI_PARTITION", Order = 1)]
+        [Index("UK_KVLI_PART_KEY", IsUnique = true, Order = 0)]
+        [Index("UK_KVLI_EXP_PART", IsUnique = false, Order = 1)]
         public virtual string Partition { get; set; }
 
-        [Column("KVLI_KEY"), Index("UK_KVLI_PART_KEY", IsUnique = true, Order = 1)]
+        [Column("KVLI_KEY", Order = 2)]
+        [Index("UK_KVLI_PART_KEY", IsUnique = true, Order = 1)]
         public virtual string Key { get; set; }
-
-        [Column("KVLI_VALUE"), Required]
-        public virtual byte[] Value { get; set; }
 
         [Column("KVLI_CREATION"), Required]
         public virtual long UtcCreation { get; set; }
 
         [Column("KVLI_EXPIRY"), Required]
+        [Index("UK_KVLI_EXP_PART", IsUnique = false, Order = 0)]
         public virtual long UtcExpiry { get; set; }
 
         [Column("KVLI_INTERVAL"), Required]
         public virtual long Interval { get; set; }
 
-        public virtual DbCacheItem Parent0 { get; set; }
+        [Column("KVLI_COMPRESSED"), Required]
+        public virtual bool Compressed { get; set; }
 
-        [Column("KVLI_PARENT_HASH0"), Index("IX_KVLI_PARENT0", IsUnique = false, Order = 0)]
+        [Column("KVLI_PARENT_HASH0")]
+        [Index("IX_KVLI_PARENT0", IsUnique = false, Order = 0)]
         public virtual long? ParentHash0 { get; set; }
 
         [Column("KVLI_PARENT_KEY0")]
         public virtual string ParentKey0 { get; set; }
 
-        [Column("KVLI_PARENT_HASH1"), Index("IX_KVLI_PARENT1", IsUnique = false, Order = 0)]
+        [Column("KVLI_PARENT_HASH1")]
+        [Index("IX_KVLI_PARENT1", IsUnique = false, Order = 0)]
         public virtual long? ParentHash1 { get; set; }
 
         [Column("KVLI_PARENT_KEY1")]
         public virtual string ParentKey1 { get; set; }
 
-        [Column("KVLI_PARENT_HASH2"), Index("IX_KVLI_PARENT2", IsUnique = false, Order = 0)]
+        [Column("KVLI_PARENT_HASH2")]
+        [Index("IX_KVLI_PARENT2", IsUnique = false, Order = 0)]
         public virtual long? ParentHash2 { get; set; }
 
         [Column("KVLI_PARENT_KEY2")]
         public virtual string ParentKey2 { get; set; }
 
-        [Column("KVLI_PARENT_HASH3"), Index("IX_KVLI_PARENT3", IsUnique = false, Order = 0)]
+        [Column("KVLI_PARENT_HASH3")]
+        [Index("IX_KVLI_PARENT3", IsUnique = false, Order = 0)]
         public virtual long? ParentHash3 { get; set; }
 
         [Column("KVLI_PARENT_KEY3")]
         public virtual string ParentKey3 { get; set; }
 
-        [Column("KVLI_PARENT_HASH4"), Index("IX_KVLI_PARENT4", IsUnique = false, Order = 0)]
+        [Column("KVLI_PARENT_HASH4")]
+        [Index("IX_KVLI_PARENT4", IsUnique = false, Order = 0)]
         public virtual long? ParentHash4 { get; set; }
 
         [Column("KVLI_PARENT_KEY4")]
         public virtual string ParentKey4 { get; set; }
+
+        [Column("KVLI_VALUE"), Required]
+        public virtual byte[] Value { get; set; }
+
+        #region Foreign keys
+
+        public virtual ICollection<DbCacheItem> Children0 { get; set; }
+
+        public virtual DbCacheItem Parent0 { get; set; }
+
+        #endregion
     }
 }

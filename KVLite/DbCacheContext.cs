@@ -96,7 +96,9 @@ namespace PommaLabs.KVLite
                 .Property(x => x.Key).HasMaxLength(_connectionFactory.MaxKeyNameLenght);
 
             dbCacheItemTable
-                .HasOptional(x => x.Parent0);
+                .HasOptional(x => x.Parent0)
+                .WithMany(x => x.Children0)
+                .WillCascadeOnDelete();
         }
     }
 }
