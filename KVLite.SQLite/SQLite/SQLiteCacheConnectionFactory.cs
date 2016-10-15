@@ -21,10 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using LinqToDB.DataProvider;
-using LinqToDB.DataProvider.SQLite;
-using LinqToDB.Mapping;
-using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -32,7 +28,8 @@ using System.Data.SQLite;
 
 namespace PommaLabs.KVLite.SQLite
 {
-    internal sealed class SQLiteCacheConnectionFactory<TSettings> : IDbCacheConnectionFactory
+    internal sealed class SQLiteCacheConnectionFactory<TSettings> : DbCacheConnectionFactory
+        where TSettings : SQLiteCacheSettings<TSettings>
     {
         #region Constants
 
@@ -55,6 +52,7 @@ namespace PommaLabs.KVLite.SQLite
         private readonly SQLiteJournalModeEnum _journalMode;
 
         public SQLiteCacheConnectionFactory(TSettings settings, SQLiteJournalModeEnum journalMode)
+            : base(SQLiteFactory.Instance, null, null)
         {
             _settings = settings;
             _journalMode = journalMode;
@@ -62,27 +60,12 @@ namespace PommaLabs.KVLite.SQLite
 
         #region IDbCacheConnectionFactory members
 
-        public string CacheSchemaName { get; set; } = "kvlite";
-
-        public string CacheItemsTableName { get; set; } = "kvl_cache_items";
-
         /// <summary>
         ///   The connection string used to connect to the cache data provider.
         /// </summary>
-        public string ConnectionString => _connectionString;
+        public override string ConnectionString => _connectionString;
 
-        /// <summary>
-        ///   Creates a new connection to the specified data provider.
-        /// </summary>
-        /// <returns>A connection which might be opened.</returns>
-        public SQLiteConnection Create()
-        {
-            var connection = SQLiteFactory.Instance.CreateConnection() as SQLiteConnection;
-            connection.ConnectionString = _connectionString;
-            return connection;
-        }
-
-        public long GetCacheSizeInKB()
+        public override long GetCacheSizeInKB()
         {
             // No need for a transaction, since it is just a select.
             using (var conn = Create())
@@ -194,18 +177,25 @@ namespace PommaLabs.KVLite.SQLite
                 columns.Add(dataReader.GetValue(dataReader.GetOrdinal("name")) as string);
             }
 
-            return columns.Count == 11
+            return columns.Count == 18
+                && columns.Contains("kvli_hash")
                 && columns.Contains("kvli_partition")
                 && columns.Contains("kvli_key")
-                && columns.Contains("kvli_value")
                 && columns.Contains("kvli_creation")
                 && columns.Contains("kvli_expiry")
                 && columns.Contains("kvli_interval")
-                && columns.Contains("kvli_parent0")
-                && columns.Contains("kvli_parent1")
-                && columns.Contains("kvli_parent2")
-                && columns.Contains("kvli_parent3")
-                && columns.Contains("kvli_parent4");
+                && columns.Contains("kvli_compressed")
+                && columns.Contains("kvli_parent_hash0")
+                && columns.Contains("kvli_parent_key0")
+                && columns.Contains("kvli_parent_hash1")
+                && columns.Contains("kvli_parent_key1")
+                && columns.Contains("kvli_parent_hash2")
+                && columns.Contains("kvli_parent_key2")
+                && columns.Contains("kvli_parent_hash3")
+                && columns.Contains("kvli_parent_key3")
+                && columns.Contains("kvli_parent_hash4")
+                && columns.Contains("kvli_parent_key4")
+                && columns.Contains("kvli_value");
         }
     }
 }

@@ -21,8 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Text.RegularExpressions;
-
 namespace PommaLabs.KVLite.SQLite
 {
     /// <summary>
@@ -32,43 +30,51 @@ namespace PommaLabs.KVLite.SQLite
     {
         #region Queries
 
-        public static readonly string CacheSchema = MinifyQuery(@"
+        public static readonly string CacheSchema = @"
             PRAGMA auto_vacuum = INCREMENTAL;
             DROP TABLE IF EXISTS kvl_cache_items;
             CREATE TABLE kvl_cache_items (
+                kvli_hash BIGINT NOT NULL,
                 kvli_partition TEXT NOT NULL,
                 kvli_key TEXT NOT NULL,
-                kvli_value BLOB NOT NULL,
                 kvli_creation BIGINT NOT NULL,
                 kvli_expiry BIGINT NOT NULL,
                 kvli_interval BIGINT NOT NULL,
-                kvli_parent0 TEXT,
-                kvli_parent1 TEXT,
-                kvli_parent2 TEXT,
-                kvli_parent3 TEXT,
-                kvli_parent4 TEXT,
-                CONSTRAINT pk_kvl_cache_items PRIMARY KEY (kvli_partition, kvli_key),
-                CONSTRAINT fk_kvl_cache_items_parent0 FOREIGN KEY (kvli_partition, kvli_parent0) REFERENCES kvl_cache_items (kvli_partition, kvli_key) ON DELETE CASCADE,
-                CONSTRAINT fk_kvl_cache_items_parent1 FOREIGN KEY (kvli_partition, kvli_parent1) REFERENCES kvl_cache_items (kvli_partition, kvli_key) ON DELETE CASCADE,
-                CONSTRAINT fk_kvl_cache_items_parent2 FOREIGN KEY (kvli_partition, kvli_parent2) REFERENCES kvl_cache_items (kvli_partition, kvli_key) ON DELETE CASCADE,
-                CONSTRAINT fk_kvl_cache_items_parent3 FOREIGN KEY (kvli_partition, kvli_parent3) REFERENCES kvl_cache_items (kvli_partition, kvli_key) ON DELETE CASCADE,
-                CONSTRAINT fk_kvl_cache_items_parent4 FOREIGN KEY (kvli_partition, kvli_parent4) REFERENCES kvl_cache_items (kvli_partition, kvli_key) ON DELETE CASCADE
+                kvli_compressed BOOLEAN NOT NULL,
+                kvli_parent_hash0 BIGINT,
+                kvli_parent_key0 TEXT,
+                kvli_parent_hash1 BIGINT,
+                kvli_parent_key1 TEXT,
+                kvli_parent_hash2 BIGINT,
+                kvli_parent_key2 TEXT,
+                kvli_parent_hash3 BIGINT,
+                kvli_parent_key3 TEXT,
+                kvli_parent_hash4 BIGINT,
+                kvli_parent_key4 TEXT,
+                kvli_value BLOB NOT NULL,
+                CONSTRAINT pk_kvl_cache_items PRIMARY KEY (kvli_hash),
+                CONSTRAINT uk_kvl_cache_items UNIQUE (kvli_partition, kvli_key),
+                CONSTRAINT fk_kvl_cache_items_parent0 FOREIGN KEY (kvli_parent_hash0) REFERENCES kvl_cache_items (kvli_hash) ON DELETE CASCADE,
+                CONSTRAINT fk_kvl_cache_items_parent1 FOREIGN KEY (kvli_parent_hash1) REFERENCES kvl_cache_items (kvli_hash) ON DELETE CASCADE,
+                CONSTRAINT fk_kvl_cache_items_parent2 FOREIGN KEY (kvli_parent_hash2) REFERENCES kvl_cache_items (kvli_hash) ON DELETE CASCADE,
+                CONSTRAINT fk_kvl_cache_items_parent3 FOREIGN KEY (kvli_parent_hash3) REFERENCES kvl_cache_items (kvli_hash) ON DELETE CASCADE,
+                CONSTRAINT fk_kvl_cache_items_parent4 FOREIGN KEY (kvli_parent_hash4) REFERENCES kvl_cache_items (kvli_hash) ON DELETE CASCADE
             );
             CREATE INDEX ix_kvl_cache_items_expiry_partition ON kvl_cache_items (kvli_expiry ASC, kvli_partition ASC);
-            CREATE INDEX ix_kvl_cache_items_parent0 ON kvl_cache_items (kvli_partition, kvli_parent0);
-            CREATE INDEX ix_kvl_cache_items_parent1 ON kvl_cache_items (kvli_partition, kvli_parent1);
-            CREATE INDEX ix_kvl_cache_items_parent2 ON kvl_cache_items (kvli_partition, kvli_parent2);
-            CREATE INDEX ix_kvl_cache_items_parent3 ON kvl_cache_items (kvli_partition, kvli_parent3);
-            CREATE INDEX ix_kvl_cache_items_parent4 ON kvl_cache_items (kvli_partition, kvli_parent4);
-        ");
+            CREATE INDEX ix_kvl_cache_items_parent0 ON kvl_cache_items (kvli_parent_hash0);
+            CREATE INDEX ix_kvl_cache_items_parent1 ON kvl_cache_items (kvli_parent_hash1);
+            CREATE INDEX ix_kvl_cache_items_parent2 ON kvl_cache_items (kvli_parent_hash2);
+            CREATE INDEX ix_kvl_cache_items_parent3 ON kvl_cache_items (kvli_parent_hash3);
+            CREATE INDEX ix_kvl_cache_items_parent4 ON kvl_cache_items (kvli_parent_hash4);
+        ";
 
-        public static readonly string IsSchemaReady = MinifyQuery(@"
+        public static readonly string IsSchemaReady = @"
             PRAGMA table_info(kvl_cache_items)
-        ");
+        ";
 
-        public static readonly string Vacuum = MinifyQuery(@"
+        public static readonly string Vacuum = @"
             vacuum; -- Clears free list and makes DB file smaller
-        ");
+        ";
 
         #endregion Queries
     }

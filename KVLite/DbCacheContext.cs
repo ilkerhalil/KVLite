@@ -21,11 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.CodeServices.Common;
-using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System.Data.Entity;
-using System.Text;
 
 namespace PommaLabs.KVLite
 {
@@ -93,11 +90,31 @@ namespace PommaLabs.KVLite
                 .Property(x => x.Partition).HasMaxLength(_connectionFactory.MaxPartitionNameLength);
 
             dbCacheItemTable
-                .Property(x => x.Key).HasMaxLength(_connectionFactory.MaxKeyNameLenght);
+                .Property(x => x.Key).HasMaxLength(_connectionFactory.MaxKeyNameLength);
 
             dbCacheItemTable
                 .HasOptional(x => x.Parent0)
                 .WithMany(x => x.Children0)
+                .WillCascadeOnDelete();
+
+            dbCacheItemTable
+                .HasOptional(x => x.Parent1)
+                .WithMany(x => x.Children1)
+                .WillCascadeOnDelete();
+
+            dbCacheItemTable
+                .HasOptional(x => x.Parent2)
+                .WithMany(x => x.Children2)
+                .WillCascadeOnDelete();
+
+            dbCacheItemTable
+                .HasOptional(x => x.Parent3)
+                .WithMany(x => x.Children3)
+                .WillCascadeOnDelete();
+
+            dbCacheItemTable
+                .HasOptional(x => x.Parent4)
+                .WithMany(x => x.Children4)
                 .WillCascadeOnDelete();
         }
     }

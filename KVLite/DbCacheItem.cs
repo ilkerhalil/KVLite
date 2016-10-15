@@ -44,55 +44,55 @@ namespace PommaLabs.KVLite
         [Index("UK_KVLI_PART_KEY", IsUnique = true, Order = 1)]
         public virtual string Key { get; set; }
 
-        [Column("KVLI_CREATION"), Required]
+        [Column("KVLI_CREATION", Order = 3), Required]
         public virtual long UtcCreation { get; set; }
 
-        [Column("KVLI_EXPIRY"), Required]
+        [Column("KVLI_EXPIRY", Order = 4), Required]
         [Index("UK_KVLI_EXP_PART", IsUnique = false, Order = 0)]
         public virtual long UtcExpiry { get; set; }
 
-        [Column("KVLI_INTERVAL"), Required]
+        [Column("KVLI_INTERVAL", Order = 5), Required]
         public virtual long Interval { get; set; }
 
-        [Column("KVLI_COMPRESSED"), Required]
+        [Column("KVLI_COMPRESSED", Order = 6), Required]
         public virtual bool Compressed { get; set; }
 
-        [Column("KVLI_PARENT_HASH0")]
+        [Column("KVLI_PARENT_HASH0", Order = 7)]
         [Index("IX_KVLI_PARENT0", IsUnique = false, Order = 0)]
         public virtual long? ParentHash0 { get; set; }
 
-        [Column("KVLI_PARENT_KEY0")]
+        [Column("KVLI_PARENT_KEY0", Order = 8)]
         public virtual string ParentKey0 { get; set; }
 
-        [Column("KVLI_PARENT_HASH1")]
+        [Column("KVLI_PARENT_HASH1", Order = 9)]
         [Index("IX_KVLI_PARENT1", IsUnique = false, Order = 0)]
         public virtual long? ParentHash1 { get; set; }
 
-        [Column("KVLI_PARENT_KEY1")]
+        [Column("KVLI_PARENT_KEY1", Order = 10)]
         public virtual string ParentKey1 { get; set; }
 
-        [Column("KVLI_PARENT_HASH2")]
+        [Column("KVLI_PARENT_HASH2", Order = 11)]
         [Index("IX_KVLI_PARENT2", IsUnique = false, Order = 0)]
         public virtual long? ParentHash2 { get; set; }
 
-        [Column("KVLI_PARENT_KEY2")]
+        [Column("KVLI_PARENT_KEY2", Order = 12)]
         public virtual string ParentKey2 { get; set; }
 
-        [Column("KVLI_PARENT_HASH3")]
+        [Column("KVLI_PARENT_HASH3", Order = 13)]
         [Index("IX_KVLI_PARENT3", IsUnique = false, Order = 0)]
         public virtual long? ParentHash3 { get; set; }
 
-        [Column("KVLI_PARENT_KEY3")]
+        [Column("KVLI_PARENT_KEY3", Order = 14)]
         public virtual string ParentKey3 { get; set; }
 
-        [Column("KVLI_PARENT_HASH4")]
+        [Column("KVLI_PARENT_HASH4", Order = 15)]
         [Index("IX_KVLI_PARENT4", IsUnique = false, Order = 0)]
         public virtual long? ParentHash4 { get; set; }
 
-        [Column("KVLI_PARENT_KEY4")]
+        [Column("KVLI_PARENT_KEY4", Order = 16)]
         public virtual string ParentKey4 { get; set; }
 
-        [Column("KVLI_VALUE"), Required]
+        [Column("KVLI_VALUE", Order = 17), Required]
         public virtual byte[] Value { get; set; }
 
         #region Foreign keys
@@ -100,6 +100,22 @@ namespace PommaLabs.KVLite
         public virtual ICollection<DbCacheItem> Children0 { get; set; }
 
         public virtual DbCacheItem Parent0 { get; set; }
+
+        public virtual ICollection<DbCacheItem> Children1 { get; set; }
+
+        public virtual DbCacheItem Parent1 { get; set; }
+
+        public virtual ICollection<DbCacheItem> Children2 { get; set; }
+
+        public virtual DbCacheItem Parent2 { get; set; }
+
+        public virtual ICollection<DbCacheItem> Children3 { get; set; }
+
+        public virtual DbCacheItem Parent3 { get; set; }
+
+        public virtual ICollection<DbCacheItem> Children4 { get; set; }
+
+        public virtual DbCacheItem Parent4 { get; set; }
 
         #endregion
     }

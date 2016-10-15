@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.Thrower;
-using System.Data;
 using System.Data.Common;
 
 namespace PommaLabs.KVLite
@@ -31,24 +30,49 @@ namespace PommaLabs.KVLite
     {
         private readonly DbProviderFactory _dbProviderFactory;
 
-        protected DbCacheConnectionFactory(DbProviderFactory dbProviderFactory)
+        protected DbCacheConnectionFactory(DbProviderFactory dbProviderFactory, string cacheSchemaName, string cacheItemsTableName)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(dbProviderFactory, nameof(dbProviderFactory));
 
             _dbProviderFactory = dbProviderFactory;
+
+            CacheSchemaName = cacheSchemaName ?? DefaultCacheSchemaName;
+            CacheItemsTableName = cacheItemsTableName ?? DefaultCacheItemsTableName; 
         }
+
+        public static string DefaultCacheSchemaName { get; } = "kvlite";
+
+        public static string DefaultCacheItemsTableName { get; } = "kvl_cache_items";
+
+        public string CacheSchemaName { get; }
+
+        public string CacheItemsTableName { get; }
+
+        public int MaxKeyNameLength { get; }
+
+        public int MaxPartitionNameLength { get; }
 
         /// <summary>
         ///   The connection string used to connect to the cache data provider.
         /// </summary>
         public virtual string ConnectionString { get; set; }
 
+        /// <summary>
+        ///   Creates a new connection to the specified data provider.
+        /// </summary>
+        /// <returns>A connection which might be opened.</returns>
         public virtual DbConnection Create()
         {
-            var connection = _dbProviderFactory.CreateConnection() as TDbConnection;
+            var connection = _dbProviderFactory.CreateConnection();
             connection.ConnectionString = ConnectionString;
             return connection;
         }
+
+        /// <summary>
+        ///   Returns current cache size in kilobytes.
+        /// </summary>
+        /// <returns>Current cache size in kilobytes.</returns>
+        public abstract long GetCacheSizeInKB();
     }
 }

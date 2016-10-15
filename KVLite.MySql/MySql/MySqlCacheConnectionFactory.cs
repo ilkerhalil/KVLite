@@ -21,39 +21,19 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using LinqToDB.DataProvider;
-using LinqToDB.DataProvider.MySql;
-using LinqToDB.Mapping;
 using MySql.Data.MySqlClient;
-using PommaLabs.KVLite.Core;
 using System.Data;
 
 namespace PommaLabs.KVLite.MySql
 {
-    internal sealed class MySqlCacheConnectionFactory : DbCacheConnectionFactory<MySqlConnection>
+    internal sealed class MySqlCacheConnectionFactory : DbCacheConnectionFactory
     {
         public MySqlCacheConnectionFactory()
-            : base(MySqlClientFactory.Instance)
+            : base(MySqlClientFactory.Instance, null, null)
         {
-            RetrieveOneItemByHash = MinifyQuery($@"
-                select x.kvli_partition
-                  from {CacheSchemaName}.{CacheItemsTableName} x
-                 where x.kvli_hash = @hash
-            ");
         }
 
-        public string CacheSchemaName { get; set; } = "kvlite";
-
-        public string CacheItemsTableName { get; set; } = "kvl_cache_items";
-
-        /// <summary>
-        ///   The data provider for which connections are opened.
-        /// </summary>
-        public IDataProvider DataProvider { get; } = new MySqlDataProvider();
-
-        public MappingSchema MappingSchema { get; }
-
-        public long GetCacheSizeInKB()
+        public override long GetCacheSizeInKB()
         {
             using (var connection = Create())
             using (var command = connection.CreateCommand())
@@ -72,11 +52,5 @@ namespace PommaLabs.KVLite.MySql
                 }
             }
         }
-
-        #region Queries
-
-        public string RetrieveOneItemByHash { get; }
-
-        #endregion
     }
 }

@@ -446,7 +446,8 @@ namespace PommaLabs.KVLite
                 Value = serializedValue,
                 UtcCreation = Clock.UnixTime,
                 UtcExpiry = utcExpiry.ToUnixTime(),
-                Interval = (long) interval.TotalSeconds
+                Interval = (long) interval.TotalSeconds,
+                Compressed = true
             };
 
             // Also add the parent keys, if any.
@@ -489,31 +490,37 @@ namespace PommaLabs.KVLite
 
             using (var db = new DbCacheContext(ConnectionFactory))
             {
-                try
+                var oldCacheItem = db.CacheItems.FirstOrDefault(x => x.Hash == dbCacheItem.Hash);
+
+                if (oldCacheItem == null)
                 {
                     db.CacheItems.Add(dbCacheItem);
                 }
-                catch (Exception)
+                else
                 {
-                    // Insert will fail if item already exists; therefore, we try to update the item.
                     // It is not necessary to update PARTITION and KEY, since they must already have
                     // the proper values (otherwise, hashes should not have matched).
-                    db.CacheItems
-                        .Where(x => x.Partition == partition)
-                        .Where(x => x.Key == key)
-                        .Set(x => x.Value, dbCacheItem.Value)
-                        .Set(x => x.UtcCreation, dbCacheItem.UtcCreation)
-                        .Set(x => x.UtcExpiry, dbCacheItem.UtcExpiry)
-                        .Set(x => x.Interval, dbCacheItem.Interval)
-                        .Set(x => x.ParentKey0, dbCacheItem.ParentKey0)
-                        .Set(x => x.ParentKey1, dbCacheItem.ParentKey1)
-                        .Set(x => x.ParentKey2, dbCacheItem.ParentKey2)
-                        .Set(x => x.ParentKey3, dbCacheItem.ParentKey3)
-                        .Set(x => x.ParentKey4, dbCacheItem.ParentKey4)
-                        .Update();
+                    oldCacheItem.UtcCreation = dbCacheItem.UtcCreation;
+                    oldCacheItem.UtcExpiry = dbCacheItem.UtcExpiry;
+                    oldCacheItem.Interval = dbCacheItem.Interval;
+                    oldCacheItem.Compressed = dbCacheItem.Compressed;
+                    oldCacheItem.Value = dbCacheItem.Value;
+                    if (parentKeyCount > 0)
+                    {
+                        oldCacheItem.ParentHash0 = dbCacheItem.ParentHash0;
+                        oldCacheItem.ParentKey0 = dbCacheItem.ParentKey0;
+                        oldCacheItem.ParentHash1 = dbCacheItem.ParentHash1;
+                        oldCacheItem.ParentKey1 = dbCacheItem.ParentKey1;
+                        oldCacheItem.ParentHash2 = dbCacheItem.ParentHash2;
+                        oldCacheItem.ParentKey2 = dbCacheItem.ParentKey2;
+                        oldCacheItem.ParentHash3 = dbCacheItem.ParentHash3;
+                        oldCacheItem.ParentKey3 = dbCacheItem.ParentKey3;
+                        oldCacheItem.ParentHash4 = dbCacheItem.ParentHash4;
+                        oldCacheItem.ParentKey4 = dbCacheItem.ParentKey4;
+                    }
                 }
 
-                db.SaveChanges();
+                TrySaveChanges(db);
             }
 
             long insertionCount = 0L;
@@ -557,7 +564,7 @@ namespace PommaLabs.KVLite
                     db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
                 }
 
-                db.SaveChanges();
+                TrySaveChanges(db);
 
                 return hashes.LongLength;
             }
@@ -627,9 +634,7 @@ namespace PommaLabs.KVLite
             {
                 var dbCacheItem = db.CacheItems
                     .Where(x => x.Hash == hash)
-                    .Where(x => x.UtcExpiry >= utcNow)
-                    .Select(x => new { x.Value, OldUtcExpiry = x.UtcExpiry, NewUtcExpiry = utcNow + x.Interval })
-                    .FirstOrDefault();
+                    .FirstOrDefault(x => x.UtcExpiry >= utcNow);
 
                 if (dbCacheItem == null)
                 {
@@ -638,19 +643,13 @@ namespace PommaLabs.KVLite
                 }
 
                 // Since we are in a "get" operation, we should also update the expiry.
-                if (dbCacheItem.NewUtcExpiry > utcNow)
+                if (dbCacheItem.Interval > 0L)
                 {
-                    db.CacheItems
-                        .Where(x => x.Partition == partition)
-                        .Where(x => x.Key == key)
-                        .Where(x => x.UtcExpiry == dbCacheItem.OldUtcExpiry)
-                        .Set(x => x.UtcExpiry, dbCacheItem.NewUtcExpiry)
-                        .Update();
+                    dbCacheItem.UtcExpiry = utcNow + dbCacheItem.Interval;
+                    TrySaveChanges(db);
                 }
 
                 serializedValue = dbCacheItem.Value;
-
-                db.SaveChanges();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -687,15 +686,9 @@ namespace PommaLabs.KVLite
                 // Since we are in a "get" operation, we should also update the expiry.
                 if (dbCacheItem.Interval > 0L)
                 {
-                    db.CacheItems
-                        .Where(x => x.Partition == partition)
-                        .Where(x => x.Key == key)
-                        .Where(x => x.UtcExpiry == dbCacheItem.UtcExpiry)
-                        .Set(x => x.UtcExpiry, utcNow + dbCacheItem.Interval)
-                        .Update();
+                    dbCacheItem.UtcExpiry = utcNow + dbCacheItem.Interval;
+                    TrySaveChanges(db);
                 }
-
-                db.SaveChanges();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -727,15 +720,10 @@ namespace PommaLabs.KVLite
                 // Since we are in a "get" operation, we should also update the expiry.
                 foreach (var dbCacheItem in dbCacheItems.Where(x => x.Interval > 0L))
                 {
-                    db.CacheItems
-                        .Where(x => x.Partition == dbCacheItem.Partition)
-                        .Where(x => x.Key == dbCacheItem.Key)
-                        .Where(x => x.UtcExpiry == dbCacheItem.UtcExpiry)
-                        .Set(x => x.UtcExpiry, utcNow + dbCacheItem.Interval)
-                        .Update();
+                    dbCacheItem.UtcExpiry = utcNow + dbCacheItem.Interval;
                 }
 
-                db.SaveChanges();
+                TrySaveChanges(db);
                 tr.Complete();
             }
 
@@ -769,7 +757,7 @@ namespace PommaLabs.KVLite
                     .AsNoTracking()
                     .Where(x => x.Hash == hash)
                     .Where(x => x.UtcExpiry >= utcNow)
-                    .Select(x => new { x.Value, OldUtcExpiry = x.UtcExpiry, NewUtcExpiry = utcNow + x.Interval })
+                    .Select(x => x.Value)
                     .FirstOrDefault();
 
                 if (dbCacheItem == null)
@@ -778,7 +766,7 @@ namespace PommaLabs.KVLite
                     return Option.None<TVal>();
                 }
 
-                serializedValue = dbCacheItem.Value;
+                serializedValue = dbCacheItem;
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -867,7 +855,7 @@ namespace PommaLabs.KVLite
             using (var db = new DbCacheContext(ConnectionFactory))
             {
                 db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
-                db.SaveChanges();
+                TrySaveChanges(db);
             }
         }
 
@@ -958,12 +946,24 @@ namespace PommaLabs.KVLite
             var cf = Settings.ConnectionFactory;
 
             partition = partition.Truncate(cf.MaxPartitionNameLength);
-            key = key.Truncate(cf.MaxKeyNameLenght);
+            key = key.Truncate(cf.MaxKeyNameLength);
 
             var ph = (long) XXHash.XXH32(Encoding.Default.GetBytes(partition));
             var kh = (long) XXHash.XXH32(Encoding.Default.GetBytes(key));
 
             return (ph << 32) + kh;
+        }
+
+        private void TrySaveChanges(DbCacheContext db)
+        {
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+            }
         }
 
         #endregion Private Methods
