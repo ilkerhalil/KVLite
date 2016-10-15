@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite
 
         static DbCacheContext()
         {
-            Database.SetInitializer(new CreateDatabaseIfNotExists<DbCacheContext>());
+            Database.SetInitializer<DbCacheContext>(null);
         }
 
         /// <summary>
@@ -91,31 +91,6 @@ namespace PommaLabs.KVLite
 
             dbCacheItemTable
                 .Property(x => x.Key).HasMaxLength(_connectionFactory.MaxKeyNameLength);
-
-            dbCacheItemTable
-                .HasOptional(x => x.Parent0)
-                .WithMany(x => x.Children0)
-                .WillCascadeOnDelete();
-
-            dbCacheItemTable
-                .HasOptional(x => x.Parent1)
-                .WithMany(x => x.Children1)
-                .WillCascadeOnDelete();
-
-            dbCacheItemTable
-                .HasOptional(x => x.Parent2)
-                .WithMany(x => x.Children2)
-                .WillCascadeOnDelete();
-
-            dbCacheItemTable
-                .HasOptional(x => x.Parent3)
-                .WithMany(x => x.Children3)
-                .WillCascadeOnDelete();
-
-            dbCacheItemTable
-                .HasOptional(x => x.Parent4)
-                .WithMany(x => x.Children4)
-                .WillCascadeOnDelete();
         }
     }
 }

@@ -49,9 +49,9 @@ namespace PommaLabs.KVLite
 
         public string CacheItemsTableName { get; }
 
-        public int MaxKeyNameLength { get; }
+        public int MaxKeyNameLength { get; } = 255;
 
-        public int MaxPartitionNameLength { get; }
+        public int MaxPartitionNameLength { get; } = 255;
 
         /// <summary>
         ///   The connection string used to connect to the cache data provider.

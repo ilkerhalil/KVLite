@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -32,7 +31,7 @@ namespace PommaLabs.KVLite
     /// </summary>
     public class DbCacheItem
     {
-        [Column("KVLI_HASH", Order = 0), Key]
+        [Column("KVLI_HASH", Order = 0), Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public virtual long Hash { get; set; }
 
         [Column("KVLI_PARTITION", Order = 1)]
@@ -94,29 +93,5 @@ namespace PommaLabs.KVLite
 
         [Column("KVLI_VALUE", Order = 17), Required]
         public virtual byte[] Value { get; set; }
-
-        #region Foreign keys
-
-        public virtual ICollection<DbCacheItem> Children0 { get; set; }
-
-        public virtual DbCacheItem Parent0 { get; set; }
-
-        public virtual ICollection<DbCacheItem> Children1 { get; set; }
-
-        public virtual DbCacheItem Parent1 { get; set; }
-
-        public virtual ICollection<DbCacheItem> Children2 { get; set; }
-
-        public virtual DbCacheItem Parent2 { get; set; }
-
-        public virtual ICollection<DbCacheItem> Children3 { get; set; }
-
-        public virtual DbCacheItem Parent3 { get; set; }
-
-        public virtual ICollection<DbCacheItem> Children4 { get; set; }
-
-        public virtual DbCacheItem Parent4 { get; set; }
-
-        #endregion
     }
 }

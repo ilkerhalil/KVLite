@@ -443,11 +443,11 @@ namespace PommaLabs.KVLite
                 Hash = hash,
                 Partition = partition,
                 Key = key,
-                Value = serializedValue,
                 UtcCreation = Clock.UnixTime,
                 UtcExpiry = utcExpiry.ToUnixTime(),
                 Interval = (long) interval.TotalSeconds,
-                Compressed = true
+                Compressed = true,
+                Value = serializedValue,
             };
 
             // Also add the parent keys, if any.
@@ -610,8 +610,7 @@ namespace PommaLabs.KVLite
             {
                 return db.CacheItems
                     .Where(x => partition == null || x.Partition == partition)
-                    .Where(x => ignoreExpiryDate || x.UtcExpiry >= utcNow)
-                    .LongCount();
+                    .Count(x => ignoreExpiryDate || x.UtcExpiry >= utcNow);
             }
         }
 
