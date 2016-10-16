@@ -9,9 +9,11 @@
     <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Scripts\kvl_cache_items.sql" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Scripts\kvl_cache_items.sql" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)MySqlCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MySqlCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCacheConnectionFactory.cs" />
   </ItemGroup>
 </Project>

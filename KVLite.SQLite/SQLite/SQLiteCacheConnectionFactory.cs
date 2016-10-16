@@ -63,7 +63,11 @@ namespace PommaLabs.KVLite.SQLite
         /// <summary>
         ///   The connection string used to connect to the cache data provider.
         /// </summary>
-        public override string ConnectionString => _connectionString;
+        public override string ConnectionString
+        {
+            get { return _connectionString; }
+            set { throw new NotSupportedException(); }
+        }
 
         public override long GetCacheSizeInKB()
         {

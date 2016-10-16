@@ -41,7 +41,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The connection string used to connect to the cache data provider.
         /// </summary>
-        string ConnectionString { get; }
+        string ConnectionString { get; set; }
 
         /// <summary>
         ///   Creates a new connection to the specified data provider.

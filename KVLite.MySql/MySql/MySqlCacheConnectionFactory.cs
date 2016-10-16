@@ -26,7 +26,7 @@ using System.Data;
 
 namespace PommaLabs.KVLite.MySql
 {
-    internal sealed class MySqlCacheConnectionFactory : DbCacheConnectionFactory
+    public class MySqlCacheConnectionFactory : DbCacheConnectionFactory
     {
         public MySqlCacheConnectionFactory()
             : base(MySqlClientFactory.Instance, null, null)

@@ -46,7 +46,7 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   Gets the default instance for this cache kind. Default instance is configured using
-        ///   default application settings.
+        ///   default cache settings.
         /// </summary>
         [Pure]
 #pragma warning disable CC0022 // Should dispose object

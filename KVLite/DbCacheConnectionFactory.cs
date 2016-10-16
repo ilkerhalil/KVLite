@@ -23,17 +23,22 @@
 
 using PommaLabs.Thrower;
 using System.Data.Common;
+using System.Text.RegularExpressions;
 
 namespace PommaLabs.KVLite
 {
     public abstract class DbCacheConnectionFactory : IDbCacheConnectionFactory
     {
+        private static readonly Regex SqlNameRegex = new Regex("[a-z0-9_]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         private readonly DbProviderFactory _dbProviderFactory;
 
         protected DbCacheConnectionFactory(DbProviderFactory dbProviderFactory, string cacheSchemaName, string cacheItemsTableName)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(dbProviderFactory, nameof(dbProviderFactory));
+            Raise.ArgumentException.If(cacheSchemaName != null && !SqlNameRegex.IsMatch(cacheSchemaName));
+            Raise.ArgumentException.If(cacheItemsTableName != null && !SqlNameRegex.IsMatch(cacheItemsTableName));
 
             _dbProviderFactory = dbProviderFactory;
 

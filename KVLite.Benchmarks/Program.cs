@@ -54,9 +54,8 @@ namespace PommaLabs.KVLite.Benchmarks
                 BenchmarkRunner.Run<Comparison>();
                 return;
             }
-
-            //PersistentCache.DefaultInstance.ConnectionFactory = new MySqlCacheConnectionFactory(ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString);
-            //VolatileCache.DefaultInstance.ConnectionFactory = new MySqlCacheConnectionFactory(ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString);
+                        
+            MySqlCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString;
 
             Console.WriteLine(@"Running vacuum on DB...");
             PersistentCache.DefaultInstance.Vacuum();
@@ -74,6 +73,9 @@ namespace PommaLabs.KVLite.Benchmarks
             
             for (var i = 0; i < IterationCount; ++i)
             {
+                FullyCleanCache();
+                StoreEachDataTable(MySqlCache.DefaultInstance, tables, i);
+
                 FullyCleanCache();
                 StoreEachDataTable(tables, i);
 
@@ -161,6 +163,30 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Data table list stored in: {0}", stopwatch.Elapsed);
             Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.CacheSizeInKB() / 1024L);
             Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
+        }
+
+        private static void StoreEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
+            where TCache : ICache
+        {
+            var cacheName = typeof(TCache).Name;
+
+            Console.WriteLine(); // Spacer
+            Console.WriteLine($"[{cacheName}] Storing each data table, iteration {0}...", iteration);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            foreach (var table in tables)
+            {
+                cache.AddStaticToDefaultPartition(table.TableName, table);
+            }
+            stopwatch.Stop();
+
+            Debug.Assert(cache.Count() == tables.Count);
+            Debug.Assert(cache.LongCount() == tables.LongCount());
+
+            Console.WriteLine($"[{cacheName}] Data tables stored in: {0}", stopwatch.Elapsed);
+            //Console.WriteLine($"[{cacheName}] Current cache size: {0} MB", cache.CacheSizeInKB() / 1024L);
+            Console.WriteLine($"[{cacheName}] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
         private static void StoreEachDataTable(ICollection<DataTable> tables, int iteration)
