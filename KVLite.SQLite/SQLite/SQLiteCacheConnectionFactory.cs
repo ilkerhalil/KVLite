@@ -181,7 +181,8 @@ namespace PommaLabs.KVLite.SQLite
                 columns.Add(dataReader.GetValue(dataReader.GetOrdinal("name")) as string);
             }
 
-            return columns.Count == 18
+            return columns.Count == 19
+                && columns.Contains("kvli_id")
                 && columns.Contains("kvli_hash")
                 && columns.Contains("kvli_partition")
                 && columns.Contains("kvli_key")

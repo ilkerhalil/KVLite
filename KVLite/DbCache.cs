@@ -35,6 +35,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Core;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -474,8 +475,8 @@ namespace PommaLabs.KVLite
                         if (parentKeyCount > 3)
                         {
                             parentKey = parentKeys[3];
-                            dbCacheItem.ParentHash4 = TruncateAndHash(ref partition, ref parentKey);
-                            dbCacheItem.ParentKey4 = parentKey;
+                            dbCacheItem.ParentHash3 = TruncateAndHash(ref partition, ref parentKey);
+                            dbCacheItem.ParentKey3 = parentKey;
 
                             if (parentKeyCount > 4)
                             {
@@ -547,7 +548,7 @@ namespace PommaLabs.KVLite
         protected sealed override long ClearInternal(string partition, CacheReadMode cacheReadMode)
         {
             // Compute all parameters _before_ opening the connection.
-            partition = partition?.Truncate(Settings.ConnectionFactory.MaxPartitionNameLength);
+            partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength);
             var ignoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate);
             var utcNow = Clock.UnixTime;
 
@@ -602,7 +603,7 @@ namespace PommaLabs.KVLite
         protected sealed override long CountInternal(string partition, CacheReadMode cacheReadMode)
         {
             // Compute all parameters _before_ opening the connection.
-            partition = partition?.Truncate(Settings.ConnectionFactory.MaxPartitionNameLength);
+            partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength);
             var ignoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate);
             var utcNow = Clock.UnixTime;
 
@@ -704,7 +705,7 @@ namespace PommaLabs.KVLite
         protected sealed override IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition)
         {
             // Compute all parameters _before_ opening the connection.
-            partition = partition?.Truncate(Settings.ConnectionFactory.MaxPartitionNameLength);
+            partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength);
             var utcNow = Clock.UnixTime;
 
             DbCacheItem[] dbCacheItems;
@@ -820,7 +821,7 @@ namespace PommaLabs.KVLite
         protected sealed override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
         {
             // Compute all parameters _before_ opening the connection.
-            partition = partition?.Truncate(Settings.ConnectionFactory.MaxPartitionNameLength);
+            partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength);
             var utcNow = Clock.UnixTime;
 
             DbCacheItem[] dbCacheItems;
@@ -942,7 +943,7 @@ namespace PommaLabs.KVLite
 
         private long TruncateAndHash(ref string partition, ref string key)
         {
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
 
             partition = partition.Truncate(cf.MaxPartitionNameLength);
             key = key.Truncate(cf.MaxKeyNameLength);
@@ -958,6 +959,10 @@ namespace PommaLabs.KVLite
             try
             {
                 db.SaveChanges();
+            }
+            catch (OptimisticConcurrencyException)
+            {
+                // Nothing to do, we ignore concurrency errors.
             }
             catch (Exception ex)
             {
