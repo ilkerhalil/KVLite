@@ -26,6 +26,7 @@ using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
 using PommaLabs.CodeServices.Serialization;
+using PommaLabs.KVLite.MySql;
 using PommaLabs.KVLite.UnitTests;
 using System;
 using System.Collections.Generic;

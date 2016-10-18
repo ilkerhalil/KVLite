@@ -144,6 +144,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data Providers", "Data Prov
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.MySql.NET46", "Platform Specific\KVLite.MySql.NET46\KVLite.MySql.NET46.csproj", "{0CA0C2E8-19DF-43D5-B7D7-1D3817E3B90A}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KVLite.Oracle", "KVLite.Oracle\KVLite.Oracle.shproj", "{75562B35-0887-4DFD-A3E3-7332C4B9E199}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KVLite.SqlSever", "KVLite.SqlSever\KVLite.SqlSever.shproj", "{DE174CAB-29CD-448B-AA3D-9F2787EF4E6B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		KVLite.WebApi\KVLite.WebApi.projitems*{09d76014-4670-4977-b9db-6445649c862b}*SharedItemsImports = 13
@@ -164,6 +168,7 @@ Global
 		KVLite.Nancy\KVLite.Nancy.projitems*{64145a81-f369-4863-b02b-d4c14adb883e}*SharedItemsImports = 4
 		KVLite.WebForms\KVLite.WebForms.projitems*{6de6294a-ced3-4e53-85fb-60b9fead1fe7}*SharedItemsImports = 4
 		KVLite.Nancy\KVLite.Nancy.projitems*{6f8516a0-5e50-44b2-aa8f-a3ab285f513e}*SharedItemsImports = 4
+		KVLite.Oracle\KVLite.Oracle.projitems*{75562b35-0887-4dfd-a3e3-7332c4b9e199}*SharedItemsImports = 13
 		KVLite.SQLite\KVLite.SQLite.projitems*{7adaa28f-e4ab-41ef-a29c-8de4e1e7a429}*SharedItemsImports = 4
 		KVLite.Nancy\KVLite.Nancy.projitems*{7f11c0e7-f781-4543-a013-b129a72646a4}*SharedItemsImports = 13
 		KVLite.SQLite\KVLite.SQLite.projitems*{a8db2a6a-6b57-457a-996f-5519fcb51862}*SharedItemsImports = 13
@@ -173,6 +178,7 @@ Global
 		KVLite.MySql\KVLite.MySql.projitems*{c072c3df-1977-4614-83e1-95834b21fc75}*SharedItemsImports = 13
 		KVLite.WebApi\KVLite.WebApi.projitems*{cc96ea69-dcc3-4d9e-bb6a-aced0c479ef3}*SharedItemsImports = 4
 		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{d3f95e04-5400-46b2-af46-d8809fb8bcb0}*SharedItemsImports = 4
+		KVLite.SqlSever\KVLite.SqlSever.projitems*{de174cab-29cd-448b-aa3d-9f2787ef4e6b}*SharedItemsImports = 13
 		KVLite\KVLite.projitems*{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -559,5 +565,7 @@ Global
 		{6283E69E-3528-4F3A-BA93-C04962137D85} = {58F3B79E-836C-4A4C-B993-DF9983AEF5AA}
 		{C072C3DF-1977-4614-83E1-95834B21FC75} = {1E130C3D-7644-4DC2-AEA3-46CFEC48D75F}
 		{0CA0C2E8-19DF-43D5-B7D7-1D3817E3B90A} = {58F3B79E-836C-4A4C-B993-DF9983AEF5AA}
+		{75562B35-0887-4DFD-A3E3-7332C4B9E199} = {1E130C3D-7644-4DC2-AEA3-46CFEC48D75F}
+		{DE174CAB-29CD-448B-AA3D-9F2787EF4E6B} = {1E130C3D-7644-4DC2-AEA3-46CFEC48D75F}
 	EndGlobalSection
 EndGlobal

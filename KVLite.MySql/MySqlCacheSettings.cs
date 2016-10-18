@@ -25,7 +25,7 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.MySql
 {
     [Serializable, DataContract]
     public class MySqlCacheSettings : DbCacheSettings<MySqlCacheSettings>

@@ -26,10 +26,9 @@ using Common.Logging;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
-using PommaLabs.KVLite.MySql;
 using System.Diagnostics.Contracts;
 
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.MySql
 {
     public class MySqlCache : DbCache<MySqlCacheSettings>
     {
