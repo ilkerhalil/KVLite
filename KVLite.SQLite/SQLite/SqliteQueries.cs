@@ -24,7 +24,7 @@
 namespace PommaLabs.KVLite.SQLite
 {
     /// <summary>
-    ///   All queries used inside the <see cref="PersistentCache"/> class.
+    ///   All queries used inside the <see cref="PersistentCache"/> and <see cref="VolatileCache"/> classes.
     /// </summary>
     internal static class SQLiteQueries
     {
@@ -34,7 +34,6 @@ namespace PommaLabs.KVLite.SQLite
             PRAGMA auto_vacuum = INCREMENTAL;
             DROP TABLE IF EXISTS kvl_cache_items;
             CREATE TABLE kvl_cache_items (
-                kvli_id INTEGER PRIMARY KEY ASC,
                 kvli_hash BIGINT NOT NULL,
                 kvli_partition TEXT NOT NULL,
                 kvli_key TEXT NOT NULL,
@@ -53,7 +52,7 @@ namespace PommaLabs.KVLite.SQLite
                 kvli_parent_hash4 BIGINT,
                 kvli_parent_key4 TEXT,
                 kvli_value BLOB NOT NULL,
-                CONSTRAINT uk_kvli UNIQUE (kvli_hash),
+                CONSTRAINT pk_kvli PRIMARY KEY (kvli_hash),
                 CONSTRAINT fk_kvli_parent0 FOREIGN KEY (kvli_parent_hash0) REFERENCES kvl_cache_items (kvli_hash) ON DELETE CASCADE,
                 CONSTRAINT fk_kvli_parent1 FOREIGN KEY (kvli_parent_hash1) REFERENCES kvl_cache_items (kvli_hash) ON DELETE CASCADE,
                 CONSTRAINT fk_kvli_parent2 FOREIGN KEY (kvli_parent_hash2) REFERENCES kvl_cache_items (kvli_hash) ON DELETE CASCADE,

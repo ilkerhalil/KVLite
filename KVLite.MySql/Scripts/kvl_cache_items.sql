@@ -1,7 +1,6 @@
 ﻿DROP TABLE IF EXISTS `kvl_cache_items`;
 
 CREATE TABLE IF NOT EXISTS `kvl_cache_items` (
-  `kvli_id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `kvli_hash` bigint(20) NOT NULL,
   `kvli_partition` varchar(255) NOT NULL,
   `kvli_key` varchar(255) NOT NULL,
@@ -20,8 +19,7 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_items` (
   `kvli_parent_hash4` bigint(20) DEFAULT NULL,
   `kvli_parent_key4` varchar(255) DEFAULT NULL,
   `kvli_value` mediumblob NOT NULL,
-  PRIMARY KEY (`kvli_id`),
-  UNIQUE `uk_kvli` (`kvli_hash`)
+  PRIMARY KEY (`kvli_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `kvl_cache_items`

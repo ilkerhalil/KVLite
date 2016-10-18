@@ -554,20 +554,30 @@ namespace PommaLabs.KVLite
 
             using (var db = new DbCacheContext(ConnectionFactory))
             {
-                var hashes = db.CacheItems
+                var items = db.CacheItems
+                    .AsNoTracking()
                     .Where(x => partition == null || x.Partition == partition)
                     .Where(x => ignoreExpiryDate || x.UtcExpiry < utcNow)
-                    .Select(x => x.Hash)
+                    .Select(x => new { x.Hash, x.UtcExpiry })
                     .ToArray();
                 
-                foreach (var hash in hashes)
+                try
                 {
-                    db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
+                    db.Configuration.AutoDetectChangesEnabled = false;
+
+                    foreach (var item in items)
+                    {
+                        db.Entry(new DbCacheItem { Hash = item.Hash, UtcExpiry = item.UtcExpiry }).State = EntityState.Deleted;
+                    }
+                }
+                finally
+                {
+                    db.Configuration.AutoDetectChangesEnabled = true;
                 }
 
                 TrySaveChanges(db);
 
-                return hashes.LongLength;
+                return items.LongLength;
             }
         }
 
@@ -709,7 +719,6 @@ namespace PommaLabs.KVLite
             var utcNow = Clock.UnixTime;
 
             DbCacheItem[] dbCacheItems;
-            using (var tr = new TransactionScope())
             using (var db = new DbCacheContext(ConnectionFactory))
             {
                 dbCacheItems = db.CacheItems
@@ -724,7 +733,6 @@ namespace PommaLabs.KVLite
                 }
 
                 TrySaveChanges(db);
-                tr.Complete();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -854,8 +862,12 @@ namespace PommaLabs.KVLite
 
             using (var db = new DbCacheContext(ConnectionFactory))
             {
-                db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
-                TrySaveChanges(db);
+                var dbCacheItem = db.CacheItems.FirstOrDefault(x => x.Hash == hash);
+                if (dbCacheItem != null)
+                {
+                    db.CacheItems.Remove(dbCacheItem);
+                    TrySaveChanges(db);
+                }
             }
         }
 
@@ -959,10 +971,6 @@ namespace PommaLabs.KVLite
             try
             {
                 db.SaveChanges();
-            }
-            catch (OptimisticConcurrencyException)
-            {
-                // Nothing to do, we ignore concurrency errors.
             }
             catch (Exception ex)
             {

@@ -39,9 +39,9 @@ namespace PommaLabs.KVLite.Benchmarks
 {
     public static class Program
     {
-        private const int RowCount = 100;
+        private const int RowCount = 500;
         private const int IterationCount = 5;
-        private const int RandomDataTablesCount = 100;
+        private const int RandomDataTablesCount = 2000;
 
         private static readonly string[] ColumnNames = { "A", "B", "C", "D", "E" };
 
@@ -74,13 +74,13 @@ namespace PommaLabs.KVLite.Benchmarks
             for (var i = 0; i < IterationCount; ++i)
             {
                 FullyCleanCache();
+                StoreEachDataTable(MySqlCache.DefaultInstance, tables, i);
+
+                FullyCleanCache();
                 StoreEachDataTable(tables, i);
 
                 FullyCleanCache();
                 StoreEachDataTable_Volatile(tables, i);
-
-                FullyCleanCache();
-                StoreEachDataTable(MySqlCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 RetrieveEachDataTable(MySqlCache.DefaultInstance, tables, i);
