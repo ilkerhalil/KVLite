@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_items` (
   `kvli_expiry` bigint(20) unsigned NOT NULL,
   `kvli_interval` bigint(20) unsigned NOT NULL,
   `kvli_compressed` boolean NOT NULL,
+  `kvli_value` mediumblob NOT NULL,
   `kvli_parent_hash0` bigint(20) DEFAULT NULL,
   `kvli_parent_key0` varchar(255) DEFAULT NULL,
   `kvli_parent_hash1` bigint(20) DEFAULT NULL,
@@ -18,7 +19,6 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_items` (
   `kvli_parent_key3` varchar(255) DEFAULT NULL,
   `kvli_parent_hash4` bigint(20) DEFAULT NULL,
   `kvli_parent_key4` varchar(255) DEFAULT NULL,
-  `kvli_value` mediumblob NOT NULL,
   PRIMARY KEY (`kvli_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
