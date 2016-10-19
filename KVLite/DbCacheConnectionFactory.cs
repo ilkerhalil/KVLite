@@ -50,9 +50,9 @@ namespace PommaLabs.KVLite
 
         public static string DefaultCacheItemsTableName { get; } = "kvl_cache_items";
 
-        public string CacheSchemaName { get; }
+        public string CacheSchemaName { get; set; }
 
-        public string CacheItemsTableName { get; }
+        public string CacheItemsTableName { get; set; }
 
         public int MaxKeyNameLength { get; } = 255;
 

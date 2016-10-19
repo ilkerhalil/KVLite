@@ -30,9 +30,9 @@ namespace PommaLabs.KVLite
     /// </summary>
     public interface IDbCacheConnectionFactory
     {
-        string CacheSchemaName { get; }
+        string CacheSchemaName { get; set; }
 
-        string CacheItemsTableName { get; }
+        string CacheItemsTableName { get; set; }
 
         int MaxPartitionNameLength { get; }
 

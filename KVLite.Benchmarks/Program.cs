@@ -27,6 +27,7 @@ using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.MySql;
+using PommaLabs.KVLite.Oracle;
 using PommaLabs.KVLite.UnitTests;
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,10 @@ namespace PommaLabs.KVLite.Benchmarks
                         
             MySqlCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString;
 
+            OracleCache.DefaultInstance.ConnectionFactory.CacheSchemaName = "CARAVAN";
+            OracleCache.DefaultInstance.ConnectionFactory.CacheItemsTableName = "CRVN_KVL_CACHE_ITEMS";
+            OracleCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings["Oracle"].ConnectionString;
+
             Console.WriteLine(@"Running vacuum on DB...");
             PersistentCache.DefaultInstance.Vacuum();
             Console.WriteLine(@"Vacuum completed.");
@@ -74,6 +79,9 @@ namespace PommaLabs.KVLite.Benchmarks
             
             for (var i = 0; i < IterationCount; ++i)
             {
+                FullyCleanCache();
+                StoreEachDataTable(OracleCache.DefaultInstance, tables, i);
+
                 FullyCleanCache();
                 StoreEachDataTable(MySqlCache.DefaultInstance, tables, i);
 
@@ -148,6 +156,7 @@ namespace PommaLabs.KVLite.Benchmarks
             PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             MySqlCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            OracleCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             MemoryCache.DefaultInstance.Clear();
             Console.WriteLine(@"Cache cleaned!");
         }
