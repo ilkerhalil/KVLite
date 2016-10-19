@@ -148,7 +148,7 @@
       <Name>KVLite.NET40</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\..\KVLite.SqlSever\KVLite.SqlSever.projitems" Label="Shared" />
+  <Import Project="..\..\KVLite.SqlServer\KVLite.SqlServer.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\Fody.1.30.0-beta01\build\portable-net+sl+win+wpa+wp\Fody.targets" Condition="Exists('..\..\packages\Fody.1.30.0-beta01\build\portable-net+sl+win+wpa+wp\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
