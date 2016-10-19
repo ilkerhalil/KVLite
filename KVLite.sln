@@ -173,9 +173,13 @@ Global
 		KVLite.WebApi\KVLite.WebApi.projitems*{23b87a0b-df68-432b-b75c-4d73aecfa6e3}*SharedItemsImports = 4
 		KVLite.WebForms\KVLite.WebForms.projitems*{2b0dfd0c-5762-46d2-bbdb-da11d31a3acc}*SharedItemsImports = 13
 		KVLite.WebForms\KVLite.WebForms.projitems*{3183fee9-f71c-48b6-b485-64ae2f208c73}*SharedItemsImports = 4
+		KVLite.Oracle\KVLite.Oracle.projitems*{338092aa-d244-48b3-a2df-df04441b0c05}*SharedItemsImports = 4
 		KVLite.WebApi\KVLite.WebApi.projitems*{3463d66a-bac1-4e3c-ae69-b3d1cd12c13d}*SharedItemsImports = 4
+		KVLite.SqlSever\KVLite.SqlSever.projitems*{34e25dd1-948f-4da4-ba0c-7fa53db7268f}*SharedItemsImports = 4
 		KVLite\KVLite.projitems*{3768ff1c-ade5-4c9d-9c00-cacb0ce40809}*SharedItemsImports = 4
+		KVLite.MySql\KVLite.MySql.projitems*{39af8970-ce4d-4167-adbf-44e5150ec065}*SharedItemsImports = 4
 		KVLite.Nancy\KVLite.Nancy.projitems*{442146be-4713-4d3f-be9d-635fd50d70bb}*SharedItemsImports = 4
+		KVLite.SqlSever\KVLite.SqlSever.projitems*{4522d488-e358-4330-9ed3-3263bc1f5434}*SharedItemsImports = 4
 		KVLite.SQLite\KVLite.SQLite.projitems*{50c2c651-1acf-44f6-ad95-efedb75bcbd1}*SharedItemsImports = 4
 		KVLite.UnitTests\KVLite.UnitTests.projitems*{50e7c4c0-0723-41aa-bd2d-0b31ca2cc67d}*SharedItemsImports = 13
 		KVLite.SQLite\KVLite.SQLite.projitems*{6283e69e-3528-4f3a-ba93-c04962137d85}*SharedItemsImports = 4
@@ -185,6 +189,7 @@ Global
 		KVLite.Oracle\KVLite.Oracle.projitems*{75562b35-0887-4dfd-a3e3-7332c4b9e199}*SharedItemsImports = 13
 		KVLite.SQLite\KVLite.SQLite.projitems*{7adaa28f-e4ab-41ef-a29c-8de4e1e7a429}*SharedItemsImports = 4
 		KVLite.Nancy\KVLite.Nancy.projitems*{7f11c0e7-f781-4543-a013-b129a72646a4}*SharedItemsImports = 13
+		KVLite.SqlSever\KVLite.SqlSever.projitems*{a6ee205b-b23d-47b8-9561-a82e098d8be5}*SharedItemsImports = 4
 		KVLite.SQLite\KVLite.SQLite.projitems*{a8db2a6a-6b57-457a-996f-5519fcb51862}*SharedItemsImports = 13
 		KVLite\KVLite.projitems*{b81fca47-a533-4ffb-b202-f6e07668eb66}*SharedItemsImports = 4
 		KVLite.UnitTests\KVLite.UnitTests.projitems*{bbe6492a-198e-499e-add5-e8c904ec8182}*SharedItemsImports = 4
@@ -194,6 +199,8 @@ Global
 		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{d3f95e04-5400-46b2-af46-d8809fb8bcb0}*SharedItemsImports = 4
 		KVLite.SqlSever\KVLite.SqlSever.projitems*{de174cab-29cd-448b-aa3d-9f2787ef4e6b}*SharedItemsImports = 13
 		KVLite\KVLite.projitems*{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}*SharedItemsImports = 4
+		KVLite.MySql\KVLite.MySql.projitems*{e70b49f6-02fc-452e-958c-be1575bcc8f0}*SharedItemsImports = 4
+		KVLite.Oracle\KVLite.Oracle.projitems*{fea12e06-b27f-48d3-bc35-2a22fa97c67d}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
