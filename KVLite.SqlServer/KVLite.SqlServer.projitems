@@ -11,4 +11,9 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Scripts\kvl_cache_items.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)SqlServerCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SqlServerCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SqlServerCacheConnectionFactory.cs" />
+  </ItemGroup>
 </Project>
