@@ -491,51 +491,14 @@ namespace PommaLabs.KVLite
 
             using (var db = new DbCacheContext(ConnectionFactory))
             {
-                var oldCacheItem = db.CacheItems.FirstOrDefault(x => x.Hash == dbCacheItem.Hash);
+                var dbCacheItemEntry = db.Entry(dbCacheItem);
+                dbCacheItemEntry.State = EntityState.Added;
 
-                if (oldCacheItem == null)
+                if (!TrySaveChanges(db))
                 {
-                    db.CacheItems.Add(dbCacheItem);
+                    dbCacheItemEntry.State = EntityState.Modified;
+                    TrySaveChanges(db);
                 }
-                else
-                {
-                    // It is not necessary to update PARTITION and KEY, since they must already have
-                    // the proper values (otherwise, hashes should not have matched).
-                    oldCacheItem.UtcCreation = dbCacheItem.UtcCreation;
-                    oldCacheItem.UtcExpiry = dbCacheItem.UtcExpiry;
-                    oldCacheItem.Interval = dbCacheItem.Interval;
-                    oldCacheItem.Compressed = dbCacheItem.Compressed;
-                    oldCacheItem.Value = dbCacheItem.Value;
-                    if (parentKeyCount > 0)
-                    {
-                        oldCacheItem.ParentHash0 = dbCacheItem.ParentHash0;
-                        oldCacheItem.ParentKey0 = dbCacheItem.ParentKey0;
-                        oldCacheItem.ParentHash1 = dbCacheItem.ParentHash1;
-                        oldCacheItem.ParentKey1 = dbCacheItem.ParentKey1;
-                        oldCacheItem.ParentHash2 = dbCacheItem.ParentHash2;
-                        oldCacheItem.ParentKey2 = dbCacheItem.ParentKey2;
-                        oldCacheItem.ParentHash3 = dbCacheItem.ParentHash3;
-                        oldCacheItem.ParentKey3 = dbCacheItem.ParentKey3;
-                        oldCacheItem.ParentHash4 = dbCacheItem.ParentHash4;
-                        oldCacheItem.ParentKey4 = dbCacheItem.ParentKey4;
-                    }
-                }
-
-                TrySaveChanges(db);
-            }
-
-            long insertionCount = 0L;
-
-            // Insertion has concluded successfully, therefore we increment the operation counter. If
-            // it has reached the "InsertionCountBeforeAutoClean" configuration parameter, then we
-            // must reset it and do a SOFT cleanup. Following code is not fully thread safe, but it
-            // does not matter, because the "InsertionCountBeforeAutoClean" parameter should be just
-            // an hint on when to do the cleanup.
-            if (insertionCount >= Settings.InsertionCountBeforeAutoClean)
-            {
-                // If they were equal, then we need to run the maintenance cleanup. The insertion
-                // counter is automatically reset by the Clear method.
-                ClearInternal(null, CacheReadMode.ConsiderExpiryDate);
             }
         }
 
@@ -554,20 +517,19 @@ namespace PommaLabs.KVLite
 
             using (var db = new DbCacheContext(ConnectionFactory))
             {
-                var items = db.CacheItems
-                    .AsNoTracking()
+                var hashes = db.CacheItems
                     .Where(x => partition == null || x.Partition == partition)
                     .Where(x => ignoreExpiryDate || x.UtcExpiry < utcNow)
-                    .Select(x => new { x.Hash, x.UtcExpiry })
+                    .Select(x => x.Hash)
                     .ToArray();
                 
                 try
                 {
                     db.Configuration.AutoDetectChangesEnabled = false;
 
-                    foreach (var item in items)
+                    foreach (var hash in hashes)
                     {
-                        db.Entry(new DbCacheItem { Hash = item.Hash, UtcExpiry = item.UtcExpiry }).State = EntityState.Deleted;
+                        db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
                     }
                 }
                 finally
@@ -577,7 +539,7 @@ namespace PommaLabs.KVLite
 
                 TrySaveChanges(db);
 
-                return items.LongLength;
+                return hashes.LongLength;
             }
         }
 
@@ -761,20 +723,17 @@ namespace PommaLabs.KVLite
             byte[] serializedValue;
             using (var db = new DbCacheContext(ConnectionFactory))
             {
-                var dbCacheItem = db.CacheItems
-                    .AsNoTracking()
+                serializedValue = db.CacheItems
                     .Where(x => x.Hash == hash)
                     .Where(x => x.UtcExpiry >= utcNow)
                     .Select(x => x.Value)
                     .FirstOrDefault();
 
-                if (dbCacheItem == null)
+                if (serializedValue == null)
                 {
                     // Nothing to deserialize, return None.
                     return Option.None<TVal>();
                 }
-
-                serializedValue = dbCacheItem;
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -966,15 +925,17 @@ namespace PommaLabs.KVLite
             return (ph << 32) + kh;
         }
 
-        private void TrySaveChanges(DbCacheContext db)
+        private bool TrySaveChanges(DbCacheContext db)
         {
             try
             {
                 db.SaveChanges();
+                return true;
             }
             catch (Exception ex)
             {
                 LastError = ex;
+                return false;
             }
         }
 

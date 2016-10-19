@@ -29,60 +29,60 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   Represents an item stored inside the cache.
     /// </summary>
-    public class DbCacheItem
+    public sealed class DbCacheItem
     {
         [Column("KVLI_HASH"), Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public virtual long Hash { get; set; }
+        public long Hash { get; set; }
 
         [Column("KVLI_PARTITION")]
-        public virtual string Partition { get; set; }
+        public string Partition { get; set; }
 
         [Column("KVLI_KEY")]
-        public virtual string Key { get; set; }
+        public string Key { get; set; }
 
         [Column("KVLI_CREATION")]
-        public virtual long UtcCreation { get; set; }
+        public long UtcCreation { get; set; }
 
-        [Column("KVLI_EXPIRY"), ConcurrencyCheck]
-        public virtual long UtcExpiry { get; set; }
+        [Column("KVLI_EXPIRY")]
+        public long UtcExpiry { get; set; }
 
         [Column("KVLI_INTERVAL")]
-        public virtual long Interval { get; set; }
+        public long Interval { get; set; }
 
         [Column("KVLI_COMPRESSED")]
-        public virtual bool Compressed { get; set; }
-
-        [Column("KVLI_PARENT_HASH0")]
-        public virtual long? ParentHash0 { get; set; }
-
-        [Column("KVLI_PARENT_KEY0")]
-        public virtual string ParentKey0 { get; set; }
-
-        [Column("KVLI_PARENT_HASH1")]
-        public virtual long? ParentHash1 { get; set; }
-
-        [Column("KVLI_PARENT_KEY1")]
-        public virtual string ParentKey1 { get; set; }
-
-        [Column("KVLI_PARENT_HASH2")]
-        public virtual long? ParentHash2 { get; set; }
-
-        [Column("KVLI_PARENT_KEY2")]
-        public virtual string ParentKey2 { get; set; }
-
-        [Column("KVLI_PARENT_HASH3")]
-        public virtual long? ParentHash3 { get; set; }
-
-        [Column("KVLI_PARENT_KEY3")]
-        public virtual string ParentKey3 { get; set; }
-
-        [Column("KVLI_PARENT_HASH4")]
-        public virtual long? ParentHash4 { get; set; }
-
-        [Column("KVLI_PARENT_KEY4")]
-        public virtual string ParentKey4 { get; set; }
+        public bool Compressed { get; set; }
 
         [Column("KVLI_VALUE")]
-        public virtual byte[] Value { get; set; }
+        public byte[] Value { get; set; }
+
+        [Column("KVLI_PARENT_HASH0")]
+        public long? ParentHash0 { get; set; }
+
+        [Column("KVLI_PARENT_KEY0")]
+        public string ParentKey0 { get; set; }
+
+        [Column("KVLI_PARENT_HASH1")]
+        public long? ParentHash1 { get; set; }
+
+        [Column("KVLI_PARENT_KEY1")]
+        public string ParentKey1 { get; set; }
+
+        [Column("KVLI_PARENT_HASH2")]
+        public long? ParentHash2 { get; set; }
+
+        [Column("KVLI_PARENT_KEY2")]
+        public string ParentKey2 { get; set; }
+
+        [Column("KVLI_PARENT_HASH3")]
+        public long? ParentHash3 { get; set; }
+
+        [Column("KVLI_PARENT_KEY3")]
+        public string ParentKey3 { get; set; }
+
+        [Column("KVLI_PARENT_HASH4")]
+        public long? ParentHash4 { get; set; }
+
+        [Column("KVLI_PARENT_KEY4")]
+        public string ParentKey4 { get; set; }
     }
 }

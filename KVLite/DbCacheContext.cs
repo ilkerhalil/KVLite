@@ -51,6 +51,7 @@ namespace PommaLabs.KVLite
             _connectionFactory = connectionFactory;
 
             Configuration.LazyLoadingEnabled = false;
+            Configuration.ProxyCreationEnabled = false;
             Configuration.UseDatabaseNullSemantics = true;
             Configuration.ValidateOnSaveEnabled = false;
         }

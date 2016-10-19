@@ -80,10 +80,13 @@ namespace PommaLabs.KVLite.Benchmarks
             for (var i = 0; i < IterationCount; ++i)
             {
                 FullyCleanCache();
-                StoreEachDataTable(OracleCache.DefaultInstance, tables, i);
+                StoreEachDataTable(MySqlCache.DefaultInstance, tables, i);
+
+                //FullyCleanCache();
+                //StoreEachDataTable(OracleCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
-                StoreEachDataTable(MySqlCache.DefaultInstance, tables, i);
+                PeekEachDataTable(MySqlCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 StoreEachDataTable(tables, i);
@@ -400,6 +403,36 @@ namespace PommaLabs.KVLite.Benchmarks
             stopwatch.Stop();
 
             Console.WriteLine($"[{cacheName}] Data tables retrieved in: {stopwatch.Elapsed}");
+            //Console.WriteLine($"[{cacheName}] Current cache size: {cache.CacheSizeInKB() / 1024L} MB");
+            Console.WriteLine($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:.0}");
+        }
+
+        private static void PeekEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
+            where TCache : ICache
+        {
+            var cacheName = typeof(TCache).Name;
+
+            Console.WriteLine(); // Spacer
+            Console.WriteLine($"[{cacheName}] Peeking each data table, iteration {0}...", iteration);
+
+            foreach (var table in tables)
+            {
+                cache.AddStaticToDefaultPartition(table.TableName, table);
+            }
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            foreach (var table in tables)
+            {
+                var returnedTable = cache.PeekIntoDefaultPartition<DataTable>(table.TableName);
+                if (!returnedTable.HasValue)
+                {
+                    throw new Exception("Wrong data table read from cache! :(");
+                }
+            }
+            stopwatch.Stop();
+
+            Console.WriteLine($"[{cacheName}] Data tables peeked in: {stopwatch.Elapsed}");
             //Console.WriteLine($"[{cacheName}] Current cache size: {cache.CacheSizeInKB() / 1024L} MB");
             Console.WriteLine($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:.0}");
         }
