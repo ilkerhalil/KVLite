@@ -146,7 +146,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.MySql.NET46", "Platf
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KVLite.Oracle", "KVLite.Oracle\KVLite.Oracle.shproj", "{75562B35-0887-4DFD-A3E3-7332C4B9E199}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KVLite.SqlSever", "KVLite.SqlSever\KVLite.SqlSever.shproj", "{DE174CAB-29CD-448B-AA3D-9F2787EF4E6B}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KVLite.SqlServer", "KVLite.SqlSever\KVLite.SqlServer.shproj", "{DE174CAB-29CD-448B-AA3D-9F2787EF4E6B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Oracle.NET46", "Platform Specific\KVLite.Oracle.NET46\KVLite.Oracle.NET46.csproj", "{338092AA-D244-48B3-A2DF-DF04441B0C05}"
 EndProject

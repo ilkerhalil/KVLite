@@ -9,5 +9,6 @@
     <Import_RootNamespace>PommaLabs.KVLite.Oracle</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Scripts\kvl_cache_items.sql" />
   </ItemGroup>
 </Project>
