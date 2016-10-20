@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3A60BAC5-2B90-4749-8D49-0CEFB2D2054D}</ProjectGuid>
+    <ProjectGuid>{C0C58B27-4855-4637-9377-9EF01C5EB2FB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KVLite.NuGet.SQLite</RootNamespace>
-    <AssemblyName>KVLite.NuGet.SQLite</AssemblyName>
+    <RootNamespace>KVLite.NuGet.SqlServer</RootNamespace>
+    <AssemblyName>KVLite.NuGet.SqlServer</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -49,7 +49,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="LICENSE.md" />
     <None Include="NuGetPackage.ps1" />
     <None Include="NuGetSetup.ps1" />
     <None Include="NuGet.exe" />
@@ -57,9 +56,7 @@
     <None Include="Package.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="lib\net40\" />
-    <Folder Include="lib\net45\" />
-    <Folder Include="lib\net46\" />
+    <Folder Include="lib\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -81,8 +78,4 @@
     <Message Text="SUCCESS: Created package." Condition=" '$(Configuration)|$(Platform)|$(ExitCode)' == 'Debug|AnyCPU|0' " Importance="High" />
     <Message Text="SUCCESS: Published package." Condition=" '$(Configuration)|$(Platform)|$(ExitCode)' == 'Release|AnyCPU|0' " Importance="High" />
   </Target>
-  <PropertyGroup>
-    <PreBuildEvent>del "$(ProjectDir)*.nupkg"
-del "$(ProjectDir)*.nupkg.bak"</PreBuildEvent>
-  </PropertyGroup>
 </Project>

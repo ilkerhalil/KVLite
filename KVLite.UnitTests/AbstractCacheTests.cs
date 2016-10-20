@@ -41,7 +41,8 @@ using Task = System.Threading.Tasks.Task;
 namespace PommaLabs.KVLite.UnitTests
 {
     [TestFixture]
-    abstract class AbstractCacheTests<TSettings> where TSettings : DbCacheSettings<TSettings>
+    abstract class AbstractCacheTests<TSettings> : AbstractTests
+        where TSettings : DbCacheSettings<TSettings>
     {
         #region Setup/Teardown
 
@@ -89,10 +90,6 @@ namespace PommaLabs.KVLite.UnitTests
             .Range(MinItem, LargeItemCount)
             .Select(x => x.ToString(CultureInfo.InvariantCulture))
             .ToList();
-
-#pragma warning disable CC0033 // Dispose Fields Properly
-        protected readonly IKernel Kernel = new StandardKernel(new NinjectConfig());
-#pragma warning restore CC0033 // Dispose Fields Properly
 
         #endregion Constants
 

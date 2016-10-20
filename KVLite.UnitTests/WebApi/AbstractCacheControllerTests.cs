@@ -29,8 +29,7 @@ using System.Linq;
 
 namespace PommaLabs.KVLite.UnitTests.WebApi
 {
-    [TestFixture]
-    internal sealed class AbstractCacheControllerTests
+    internal sealed class AbstractCacheControllerTests : AbstractTests
     {
         CacheController _controller;
 
