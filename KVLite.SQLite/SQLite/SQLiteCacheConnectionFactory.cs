@@ -69,7 +69,7 @@ namespace PommaLabs.KVLite.SQLite
             set { throw new NotSupportedException(); }
         }
 
-        public override long GetCacheSizeInKB()
+        public override long GetCacheSizeInBytes()
         {
             // No need for a transaction, since it is just a select.
             using (var conn = Create())
@@ -84,9 +84,9 @@ namespace PommaLabs.KVLite.SQLite
                 var freelistCount = (long) cmd.ExecuteScalar();
 
                 cmd.CommandText = "PRAGMA page_size;";
-                var pageSizeInKB = (long) cmd.ExecuteScalar() / 1024L;
+                var pageSizeInKB = (long) cmd.ExecuteScalar();
 
-                return (pageCount - freelistCount) * pageSizeInKB;
+                return (pageCount - freelistCount) * pageSizeInKB * 1024;
             }
         }
 

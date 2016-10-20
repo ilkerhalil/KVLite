@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool;
 using CodeProject.ObjectPool.Specialized;
 using Common.Logging;
 using PommaLabs.CodeServices.Caching;
@@ -473,14 +472,14 @@ namespace PommaLabs.KVLite
         #region Cache size estimation
 
         /// <summary>
-        ///   Returns current cache size in kilobytes.
+        ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
+        ///   therefore, it does not need to be extremely accurate.
         /// </summary>
-        /// <returns>Current cache size in kilobytes.</returns>
-        [Pure]
-        public long CacheSizeInKB() => _store
+        /// <returns>An estimate of cache size in bytes.</returns>
+        protected override long GetCacheSizeInBytesInternal() => _store
             .Select(x => x.Value as CacheValue)
             .Where(x => x != null)
-            .Sum(x => x.SerializedValue.LongLength) / 1024L;
+            .Sum(x => x.SerializedValue.LongLength);
 
         #endregion Cache size estimation
 

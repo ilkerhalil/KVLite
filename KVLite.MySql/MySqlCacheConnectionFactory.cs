@@ -33,14 +33,14 @@ namespace PommaLabs.KVLite.MySql
         {
         }
 
-        public override long GetCacheSizeInKB()
+        public override long GetCacheSizeInBytes()
         {
             using (var connection = Create())
             using (var command = connection.CreateCommand())
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = $@"
-                    select round(sum(length(kvli_value)) / 1024) as result
+                    select round(sum(length(kvli_value))) as result
                     from {CacheSchemaName}.{CacheItemsTableName};
                 ";
 

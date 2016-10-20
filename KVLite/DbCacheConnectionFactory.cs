@@ -78,6 +78,6 @@ namespace PommaLabs.KVLite
         ///   Returns current cache size in kilobytes.
         /// </summary>
         /// <returns>Current cache size in kilobytes.</returns>
-        public abstract long GetCacheSizeInKB();
+        public abstract long GetCacheSizeInBytes();
     }
 }

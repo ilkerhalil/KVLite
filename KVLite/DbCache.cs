@@ -35,13 +35,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.Entity.Core;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Transactions;
 
 namespace PommaLabs.KVLite
 {
@@ -87,28 +85,6 @@ namespace PommaLabs.KVLite
         ///   The connection factory used to retrieve connections to the cache data store.
         /// </summary>
         public IDbCacheConnectionFactory ConnectionFactory => Settings.ConnectionFactory;
-
-        /// <summary>
-        ///   Returns current cache size in kilobytes.
-        /// </summary>
-        /// <returns>Current cache size in kilobytes.</returns>
-        [Pure]
-        public long CacheSizeInKB()
-        {
-            // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-
-            try
-            {
-                return ConnectionFactory.GetCacheSizeInKB();
-            }
-            catch (Exception ex)
-            {
-                LastError = ex;
-                Log.Error(ErrorMessages.InternalErrorOnReadAll, ex);
-                return 0L;
-            }
-        }
 
         /// <summary>
         ///   Clears the cache using the specified cache read mode.
@@ -403,6 +379,13 @@ namespace PommaLabs.KVLite
         #region Private Methods
 
         /// <summary>
+        ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
+        ///   therefore, it does not need to be extremely accurate.
+        /// </summary>
+        /// <returns>An estimate of cache size in bytes.</returns>
+        protected sealed override long GetCacheSizeInBytesInternal() => ConnectionFactory.GetCacheSizeInBytes();
+
+        /// <summary>
         ///   Adds given value with the specified expiry time and refresh internal.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
@@ -465,7 +448,7 @@ namespace PommaLabs.KVLite
                     parentKey = parentKeys[1];
                     dbCacheItem.ParentHash1 = TruncateAndHash(ref partition, ref parentKey);
                     dbCacheItem.ParentKey1 = parentKey;
-                    
+
                     if (parentKeyCount > 2)
                     {
                         parentKey = parentKeys[2];
@@ -522,7 +505,7 @@ namespace PommaLabs.KVLite
                     .Where(x => ignoreExpiryDate || x.UtcExpiry < utcNow)
                     .Select(x => x.Hash)
                     .ToArray();
-                
+
                 try
                 {
                     db.Configuration.AutoDetectChangesEnabled = false;

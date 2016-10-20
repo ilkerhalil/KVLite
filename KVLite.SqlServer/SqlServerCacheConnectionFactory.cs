@@ -33,7 +33,7 @@ namespace PommaLabs.KVLite.SqlServer
         {
         }
 
-        public override long GetCacheSizeInKB()
+        public override long GetCacheSizeInBytes()
         {
             using (var connection = Create())
             using (var command = connection.CreateCommand())
