@@ -28,6 +28,7 @@ using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using Ninject.Modules;
+using System.Data.Entity.Infrastructure.Interception;
 
 namespace PommaLabs.KVLite.UnitTests
 {
@@ -61,6 +62,8 @@ namespace PommaLabs.KVLite.UnitTests
             Bind<JsonSerializerSettings>()
                 .ToConstant(new JsonSerializerSettings())
                 .InSingletonScope();
+            
+            DbInterception.Add(new DbCommandInterceptor());
         }
     }
 }
