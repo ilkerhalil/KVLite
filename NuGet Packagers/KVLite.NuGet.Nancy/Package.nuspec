@@ -8,7 +8,7 @@
         <authors>Alessio Parma</authors>
         <owners>Alessio Parma</owners>
         <description>
-KVLite is a partition-based key-value store built on SQLite. 
+KVLite is a partition-based key-value store built on SQL and Entity Framework. 
 KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
 
 This package contains the code and the references required to use the Nancy caching bootstrapper.
@@ -18,7 +18,7 @@ This package contains the code and the references required to use the Nancy cach
 * [UPD] Moved interfaces and core classes to PommaLabs.CodeServices.Caching package.
         </releaseNotes>
         <summary>
-KVLite is a partition-based key-value store built on SQLite. This package contains the code and the references required to use the Nancy caching bootstrapper.
+KVLite is a partition-based key-value store built on SQL and Entity Framework. This package contains the code and the references required to use the Nancy caching bootstrapper.
         </summary>
         <language>en-US</language>
         <projectUrl>https://github.com/pomma89/KVLite</projectUrl>
