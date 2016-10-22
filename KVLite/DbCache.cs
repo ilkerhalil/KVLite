@@ -54,6 +54,7 @@ namespace PommaLabs.KVLite
     ///   Base class for SQL caches, implements common functionalities.
     /// </summary>
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
+    [Fody.ConfigureAwait(false)]
     public class DbCache<TSettings> : AbstractCache<TSettings>
         where TSettings : DbCacheSettings<TSettings>
     {
