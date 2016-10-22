@@ -26,8 +26,10 @@ using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Benchmarks.Models;
+using PommaLabs.KVLite.MySql;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.IO.Compression;
 
@@ -49,8 +51,34 @@ namespace PommaLabs.KVLite.Benchmarks
             File.Copy(src86, dst86, true);
             File.Copy(src64, dst64, true);
 
+            MySqlCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString;
+
             _caches = new Dictionary<string, Dictionary<string, Dictionary<string, ICache>>>
             {
+                ["mysql"] = new Dictionary<string, Dictionary<string, ICache>>
+                {
+                    ["json"] = new Dictionary<string, ICache>
+                    {
+                        ["deflate"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "json+deflate" }, serializer: new JsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.Fastest)),
+                        ["gzip"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "json+gzip" }, serializer: new JsonSerializer(), compressor: new GZipCompressor(CompressionLevel.Fastest)),
+                        ["lz4"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "json+lz4" }, serializer: new JsonSerializer(), compressor: new LZ4Compressor()),
+                        ["snappy"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "json+snappy" }, serializer: new JsonSerializer(), compressor: new SnappyCompressor()),
+                    },
+                    ["bson"] = new Dictionary<string, ICache>
+                    {
+                        ["deflate"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new BsonSerializer(), compressor: new DeflateCompressor(CompressionLevel.Fastest)),
+                        ["gzip"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "bson+gzip" }, serializer: new BsonSerializer(), compressor: new GZipCompressor(CompressionLevel.Fastest)),
+                        ["lz4"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "bson+lz4" }, serializer: new BsonSerializer(), compressor: new LZ4Compressor()),
+                        ["snappy"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "bson+snappy" }, serializer: new BsonSerializer(), compressor: new SnappyCompressor()),
+                    },
+                    ["msgpack"] = new Dictionary<string, ICache>
+                    {
+                        ["deflate"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "bson+deflate" }, serializer: new MsgPackSerializer(), compressor: new DeflateCompressor(CompressionLevel.Fastest)),
+                        ["gzip"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "bson+gzip" }, serializer: new MsgPackSerializer(), compressor: new GZipCompressor(CompressionLevel.Fastest)),
+                        ["lz4"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "bson+lz4" }, serializer: new MsgPackSerializer(), compressor: new LZ4Compressor()),
+                        ["snappy"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "bson+snappy" }, serializer: new MsgPackSerializer(), compressor: new SnappyCompressor()),
+                    }
+                },
                 ["volatile"] = new Dictionary<string, Dictionary<string, ICache>>
                 {
                     ["json"] = new Dictionary<string, ICache>
@@ -129,7 +157,7 @@ namespace PommaLabs.KVLite.Benchmarks
         [Params(1, 10, 100)]
         public int Count { get; set; }
 
-        [Params("volatile", "memory", "persistent")]
+        [Params("mysql", "volatile", "memory", "persistent")]
         public string Cache { get; set; }
 
         [Params("json", "bson", "msgpack")]

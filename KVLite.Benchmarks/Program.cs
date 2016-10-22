@@ -99,6 +99,20 @@ namespace PommaLabs.KVLite.Benchmarks
                 FullyCleanCache();
                 StoreEachDataTable(MemoryCache.DefaultInstance, tables, i);
 
+                /*** STORE EACH DATA TABLE TWO TIMES ***/
+
+                FullyCleanCache();
+                StoreEachDataTableTwoTimes(MySqlCache.DefaultInstance, tables, i);
+
+                FullyCleanCache();
+                StoreEachDataTableTwoTimes(PersistentCache.DefaultInstance, tables, i);
+
+                FullyCleanCache();
+                StoreEachDataTableTwoTimes(VolatileCache.DefaultInstance, tables, i);
+
+                FullyCleanCache();
+                StoreEachDataTableTwoTimes(MemoryCache.DefaultInstance, tables, i);
+
                 /*** RETRIEVE EACH DATA TABLE ***/
 
                 FullyCleanCache();
@@ -124,8 +138,22 @@ namespace PommaLabs.KVLite.Benchmarks
                 FullyCleanCache();
                 PeekEachDataTable(VolatileCache.DefaultInstance, tables, i);
 
+                //FullyCleanCache(); < --Memory cache does not allow peeking!
+                //PeekEachDataTable(MemoryCache.DefaultInstance, tables, i);
+
+                /*** REMOVE EACH DATA TABLE ***/
+
                 FullyCleanCache();
-                PeekEachDataTable(MemoryCache.DefaultInstance, tables, i);
+                RemoveEachDataTable(MySqlCache.DefaultInstance, tables, i);
+
+                FullyCleanCache();
+                RemoveEachDataTable(PersistentCache.DefaultInstance, tables, i);
+
+                FullyCleanCache();
+                RemoveEachDataTable(VolatileCache.DefaultInstance, tables, i);
+
+                FullyCleanCache();
+                RemoveEachDataTable(MemoryCache.DefaultInstance, tables, i);
 
                 /*** RETRIEVE EACH DATA TABLE ITEM ***/
 
@@ -138,8 +166,10 @@ namespace PommaLabs.KVLite.Benchmarks
                 FullyCleanCache();
                 RetrieveEachDataTableItem(VolatileCache.DefaultInstance, tables, i);
 
-                //FullyCleanCache(); <-- Memory cache does not allow peeking!
-                //RetrieveEachDataTableItem(MemoryCache.DefaultInstance, tables, i);
+                FullyCleanCache();
+                RetrieveEachDataTableItem(MemoryCache.DefaultInstance, tables, i);
+
+                /*** TODO ***/
 
                 FullyCleanCache();
                 StoreEachDataTableAsync(tables, i);
@@ -161,9 +191,6 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 FullyCleanCache();
                 StoreAndRetrieveEachDataTableAsync_Volatile(tables, i);
-
-                FullyCleanCache();
-                RemoveEachDataTable(tables, i);
 
                 FullyCleanCache();
                 RemoveEachDataTableAsync(tables, i);
@@ -244,25 +271,32 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:.0}");
         }
 
-        private static void StoreEachDataTable_Volatile(ICollection<DataTable> tables, int iteration)
+        private static void StoreEachDataTableTwoTimes<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
+            where TCache : ICache
         {
+            var cacheName = typeof(TCache).Name;
+
             Console.WriteLine(); // Spacer
-            Console.WriteLine(@"[Volatile] Storing each data table, iteration {0}...", iteration);
+            Console.WriteLine($"[{cacheName}] Storing each data table two times, iteration {iteration}...");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             foreach (var table in tables)
             {
-                VolatileCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table);
+                cache.AddStaticToDefaultPartition(table.TableName, table);
+            }
+            foreach (var table in tables)
+            {
+                cache.AddStaticToDefaultPartition(table.TableName, table);
             }
             stopwatch.Stop();
 
-            Debug.Assert(VolatileCache.DefaultInstance.Count() == tables.Count);
-            Debug.Assert(VolatileCache.DefaultInstance.LongCount() == tables.LongCount());
+            Debug.Assert(cache.Count() == tables.Count);
+            Debug.Assert(cache.LongCount() == tables.LongCount());
 
-            Console.WriteLine(@"[Volatile] Data tables stored in: {0}", stopwatch.Elapsed);
-            Console.WriteLine(@"[Volatile] Current cache size: {0} MB", VolatileCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L));
-            Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
+            Console.WriteLine($"[{cacheName}] Data tables stored two times in: {stopwatch.Elapsed}");
+            Console.WriteLine($"[{cacheName}] Current cache size: {cache.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
+            Console.WriteLine($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:.0}");
         }
 
         private static void StoreEachDataTableAsync(ICollection<DataTable> tables, int iteration)
@@ -379,7 +413,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var cacheName = typeof(TCache).Name;
 
             Console.WriteLine(); // Spacer
-            Console.WriteLine($"[{cacheName}] Retrieving each data table, iteration {0}...", iteration);
+            Console.WriteLine($"[{cacheName}] Retrieving each data table, iteration {iteration}...");
 
             foreach (var table in tables)
             {
@@ -409,7 +443,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var cacheName = typeof(TCache).Name;
 
             Console.WriteLine(); // Spacer
-            Console.WriteLine($"[{cacheName}] Retrieving each data table, iteration {0}...", iteration);
+            Console.WriteLine($"[{cacheName}] Retrieving each data table item, iteration {iteration}...");
 
             foreach (var table in tables)
             {
@@ -423,12 +457,12 @@ namespace PommaLabs.KVLite.Benchmarks
                 var returnedTable = cache.GetItemFromDefaultPartition<DataTable>(table.TableName);
                 if (!returnedTable.HasValue)
                 {
-                    throw new Exception("Wrong data table read from cache! :(");
+                    throw new Exception("Wrong data table item read from cache! :(");
                 }
             }
             stopwatch.Stop();
 
-            Console.WriteLine($"[{cacheName}] Data tables retrieved in: {stopwatch.Elapsed}");
+            Console.WriteLine($"[{cacheName}] Data table items retrieved in: {stopwatch.Elapsed}");
             Console.WriteLine($"[{cacheName}] Current cache size: {cache.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
             Console.WriteLine($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:.0}");
         }
@@ -439,7 +473,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var cacheName = typeof(TCache).Name;
 
             Console.WriteLine(); // Spacer
-            Console.WriteLine($"[{cacheName}] Peeking each data table, iteration {0}...", iteration);
+            Console.WriteLine($"[{cacheName}] Peeking each data table, iteration {iteration}...");
 
             foreach (var table in tables)
             {
@@ -459,6 +493,35 @@ namespace PommaLabs.KVLite.Benchmarks
             stopwatch.Stop();
 
             Console.WriteLine($"[{cacheName}] Data tables peeked in: {stopwatch.Elapsed}");
+            Console.WriteLine($"[{cacheName}] Current cache size: {cache.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
+            Console.WriteLine($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:.0}");
+        }
+
+        private static void RemoveEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
+            where TCache : ICache
+        {
+            var cacheName = typeof(TCache).Name;
+
+            Console.WriteLine(); // Spacer
+            Console.WriteLine($"[{cacheName}] Removing each data table, iteration {iteration}...");
+
+            foreach (var table in tables)
+            {
+                cache.AddTimedToDefaultPartition(table.TableName, table, DateTime.UtcNow.AddHours(1));
+            }
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            foreach (var table in tables)
+            {
+                cache.RemoveFromDefaultPartition(table.TableName);
+            }
+            stopwatch.Stop();
+
+            Debug.Assert(PersistentCache.DefaultInstance.Count() == 0);
+            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == 0);
+
+            Console.WriteLine($"[{cacheName}] Data tables removed in: {stopwatch.Elapsed}");
             Console.WriteLine($"[{cacheName}] Current cache size: {cache.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
             Console.WriteLine($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:.0}");
         }
@@ -566,32 +629,6 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"[Volatile] Data tables stored and retrieved in: {0}", stopwatch.Elapsed);
             Console.WriteLine(@"[Volatile] Current cache size: {0} MB", VolatileCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L));
             Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:.0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
-        }
-
-        private static void RemoveEachDataTable(ICollection<DataTable> tables, int iteration)
-        {
-            Console.WriteLine(); // Spacer
-            Console.WriteLine(@"Removing each data table, iteration {0}...", iteration);
-
-            foreach (var table in tables)
-            {
-                PersistentCache.DefaultInstance.AddTimedToDefaultPartition(table.TableName, table, DateTime.UtcNow.AddHours(1));
-            }
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            foreach (var table in tables)
-            {
-                PersistentCache.DefaultInstance.RemoveFromDefaultPartition(table.TableName);
-            }
-            stopwatch.Stop();
-
-            Debug.Assert(PersistentCache.DefaultInstance.Count() == 0);
-            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == 0);
-
-            Console.WriteLine(@"Data tables removed in: {0}", stopwatch.Elapsed);
-            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L));
-            Console.WriteLine(@"Approximate speed (MB/sec): {0:.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
         }
 
         private static void RemoveEachDataTableAsync(ICollection<DataTable> tables, int iteration)

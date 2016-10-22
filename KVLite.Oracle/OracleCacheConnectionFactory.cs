@@ -47,8 +47,7 @@ namespace PommaLabs.KVLite.Oracle
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {
-                    reader.Read();
-                    return reader.GetInt64(0);
+                    return reader.Read() ? reader.GetInt64(0) : 0L;
                 }
             }
         }
