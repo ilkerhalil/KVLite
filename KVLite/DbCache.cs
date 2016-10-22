@@ -469,24 +469,21 @@ namespace PommaLabs.KVLite
             using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 var dbCacheItemEntry = db.Entry(dbCacheItem);
-                dbCacheItemEntry.State = EntityState.Added;
                 var dbCacheValueEntry = db.Entry(dbCacheValue);
-                dbCacheValueEntry.State = EntityState.Added;
 
-                if (TrySaveChanges(db))
-                {
-                    tr.Commit();
-                }
-                else
+                if (db.CacheItems.Any(x => x.Hash == hash))
                 {
                     dbCacheItemEntry.State = EntityState.Modified;
                     dbCacheValueEntry.State = EntityState.Modified;
-
-                    if (TrySaveChanges(db))
-                    {
-                        tr.Commit();
-                    }
                 }
+                else
+                {
+                    dbCacheItemEntry.State = EntityState.Added;
+                    dbCacheValueEntry.State = EntityState.Added;
+                }
+
+                TrySaveChanges(db);
+                tr.Commit();                
             }
         }
 
@@ -1002,33 +999,29 @@ namespace PommaLabs.KVLite
             return (ph << 32) + kh;
         }
 
-        private bool TrySaveChanges(DbCacheContext db)
+        private void TrySaveChanges(DbCacheContext db)
         {
             try
             {
                 db.SaveChanges();
-                return true;
             }
             catch (Exception ex)
             {
                 LastError = ex;
-                return false;
             }
         }
 
 #if !NET40
 
-        private async Task<bool> TrySaveChangesAsync(DbCacheContext db, CancellationToken ct)
+        private async Task TrySaveChangesAsync(DbCacheContext db, CancellationToken ct)
         {
             try
             {
                 await db.SaveChangesAsync(ct);
-                return true;
             }
             catch (Exception ex)
             {
                 LastError = ex;
-                return false;
             }
         }
 
