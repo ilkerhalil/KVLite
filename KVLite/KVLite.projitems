@@ -9,6 +9,7 @@
     <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\XXHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DbCacheContext.cs" />
@@ -24,5 +25,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)doxyfile.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)MySql\" />
+    <Folder Include="$(MSBuildThisFileDirectory)SQLite\" />
   </ItemGroup>
 </Project>

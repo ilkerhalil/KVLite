@@ -40,6 +40,14 @@ namespace PommaLabs.KVLite
 
         int MaxKeyNameLength { get; }
 
+        #region Commands
+
+        string InsertOrUpdateCacheEntryCommand { get; }
+
+        string DeleteCacheEntriesCommand { get; }
+
+        #endregion
+
         /// <summary>
         ///   The connection string used to connect to the cache data provider.
         /// </summary>
@@ -50,6 +58,12 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <returns>A connection which might be opened.</returns>
         DbConnection Create();
+
+        /// <summary>
+        ///   Opens a new connection to the specified data provider.
+        /// </summary>
+        /// <returns>An open connection.</returns>
+        DbConnection Open();
 
         /// <summary>
         ///   Returns current cache size in kilobytes.

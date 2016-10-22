@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
+using Dapper;
 using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
@@ -411,19 +412,14 @@ namespace PommaLabs.KVLite
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
-            var dbCacheItem = new DbCacheItem
+            var dbCacheEntry = new DbCacheEntry
             {
                 Hash = hash,
                 Partition = partition,
                 Key = key,
                 UtcCreation = Clock.UnixTime,
                 UtcExpiry = utcExpiry.ToUnixTime(),
-                Interval = (long) interval.TotalSeconds
-            };
-
-            var dbCacheValue = new DbCacheValue
-            {
-                Hash = hash,
+                Interval = (long) interval.TotalSeconds,
                 Compressed = true,
                 Value = serializedValue
             };
@@ -434,57 +430,41 @@ namespace PommaLabs.KVLite
             if (parentKeyCount > 0)
             {
                 parentKey = parentKeys[0];
-                dbCacheItem.ParentHash0 = TruncateAndHash(ref partition, ref parentKey);
-                dbCacheItem.ParentKey0 = parentKey;
+                dbCacheEntry.ParentHash0 = TruncateAndHash(ref partition, ref parentKey);
+                dbCacheEntry.ParentKey0 = parentKey;
 
                 if (parentKeyCount > 1)
                 {
                     parentKey = parentKeys[1];
-                    dbCacheItem.ParentHash1 = TruncateAndHash(ref partition, ref parentKey);
-                    dbCacheItem.ParentKey1 = parentKey;
+                    dbCacheEntry.ParentHash1 = TruncateAndHash(ref partition, ref parentKey);
+                    dbCacheEntry.ParentKey1 = parentKey;
 
                     if (parentKeyCount > 2)
                     {
                         parentKey = parentKeys[2];
-                        dbCacheItem.ParentHash2 = TruncateAndHash(ref partition, ref parentKey);
-                        dbCacheItem.ParentKey2 = parentKey;
+                        dbCacheEntry.ParentHash2 = TruncateAndHash(ref partition, ref parentKey);
+                        dbCacheEntry.ParentKey2 = parentKey;
 
                         if (parentKeyCount > 3)
                         {
                             parentKey = parentKeys[3];
-                            dbCacheItem.ParentHash3 = TruncateAndHash(ref partition, ref parentKey);
-                            dbCacheItem.ParentKey3 = parentKey;
+                            dbCacheEntry.ParentHash3 = TruncateAndHash(ref partition, ref parentKey);
+                            dbCacheEntry.ParentKey3 = parentKey;
 
                             if (parentKeyCount > 4)
                             {
                                 parentKey = parentKeys[4];
-                                dbCacheItem.ParentHash4 = TruncateAndHash(ref partition, ref parentKey);
-                                dbCacheItem.ParentKey4 = parentKey;
+                                dbCacheEntry.ParentHash4 = TruncateAndHash(ref partition, ref parentKey);
+                                dbCacheEntry.ParentKey4 = parentKey;
                             }
                         }
                     }
                 }
             }
 
-            using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            using (var db = ConnectionFactory.Open())
             {
-                var dbCacheItemEntry = db.Entry(dbCacheItem);
-                var dbCacheValueEntry = db.Entry(dbCacheValue);
-
-                if (db.CacheItems.Any(x => x.Hash == hash))
-                {
-                    dbCacheItemEntry.State = EntityState.Modified;
-                    dbCacheValueEntry.State = EntityState.Modified;
-                }
-                else
-                {
-                    dbCacheItemEntry.State = EntityState.Added;
-                    dbCacheValueEntry.State = EntityState.Added;
-                }
-
-                TrySaveChanges(db);
-                tr.Commit();                
+                db.Execute(ConnectionFactory.InsertOrUpdateCacheEntryCommand, dbCacheEntry);
             }
         }
 
@@ -497,41 +477,16 @@ namespace PommaLabs.KVLite
         protected sealed override long ClearInternal(string partition, CacheReadMode cacheReadMode)
         {
             // Compute all parameters _before_ opening the connection.
-            partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength);
-            var ignoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate);
-            var utcNow = Clock.UnixTime;
-
-            // When a cache item uses parent tags, a delete operation can involve more than one row,
-            // since deletes are cascaded. EF seems to have an issue with the SQLite driver, because
-            // it returns an unexpected number of rows involved in the delete operation; therefore,
-            // in order to complete all deletes, we use a custom transaction and ignore any error
-            // occurred during this operation.
-            using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                var hashes = db.CacheItems
-                    .Where(x => (partition == null || x.Partition == partition) && (ignoreExpiryDate || x.UtcExpiry < utcNow))
-                    .Select(x => x.Hash)
-                    .ToArray();
+                Partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength),
+                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate),
+                UtcNow = Clock.UnixTime
+            };
 
-                try
-                {
-                    db.Configuration.AutoDetectChangesEnabled = false;
-
-                    foreach (var hash in hashes)
-                    {
-                        db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
-                    }
-                }
-                finally
-                {
-                    db.Configuration.AutoDetectChangesEnabled = true;
-                }
-
-                TrySaveChanges(db);
-                tr.Commit();
-
-                return hashes.LongLength;
+            using (var db = ConnectionFactory.Open())
+            {
+                return db.Execute(ConnectionFactory.DeleteCacheEntriesCommand, dbCacheEntryGroup);
             }
         }
 

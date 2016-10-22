@@ -44,7 +44,7 @@ namespace PommaLabs.KVLite
             _dbProviderFactory = dbProviderFactory;
 
             CacheSchemaName = cacheSchemaName ?? DefaultCacheSchemaName;
-            CacheItemsTableName = cacheItemsTableName ?? DefaultCacheItemsTableName; 
+            CacheItemsTableName = cacheItemsTableName ?? DefaultCacheItemsTableName;
             CacheValuesTableName = cacheValuesTableName ?? DefaultCacheValuesTableName;
         }
 
@@ -64,6 +64,14 @@ namespace PommaLabs.KVLite
 
         public int MaxPartitionNameLength { get; } = 255;
 
+        #region Commands
+
+        public string InsertOrUpdateCacheEntryCommand { get; protected set; }
+
+        public string DeleteCacheEntriesCommand { get; protected set; }
+
+        #endregion
+
         /// <summary>
         ///   The connection string used to connect to the cache data provider.
         /// </summary>
@@ -81,9 +89,36 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
+        ///   Opens a new connection to the specified data provider.
+        /// </summary>
+        /// <returns>An open connection.</returns>
+        public DbConnection Open()
+        {
+            var connection = Create();
+            connection.Open();
+            return connection;
+        }
+
+        /// <summary>
         ///   Returns current cache size in kilobytes.
         /// </summary>
         /// <returns>Current cache size in kilobytes.</returns>
         public abstract long GetCacheSizeInBytes();
+
+        #region Private Methods
+
+        protected static string MinifyQuery(string query)
+        {
+            // Removes all SQL comments. Multiline excludes '/n' from '.' matches.
+            query = Regex.Replace(query, @"--.*", string.Empty, RegexOptions.Multiline | RegexOptions.Compiled);
+
+            // Removes all multiple blanks.
+            query = Regex.Replace(query, @"\s+", " ", RegexOptions.Compiled);
+
+            // Removes initial and ending blanks.
+            return query.Trim();
+        }
+
+        #endregion Private Methods
     }
 }
