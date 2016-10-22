@@ -56,7 +56,7 @@ namespace PommaLabs.KVLite.UnitTests
                 .ToConstant(new JsonSerializerSettings())
                 .InSingletonScope();
 
-            //System.Data.Entity.Infrastructure.Interception.DbInterception.Add(new DbCommandInterceptor());
+            System.Data.Entity.Infrastructure.Interception.DbInterception.Add(new DbCommandInterceptor());
         }
     }
 }

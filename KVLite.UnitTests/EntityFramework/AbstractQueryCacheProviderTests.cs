@@ -35,8 +35,7 @@ using System.Linq;
 
 namespace PommaLabs.KVLite.UnitTests.EntityFramework
 {
-    [TestFixture]
-    abstract class AbstractQueryCacheProviderTests
+    internal abstract class AbstractQueryCacheProviderTests : AbstractTests
     {
         const string Pino = "PINO";
         const string Gino = "GINO";

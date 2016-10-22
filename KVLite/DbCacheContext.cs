@@ -50,6 +50,9 @@ namespace PommaLabs.KVLite
 
             _connectionFactory = connectionFactory;
 
+            // Following settings are customized because either we perform that operation by ourself
+            // or we do not need that particular feature.
+            Configuration.EnsureTransactionsForFunctionsAndCommands = false;
             Configuration.LazyLoadingEnabled = false;
             Configuration.ProxyCreationEnabled = false;
             Configuration.UseDatabaseNullSemantics = true;

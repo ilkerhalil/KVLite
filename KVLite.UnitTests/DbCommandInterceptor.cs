@@ -31,7 +31,6 @@ namespace PommaLabs.KVLite.UnitTests
     {
         public void NonQueryExecuting(DbCommand command, DbCommandInterceptionContext<int> interceptionContext)
         {
-            Print(command, interceptionContext);
         }
 
         public void NonQueryExecuted(DbCommand command, DbCommandInterceptionContext<int> interceptionContext)
@@ -41,7 +40,6 @@ namespace PommaLabs.KVLite.UnitTests
 
         public void ReaderExecuting(DbCommand command, DbCommandInterceptionContext<DbDataReader> interceptionContext)
         {
-            Print(command, interceptionContext);
         }
 
         public void ReaderExecuted(DbCommand command, DbCommandInterceptionContext<DbDataReader> interceptionContext)
@@ -51,7 +49,6 @@ namespace PommaLabs.KVLite.UnitTests
 
         public void ScalarExecuting(DbCommand command, DbCommandInterceptionContext<object> interceptionContext)
         {
-            Print(command, interceptionContext);
         }
 
         public void ScalarExecuted(DbCommand command, DbCommandInterceptionContext<object> interceptionContext)
@@ -59,15 +56,15 @@ namespace PommaLabs.KVLite.UnitTests
             Print(command, interceptionContext);
         }
 
-        private void Print<TResult>(DbCommand command, DbCommandInterceptionContext<TResult> interceptionContext)
+        private static void Print<TResult>(DbCommand command, DbCommandInterceptionContext<TResult> interceptionContext)
         {
             if (interceptionContext.Exception != null)
             {
-                Console.Error.WriteLine(command.CommandText);
+                Console.WriteLine($"ERROR - {interceptionContext.Exception.GetBaseException().Message} - {command.CommandText}");
             }
             else
             {
-                Console.WriteLine(command.CommandText);
+                Console.WriteLine($"INFO - {command.CommandText}");
             }
         }
     }

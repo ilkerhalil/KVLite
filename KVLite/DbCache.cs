@@ -41,6 +41,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+#if !NET40
+
+using System.Threading;
+using System.Threading.Tasks;
+
+#endif
+
 namespace PommaLabs.KVLite
 {
     /// <summary>
@@ -479,11 +486,16 @@ namespace PommaLabs.KVLite
             var ignoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate);
             var utcNow = Clock.UnixTime;
 
+            // When a cache item uses parent tags, a delete operation can involve more than one row,
+            // since deletes are cascaded. EF seems to have an issue with the SQLite driver, because
+            // it returns an unexpected number of rows involved in the delete operation; therefore,
+            // in order to complete all deletes, we use a custom transaction and ignore any error
+            // occurred during this operation.
             using (var db = new DbCacheContext(ConnectionFactory))
+            using (var tr = db.Database.BeginTransaction())
             {
                 var hashes = db.CacheItems
-                    .Where(x => partition == null || x.Partition == partition)
-                    .Where(x => ignoreExpiryDate || x.UtcExpiry < utcNow)
+                    .Where(x => (partition == null || x.Partition == partition) && (ignoreExpiryDate || x.UtcExpiry < utcNow))
                     .Select(x => x.Hash)
                     .ToArray();
 
@@ -502,6 +514,7 @@ namespace PommaLabs.KVLite
                 }
 
                 TrySaveChanges(db);
+                tr.Commit();
 
                 return hashes.LongLength;
             }
@@ -523,11 +536,34 @@ namespace PommaLabs.KVLite
             using (var db = new DbCacheContext(ConnectionFactory))
             {
                 // Search for at least one valid item.
-                return db.CacheItems
-                    .Where(x => x.Hash == hash)
-                    .Any(x => x.UtcExpiry >= utcNow);
+                return db.CacheItems.Any(x => x.Hash == hash && x.UtcExpiry >= utcNow);
             }
         }
+
+#if !NET40
+
+        /// <summary>
+        ///   Determines whether cache contains the specified partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>Whether cache contains the specified partition and key.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        protected sealed override async Task<bool> ContainsAsyncInternal(string partition, string key, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var hash = TruncateAndHash(ref partition, ref key);
+            var utcNow = Clock.UnixTime;
+
+            using (var db = new DbCacheContext(ConnectionFactory))
+            {
+                // Search for at least one valid item.
+                return await db.CacheItems.AnyAsync(x => x.Hash == hash && x.UtcExpiry >= utcNow, cancellationToken);
+            }
+        }
+
+#endif
 
         /// <summary>
         ///   The number of items in the cache or in a partition, if specified.
@@ -545,9 +581,7 @@ namespace PommaLabs.KVLite
 
             using (var db = new DbCacheContext(ConnectionFactory))
             {
-                return db.CacheItems
-                    .Where(x => partition == null || x.Partition == partition)
-                    .Count(x => ignoreExpiryDate || x.UtcExpiry >= utcNow);
+                return db.CacheItems.Count(x => (partition == null || x.Partition == partition) && (ignoreExpiryDate || x.UtcExpiry >= utcNow));
             }
         }
 
@@ -783,16 +817,48 @@ namespace PommaLabs.KVLite
             // Compute all parameters _before_ opening the connection.
             var hash = TruncateAndHash(ref partition, ref key);
 
+            // When a cache item uses parent tags, a delete operation can involve more than one row,
+            // since deletes are cascaded. EF seems to have an issue with the SQLite driver, because
+            // it returns an unexpected number of rows involved in the delete operation; therefore,
+            // in order to complete all deletes, we use a custom transaction and ignore any error
+            // occurred during this operation.
             using (var db = new DbCacheContext(ConnectionFactory))
+            using (var tr = db.Database.BeginTransaction())
             {
-                var dbCacheItem = db.CacheItems.FirstOrDefault(x => x.Hash == hash);
-                if (dbCacheItem != null)
-                {
-                    db.CacheItems.Remove(dbCacheItem);
-                    TrySaveChanges(db);
-                }
+                db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
+                TrySaveChanges(db);
+                tr.Commit();
             }
         }
+
+#if !NET40
+
+        /// <summary>
+        ///   Removes the value with given partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        protected sealed override async Task RemoveAsyncInternal(string partition, string key, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var hash = TruncateAndHash(ref partition, ref key);
+
+            // When a cache item uses parent tags, a delete operation can involve more than one row,
+            // since deletes are cascaded. EF seems to have an issue with the SQLite driver, because
+            // it returns an unexpected number of rows involved in the delete operation; therefore,
+            // in order to complete all deletes, we use a custom transaction and ignore any error
+            // occurred during this operation.
+            using (var db = new DbCacheContext(ConnectionFactory))
+            using (var tr = db.Database.BeginTransaction())
+            {
+                db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
+                await TrySaveChangesAsync(db, cancellationToken);
+                tr.Commit();
+            }
+        }
+
+#endif
 
         private TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
         {
@@ -902,6 +968,24 @@ namespace PommaLabs.KVLite
                 return false;
             }
         }
+
+#if !NET40
+
+        private async Task<bool> TrySaveChangesAsync(DbCacheContext db, CancellationToken ct)
+        {
+            try
+            {
+                await db.SaveChangesAsync(ct);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                return false;
+            }
+        }
+
+#endif
 
         #endregion Private Methods
     }
