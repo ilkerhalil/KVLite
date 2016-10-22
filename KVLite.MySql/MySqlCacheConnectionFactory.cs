@@ -86,6 +86,11 @@ namespace PommaLabs.KVLite.MySql
                     {DbCacheEntry.CompressedColumn} = @{nameof(DbCacheEntry.Compressed)};
             ");
 
+            DeleteCacheEntryCommand = MinifyQuery($@"
+                delete from {CacheItemsTableName}
+                 where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
+            ");
+
             DeleteCacheEntriesCommand = MinifyQuery($@"
                 delete from {CacheItemsTableName}
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})

@@ -532,7 +532,7 @@ namespace PommaLabs.KVLite
                 UtcExpiry = Clock.UnixTime
             };
 
-            using (var db = await ConnectionFactory.OpenAsync())
+            using (var db = await ConnectionFactory.OpenAsync(cancellationToken))
             {
                 // Search for at least one valid item.
                 return (await db.QuerySingleAsync<long>(ConnectionFactory.ContainsCacheEntryQuery, dbCacheEntrySingle)) > 0L;
@@ -824,19 +824,14 @@ namespace PommaLabs.KVLite
         protected sealed override void RemoveInternal(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var hash = TruncateAndHash(ref partition, ref key);
-
-            // When a cache item uses parent tags, a delete operation can involve more than one row,
-            // since deletes are cascaded. EF seems to have an issue with the SQLite driver, because
-            // it returns an unexpected number of rows involved in the delete operation; therefore,
-            // in order to complete all deletes, we use a custom transaction and ignore any error
-            // occurred during this operation.
-            using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
-                TrySaveChanges(db);
-                tr.Commit();
+                Hash = TruncateAndHash(ref partition, ref key)
+            };
+            
+            using (var db = ConnectionFactory.Open())
+            {
+                db.Execute(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
             }
         }
 
@@ -851,19 +846,14 @@ namespace PommaLabs.KVLite
         protected sealed override async Task RemoveAsyncInternal(string partition, string key, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var hash = TruncateAndHash(ref partition, ref key);
-
-            // When a cache item uses parent tags, a delete operation can involve more than one row,
-            // since deletes are cascaded. EF seems to have an issue with the SQLite driver, because
-            // it returns an unexpected number of rows involved in the delete operation; therefore,
-            // in order to complete all deletes, we use a custom transaction and ignore any error
-            // occurred during this operation.
-            using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
-                await TrySaveChangesAsync(db, cancellationToken);
-                tr.Commit();
+                Hash = TruncateAndHash(ref partition, ref key)
+            };
+            
+            using (var db = await ConnectionFactory.OpenAsync(cancellationToken))
+            {
+                await db.ExecuteAsync(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
             }
         }
 
@@ -975,22 +965,6 @@ namespace PommaLabs.KVLite
                 LastError = ex;
             }
         }
-
-#if !NET40
-
-        private async Task TrySaveChangesAsync(DbCacheContext db, CancellationToken ct)
-        {
-            try
-            {
-                await db.SaveChangesAsync(ct);
-            }
-            catch (Exception ex)
-            {
-                LastError = ex;
-            }
-        }
-
-#endif
 
         #endregion Private Methods
     }

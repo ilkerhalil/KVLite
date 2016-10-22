@@ -24,6 +24,7 @@
 using PommaLabs.Thrower;
 using System.Data.Common;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
@@ -69,6 +70,8 @@ namespace PommaLabs.KVLite
 
         public string InsertOrUpdateCacheEntryCommand { get; protected set; }
 
+        public string DeleteCacheEntryCommand { get; protected set; }
+
         public string DeleteCacheEntriesCommand { get; protected set; }
 
         #endregion Commands
@@ -111,12 +114,13 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Opens a new connection to the specified data provider.
         /// </summary>
+        /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns>An open connection.</returns>
-        public async Task<DbConnection> OpenAsync()
+        public async Task<DbConnection> OpenAsync(CancellationToken cancellationToken)
         {
             var connection = Create();
 #if !NET40
-            await connection.OpenAsync();
+            await connection.OpenAsync(cancellationToken);
 #else
             connection.Open();
 #endif

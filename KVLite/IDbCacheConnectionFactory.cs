@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Data.Common;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
@@ -44,6 +45,8 @@ namespace PommaLabs.KVLite
         #region Commands
 
         string InsertOrUpdateCacheEntryCommand { get; }
+
+        string DeleteCacheEntryCommand { get; }
 
         string DeleteCacheEntriesCommand { get; }
 
@@ -77,8 +80,9 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Opens a new connection to the specified data provider.
         /// </summary>
+        /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns>An open connection.</returns>
-        Task<DbConnection> OpenAsync();
+        Task<DbConnection> OpenAsync(CancellationToken cancellationToken);
 
         /// <summary>
         ///   Returns current cache size in kilobytes.
