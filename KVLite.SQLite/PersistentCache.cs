@@ -22,8 +22,8 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
-using Common.Logging;
 using PommaLabs.CodeServices.Clock;
+using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
@@ -64,12 +64,11 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="clock">The clock.</param>
-        /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
-            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, SQLiteJournalModeEnum.Wal), clock, log, serializer, compressor, memoryStreamPool)
+        public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
+            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, SQLiteJournalModeEnum.Wal), clock, serializer, compressor, memoryStreamPool)
         {
             // Connection string must be customized by each cache.
             UpdateConnectionString();            
@@ -100,7 +99,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.Error(ErrorMessages.InternalErrorOnVacuum, ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnVacuum, ex);
             }
         }
 

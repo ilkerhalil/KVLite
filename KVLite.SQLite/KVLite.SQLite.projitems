@@ -17,7 +17,4 @@
     <Compile Include="$(MSBuildThisFileDirectory)VolatileCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheSettings.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Scripts\" />
-  </ItemGroup>
 </Project>

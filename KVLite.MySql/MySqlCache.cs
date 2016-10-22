@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
-using Common.Logging;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
@@ -47,13 +46,13 @@ namespace PommaLabs.KVLite.MySql
 
         #endregion Default Instance
 
-        public MySqlCache(MySqlCacheSettings settings, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
-            : this(settings, new MySqlCacheConnectionFactory(), clock, log, serializer, compressor, memoryStreamPool)
+        public MySqlCache(MySqlCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
+            : this(settings, new MySqlCacheConnectionFactory(), clock, serializer, compressor, memoryStreamPool)
         {
         }
 
-        public MySqlCache(MySqlCacheSettings settings, MySqlCacheConnectionFactory connectionFactory, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
-            : base(settings, connectionFactory, clock, log, serializer, compressor, memoryStreamPool)
+        public MySqlCache(MySqlCacheSettings settings, MySqlCacheConnectionFactory connectionFactory, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
+            : base(settings, connectionFactory, clock, serializer, compressor, memoryStreamPool)
         {
         }
     }

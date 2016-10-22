@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
-using Common.Logging;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
@@ -72,12 +71,11 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="clock">The clock.</param>
-        /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
-            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, SQLiteJournalModeEnum.Memory), clock, log, serializer, compressor, memoryStreamPool)
+        public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
+            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, SQLiteJournalModeEnum.Memory), clock, serializer, compressor, memoryStreamPool)
         {
             // Connection string must be customized by each cache.
             UpdateConnectionString();

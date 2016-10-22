@@ -22,19 +22,17 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
-using Common.Logging;
-using Common.Logging.Simple;
+using Ninject.Modules;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
-using Ninject.Modules;
 
 namespace PommaLabs.KVLite.UnitTests
 {
     /// <summary>
     ///   Bindings for KVLite.
     /// </summary>
-    sealed class NinjectConfig : NinjectModule
+    internal sealed class NinjectConfig : NinjectModule
     {
         public override void Load()
         {
@@ -48,10 +46,6 @@ namespace PommaLabs.KVLite.UnitTests
 
             Bind<ICompressor>()
                 .To<DeflateCompressor>()
-                .InSingletonScope();
-
-            Bind<ILog>()
-                .To<NoOpLogger>()
                 .InSingletonScope();
 
             Bind<ISerializer>()

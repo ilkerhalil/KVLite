@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Common.Logging;
 using NLipsum.Core;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,5 +46,15 @@ namespace PommaLabs.KVLite.Benchmarks.Models
             ShortMessage = LipsumGenerator.GenerateSentences(1)[0],
             LongMessage = LipsumGenerator.GenerateHtml(Random.Next(5, 10))
         });
+    }
+
+    public enum LogLevel
+    {
+        Trace,
+        Debug,
+        Info,
+        Warn,
+        Error,
+        Fatal
     }
 }

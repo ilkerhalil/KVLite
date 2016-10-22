@@ -22,11 +22,11 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
-using Common.Logging;
 using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
+using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
@@ -78,10 +78,9 @@ namespace PommaLabs.KVLite
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public MemoryCache(MemoryCacheSettings settings, ILog log = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
+        public MemoryCache(MemoryCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
         {
             Settings = settings;
-            Log = log ?? LogManager.GetLogger(GetType());
             Compressor = compressor ?? Constants.DefaultCompressor;
             Serializer = serializer ?? Constants.DefaultSerializer;
             MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
@@ -138,7 +137,6 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Gets the clock used by the cache.
         /// </summary>
-        /// <value>The clock used by the cache.</value>
         /// <remarks>
         ///   Since <see cref="SystemMemoryCache"/> does not allow clock customisation, then this
         ///   property defaults to <see cref="T:PommaLabs.CodeServices.Clock.SystemClock"/>.
@@ -150,17 +148,6 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <value>The compressor used by the cache.</value>
         public override ICompressor Compressor { get; }
-
-        /// <summary>
-        ///   Gets the log used by the cache.
-        /// </summary>
-        /// <value>The log used by the cache.</value>
-        /// <remarks>
-        ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to what
-        ///   <see cref="LogManager.GetLogger(System.Type)"/> returns.
-        /// </remarks>
-        public override ILog Log { get; }
 
         /// <summary>
         ///   The maximum number of parent keys each item can have. The .NET memory cache supports an
@@ -180,13 +167,9 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Gets the serializer used by the cache.
         /// </summary>
-        /// <value>The serializer used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>. Therefore,
-        ///   if you do not specify another serializer, make sure that your objects are serializable
-        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as
-        ///   public properties).
+        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>.
         /// </remarks>
         public override ISerializer Serializer { get; }
 
@@ -230,7 +213,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorFormat(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
+                Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
@@ -548,7 +531,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
                 return Option.None<TVal>();
             }
         }
@@ -575,7 +558,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
                 return Option.None<ICacheItem<TVal>>();
             }
         }

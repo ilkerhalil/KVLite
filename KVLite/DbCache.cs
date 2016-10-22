@@ -22,11 +22,11 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
-using Common.Logging;
 using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
+using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
@@ -58,11 +58,10 @@ namespace PommaLabs.KVLite
         /// <param name="settings">The settings.</param>
         /// <param name="connectionFactory">The DB connection factory.</param>
         /// <param name="clock">The clock.</param>
-        /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public DbCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ILog log, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool)
+        public DbCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -71,7 +70,6 @@ namespace PommaLabs.KVLite
             Settings = settings;
             Settings.ConnectionFactory = connectionFactory;
             Clock = clock ?? Constants.DefaultClock;
-            Log = log ?? LogManager.GetLogger(GetType());
             Serializer = serializer ?? Constants.DefaultSerializer;
             Compressor = compressor ?? Constants.DefaultCompressor;
             MemoryStreamPool = memoryStreamPool ?? Constants.DefaultMemoryStreamPool;
@@ -112,7 +110,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.Error(ErrorMessages.InternalErrorOnClearAll, ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex);
                 return 0L;
             }
         }
@@ -145,7 +143,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.Error(string.Format(ErrorMessages.InternalErrorOnClearPartition, partition), ex);
+                Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnClearPartition, partition), ex);
                 return 0L;
             }
         }
@@ -173,7 +171,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.Error(ErrorMessages.InternalErrorOnCountAll, ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex);
                 return 0;
             }
         }
@@ -203,7 +201,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.Error(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
+                Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
                 return 0;
             }
         }
@@ -231,7 +229,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.Error(ErrorMessages.InternalErrorOnCountAll, ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex);
                 return 0L;
             }
         }
@@ -261,7 +259,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.Error(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
+                Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
                 return 0L;
             }
         }
@@ -308,7 +306,6 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Gets the clock used by the cache.
         /// </summary>
-        /// <value>The clock used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
@@ -318,23 +315,11 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Gets the compressor used by the cache.
         /// </summary>
-        /// <value>The compressor used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
         /// </remarks>
         public sealed override ICompressor Compressor { get; }
-
-        /// <summary>
-        ///   Gets the log used by the cache.
-        /// </summary>
-        /// <value>The log used by the cache.</value>
-        /// <remarks>
-        ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to what
-        ///   <see cref="LogManager.GetLogger(System.Type)"/> returns.
-        /// </remarks>
-        public sealed override ILog Log { get; }
 
         /// <summary>
         ///   The maximum number of parent keys each item can have. SQLite based caches support up to
@@ -354,13 +339,9 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Gets the serializer used by the cache.
         /// </summary>
-        /// <value>The serializer used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>. Therefore,
-        ///   if you do not specify another serializer, make sure that your objects are serializable
-        ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as
-        ///   public properties).
+        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>.
         /// </remarks>
         public sealed override ISerializer Serializer { get; }
 
@@ -418,7 +399,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorFormat(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
+                Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
@@ -836,7 +817,7 @@ namespace PommaLabs.KVLite
                 // element (in order to avoid future errors) and we return None.
                 RemoveInternal(partition, key);
 
-                Log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
 
                 return Option.None<TVal>();
             }
@@ -889,7 +870,7 @@ namespace PommaLabs.KVLite
                 // element (in order to avoid future errors) and we return None.
                 RemoveInternal(src.Partition, src.Key);
 
-                Log.Warn(ErrorMessages.InternalErrorOnDeserialization, ex);
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
 
                 return Option.None<ICacheItem<TVal>>();
             }
