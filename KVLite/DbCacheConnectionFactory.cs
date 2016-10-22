@@ -24,6 +24,7 @@
 using PommaLabs.Thrower;
 using System.Data.Common;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
 {
@@ -70,7 +71,15 @@ namespace PommaLabs.KVLite
 
         public string DeleteCacheEntriesCommand { get; protected set; }
 
-        #endregion
+        #endregion Commands
+
+        #region Queries
+
+        public string ContainsCacheEntryQuery { get; protected set; }
+
+        public string CountCacheEntriesQuery { get; protected set; }
+
+        #endregion Queries
 
         /// <summary>
         ///   The connection string used to connect to the cache data provider.
@@ -100,12 +109,27 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
+        ///   Opens a new connection to the specified data provider.
+        /// </summary>
+        /// <returns>An open connection.</returns>
+        public async Task<DbConnection> OpenAsync()
+        {
+            var connection = Create();
+#if !NET40
+            await connection.OpenAsync();
+#else
+            connection.Open();
+#endif
+            return connection;
+        }
+
+        /// <summary>
         ///   Returns current cache size in kilobytes.
         /// </summary>
         /// <returns>Current cache size in kilobytes.</returns>
         public abstract long GetCacheSizeInBytes();
 
-        #region Private Methods
+#region Private Methods
 
         protected static string MinifyQuery(string query)
         {
@@ -119,6 +143,6 @@ namespace PommaLabs.KVLite
             return query.Trim();
         }
 
-        #endregion Private Methods
+#endregion Private Methods
     }
 }

@@ -481,7 +481,7 @@ namespace PommaLabs.KVLite
             {
                 Partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate),
-                UtcNow = Clock.UnixTime
+                UtcExpiry = Clock.UnixTime
             };
 
             using (var db = ConnectionFactory.Open())
@@ -500,13 +500,16 @@ namespace PommaLabs.KVLite
         protected sealed override bool ContainsInternal(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var hash = TruncateAndHash(ref partition, ref key);
-            var utcNow = Clock.UnixTime;
+            var dbCacheEntrySingle = new DbCacheEntry.Single
+            {
+                Hash = TruncateAndHash(ref partition, ref key),
+                UtcExpiry = Clock.UnixTime
+            };
 
-            using (var db = new DbCacheContext(ConnectionFactory))
+            using (var db = ConnectionFactory.Open())
             {
                 // Search for at least one valid item.
-                return db.CacheItems.Any(x => x.Hash == hash && x.UtcExpiry >= utcNow);
+                return db.QuerySingle<long>(ConnectionFactory.ContainsCacheEntryQuery, dbCacheEntrySingle) > 0L;
             }
         }
 
@@ -523,13 +526,16 @@ namespace PommaLabs.KVLite
         protected sealed override async Task<bool> ContainsAsyncInternal(string partition, string key, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var hash = TruncateAndHash(ref partition, ref key);
-            var utcNow = Clock.UnixTime;
+            var dbCacheEntrySingle = new DbCacheEntry.Single
+            {
+                Hash = TruncateAndHash(ref partition, ref key),
+                UtcExpiry = Clock.UnixTime
+            };
 
-            using (var db = new DbCacheContext(ConnectionFactory))
+            using (var db = await ConnectionFactory.OpenAsync())
             {
                 // Search for at least one valid item.
-                return await db.CacheItems.AnyAsync(x => x.Hash == hash && x.UtcExpiry >= utcNow, cancellationToken);
+                return (await db.QuerySingleAsync<long>(ConnectionFactory.ContainsCacheEntryQuery, dbCacheEntrySingle)) > 0L;
             }
         }
 
@@ -545,13 +551,16 @@ namespace PommaLabs.KVLite
         protected sealed override long CountInternal(string partition, CacheReadMode cacheReadMode)
         {
             // Compute all parameters _before_ opening the connection.
-            partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength);
-            var ignoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate);
-            var utcNow = Clock.UnixTime;
-
-            using (var db = new DbCacheContext(ConnectionFactory))
+            var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                return db.CacheItems.Count(x => (partition == null || x.Partition == partition) && (ignoreExpiryDate || x.UtcExpiry >= utcNow));
+                Partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength),
+                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate),
+                UtcExpiry = Clock.UnixTime
+            };
+
+            using (var db = ConnectionFactory.Open())
+            {
+                return db.QuerySingle<long>(ConnectionFactory.CountCacheEntriesQuery, dbCacheEntryGroup);
             }
         }
 
