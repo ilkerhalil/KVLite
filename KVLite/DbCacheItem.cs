@@ -49,12 +49,6 @@ namespace PommaLabs.KVLite
         [Column("KVLI_INTERVAL")]
         public long Interval { get; set; }
 
-        [Column("KVLI_COMPRESSED")]
-        public bool Compressed { get; set; }
-
-        [Column("KVLI_VALUE")]
-        public byte[] Value { get; set; }
-
         [Column("KVLI_PARENT_HASH0")]
         public long? ParentHash0 { get; set; }
 
@@ -84,5 +78,7 @@ namespace PommaLabs.KVLite
 
         [Column("KVLI_PARENT_KEY4")]
         public string ParentKey4 { get; set; }
+
+        public DbCacheValue Value { get; set; }
     }
 }

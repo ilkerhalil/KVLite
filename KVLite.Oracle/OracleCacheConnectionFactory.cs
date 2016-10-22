@@ -29,7 +29,7 @@ namespace PommaLabs.KVLite.Oracle
     public class OracleCacheConnectionFactory : DbCacheConnectionFactory
     {
         public OracleCacheConnectionFactory()
-            : base(OracleClientFactory.Instance, null, null)
+            : base(OracleClientFactory.Instance, null, null, null)
         {
         }
 
@@ -40,8 +40,8 @@ namespace PommaLabs.KVLite.Oracle
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = $@"
-                    select round(sum(length(kvli_value)) / 1024) as result
-                    from {CacheSchemaName}.{CacheItemsTableName};
+                    select round(sum(length(kvlv_value))) as result
+                    from {CacheSchemaName}.{CacheValuesTableName};
                 ";
 
                 connection.Open();

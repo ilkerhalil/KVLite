@@ -9,6 +9,7 @@
     <Import_RootNamespace>PommaLabs.KVLite.MySql</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Scripts\kvl_cache_values.sql" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Scripts\kvl_cache_items.sql" />
   </ItemGroup>
   <ItemGroup>

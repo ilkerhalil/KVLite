@@ -33,26 +33,32 @@ namespace PommaLabs.KVLite
 
         private readonly DbProviderFactory _dbProviderFactory;
 
-        protected DbCacheConnectionFactory(DbProviderFactory dbProviderFactory, string cacheSchemaName, string cacheItemsTableName)
+        protected DbCacheConnectionFactory(DbProviderFactory dbProviderFactory, string cacheSchemaName, string cacheItemsTableName, string cacheValuesTableName)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(dbProviderFactory, nameof(dbProviderFactory));
             Raise.ArgumentException.If(cacheSchemaName != null && !SqlNameRegex.IsMatch(cacheSchemaName));
             Raise.ArgumentException.If(cacheItemsTableName != null && !SqlNameRegex.IsMatch(cacheItemsTableName));
+            Raise.ArgumentException.If(cacheValuesTableName != null && !SqlNameRegex.IsMatch(cacheValuesTableName));
 
             _dbProviderFactory = dbProviderFactory;
 
             CacheSchemaName = cacheSchemaName ?? DefaultCacheSchemaName;
             CacheItemsTableName = cacheItemsTableName ?? DefaultCacheItemsTableName; 
+            CacheValuesTableName = cacheValuesTableName ?? DefaultCacheValuesTableName;
         }
 
         public static string DefaultCacheSchemaName { get; } = "kvlite";
 
         public static string DefaultCacheItemsTableName { get; } = "kvl_cache_items";
 
+        public static string DefaultCacheValuesTableName { get; } = "kvl_cache_values";
+
         public string CacheSchemaName { get; set; }
 
         public string CacheItemsTableName { get; set; }
+
+        public string CacheValuesTableName { get; set; }
 
         public int MaxKeyNameLength { get; } = 255;
 

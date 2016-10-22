@@ -34,6 +34,8 @@ namespace PommaLabs.KVLite
 
         string CacheItemsTableName { get; set; }
 
+        string CacheValuesTableName { get; set; }
+
         int MaxPartitionNameLength { get; }
 
         int MaxKeyNameLength { get; }

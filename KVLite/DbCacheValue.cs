@@ -1,4 +1,4 @@
-﻿// File name: SqlServerCacheConnectionFactory.cs
+﻿// File name: DbCacheItem.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,36 +21,25 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Data;
-using System.Data.SqlClient;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PommaLabs.KVLite.SqlServer
+namespace PommaLabs.KVLite
 {
-    public class SqlServerCacheConnectionFactory : DbCacheConnectionFactory
+    /// <summary>
+    ///   Represents a value stored inside the cache.
+    /// </summary>
+    public sealed class DbCacheValue
     {
-        public SqlServerCacheConnectionFactory()
-            : base(SqlClientFactory.Instance, null, null, null)
-        {
-        }
+        [Column("KVLI_HASH"), Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long Hash { get; set; }
 
-        public override long GetCacheSizeInBytes()
-        {
-            using (var connection = Create())
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandType = CommandType.Text;
-                command.CommandText = $@"
-                    select round(sum(length(kvlv_value))) as result
-                    from {CacheSchemaName}.{CacheValuesTableName};
-                ";
+        [Column("KVLV_VALUE")]
+        public byte[] Value { get; set; }
 
-                connection.Open();
-                using (var reader = command.ExecuteReader())
-                {
-                    reader.Read();
-                    return reader.GetInt64(0);
-                }
-            }
-        }
+        [Column("KVLV_COMPRESSED")]
+        public bool Compressed { get; set; }
+
+        public DbCacheItem Item { get; set; }
     }
 }

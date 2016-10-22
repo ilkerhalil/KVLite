@@ -52,7 +52,7 @@ namespace PommaLabs.KVLite.SQLite
         private readonly SQLiteJournalModeEnum _journalMode;
 
         public SQLiteCacheConnectionFactory(TSettings settings, SQLiteJournalModeEnum journalMode)
-            : base(SQLiteFactory.Instance, null, null)
+            : base(SQLiteFactory.Instance, null, null, null)
         {
             _settings = settings;
             _journalMode = journalMode;

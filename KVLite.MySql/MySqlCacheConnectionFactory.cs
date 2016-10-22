@@ -29,7 +29,7 @@ namespace PommaLabs.KVLite.MySql
     public class MySqlCacheConnectionFactory : DbCacheConnectionFactory
     {
         public MySqlCacheConnectionFactory()
-            : base(MySqlClientFactory.Instance, null, null)
+            : base(MySqlClientFactory.Instance, null, null, null)
         {
         }
 
@@ -40,8 +40,8 @@ namespace PommaLabs.KVLite.MySql
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = $@"
-                    select round(sum(length(kvli_value))) as result
-                    from {CacheSchemaName}.{CacheItemsTableName};
+                    select round(sum(length(kvlv_value))) as result
+                    from {CacheSchemaName}.{CacheValuesTableName};
                 ";
 
                 connection.Open();

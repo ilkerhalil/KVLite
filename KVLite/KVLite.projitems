@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\XXHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DbCacheContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DbCacheValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DbCacheItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DbCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DbCache.cs" />

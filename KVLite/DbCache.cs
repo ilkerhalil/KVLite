@@ -417,9 +417,14 @@ namespace PommaLabs.KVLite
                 Key = key,
                 UtcCreation = Clock.UnixTime,
                 UtcExpiry = utcExpiry.ToUnixTime(),
-                Interval = (long) interval.TotalSeconds,
+                Interval = (long) interval.TotalSeconds
+            };
+
+            var dbCacheValue = new DbCacheValue
+            {
+                Hash = hash,
                 Compressed = true,
-                Value = serializedValue,
+                Value = serializedValue
             };
 
             // Also add the parent keys, if any.
@@ -461,14 +466,26 @@ namespace PommaLabs.KVLite
             }
 
             using (var db = new DbCacheContext(ConnectionFactory))
+            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadUncommitted))
             {
                 var dbCacheItemEntry = db.Entry(dbCacheItem);
                 dbCacheItemEntry.State = EntityState.Added;
+                var dbCacheValueEntry = db.Entry(dbCacheValue);
+                dbCacheValueEntry.State = EntityState.Added;
 
-                if (!TrySaveChanges(db))
+                if (TrySaveChanges(db))
+                {
+                    tr.Commit();
+                }
+                else
                 {
                     dbCacheItemEntry.State = EntityState.Modified;
-                    TrySaveChanges(db);
+                    dbCacheValueEntry.State = EntityState.Modified;
+
+                    if (TrySaveChanges(db))
+                    {
+                        tr.Commit();
+                    }
                 }
             }
         }
@@ -492,7 +509,7 @@ namespace PommaLabs.KVLite
             // in order to complete all deletes, we use a custom transaction and ignore any error
             // occurred during this operation.
             using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction())
+            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadUncommitted))
             {
                 var hashes = db.CacheItems
                     .Where(x => (partition == null || x.Partition == partition) && (ignoreExpiryDate || x.UtcExpiry < utcNow))
@@ -599,12 +616,14 @@ namespace PommaLabs.KVLite
             var hash = TruncateAndHash(ref partition, ref key);
             var utcNow = Clock.UnixTime;
 
-            byte[] serializedValue;
+            DbCacheValue dbCacheValue;
             using (var db = new DbCacheContext(ConnectionFactory))
             {
                 var dbCacheItem = db.CacheItems
+                    .Include(x => x.Value)
                     .Where(x => x.Hash == hash)
-                    .FirstOrDefault(x => x.UtcExpiry >= utcNow);
+                    .Select(x => new { x.Interval, x.UtcExpiry, x.Value })
+                    .FirstOrDefault();
 
                 if (dbCacheItem == null)
                 {
@@ -612,18 +631,28 @@ namespace PommaLabs.KVLite
                     return Option.None<TVal>();
                 }
 
-                // Since we are in a "get" operation, we should also update the expiry.
+                if (dbCacheItem.UtcExpiry < utcNow)
+                {
+                    // When an item expires, we should remove it from the cache.
+                    RemoveInternal(partition, key);
+
+                    // Nothing to deserialize, return None.
+                    return Option.None<TVal>();
+                }
+
                 if (dbCacheItem.Interval > 0L)
                 {
-                    dbCacheItem.UtcExpiry = utcNow + dbCacheItem.Interval;
+                    // Since we are in a "get" operation, we should also update the expiry.
+                    var attachedDbCacheItem = db.CacheItems.Attach(new DbCacheItem { Hash = hash });
+                    attachedDbCacheItem.UtcExpiry = utcNow + dbCacheItem.Interval;
                     TrySaveChanges(db);
                 }
 
-                serializedValue = dbCacheItem.Value;
+                dbCacheValue = dbCacheItem.Value;
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeValue<TVal>(serializedValue, partition, key);
+            return DeserializeValue<TVal>(dbCacheValue, partition, key);
         }
 
         /// <summary>
@@ -644,11 +673,20 @@ namespace PommaLabs.KVLite
             using (var db = new DbCacheContext(ConnectionFactory))
             {
                 dbCacheItem = db.CacheItems
-                    .Where(x => x.Hash == hash)
-                    .FirstOrDefault(x => x.UtcExpiry >= utcNow);
+                    .Include(x => x.Value)
+                    .FirstOrDefault(x => x.Hash == hash && x.UtcExpiry >= utcNow);
 
                 if (dbCacheItem == null)
                 {
+                    // Nothing to deserialize, return None.
+                    return Option.None<ICacheItem<TVal>>();
+                }
+
+                if (dbCacheItem.UtcExpiry < utcNow)
+                {
+                    // When an item expires, we should remove it from the cache.
+                    RemoveInternal(partition, key);
+
                     // Nothing to deserialize, return None.
                     return Option.None<ICacheItem<TVal>>();
                 }
@@ -680,19 +718,31 @@ namespace PommaLabs.KVLite
 
             DbCacheItem[] dbCacheItems;
             using (var db = new DbCacheContext(ConnectionFactory))
+            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadUncommitted))
             {
                 dbCacheItems = db.CacheItems
+                    .Include(x => x.Value)
                     .Where(x => partition == null || x.Partition == partition)
                     .Where(x => x.UtcExpiry >= utcNow)
                     .ToArray();
 
                 // Since we are in a "get" operation, we should also update the expiry.
-                foreach (var dbCacheItem in dbCacheItems.Where(x => x.Interval > 0L))
+                foreach (var dbCacheItem in dbCacheItems)
                 {
-                    dbCacheItem.UtcExpiry = utcNow + dbCacheItem.Interval;
+                    if (dbCacheItem.UtcExpiry < utcNow)
+                    {
+                        // When an item expires, we should remove it from the cache.
+                        RemoveInternal(dbCacheItem.Partition, dbCacheItem.Key);
+                    }
+                    else if (dbCacheItem.Interval > 0L)
+                    {
+                        // Since we are in a "get" operation, we should also update the expiry.
+                        dbCacheItem.UtcExpiry = utcNow + dbCacheItem.Interval;
+                    }
                 }
 
                 TrySaveChanges(db);
+                tr.Commit();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -718,16 +768,15 @@ namespace PommaLabs.KVLite
             var hash = TruncateAndHash(ref partition, ref key);
             var utcNow = Clock.UnixTime;
 
-            byte[] serializedValue;
+            DbCacheValue dbCacheValue;
             using (var db = new DbCacheContext(ConnectionFactory))
             {
-                serializedValue = db.CacheItems
-                    .Where(x => x.Hash == hash)
-                    .Where(x => x.UtcExpiry >= utcNow)
+                dbCacheValue = db.CacheItems
+                    .Where(x => x.Hash == hash && x.UtcExpiry >= utcNow)
                     .Select(x => x.Value)
                     .FirstOrDefault();
 
-                if (serializedValue == null)
+                if (dbCacheValue == null)
                 {
                     // Nothing to deserialize, return None.
                     return Option.None<TVal>();
@@ -735,7 +784,7 @@ namespace PommaLabs.KVLite
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeValue<TVal>(serializedValue, partition, key);
+            return DeserializeValue<TVal>(dbCacheValue, partition, key);
         }
 
         /// <summary>
@@ -757,9 +806,8 @@ namespace PommaLabs.KVLite
             using (var db = new DbCacheContext(ConnectionFactory))
             {
                 dbCacheItem = db.CacheItems
-                    .AsNoTracking()
-                    .Where(x => x.Hash == hash)
-                    .FirstOrDefault(x => x.UtcExpiry >= utcNow);
+                    .Include(x => x.Value)
+                    .FirstOrDefault(x => x.Hash == hash && x.UtcExpiry >= utcNow);
 
                 if (dbCacheItem == null)
                 {
@@ -793,9 +841,8 @@ namespace PommaLabs.KVLite
             using (var db = new DbCacheContext(ConnectionFactory))
             {
                 dbCacheItems = db.CacheItems
-                    .AsNoTracking()
-                    .Where(x => partition == null || x.Partition == partition)
-                    .Where(x => x.UtcExpiry >= utcNow)
+                    .Include(x => x.Value)
+                    .Where(x => (partition == null || x.Partition == partition) && x.UtcExpiry >= utcNow)
                     .ToArray();
             }
 
@@ -823,7 +870,7 @@ namespace PommaLabs.KVLite
             // in order to complete all deletes, we use a custom transaction and ignore any error
             // occurred during this operation.
             using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction())
+            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadUncommitted))
             {
                 db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
                 TrySaveChanges(db);
@@ -850,7 +897,7 @@ namespace PommaLabs.KVLite
             // in order to complete all deletes, we use a custom transaction and ignore any error
             // occurred during this operation.
             using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction())
+            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadUncommitted))
             {
                 db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
                 await TrySaveChangesAsync(db, cancellationToken);
@@ -860,20 +907,20 @@ namespace PommaLabs.KVLite
 
 #endif
 
-        private TVal UnsafeDeserializeValue<TVal>(byte[] serializedValue)
+        private TVal UnsafeDeserializeValue<TVal>(DbCacheValue dbCacheValue)
         {
-            using (var memoryStream = new MemoryStream(serializedValue))
+            using (var memoryStream = new MemoryStream(dbCacheValue.Value))
             using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
             {
                 return Serializer.DeserializeFromStream<TVal>(decompressionStream);
             }
         }
 
-        private Option<TVal> DeserializeValue<TVal>(byte[] serializedValue, string partition, string key)
+        private Option<TVal> DeserializeValue<TVal>(DbCacheValue dbCacheValue, string partition, string key)
         {
             try
             {
-                return Option.Some(UnsafeDeserializeValue<TVal>(serializedValue));
+                return Option.Some(UnsafeDeserializeValue<TVal>(dbCacheValue));
             }
             catch (Exception ex)
             {
