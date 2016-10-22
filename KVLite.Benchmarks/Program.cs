@@ -41,9 +41,9 @@ namespace PommaLabs.KVLite.Benchmarks
 {
     public static class Program
     {
-        private const int RowCount = 200;
+        private const int RowCount = 100;
         private const int IterationCount = 5;
-        private const int RandomDataTablesCount = 50;
+        private const int RandomDataTablesCount = 1000;
 
         private static readonly string[] ColumnNames = { "A", "B", "C", "D", "E" };
 
@@ -56,7 +56,7 @@ namespace PommaLabs.KVLite.Benchmarks
                 BenchmarkRunner.Run<Comparison>();
                 return;
             }
-                        
+
             MySqlCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString;
 
             OracleCache.DefaultInstance.ConnectionFactory.CacheSchemaName = "CARAVAN";
@@ -76,7 +76,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Table Count: {0}", RandomDataTablesCount);
             Console.WriteLine(@"Row Count: {0}", RowCount);
             Console.WriteLine(@"Total Size: {0:.0} MB", _tableListSize);
-            
+
             for (var i = 0; i < IterationCount; ++i)
             {
                 //FullyCleanCache();
@@ -138,8 +138,8 @@ namespace PommaLabs.KVLite.Benchmarks
                 FullyCleanCache();
                 RetrieveEachDataTableItem(VolatileCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
-                RetrieveEachDataTableItem(MemoryCache.DefaultInstance, tables, i);
+                //FullyCleanCache(); <-- Memory cache does not allow peeking!
+                //RetrieveEachDataTableItem(MemoryCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 StoreEachDataTableAsync(tables, i);

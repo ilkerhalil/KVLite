@@ -86,7 +86,7 @@ namespace PommaLabs.KVLite.SQLite
                 cmd.CommandText = "PRAGMA page_size;";
                 var pageSizeInKB = (long) cmd.ExecuteScalar();
 
-                return (pageCount - freelistCount) * pageSizeInKB * 1024;
+                return (pageCount - freelistCount) * pageSizeInKB;
             }
         }
 
@@ -130,8 +130,7 @@ namespace PommaLabs.KVLite.SQLite
                 PrepareRetries = 3,
 
                 /* Transaction handling */
-                Enlist = true,
-                DefaultIsolationLevel = IsolationLevel.ReadCommitted,
+                Enlist = false,
 
                 /* Required by parent keys */
                 ForeignKeys = true,
@@ -156,11 +155,18 @@ namespace PommaLabs.KVLite.SQLite
             {
                 conn.Open();
 
-                bool isSchemaReady;
-                cmd.CommandText = SQLiteQueries.IsSchemaReady;
+                var isSchemaReady = true;
+
+                cmd.CommandText = SQLiteQueries.IsCacheItemsTableReady;
                 using (var dataReader = cmd.ExecuteReader())
                 {
-                    isSchemaReady = IsSchemaReady(dataReader);
+                    isSchemaReady &= IsCacheItemsTableReady(dataReader);
+                }
+
+                cmd.CommandText = SQLiteQueries.IsCacheValuesTableReady;
+                using (var dataReader = cmd.ExecuteReader())
+                {
+                    isSchemaReady &= IsCacheValuesTableReady(dataReader);
                 }
 
                 if (!isSchemaReady)
@@ -172,7 +178,7 @@ namespace PommaLabs.KVLite.SQLite
             }
         }
 
-        private static bool IsSchemaReady(IDataReader dataReader)
+        private static bool IsCacheItemsTableReady(IDataReader dataReader)
         {
             var columns = new HashSet<string>();
 
@@ -181,14 +187,13 @@ namespace PommaLabs.KVLite.SQLite
                 columns.Add(dataReader.GetValue(dataReader.GetOrdinal("name")) as string);
             }
 
-            return columns.Count == 18
+            return columns.Count == 16
                 && columns.Contains("kvli_hash")
                 && columns.Contains("kvli_partition")
                 && columns.Contains("kvli_key")
                 && columns.Contains("kvli_creation")
                 && columns.Contains("kvli_expiry")
                 && columns.Contains("kvli_interval")
-                && columns.Contains("kvli_compressed")
                 && columns.Contains("kvli_parent_hash0")
                 && columns.Contains("kvli_parent_key0")
                 && columns.Contains("kvli_parent_hash1")
@@ -198,8 +203,22 @@ namespace PommaLabs.KVLite.SQLite
                 && columns.Contains("kvli_parent_hash3")
                 && columns.Contains("kvli_parent_key3")
                 && columns.Contains("kvli_parent_hash4")
-                && columns.Contains("kvli_parent_key4")
-                && columns.Contains("kvli_value");
+                && columns.Contains("kvli_parent_key4");
+        }
+
+        private static bool IsCacheValuesTableReady(IDataReader dataReader)
+        {
+            var columns = new HashSet<string>();
+
+            while (dataReader.Read())
+            {
+                columns.Add(dataReader.GetValue(dataReader.GetOrdinal("name")) as string);
+            }
+
+            return columns.Count == 3
+                && columns.Contains("kvli_hash")
+                && columns.Contains("kvlv_value")
+                && columns.Contains("kvlv_compressed");
         }
     }
 }

@@ -32,6 +32,7 @@ namespace PommaLabs.KVLite.SQLite
 
         public static readonly string CacheSchema = @"
             PRAGMA auto_vacuum = INCREMENTAL;
+            
             DROP TABLE IF EXISTS kvl_cache_items;
             CREATE TABLE kvl_cache_items (
                 kvli_hash BIGINT NOT NULL,
@@ -40,7 +41,6 @@ namespace PommaLabs.KVLite.SQLite
                 kvli_creation BIGINT NOT NULL,
                 kvli_expiry BIGINT NOT NULL,
                 kvli_interval BIGINT NOT NULL,
-                kvli_compressed BOOLEAN NOT NULL,
                 kvli_parent_hash0 BIGINT,
                 kvli_parent_key0 TEXT,
                 kvli_parent_hash1 BIGINT,
@@ -51,7 +51,6 @@ namespace PommaLabs.KVLite.SQLite
                 kvli_parent_key3 TEXT,
                 kvli_parent_hash4 BIGINT,
                 kvli_parent_key4 TEXT,
-                kvli_value BLOB NOT NULL,
                 CONSTRAINT pk_kvli PRIMARY KEY (kvli_hash),
                 CONSTRAINT fk_kvli_parent0 FOREIGN KEY (kvli_parent_hash0) REFERENCES kvl_cache_items (kvli_hash) ON DELETE CASCADE,
                 CONSTRAINT fk_kvli_parent1 FOREIGN KEY (kvli_parent_hash1) REFERENCES kvl_cache_items (kvli_hash) ON DELETE CASCADE,
@@ -65,10 +64,23 @@ namespace PommaLabs.KVLite.SQLite
             CREATE INDEX ix_kvli_parent2 ON kvl_cache_items (kvli_parent_hash2);
             CREATE INDEX ix_kvli_parent3 ON kvl_cache_items (kvli_parent_hash3);
             CREATE INDEX ix_kvli_parent4 ON kvl_cache_items (kvli_parent_hash4);
+            
+            DROP TABLE IF EXISTS kvl_cache_values;
+            CREATE TABLE kvl_cache_values (
+                kvli_hash BIGINT NOT NULL,
+                kvlv_value BLOB NOT NULL,
+                kvlv_compressed BOOLEAN NOT NULL,
+                CONSTRAINT pk_kvlv PRIMARY KEY (kvli_hash),
+                CONSTRAINT fk_kvlv_hash FOREIGN KEY (kvli_hash) REFERENCES kvl_cache_items (kvli_hash) ON DELETE CASCADE
+            );
         ";
 
-        public static readonly string IsSchemaReady = @"
+        public static readonly string IsCacheItemsTableReady = @"
             PRAGMA table_info(kvl_cache_items)
+        ";
+
+        public static readonly string IsCacheValuesTableReady = @"
+            PRAGMA table_info(kvl_cache_values)
         ";
 
         public static readonly string Vacuum = @"

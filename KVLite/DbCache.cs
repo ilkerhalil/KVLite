@@ -466,7 +466,7 @@ namespace PommaLabs.KVLite
             }
 
             using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadUncommitted))
+            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 var dbCacheItemEntry = db.Entry(dbCacheItem);
                 dbCacheItemEntry.State = EntityState.Added;
@@ -509,7 +509,7 @@ namespace PommaLabs.KVLite
             // in order to complete all deletes, we use a custom transaction and ignore any error
             // occurred during this operation.
             using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadUncommitted))
+            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 var hashes = db.CacheItems
                     .Where(x => (partition == null || x.Partition == partition) && (ignoreExpiryDate || x.UtcExpiry < utcNow))
@@ -718,7 +718,7 @@ namespace PommaLabs.KVLite
 
             DbCacheItem[] dbCacheItems;
             using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadUncommitted))
+            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 dbCacheItems = db.CacheItems
                     .Include(x => x.Value)
@@ -870,7 +870,7 @@ namespace PommaLabs.KVLite
             // in order to complete all deletes, we use a custom transaction and ignore any error
             // occurred during this operation.
             using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadUncommitted))
+            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
                 TrySaveChanges(db);
@@ -897,7 +897,7 @@ namespace PommaLabs.KVLite
             // in order to complete all deletes, we use a custom transaction and ignore any error
             // occurred during this operation.
             using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadUncommitted))
+            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 db.Entry(new DbCacheItem { Hash = hash }).State = EntityState.Deleted;
                 await TrySaveChangesAsync(db, cancellationToken);
