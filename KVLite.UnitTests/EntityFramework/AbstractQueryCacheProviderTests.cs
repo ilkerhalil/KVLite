@@ -1,32 +1,32 @@
 ﻿// File name: AbstractQueryCacheProviderTests.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using EntityFramework.Caching;
 using EntityFramework.Extensions;
-using PommaLabs.CodeServices.Caching;
 using NUnit.Framework;
+using PommaLabs.CodeServices.Caching;
 using PommaLabs.KVLite.EntityFramework;
-using System;
+using PommaLabs.KVLite.Memory;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Common;
@@ -37,12 +37,12 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
 {
     internal abstract class AbstractQueryCacheProviderTests : AbstractTests
     {
-        const string Pino = "PINO";
-        const string Gino = "GINO";
-        const string Nino = "NINO";
+        private const string Pino = "PINO";
+        private const string Gino = "GINO";
+        private const string Nino = "NINO";
 
-        DbConnection _dbConnection;
-        TestDbContext _dbContext;
+        private DbConnection _dbConnection;
+        private TestDbContext _dbContext;
 
         static AbstractQueryCacheProviderTests()
         {
@@ -181,8 +181,9 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
 
                     if (Cache is MemoryCache)
                     {
-                        // FIXME: MemoryCache is triggering one more delete than necessary. 
-                        //        Of course, this is a broken behaviour, but there is no easy way to fix it right now.
+                        // FIXME: MemoryCache is triggering one more delete than necessary. Of
+                        //        course, this is a broken behaviour, but there is no easy way to fix
+                        //        it right now.
                         Assert.That(Cache.GetItems<object>().Count, Is.EqualTo(4));
                         Assert.Ignore("MemoryCache has a partially buggy behavior...");
                     }
@@ -238,12 +239,12 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                 Assert.That(pino.Name, Is.EqualTo(Pino));
 
                 using (var anotherContext = new TestDbContext(_dbConnection))
-                using (anotherContext.AsCaching()) 
+                using (anotherContext.AsCaching())
                 {
                     pino = anotherContext.TestEntities1.Where(te => te.Name == Pino).FromCacheFirstOrDefault();
                     Assert.That(pino, Is.Not.Null);
                     Assert.That(pino.Name, Is.EqualTo(Pino));
-                }                    
+                }
             }
             Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.True);
             Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.True);
@@ -418,7 +419,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                 Assert.That(e3[0].Name, Is.EqualTo("@C"));
                 Assert.That(e3[1].Id, Is.EqualTo(104));
                 Assert.That(e3[1].Name, Is.EqualTo("#A"));
-            }            
+            }
         }
 
         public sealed class TestDbContext : DbContext

@@ -1,5 +1,6 @@
 ﻿using PommaLabs.KVLite;
 using PommaLabs.KVLite.Nancy;
+using PommaLabs.KVLite.SQLite;
 
 namespace RestService.Nancy
 {

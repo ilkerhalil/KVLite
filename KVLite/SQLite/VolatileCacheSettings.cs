@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.SQLite;
 using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
@@ -30,7 +29,7 @@ using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.SQLite
 {
     /// <summary>
     ///   Settings used by <see cref="VolatileCache"/>.

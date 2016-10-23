@@ -1,4 +1,4 @@
-﻿// File name: MemoryCacheSettings.cs
+﻿// File name: PersistentCacheSettings.cs
 // 
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 // 
@@ -21,40 +21,35 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.CodeServices.Caching;
 using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
 
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.SQLite
 {
     /// <summary>
-    ///   Settings used by <see cref="MemoryCache"/>.
+    ///   Settings used by <see cref="PersistentCache"/>.
     /// </summary>
     [Serializable, DataContract]
-    public sealed class MemoryCacheSettings : AbstractCacheSettings<MemoryCacheSettings>
+    public sealed class PersistentCacheSettings : SQLiteCacheSettings<PersistentCacheSettings>
     {
         #region Fields
 
-        string _cacheName = nameof(MemoryCache);
-        private int _maxCacheSizeInMB;
+        string _cacheFile = "PersistentCache.sqlite";
 
         #endregion Fields
 
         #region Construction
 
         /// <summary>
-        ///   Sets default values for memory cache settings.
+        ///   Sets default values for persistent cache settings.
         /// </summary>
-        public MemoryCacheSettings()
-        {
-            DefaultPartition = "KVLite.DefaultPartition";
-            StaticIntervalInDays = 30;
-            MaxCacheSizeInMB = 256;
+        public PersistentCacheSettings()
+        {            
+            MaxCacheSizeInMB = 1024;
         }
 
         #endregion Construction
@@ -62,51 +57,27 @@ namespace PommaLabs.KVLite
         #region Properties
 
         /// <summary>
-        ///   Gets the default settings for <see cref="MemoryCache"/>.
+        ///   Gets the default settings for <see cref="PersistentCache"/>.
         /// </summary>
-        /// <value>The default settings for <see cref="MemoryCache"/>.</value>
+        /// <value>The default settings for <see cref="PersistentCache"/>.</value>
         [Pure]
-        public static MemoryCacheSettings Default { get; } = new MemoryCacheSettings();
+        public static PersistentCacheSettings Default { get; } = new PersistentCacheSettings();
 
         #endregion Properties
 
         #region Settings
 
         /// <summary>
-        ///   Max size in megabytes for the cache.
-        /// </summary>
-        [DataMember]
-        public int MaxCacheSizeInMB
-        {
-            get
-            {
-                var result = _maxCacheSizeInMB;
-
-                // Postconditions
-                Debug.Assert(result > 0);
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                Raise.ArgumentOutOfRangeException.If(value <= 0);
-
-                _maxCacheSizeInMB = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        ///   The name of the in-memory store used as the backend for the cache.
+        ///   The SQLite DB used as the backend for the cache.
         /// 
-        ///   Default value is "MemoryCache".
+        ///   Default value is "PersistentCache.sqlite".
         /// </summary>
         [DataMember]
-        public string CacheName
+        public string CacheFile
         {
             get
             {
-                var result = _cacheName;
+                var result = _cacheFile;
 
                 // Postconditions
                 Debug.Assert(!string.IsNullOrWhiteSpace(result));
@@ -115,20 +86,12 @@ namespace PommaLabs.KVLite
             set
             {
                 // Preconditions
-                Raise.ArgumentException.IfIsNullOrWhiteSpace(value, nameof(CacheName), ErrorMessages.NullOrEmptyCacheName);
-                Raise.ArgumentException.IfNot(Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$"), nameof(CacheName), ErrorMessages.InvalidCacheName);
+                Raise.ArgumentException.IfIsNullOrWhiteSpace(value, nameof(CacheFile), ErrorMessages.NullOrEmptyCacheFile);
 
-                _cacheName = value;
+                _cacheFile = value;
                 OnPropertyChanged();
             }
         }
-
-        /// <summary>
-        ///   Gets the cache URI; used for logging.
-        /// </summary>
-        /// <value>The cache URI.</value>
-        [IgnoreDataMember]
-        public override string CacheUri => CacheName;
 
         #endregion Settings
     }

@@ -21,10 +21,12 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
+using System.Data.Common;
+using System.Reflection;
 
 namespace PommaLabs.KVLite.SQLite
 {
@@ -42,6 +44,21 @@ namespace PommaLabs.KVLite.SQLite
 
         #endregion Constants
 
+        private static readonly DbProviderFactory DbProviderFactory;
+
+        static SQLiteCacheConnectionFactory()
+        {
+            try
+            {
+                var factoryType = Type.GetType("System.Data.SQLite.SQLiteFactory, System.Data.SQLite");
+                DbProviderFactory = factoryType.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null) as DbProviderFactory;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorMessages.MissingSQLiteDriver, ex);
+            }
+        }
+
         /// <summary>
         ///   The connection string used to connect to the SQLite database.
         /// </summary>
@@ -49,10 +66,10 @@ namespace PommaLabs.KVLite.SQLite
 
         private readonly TSettings _settings;
 
-        private readonly SQLiteJournalModeEnum _journalMode;
+        private readonly SQLiteJournalMode _journalMode;
 
-        public SQLiteCacheConnectionFactory(TSettings settings, SQLiteJournalModeEnum journalMode)
-            : base(SQLiteFactory.Instance, null, null, null)
+        public SQLiteCacheConnectionFactory(TSettings settings, SQLiteJournalMode journalMode)
+            : base(DbProviderFactory, null, null, null)
         {
             _settings = settings;
             _journalMode = journalMode;
@@ -235,42 +252,7 @@ namespace PommaLabs.KVLite.SQLite
 
         internal void InitConnectionString(string dataSource)
         {
-            var builder = new SQLiteConnectionStringBuilder
-            {
-                BaseSchemaName = CacheSchemaName,
-                FullUri = dataSource,
-                JournalMode = _journalMode,
-                FailIfMissing = false,
-                LegacyFormat = false,
-                ReadOnly = false,
-                SyncMode = SynchronizationModes.Off,
-                Version = 3,
-
-                /* KVLite uses UNIX time */
-                DateTimeFormat = SQLiteDateFormats.Ticks,
-                DateTimeKind = DateTimeKind.Utc,
-
-                /* Settings three minutes as timeout should be more than enough... */
-                DefaultTimeout = 180,
-                PrepareRetries = 3,
-
-                /* Transaction handling */
-                Enlist = false,
-
-                /* Required by parent keys */
-                ForeignKeys = true,
-                RecursiveTriggers = true,
-
-                /* Each page is 4KB large - Multiply by 1024*1024/PageSizeInBytes */
-                MaxPageCount = _settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes,
-                PageSize = PageSizeInBytes,
-                CacheSize = -2000,
-
-                /* We need pooling to improve performance */
-                Pooling = true,
-            };
-
-            _connectionString = builder.ToString();
+            _connectionString = $"baseschemaname=kvlite;fulluri=\"{dataSource}\";journal mode={_journalMode};failifmissing=False;legacy format=False;read only=False;synchronous=Off;version=3;datetimeformat=Ticks;datetimekind=Utc;default timeout=180;prepareretries=3;enlist=False;foreign keys=True;recursive triggers=True;max page count={_settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes};page size={PageSizeInBytes};cache size=-2000;pooling=True";
         }
 
         internal void EnsureSchemaIsReady()
@@ -343,5 +325,16 @@ namespace PommaLabs.KVLite.SQLite
                 && columns.Contains("kvlv_value")
                 && columns.Contains("kvlv_compressed");
         }
+    }
+
+    internal enum SQLiteJournalMode
+    {
+        Default = -1,
+        Delete = 0,
+        Persist = 1,
+        Off = 2,
+        Truncate = 3,
+        Memory = 4,
+        Wal = 5
     }
 }

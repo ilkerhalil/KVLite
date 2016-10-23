@@ -18,16 +18,21 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IDbCacheConnectionFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MemoryCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MemoryCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Oracle\OracleCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Oracle\OracleCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Oracle\OracleCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\PersistentCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\PersistentCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteQueries.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\VolatileCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\VolatileCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCacheSettings.cs" />
@@ -40,8 +45,5 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)MySql\Scripts\kvl_cache_values.sql" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Oracle\Scripts\kvl_cache_items.sql" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)SqlServer\Scripts\kvl_cache_items.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Memory\" />
   </ItemGroup>
 </Project>

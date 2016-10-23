@@ -28,6 +28,7 @@ using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite;
+using PommaLabs.KVLite.SQLite;
 
 namespace RestService.WebApi
 {

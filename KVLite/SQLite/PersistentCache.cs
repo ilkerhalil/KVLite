@@ -1,4 +1,4 @@
-﻿// File name: VolatileCache.cs
+﻿// File name: PersistentCache.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -23,21 +23,22 @@
 
 using CodeProject.ObjectPool.Specialized;
 using PommaLabs.CodeServices.Clock;
+using PommaLabs.CodeServices.Common.Logging;
+using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
-using PommaLabs.KVLite.SQLite;
+using PommaLabs.KVLite.Core;
 using System;
-using System.Data;
-using System.Data.SQLite;
 using System.Diagnostics.Contracts;
+using System.IO;
 
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.SQLite
 {
     /// <summary>
-    ///   An SQLite-based in-memory cache.
+    ///   An SQLite-based persistent cache.
     /// </summary>
     /// <remarks>SQLite-based caches do not allow more than ten parent keys per item.</remarks>
-    public sealed class VolatileCache : DbCache<VolatileCacheSettings>
+    public sealed class PersistentCache : DbCache<PersistentCacheSettings>
     {
         #region Default Instance
 
@@ -48,37 +49,27 @@ namespace PommaLabs.KVLite
         [Pure]
 #pragma warning disable CC0022 // Should dispose object
 
-        public static VolatileCache DefaultInstance { get; } = new VolatileCache(new VolatileCacheSettings());
+        public static PersistentCache DefaultInstance { get; } = new PersistentCache(new PersistentCacheSettings());
 
 #pragma warning restore CC0022 // Should dispose object
 
         #endregion Default Instance
 
-        #region Fields
-
-        /// <summary>
-        ///   Since in-memory SQLite instances are deleted as soon as the connection is closed, then
-        ///   we keep one dangling connection open, so that the store does not disappear.
-        /// </summary>
-        private IDbConnection _keepAliveConnection;
-
-        #endregion Fields
-
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="VolatileCache"/> class with given settings.
+        ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
-            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, SQLiteJournalModeEnum.Memory), clock, serializer, compressor, memoryStreamPool)
+        public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
+            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, SQLiteJournalMode.Wal), clock, serializer, compressor, memoryStreamPool)
         {
             // Connection string must be customized by each cache.
-            UpdateConnectionString();
+            UpdateConnectionString();            
 
             Settings.PropertyChanged += (sender, args) =>
             {
@@ -91,17 +82,35 @@ namespace PommaLabs.KVLite
 
         #endregion Construction
 
+        #region Public members
+
+        /// <summary>
+        ///   Runs VACUUM on the underlying SQLite database.
+        /// </summary>
+        public void Vacuum()
+        {
+            try
+            {
+                Log.Info($"Vacuuming the SQLite DB '{Settings.CacheFile}'...");
+                (ConnectionFactory as SQLiteCacheConnectionFactory<PersistentCacheSettings>).Vacuum();
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.ErrorException(ErrorMessages.InternalErrorOnVacuum, ex);
+            }
+        }
+
+        #endregion
+
         #region Private members
 
         private void UpdateConnectionString()
         {
-            var sqliteConnFactory = (ConnectionFactory as SQLiteCacheConnectionFactory<VolatileCacheSettings>);
-            var dataSource = GetDataSource(Settings.CacheName);
+            var sqliteConnFactory = (ConnectionFactory as SQLiteCacheConnectionFactory<PersistentCacheSettings>);
+            var dataSource = GetDataSource(Settings.CacheFile);
             sqliteConnFactory.InitConnectionString(dataSource);
             sqliteConnFactory.EnsureSchemaIsReady();
-
-            _keepAliveConnection?.Dispose();
-            _keepAliveConnection = sqliteConnFactory.Open();
         }
 
         /// <summary>
@@ -109,15 +118,29 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="changedPropertyName">Name of the changed property.</param>
         /// <returns>Whether the changed property is the data source.</returns>
-        private static bool DataSourceHasChanged(string changedPropertyName) => string.Equals(changedPropertyName, nameof(VolatileCacheSettings.CacheName), StringComparison.OrdinalIgnoreCase);
+        private static bool DataSourceHasChanged(string changedPropertyName) => string.Equals(changedPropertyName, nameof(PersistentCacheSettings.CacheFile), StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         ///   Gets the data source, that is, the location of the SQLite store (it might be a file
         ///   path or a memory URI).
         /// </summary>
-        /// <param name="cacheName">User specified cache name.</param>
+        /// <param name="cacheFile">User specified cache file.</param>
         /// <returns>The SQLite data source that will be used by the cache.</returns>
-        private static string GetDataSource(string cacheName) => string.Format("file:{0}?mode=memory&cache=shared", cacheName);
+        private static string GetDataSource(string cacheFile)
+        {
+            // Map cache path, since it may be an IIS relative path.
+            var mappedPath = PortableEnvironment.MapPath(cacheFile);
+
+            // If the directory which should contain the cache does not exist, then we create it.
+            // SQLite will take care of creating the DB itself.
+            var cacheDir = Path.GetDirectoryName(mappedPath);
+            if (cacheDir != null && !Directory.Exists(cacheDir))
+            {
+                Directory.CreateDirectory(cacheDir);
+            }
+
+            return mappedPath;
+        }
 
         #endregion Private members
     }

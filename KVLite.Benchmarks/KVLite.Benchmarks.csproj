@@ -262,10 +262,6 @@
       <Project>{3768ff1c-ade5-4c9d-9c00-cacb0ce40809}</Project>
       <Name>KVLite.NET46</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Platform Specific\KVLite.SQLite.NET46\KVLite.SQLite.NET46.csproj">
-      <Project>{50c2c651-1acf-44f6-ad95-efedb75bcbd1}</Project>
-      <Name>KVLite.SQLite.NET46</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Platform Specific\KVLite.UnitTests.NET45\KVLite.UnitTests.NET45.csproj">
       <Project>{bbe6492a-198e-499e-add5-e8c904ec8182}</Project>
       <Name>KVLite.UnitTests.NET45</Name>

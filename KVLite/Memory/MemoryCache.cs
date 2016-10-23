@@ -41,7 +41,7 @@ using System.Runtime.Serialization;
 using SystemCacheItemPolicy = System.Runtime.Caching.CacheItemPolicy;
 using SystemMemoryCache = System.Runtime.Caching.MemoryCache;
 
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.Memory
 {
     /// <summary>
     ///   An in-memory cache based on the .NET <see cref="SystemMemoryCache"/>.

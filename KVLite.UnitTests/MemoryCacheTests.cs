@@ -32,6 +32,7 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using PommaLabs.KVLite.Memory;
 
 namespace PommaLabs.KVLite.UnitTests
 {

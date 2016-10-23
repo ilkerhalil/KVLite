@@ -167,5 +167,10 @@ namespace PommaLabs.KVLite.Core
         ///   An error message.
         /// </summary>
         public const string MissingOracleDriver = @"Oracle driver seems to be missing. Please install PommaLabs.KVLite.Oracle package in order to receive the proper driver.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string MissingSQLiteDriver = @"SQLite driver seems to be missing. Please install PommaLabs.KVLite.SQLite package in order to receive the proper driver.";
     }
 }

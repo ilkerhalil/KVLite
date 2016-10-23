@@ -215,10 +215,6 @@
       <Project>{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}</Project>
       <Name>KVLite.NET45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Platform Specific\KVLite.SQLite.NET45\KVLite.SQLite.NET45.csproj">
-      <Project>{7adaa28f-e4ab-41ef-a29c-8de4e1e7a429}</Project>
-      <Name>KVLite.SQLite.NET45</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Platform Specific\KVLite.WebApi.NET45\KVLite.WebApi.NET45.csproj">
       <Project>{cc96ea69-dcc3-4d9e-bb6a-aced0c479ef3}</Project>
       <Name>KVLite.WebApi.NET45</Name>
