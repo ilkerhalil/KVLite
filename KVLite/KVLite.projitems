@@ -9,6 +9,7 @@
     <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\XXHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DbCacheConnectionFactory.cs" />
@@ -25,12 +26,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteQueries.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)doxyfile.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)SQLite\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)MySql\Scripts\kvl_cache_items.sql" />

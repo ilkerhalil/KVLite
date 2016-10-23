@@ -113,6 +113,8 @@ namespace PommaLabs.KVLite
         {
             public long Hash { get; set; }
 
+            public bool IgnoreExpiryDate { get; set; }
+
             public long UtcExpiry { get; set; }
         }
     }

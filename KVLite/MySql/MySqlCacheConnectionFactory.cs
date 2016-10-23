@@ -53,7 +53,7 @@ namespace PommaLabs.KVLite.MySql
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
-                insert into {CacheItemsTableName} (
+                insert into {CacheSchemaName}.{CacheItemsTableName} (
                     {DbCacheEntry.HashColumn},
                     {DbCacheEntry.PartitionColumn}, {DbCacheEntry.KeyColumn},
                     {DbCacheEntry.UtcCreationColumn},
@@ -90,7 +90,7 @@ namespace PommaLabs.KVLite.MySql
                     {DbCacheEntry.ParentHash4Column} = @{nameof(DbCacheEntry.ParentHash4)},
                     {DbCacheEntry.ParentKey4Column} = @{nameof(DbCacheEntry.ParentKey4)};
 
-                insert into {CacheValuesTableName} (
+                insert into {CacheSchemaName}.{CacheValuesTableName} (
                     {DbCacheEntry.HashColumn},
                     {DbCacheEntry.ValueColumn},
                     {DbCacheEntry.CompressedColumn}
@@ -106,12 +106,12 @@ namespace PommaLabs.KVLite.MySql
             ");
 
             DeleteCacheEntryCommand = MinifyQuery($@"
-                delete from {CacheItemsTableName}
+                delete from {CacheSchemaName}.{CacheItemsTableName}
                  where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
             ");
 
             DeleteCacheEntriesCommand = MinifyQuery($@"
-                delete from {CacheItemsTableName}
+                delete from {CacheSchemaName}.{CacheItemsTableName}
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheEntry.UtcExpiryColumn} < @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
@@ -122,16 +122,47 @@ namespace PommaLabs.KVLite.MySql
 
             ContainsCacheEntryQuery = MinifyQuery($@"
                 select count(*)
-                  from {CacheItemsTableName}
+                  from {CacheSchemaName}.{CacheItemsTableName}
                  where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
                    and {DbCacheEntry.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)}
             ");
 
             CountCacheEntriesQuery = MinifyQuery($@"
                 select count(*)
-                  from {CacheItemsTableName}
+                  from {CacheSchemaName}.{CacheItemsTableName}
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheEntry.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
+            ");
+
+            PeekCacheEntryQuery = MinifyQuery($@"
+                select item.{DbCacheEntry.PartitionColumn} {nameof(DbCacheEntry.Partition)},
+                       item.{DbCacheEntry.KeyColumn} {nameof(DbCacheEntry.Key)},
+                       item.{DbCacheEntry.UtcCreationColumn} {nameof(DbCacheEntry.UtcCreation)},
+                       item.{DbCacheEntry.UtcExpiryColumn} {nameof(DbCacheEntry.UtcExpiry)},
+                       item.{DbCacheEntry.IntervalColumn} {nameof(DbCacheEntry.Interval)},
+                       item.{DbCacheEntry.ParentHash0Column} {nameof(DbCacheEntry.ParentHash0)},
+                       item.{DbCacheEntry.ParentKey0Column} {nameof(DbCacheEntry.ParentKey0)},
+                       item.{DbCacheEntry.ParentHash1Column} {nameof(DbCacheEntry.ParentHash1)},
+                       item.{DbCacheEntry.ParentKey1Column} {nameof(DbCacheEntry.ParentKey1)},
+                       item.{DbCacheEntry.ParentHash2Column} {nameof(DbCacheEntry.ParentHash2)},
+                       item.{DbCacheEntry.ParentKey2Column} {nameof(DbCacheEntry.ParentKey2)},
+                       item.{DbCacheEntry.ParentHash3Column} {nameof(DbCacheEntry.ParentHash3)},
+                       item.{DbCacheEntry.ParentKey3Column} {nameof(DbCacheEntry.ParentKey3)},
+                       item.{DbCacheEntry.ParentHash4Column} {nameof(DbCacheEntry.ParentHash4)},
+                       item.{DbCacheEntry.ParentKey4Column} {nameof(DbCacheEntry.ParentKey4)},
+                       value.{DbCacheEntry.ValueColumn} {nameof(DbCacheEntry.Value)},
+                       value.{DbCacheEntry.CompressedColumn} {nameof(DbCacheEntry.Compressed)}
+                  from {CacheSchemaName}.{CacheItemsTableName} item natural join {CacheSchemaName}.{CacheValuesTableName} value
+                 where item.{DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
+                   and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} or item.{DbCacheEntry.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
+            ");
+
+            PeekCacheValueQuery = MinifyQuery($@"
+                select entry.{nameof(DbCacheEntry.UtcExpiry)} {nameof(Core.DbCacheValue.UtcExpiry)},
+                       entry.{nameof(DbCacheEntry.Interval)} {nameof(Core.DbCacheValue.Interval)},
+                       entry.{nameof(DbCacheEntry.Value)} {nameof(Core.DbCacheValue.Value)},
+                       entry.{nameof(DbCacheEntry.Compressed)} {nameof(Core.DbCacheValue.Compressed)}
+                  from ({PeekCacheEntryQuery}) entry
             ");
 
             #endregion Queries

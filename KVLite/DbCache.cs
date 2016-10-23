@@ -727,22 +727,23 @@ namespace PommaLabs.KVLite
         protected sealed override Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var hash = TruncateAndHash(ref partition, ref key);
-            var utcNow = Clock.UnixTime;
-
-            DbCacheValue dbCacheValue;
-            using (var db = new DbCacheContext(ConnectionFactory))
+            var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                dbCacheValue = db.CacheItems
-                    .Where(x => x.Hash == hash && x.UtcExpiry >= utcNow)
-                    .Select(x => x.Value)
-                    .FirstOrDefault();
+                Hash = TruncateAndHash(ref partition, ref key),
+                IgnoreExpiryDate = false,
+                UtcExpiry = Clock.UnixTime
+            };
 
-                if (dbCacheValue == null)
-                {
-                    // Nothing to deserialize, return None.
-                    return Option.None<TVal>();
-                }
+            Core.DbCacheValue dbCacheValue;
+            using (var db = ConnectionFactory.Open())
+            {
+                dbCacheValue = db.QuerySingleOrDefault<Core.DbCacheValue>(ConnectionFactory.PeekCacheValueQuery, dbCacheEntrySingle);
+            }
+
+            if (dbCacheValue == null)
+            {
+                // Nothing to deserialize, return None.
+                return Option.None<TVal>();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -761,25 +762,27 @@ namespace PommaLabs.KVLite
         protected sealed override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var hash = TruncateAndHash(ref partition, ref key);
-            var utcNow = Clock.UnixTime;
-
-            DbCacheItem dbCacheItem;
-            using (var db = new DbCacheContext(ConnectionFactory))
+            var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                dbCacheItem = db.CacheItems
-                    .Include(x => x.Value)
-                    .FirstOrDefault(x => x.Hash == hash && x.UtcExpiry >= utcNow);
+                Hash = TruncateAndHash(ref partition, ref key),
+                IgnoreExpiryDate = false,
+                UtcExpiry = Clock.UnixTime
+            };
 
-                if (dbCacheItem == null)
-                {
-                    // Nothing to deserialize, return None.
-                    return Option.None<ICacheItem<TVal>>();
-                }
+            DbCacheEntry dbCacheEntry;
+            using (var db = ConnectionFactory.Open())
+            {
+                dbCacheEntry = db.QuerySingleOrDefault<DbCacheEntry>(ConnectionFactory.PeekCacheEntryQuery, dbCacheEntrySingle);
+            }
+
+            if (dbCacheEntry == null)
+            {
+                // Nothing to deserialize, return None.
+                return Option.None<ICacheItem<TVal>>();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheItem<TVal>(dbCacheItem);
+            return DeserializeCacheEntry<TVal>(dbCacheEntry);
         }
 
         /// <summary>
@@ -790,7 +793,7 @@ namespace PommaLabs.KVLite
         /// <returns>All values, without updating expiry dates.</returns>
         /// <remarks>
         ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="T:System.Object"/> as type parameter; that will work whether the required
+        ///   <see cref="Object"/> as type parameter; that will work whether the required
         ///   value is a class or not.
         /// </remarks>
         protected sealed override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
@@ -859,6 +862,15 @@ namespace PommaLabs.KVLite
 
 #endif
 
+        private TVal UnsafeDeserializeValue<TVal>(byte[] value, bool compressed)
+        {
+            using (var memoryStream = new MemoryStream(value))
+            using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
+            {
+                return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+            }
+        }
+
         private TVal UnsafeDeserializeValue<TVal>(DbCacheValue dbCacheValue)
         {
             using (var memoryStream = new MemoryStream(dbCacheValue.Value))
@@ -868,11 +880,11 @@ namespace PommaLabs.KVLite
             }
         }
 
-        private Option<TVal> DeserializeValue<TVal>(DbCacheValue dbCacheValue, string partition, string key)
+        private Option<TVal> DeserializeValue<TVal>(Core.DbCacheValue src, string partition, string key)
         {
             try
             {
-                return Option.Some(UnsafeDeserializeValue<TVal>(dbCacheValue));
+                return Option.Some(UnsafeDeserializeValue<TVal>(src.Value, src.Compressed));
             }
             catch (Exception ex)
             {
@@ -885,6 +897,79 @@ namespace PommaLabs.KVLite
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
 
                 return Option.None<TVal>();
+            }
+        }
+
+        private Option<TVal> DeserializeValue<TVal>(DbCacheValue src, string partition, string key)
+        {
+            try
+            {
+                return Option.Some(UnsafeDeserializeValue<TVal>(src));
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+
+                // Something wrong happened during deserialization. Therefore, we remove the old
+                // element (in order to avoid future errors) and we return None.
+                RemoveInternal(partition, key);
+
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
+
+                return Option.None<TVal>();
+            }
+        }
+
+        private Option<ICacheItem<TVal>> DeserializeCacheEntry<TVal>(DbCacheEntry src)
+        {
+            try
+            {
+                var cacheItem = new CacheItem<TVal>
+                {
+                    Partition = src.Partition,
+                    Key = src.Key,
+                    Value = UnsafeDeserializeValue<TVal>(src.Value, src.Compressed),
+                    UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcCreation),
+                    UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry),
+                    Interval = TimeSpan.FromSeconds(src.Interval)
+                };
+
+                // Quickly read the parent keys, if any.
+                if (src.ParentKey0 != null)
+                {
+                    if (src.ParentKey1 != null)
+                    {
+                        if (src.ParentKey2 != null)
+                        {
+                            if (src.ParentKey3 != null)
+                            {
+                                if (src.ParentKey4 != null)
+                                {
+                                    cacheItem.ParentKeys = new[] { src.ParentKey0, src.ParentKey1, src.ParentKey2, src.ParentKey3, src.ParentKey4 };
+                                }
+                                else cacheItem.ParentKeys = new[] { src.ParentKey0, src.ParentKey1, src.ParentKey2, src.ParentKey3 };
+                            }
+                            else cacheItem.ParentKeys = new[] { src.ParentKey0, src.ParentKey1, src.ParentKey2 };
+                        }
+                        else cacheItem.ParentKeys = new[] { src.ParentKey0, src.ParentKey1 };
+                    }
+                    else cacheItem.ParentKeys = new[] { src.ParentKey0 };
+                }
+                else cacheItem.ParentKeys = CacheExtensions.NoParentKeys;
+
+                return Option.Some<ICacheItem<TVal>>(cacheItem);
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+
+                // Something wrong happened during deserialization. Therefore, we remove the old
+                // element (in order to avoid future errors) and we return None.
+                RemoveInternal(src.Partition, src.Key);
+
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
+
+                return Option.None<ICacheItem<TVal>>();
             }
         }
 
