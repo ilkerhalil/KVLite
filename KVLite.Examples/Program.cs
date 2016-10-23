@@ -94,7 +94,7 @@ namespace PommaLabs.KVLite.Examples
             var persistentCacheSettings = new PersistentCacheSettings
             {
                 CacheFile = "CustomCache.sqlite", // The SQLite DB used as the backend for the cache.
-                InsertionCountBeforeAutoClean = 10, // Number of inserts before a cache cleanup is issued.
+                ChancesOfAutoCleanup = 10, // Number of inserts before a cache cleanup is issued.
                 MaxCacheSizeInMB = 64, // Max size in megabytes for the cache.
                 StaticIntervalInDays = 10 // How many days static values will last.
             };

@@ -30,7 +30,6 @@ using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
-using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
@@ -474,7 +473,7 @@ namespace PommaLabs.KVLite.Core
                 db.Execute(ConnectionFactory.InsertOrUpdateCacheEntryCommand, dbCacheEntry);
             }
 
-            if (RandomGenerator.NextDouble() < 0.01)
+            if (RandomGenerator.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
                 // Run soft cleanup, so that cache is almost always clean. We do not call the
                 // internal version since we need the following method not to throw anything in case

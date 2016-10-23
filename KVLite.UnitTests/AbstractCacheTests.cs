@@ -1199,7 +1199,8 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_InvalidValues()
         {
-            for (var i = 0; i < Cache.Settings.InsertionCountBeforeAutoClean; ++i)
+            const int fixedValue = 64;
+            for (var i = 0; i < fixedValue; ++i)
             {
                 Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
@@ -1209,12 +1210,13 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_ValidValues()
         {
-            for (var i = 0; i < Cache.Settings.InsertionCountBeforeAutoClean - 1; ++i)
+            const int fixedValue = 64;
+            for (var i = 0; i < fixedValue - 1; ++i)
             {
                 Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
             }
-            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count());
-            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
+            Assert.AreEqual(fixedValue - 1, Cache.Count());
+            Assert.AreEqual(fixedValue - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
 
             // Advance the clock, in order to make items not valid.
             ((MockClock) Cache.Clock).AdvanceMinutes(15);
@@ -1230,7 +1232,8 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_InvalidValues_Async()
         {
-            Parallel.For(0, Cache.Settings.InsertionCountBeforeAutoClean, i =>
+            const int fixedValue = 64;
+            Parallel.For(0, fixedValue, i =>
             {
                 Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             });
@@ -1240,12 +1243,13 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_ValidValues_Async()
         {
-            Parallel.For(0, Cache.Settings.InsertionCountBeforeAutoClean - 1, i =>
+            const int fixedValue = 64;
+            Parallel.For(0, fixedValue - 1, i =>
             {
                 Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
             });
-            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count());
-            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
+            Assert.AreEqual(fixedValue - 1, Cache.Count());
+            Assert.AreEqual(fixedValue - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
 
             // Advance the clock, in order to make items not valid.
             ((MockClock) Cache.Clock).AdvanceMinutes(15);

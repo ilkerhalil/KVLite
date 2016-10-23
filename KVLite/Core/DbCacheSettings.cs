@@ -37,8 +37,8 @@ namespace PommaLabs.KVLite.Core
         where TSettings : DbCacheSettings<TSettings>
     {
         #region Fields
-        
-        private int _insertionCountBeforeCleanup;
+
+        private double _chancesOfAutoCleanup;
 
         #endregion Fields
 
@@ -52,12 +52,12 @@ namespace PommaLabs.KVLite.Core
             // Default values.
             DefaultPartition = "kvl.default";
             StaticIntervalInDays = 30;
-            InsertionCountBeforeAutoClean = 64;
+            ChancesOfAutoCleanup = 0.01;
         }
 
         internal IDbCacheConnectionFactory ConnectionFactory { get; set; }
 
-        #endregion
+        #endregion Construction
 
         #region Settings
 
@@ -68,25 +68,33 @@ namespace PommaLabs.KVLite.Core
         public override sealed string CacheUri => ConnectionFactory.ConnectionString;
 
         /// <summary>
-        ///   Number of inserts before a cache cleanup is issued.
+        ///   Chances of an automatic cleanup happening tight after an insert operation. Defaults to 1%.
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="value"/> is greater than one.
+        /// </exception>
+        /// <remarks>
+        ///   Set this property to a value less than zero if you want automatic cleanups to never
+        ///   happen. Instead, if you want automatic cleanups to happen on every insert operation,
+        ///   you should set this value to one.
+        /// </remarks>
         [DataMember]
-        public int InsertionCountBeforeAutoClean
+        public double ChancesOfAutoCleanup
         {
             get
             {
-                var result = _insertionCountBeforeCleanup;
+                var result = _chancesOfAutoCleanup;
 
                 // Postconditions
-                Debug.Assert(result > 0);
+                Debug.Assert(result <= 1.0);
                 return result;
             }
             set
             {
                 // Preconditions
-                Raise.ArgumentOutOfRangeException.If(value <= 0);
+                Raise.ArgumentOutOfRangeException.IfIsGreater(value, 1.0, nameof(value));
 
-                _insertionCountBeforeCleanup = value;
+                _chancesOfAutoCleanup = value;
                 OnPropertyChanged();
             }
         }
