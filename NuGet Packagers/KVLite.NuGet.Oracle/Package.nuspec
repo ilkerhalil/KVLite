@@ -27,7 +27,6 @@ KVLite is a partition-based key-value store built on SQL and Entity Framework. T
     <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <dependency id="Oracle.ManagedDataAccess" version="12.1.24160719" />
-      <dependency id="Oracle.ManagedDataAccess.EntityFramework" version="12.1.2400" />
       <dependency id="PommaLabs.KVLite" version="6.0.1" />
     </dependencies>
     <references></references>
