@@ -654,7 +654,7 @@ namespace PommaLabs.KVLite
                 if (dbCacheEntry.Interval > 0L)
                 {
                     // Since we are in a "get" operation, we should also update the expiry.
-                    dbCacheEntrySingle.UtcExpiry += dbCacheEntry.Interval;
+                    dbCacheEntry.UtcExpiry = (dbCacheEntrySingle.UtcExpiry += dbCacheEntry.Interval);
                     db.Execute(ConnectionFactory.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
                 }
             }
@@ -702,7 +702,7 @@ namespace PommaLabs.KVLite
                         db.Execute(ConnectionFactory.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
                         {
                             Hash = TruncateAndHash(dbCacheEntry.Partition, dbCacheEntry.Key),
-                            UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
+                            UtcExpiry = dbCacheEntry.UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
                         });
                     }
                 }
@@ -712,6 +712,7 @@ namespace PommaLabs.KVLite
 
             // Deserialize operation is expensive and it should be performed outside the connection.
             return dbCacheEntries
+                .Where(i => i.UtcExpiry >= dbCacheEntryGroup.UtcExpiry)
                 .Select(DeserializeCacheEntry<TVal>)
                 .Where(i => i.HasValue)
                 .Select(i => i.Value)

@@ -1219,10 +1219,10 @@ namespace PommaLabs.KVLite.UnitTests
             // Advance the clock, in order to make items not valid.
             ((MockClock) Cache.Clock).AdvanceMinutes(15);
 
-            // Add a new item, which should trigger the async cleanup.
+            // Add a new item, and then trigger a soft cleanup.
             Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
-            // Wait for the task to complete...
-            Thread.Sleep(1000);
+            Cache.Clear(CacheReadMode.ConsiderExpiryDate);
+
             Assert.AreEqual(1, Cache.Count());
             Assert.AreEqual(1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
         }
@@ -1250,10 +1250,10 @@ namespace PommaLabs.KVLite.UnitTests
             // Advance the clock, in order to make items not valid.
             ((MockClock) Cache.Clock).AdvanceMinutes(15);
 
-            // Add a new item, which should trigger the async cleanup.
+            // Add a new item, and then trigger a soft cleanup.
             Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
-            // Wait for the task to complete...
-            Thread.Sleep(1000);
+            Cache.Clear(CacheReadMode.ConsiderExpiryDate);
+
             Assert.AreEqual(1, Cache.Count());
             Assert.AreEqual(1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
         }
