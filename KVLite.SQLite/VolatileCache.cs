@@ -101,8 +101,7 @@ namespace PommaLabs.KVLite
             sqliteConnFactory.EnsureSchemaIsReady();
 
             _keepAliveConnection?.Dispose();
-            _keepAliveConnection = sqliteConnFactory.Create();
-            _keepAliveConnection.Open();
+            _keepAliveConnection = sqliteConnFactory.Open();
         }
 
         /// <summary>

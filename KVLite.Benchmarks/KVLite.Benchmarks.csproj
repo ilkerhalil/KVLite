@@ -95,10 +95,6 @@
       <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MySql.Data.Entity.EF6, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.Entity.6.9.9\lib\net45\MySql.Data.Entity.EF6.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -274,17 +270,9 @@
       <Project>{3768ff1c-ade5-4c9d-9c00-cacb0ce40809}</Project>
       <Name>KVLite.NET46</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Platform Specific\KVLite.Oracle.NET46\KVLite.Oracle.NET46.csproj">
-      <Project>{338092aa-d244-48b3-a2df-df04441b0c05}</Project>
-      <Name>KVLite.Oracle.NET46</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Platform Specific\KVLite.SQLite.NET46\KVLite.SQLite.NET46.csproj">
       <Project>{50c2c651-1acf-44f6-ad95-efedb75bcbd1}</Project>
       <Name>KVLite.SQLite.NET46</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Platform Specific\KVLite.SqlServer.NET46\KVLite.SqlServer.NET46.csproj">
-      <Project>{a6ee205b-b23d-47b8-9561-a82e098d8be5}</Project>
-      <Name>KVLite.SqlServer.NET46</Name>
     </ProjectReference>
     <ProjectReference Include="..\Platform Specific\KVLite.UnitTests.NET45\KVLite.UnitTests.NET45.csproj">
       <Project>{bbe6492a-198e-499e-add5-e8c904ec8182}</Project>

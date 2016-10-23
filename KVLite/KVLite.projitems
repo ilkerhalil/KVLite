@@ -23,8 +23,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Oracle\OracleCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Oracle\OracleCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Oracle\OracleCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteQueries.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCacheSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)doxyfile.txt" />
@@ -32,6 +38,8 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)MySql\Scripts\kvl_cache_items.sql" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)MySql\Scripts\kvl_cache_values.sql" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Oracle\Scripts\kvl_cache_items.sql" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)SqlServer\Scripts\kvl_cache_items.sql" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Memory\" />

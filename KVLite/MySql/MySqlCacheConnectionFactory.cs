@@ -46,7 +46,6 @@ namespace PommaLabs.KVLite.MySql
             }
         }
 
-
         public MySqlCacheConnectionFactory()
             : base(DbProviderFactory, null, null, null)
         {

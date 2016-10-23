@@ -162,5 +162,10 @@ namespace PommaLabs.KVLite.Core
         ///   An error message.
         /// </summary>
         public const string MissingMySqlDriver = @"MySQL driver seems to be missing. Please install PommaLabs.KVLite.MySql package in order to receive the proper driver.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string MissingOracleDriver = @"Oracle driver seems to be missing. Please install PommaLabs.KVLite.Oracle package in order to receive the proper driver.";
     }
 }
