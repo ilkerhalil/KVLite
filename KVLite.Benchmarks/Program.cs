@@ -155,20 +155,6 @@ namespace PommaLabs.KVLite.Benchmarks
                 FullyCleanCache();
                 RemoveEachDataTableAsync(MemoryCache.DefaultInstance, tables, i);
 
-                /*** RETRIEVE EACH DATA TABLE ***/
-
-                FullyCleanCache();
-                RetrieveEachDataTable(MySqlCache.DefaultInstance, tables, i);
-
-                FullyCleanCache();
-                RetrieveEachDataTable(PersistentCache.DefaultInstance, tables, i);
-
-                FullyCleanCache();
-                RetrieveEachDataTable(VolatileCache.DefaultInstance, tables, i);
-
-                FullyCleanCache();
-                RetrieveEachDataTable(MemoryCache.DefaultInstance, tables, i);
-
                 /*** PEEK EACH DATA TABLE ***/
 
                 FullyCleanCache();
@@ -182,6 +168,20 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 //FullyCleanCache(); < --Memory cache does not allow peeking!
                 //PeekEachDataTable(MemoryCache.DefaultInstance, tables, i);
+
+                /*** RETRIEVE EACH DATA TABLE ***/
+
+                FullyCleanCache();
+                RetrieveEachDataTable(MySqlCache.DefaultInstance, tables, i);
+
+                FullyCleanCache();
+                RetrieveEachDataTable(PersistentCache.DefaultInstance, tables, i);
+
+                FullyCleanCache();
+                RetrieveEachDataTable(VolatileCache.DefaultInstance, tables, i);
+
+                FullyCleanCache();
+                RetrieveEachDataTable(MemoryCache.DefaultInstance, tables, i);
 
                 /*** RETRIEVE EACH DATA TABLE ITEM ***/
 

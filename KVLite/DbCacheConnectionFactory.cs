@@ -82,6 +82,8 @@ namespace PommaLabs.KVLite
 
         public string CountCacheEntriesQuery { get; protected set; }
 
+        public string PeekCacheEntry { get; protected set; }
+
         #endregion Queries
 
         /// <summary>

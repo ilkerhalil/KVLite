@@ -270,10 +270,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Platform Specific\KVLite.MySql.NET46\KVLite.MySql.NET46.csproj">
-      <Project>{0ca0c2e8-19df-43d5-b7d7-1d3817e3b90a}</Project>
-      <Name>KVLite.MySql.NET46</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Platform Specific\KVLite.NET46\KVLite.NET46.csproj">
       <Project>{3768ff1c-ade5-4c9d-9c00-cacb0ce40809}</Project>
       <Name>KVLite.NET46</Name>

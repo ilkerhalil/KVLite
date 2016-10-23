@@ -21,15 +21,34 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using MySql.Data.MySqlClient;
+using PommaLabs.KVLite.Core;
+using System;
 using System.Data;
+using System.Data.Common;
+using System.Reflection;
 
 namespace PommaLabs.KVLite.MySql
 {
     public class MySqlCacheConnectionFactory : DbCacheConnectionFactory
     {
+        private static readonly DbProviderFactory DbProviderFactory;
+
+        static MySqlCacheConnectionFactory()
+        {
+            try
+            {
+                var factoryType = Type.GetType("MySql.Data.MySqlClient.MySqlClientFactory, MySql.Data");
+                DbProviderFactory = factoryType.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null) as DbProviderFactory;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorMessages.MissingMySqlDriver, ex);
+            }
+        }
+
+
         public MySqlCacheConnectionFactory()
-            : base(MySqlClientFactory.Instance, null, null, null)
+            : base(DbProviderFactory, null, null, null)
         {
             #region Commands
 

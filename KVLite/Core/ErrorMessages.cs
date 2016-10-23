@@ -157,5 +157,10 @@ namespace PommaLabs.KVLite.Core
         ///   An error message.
         /// </summary>
         public const string TooManyParentKeys = @"Too many parent keys have been specified for this item.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string MissingMySqlDriver = @"MySQL driver seems to be missing. Please install PommaLabs.KVLite.MySql package in order to receive the proper driver.";
     }
 }
