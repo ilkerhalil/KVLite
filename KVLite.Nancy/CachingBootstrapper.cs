@@ -38,7 +38,6 @@ namespace PommaLabs.KVLite.Nancy
     ///   A Nancy bootstrapper which implements KVLite-based caching, both persistent and volatile.
     ///   You can configure it using application settings.
     /// </summary>
-    [CLSCompliant(false)]
     public abstract class CachingBootstrapper : DefaultNancyBootstrapper
     {
         #region Fields

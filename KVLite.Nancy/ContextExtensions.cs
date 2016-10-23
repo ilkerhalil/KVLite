@@ -33,7 +33,6 @@ namespace PommaLabs.KVLite.Nancy
     /// <summary>
     ///   Nancy Context extensions to allow each Module to specify whether or not to enable caching.
     /// </summary>
-    [CLSCompliant(false)]
     public static class ContextExtensions
     {
         internal const string OutputCacheTimeKey = "KVLite.Nancy.ResponseCacheTime";

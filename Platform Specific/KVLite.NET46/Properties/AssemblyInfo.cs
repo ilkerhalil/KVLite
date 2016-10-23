@@ -51,7 +51,3 @@ using System.Runtime.InteropServices;
 // as shown below: [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("6.0.0")]
 [assembly: AssemblyFileVersion("6.0.1")]
-
-// Common Language Specification (CLS) compliance generally refers to the claim that CLS rules and
-// restrictions are being followed.
-[assembly: CLSCompliant(true)]

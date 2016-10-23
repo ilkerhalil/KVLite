@@ -26,6 +26,7 @@ using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using System.Diagnostics.Contracts;
+using Troschuetz.Random;
 
 namespace PommaLabs.KVLite.SqlServer
 {
@@ -46,13 +47,13 @@ namespace PommaLabs.KVLite.SqlServer
 
         #endregion Default Instance
 
-        public SqlServerCache(SqlServerCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
-            : this(settings, new SqlServerCacheConnectionFactory(), clock, serializer, compressor, memoryStreamPool)
+        public SqlServerCache(SqlServerCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IGenerator randomGenerator = null)
+            : this(settings, new SqlServerCacheConnectionFactory(), clock, serializer, compressor, memoryStreamPool, randomGenerator)
         {
         }
 
-        public SqlServerCache(SqlServerCacheSettings settings, SqlServerCacheConnectionFactory connectionFactory, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
-            : base(settings, connectionFactory, clock, serializer, compressor, memoryStreamPool)
+        public SqlServerCache(SqlServerCacheSettings settings, SqlServerCacheConnectionFactory connectionFactory, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IGenerator randomGenerator = null)
+            : base(settings, connectionFactory, clock, serializer, compressor, memoryStreamPool, randomGenerator)
         {
         }
     }

@@ -28,6 +28,8 @@ using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
+using Troschuetz.Random;
+using Troschuetz.Random.Generators;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -76,5 +78,10 @@ namespace PommaLabs.KVLite.Core
             TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
             TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
         }, MemoryStreamPool.Instance);
+
+        /// <summary>
+        ///   Default random number generator.
+        /// </summary>
+        public static IGenerator DefaultRandomGenerator { get; } = new XorShift128Generator();
     }
 }

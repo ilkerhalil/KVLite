@@ -31,6 +31,7 @@ using PommaLabs.KVLite.Core;
 using System;
 using System.Diagnostics.Contracts;
 using System.IO;
+using Troschuetz.Random;
 
 namespace PommaLabs.KVLite.SQLite
 {
@@ -65,8 +66,9 @@ namespace PommaLabs.KVLite.SQLite
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
-            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, SQLiteJournalMode.Wal), clock, serializer, compressor, memoryStreamPool)
+        /// <param name="randomGenerator">The random number generator.</param>
+        public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IGenerator randomGenerator = null)
+            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, SQLiteJournalMode.Wal), clock, serializer, compressor, memoryStreamPool, randomGenerator)
         {
             // Connection string must be customized by each cache.
             UpdateConnectionString();            

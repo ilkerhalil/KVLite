@@ -40,6 +40,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Troschuetz.Random;
 
 #if !NET40
 
@@ -69,18 +70,20 @@ namespace PommaLabs.KVLite
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public DbCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool)
+        /// <param name="randomGenerator">The random number generator.</param>
+        public DbCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool, IGenerator randomGenerator)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
             Raise.ArgumentNullException.IfIsNull(connectionFactory, nameof(connectionFactory));
 
             Settings = settings;
-            Settings.ConnectionFactory = connectionFactory;
+            ConnectionFactory = Settings.ConnectionFactory = connectionFactory;
             Clock = clock ?? Constants.DefaultClock;
             Serializer = serializer ?? Constants.DefaultSerializer;
             Compressor = compressor ?? Constants.DefaultCompressor;
             MemoryStreamPool = memoryStreamPool ?? Constants.DefaultMemoryStreamPool;
+            RandomGenerator = randomGenerator ?? Constants.DefaultRandomGenerator;
         }
 
         #endregion Construction
@@ -90,7 +93,12 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The connection factory used to retrieve connections to the cache data store.
         /// </summary>
-        public IDbCacheConnectionFactory ConnectionFactory => Settings.ConnectionFactory;
+        public IDbCacheConnectionFactory ConnectionFactory { get; }
+
+        /// <summary>
+        ///   Generates random numbers. Used to determine when to perform automatic soft cleanups.
+        /// </summary>
+        public IGenerator RandomGenerator { get; }
 
         /// <summary>
         ///   Clears the cache using the specified cache read mode.
@@ -465,6 +473,14 @@ namespace PommaLabs.KVLite
             {
                 db.Execute(ConnectionFactory.InsertOrUpdateCacheEntryCommand, dbCacheEntry);
             }
+
+            if (RandomGenerator.NextDouble() < 0.01)
+            {
+                // Run soft cleanup, so that cache is almost always clean. We do not call the
+                // internal version since we need the following method not to throw anything in case
+                // of error. A missed cleanup should not break the insertion.
+                Clear(CacheReadMode.ConsiderExpiryDate);
+            }
         }
 
         /// <summary>
@@ -685,7 +701,7 @@ namespace PommaLabs.KVLite
             using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntriesQuery, dbCacheEntryGroup, buffered: false).ToArray();
-                
+
                 foreach (var dbCacheEntry in dbCacheEntries)
                 {
                     if (dbCacheEntry.UtcExpiry < dbCacheEntryGroup.UtcExpiry)
@@ -797,8 +813,8 @@ namespace PommaLabs.KVLite
         /// <returns>All values, without updating expiry dates.</returns>
         /// <remarks>
         ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="Object"/> as type parameter; that will work whether the required
-        ///   value is a class or not.
+        ///   <see cref="Object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
         /// </remarks>
         protected sealed override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
         {
@@ -836,7 +852,7 @@ namespace PommaLabs.KVLite
             {
                 Hash = TruncateAndHash(partition, key)
             };
-            
+
             using (var db = ConnectionFactory.Open())
             {
                 db.Execute(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
@@ -858,7 +874,7 @@ namespace PommaLabs.KVLite
             {
                 Hash = TruncateAndHash(partition, key)
             };
-            
+
             using (var db = await ConnectionFactory.OpenAsync(cancellationToken))
             {
                 await db.ExecuteAsync(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
