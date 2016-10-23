@@ -80,8 +80,8 @@ namespace PommaLabs.KVLite.Core
         }, MemoryStreamPool.Instance);
 
         /// <summary>
-        ///   Default random number generator.
+        ///   Creates a random number generator.
         /// </summary>
-        public static IGenerator DefaultRandomGenerator { get; } = new XorShift128Generator();
+        public static IGenerator CreateRandomGenerator() => new XorShift128Generator();
     }
 }

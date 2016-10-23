@@ -83,7 +83,7 @@ namespace PommaLabs.KVLite
             Serializer = serializer ?? Constants.DefaultSerializer;
             Compressor = compressor ?? Constants.DefaultCompressor;
             MemoryStreamPool = memoryStreamPool ?? Constants.DefaultMemoryStreamPool;
-            RandomGenerator = randomGenerator ?? Constants.DefaultRandomGenerator;
+            RandomGenerator = randomGenerator ?? Constants.CreateRandomGenerator();
         }
 
         #endregion Construction
