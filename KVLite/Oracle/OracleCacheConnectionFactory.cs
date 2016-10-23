@@ -33,6 +33,11 @@ namespace PommaLabs.KVLite.Oracle
     {
         private static readonly DbProviderFactory DbProviderFactory;
 
+        public OracleCacheConnectionFactory()
+            : base(DbProviderFactory, null, null, null)
+        {
+        }
+
         static OracleCacheConnectionFactory()
         {
             try
@@ -46,11 +51,6 @@ namespace PommaLabs.KVLite.Oracle
             }
         }
 
-        public OracleCacheConnectionFactory()
-            : base(DbProviderFactory, null, null, null)
-        {
-        }
-
         public override long GetCacheSizeInBytes()
         {
             using (var connection = Open())
@@ -61,7 +61,7 @@ namespace PommaLabs.KVLite.Oracle
                     select round(sum(length(kvlv_value))) as result
                     from {CacheSchemaName}.{CacheValuesTableName};
                 ";
-                
+
                 using (var reader = command.ExecuteReader())
                 {
                     return (reader.Read() && !reader.IsDBNull(0)) ? reader.GetInt64(0) : 0L;

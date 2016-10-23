@@ -27,7 +27,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.Core
 {
     public abstract class DbCacheConnectionFactory : IDbCacheConnectionFactory
     {

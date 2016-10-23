@@ -25,6 +25,7 @@ using CodeProject.ObjectPool.Specialized;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
+using PommaLabs.KVLite.Core;
 using System;
 using System.Data;
 using System.Diagnostics.Contracts;

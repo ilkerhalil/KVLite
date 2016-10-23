@@ -9,15 +9,15 @@
     <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Core\DbCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\IDbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\XXHash.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DbCacheConnectionFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DbCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DbCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IDbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCache.cs" />

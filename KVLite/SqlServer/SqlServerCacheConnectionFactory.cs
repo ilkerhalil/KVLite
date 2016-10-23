@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Core;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -43,7 +44,7 @@ namespace PommaLabs.KVLite.SqlServer
                     select round(sum(length(kvlv_value))) as result
                     from {CacheSchemaName}.{CacheValuesTableName};
                 ";
-                
+
                 using (var reader = command.ExecuteReader())
                 {
                     return (reader.Read() && !reader.IsDBNull(0)) ? reader.GetInt64(0) : 0L;

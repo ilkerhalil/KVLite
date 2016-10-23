@@ -49,7 +49,7 @@ using System.Threading.Tasks;
 
 #endif
 
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.Core
 {
     /// <summary>
     ///   Base class for SQL caches, implements common functionalities.
