@@ -684,7 +684,7 @@ namespace PommaLabs.KVLite
             using (var db = ConnectionFactory.Open())
             using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntryQuery, dbCacheEntryGroup, buffered: false).ToArray();
+                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntriesQuery, dbCacheEntryGroup, buffered: false).ToArray();
                 
                 foreach (var dbCacheEntry in dbCacheEntries)
                 {
@@ -812,7 +812,7 @@ namespace PommaLabs.KVLite
             DbCacheEntry[] dbCacheEntries;
             using (var db = ConnectionFactory.Open())
             {
-                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntryQuery, dbCacheEntryGroup, buffered: false).ToArray();
+                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntriesQuery, dbCacheEntryGroup, buffered: false).ToArray();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
