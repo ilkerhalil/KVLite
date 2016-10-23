@@ -129,6 +129,12 @@ namespace PommaLabs.KVLite.SQLite
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheEntry.UtcExpiryColumn} < @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
+            UpdateCacheEntryExpiryCommand = MinifyQuery($@"
+                update {CacheItemsTableName}
+                   set {DbCacheEntry.UtcExpiryColumn} = @{nameof(DbCacheEntry.Single.UtcExpiry)}
+                 where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
+            ");
+
             #endregion Commands
 
             #region Queries
@@ -195,11 +201,9 @@ namespace PommaLabs.KVLite.SQLite
         public override long GetCacheSizeInBytes()
         {
             // No need for a transaction, since it is just a select.
-            using (var conn = Create())
+            using (var conn = Open())
             using (var cmd = conn.CreateCommand())
             {
-                conn.Open();
-
                 cmd.CommandText = "PRAGMA page_count;";
                 var pageCount = (long) cmd.ExecuteScalar();
 
@@ -221,11 +225,9 @@ namespace PommaLabs.KVLite.SQLite
         public void Vacuum()
         {
             // Vacuum cannot be run within a transaction.
-            using (var conn = Create())
+            using (var conn = Open())
             using (var cmd = conn.CreateCommand())
             {
-                conn.Open();
-
                 cmd.CommandText = SQLiteQueries.Vacuum;
                 cmd.ExecuteNonQuery();
             }
@@ -273,11 +275,9 @@ namespace PommaLabs.KVLite.SQLite
 
         internal void EnsureSchemaIsReady()
         {
-            using (var conn = Create())
+            using (var conn = Open())
             using (var cmd = conn.CreateCommand())
             {
-                conn.Open();
-
                 var isSchemaReady = true;
 
                 cmd.CommandText = SQLiteQueries.IsCacheItemsTableReady;

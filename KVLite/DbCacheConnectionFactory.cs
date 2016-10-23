@@ -74,6 +74,8 @@ namespace PommaLabs.KVLite
 
         public string DeleteCacheEntriesCommand { get; protected set; }
 
+        public string UpdateCacheEntryExpiryCommand { get; protected set; }
+
         #endregion Commands
 
         #region Queries
@@ -81,6 +83,8 @@ namespace PommaLabs.KVLite
         public string ContainsCacheEntryQuery { get; protected set; }
 
         public string CountCacheEntriesQuery { get; protected set; }
+
+        public string PeekCacheEntriesQuery { get; protected set; }
 
         public string PeekCacheEntryQuery { get; protected set; }
 
@@ -94,23 +98,13 @@ namespace PommaLabs.KVLite
         public virtual string ConnectionString { get; set; }
 
         /// <summary>
-        ///   Creates a new connection to the specified data provider.
-        /// </summary>
-        /// <returns>A connection which might be opened.</returns>
-        public virtual DbConnection Create()
-        {
-            var connection = _dbProviderFactory.CreateConnection();
-            connection.ConnectionString = ConnectionString;
-            return connection;
-        }
-
-        /// <summary>
         ///   Opens a new connection to the specified data provider.
         /// </summary>
         /// <returns>An open connection.</returns>
-        public DbConnection Open()
+        public virtual DbConnection Open()
         {
-            var connection = Create();
+            var connection = _dbProviderFactory.CreateConnection();
+            connection.ConnectionString = ConnectionString;
             connection.Open();
             return connection;
         }
@@ -120,9 +114,10 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns>An open connection.</returns>
-        public async Task<DbConnection> OpenAsync(CancellationToken cancellationToken)
+        public virtual async Task<DbConnection> OpenAsync(CancellationToken cancellationToken)
         {
-            var connection = Create();
+            var connection = _dbProviderFactory.CreateConnection();
+            connection.ConnectionString = ConnectionString;
 #if !NET40
             await connection.OpenAsync(cancellationToken);
 #else

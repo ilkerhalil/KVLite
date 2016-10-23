@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite.Oracle
 
         public override long GetCacheSizeInBytes()
         {
-            using (var connection = Create())
+            using (var connection = Open())
             using (var command = connection.CreateCommand())
             {
                 command.CommandType = CommandType.Text;
@@ -43,8 +43,7 @@ namespace PommaLabs.KVLite.Oracle
                     select round(sum(length(kvlv_value))) as result
                     from {CacheSchemaName}.{CacheValuesTableName};
                 ";
-
-                connection.Open();
+                
                 using (var reader = command.ExecuteReader())
                 {
                     return (reader.Read() && !reader.IsDBNull(0)) ? reader.GetInt64(0) : 0L;

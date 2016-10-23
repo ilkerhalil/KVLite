@@ -35,7 +35,6 @@ using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -502,7 +501,7 @@ namespace PommaLabs.KVLite
             // Compute all parameters _before_ opening the connection.
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(ref partition, ref key),
+                Hash = TruncateAndHash(partition, key),
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -528,7 +527,7 @@ namespace PommaLabs.KVLite
             // Compute all parameters _before_ opening the connection.
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(ref partition, ref key),
+                Hash = TruncateAndHash(partition, key),
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -575,42 +574,39 @@ namespace PommaLabs.KVLite
         protected sealed override Option<TVal> GetInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var hash = TruncateAndHash(ref partition, ref key);
-            var utcNow = Clock.UnixTime;
+            var dbCacheEntrySingle = new DbCacheEntry.Single
+            {
+                Hash = TruncateAndHash(partition, key),
+                IgnoreExpiryDate = true,
+                UtcExpiry = Clock.UnixTime
+            };
 
             DbCacheValue dbCacheValue;
-            using (var db = new DbCacheContext(ConnectionFactory))
+            using (var db = ConnectionFactory.Open())
             {
-                var dbCacheItem = db.CacheItems
-                    .Include(x => x.Value)
-                    .Where(x => x.Hash == hash)
-                    .Select(x => new { x.Interval, x.UtcExpiry, x.Value })
-                    .FirstOrDefault();
+                dbCacheValue = db.QuerySingleOrDefault<Core.DbCacheValue>(ConnectionFactory.PeekCacheValueQuery, dbCacheEntrySingle);
 
-                if (dbCacheItem == null)
+                if (dbCacheValue == null)
                 {
                     // Nothing to deserialize, return None.
                     return Option.None<TVal>();
                 }
 
-                if (dbCacheItem.UtcExpiry < utcNow)
+                if (dbCacheValue.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
                 {
                     // When an item expires, we should remove it from the cache.
-                    RemoveInternal(partition, key);
+                    db.Execute(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
 
                     // Nothing to deserialize, return None.
                     return Option.None<TVal>();
                 }
 
-                if (dbCacheItem.Interval > 0L)
+                if (dbCacheValue.Interval > 0L)
                 {
                     // Since we are in a "get" operation, we should also update the expiry.
-                    var attachedDbCacheItem = db.CacheItems.Attach(new DbCacheItem { Hash = hash });
-                    attachedDbCacheItem.UtcExpiry = utcNow + dbCacheItem.Interval;
-                    TrySaveChanges(db);
+                    dbCacheEntrySingle.UtcExpiry += dbCacheValue.Interval;
+                    db.Execute(ConnectionFactory.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
                 }
-
-                dbCacheValue = dbCacheItem.Value;
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -628,41 +624,43 @@ namespace PommaLabs.KVLite
         protected sealed override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var hash = TruncateAndHash(ref partition, ref key);
-            var utcNow = Clock.UnixTime;
-
-            DbCacheItem dbCacheItem;
-            using (var db = new DbCacheContext(ConnectionFactory))
+            var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                dbCacheItem = db.CacheItems
-                    .Include(x => x.Value)
-                    .FirstOrDefault(x => x.Hash == hash && x.UtcExpiry >= utcNow);
+                Hash = TruncateAndHash(partition, key),
+                IgnoreExpiryDate = true,
+                UtcExpiry = Clock.UnixTime
+            };
 
-                if (dbCacheItem == null)
+            DbCacheEntry dbCacheEntry;
+            using (var db = ConnectionFactory.Open())
+            {
+                dbCacheEntry = db.QuerySingleOrDefault<DbCacheEntry>(ConnectionFactory.PeekCacheEntryQuery, dbCacheEntrySingle);
+
+                if (dbCacheEntry == null)
                 {
                     // Nothing to deserialize, return None.
                     return Option.None<ICacheItem<TVal>>();
                 }
 
-                if (dbCacheItem.UtcExpiry < utcNow)
+                if (dbCacheEntry.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
                 {
                     // When an item expires, we should remove it from the cache.
-                    RemoveInternal(partition, key);
+                    db.Execute(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
 
                     // Nothing to deserialize, return None.
                     return Option.None<ICacheItem<TVal>>();
                 }
 
-                // Since we are in a "get" operation, we should also update the expiry.
-                if (dbCacheItem.Interval > 0L)
+                if (dbCacheEntry.Interval > 0L)
                 {
-                    dbCacheItem.UtcExpiry = utcNow + dbCacheItem.Interval;
-                    TrySaveChanges(db);
+                    // Since we are in a "get" operation, we should also update the expiry.
+                    dbCacheEntrySingle.UtcExpiry += dbCacheEntry.Interval;
+                    db.Execute(ConnectionFactory.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
                 }
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheItem<TVal>(dbCacheItem);
+            return DeserializeCacheEntry<TVal>(dbCacheEntry);
         }
 
         /// <summary>
@@ -675,41 +673,46 @@ namespace PommaLabs.KVLite
         protected sealed override IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition)
         {
             // Compute all parameters _before_ opening the connection.
-            partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength);
-            var utcNow = Clock.UnixTime;
-
-            DbCacheItem[] dbCacheItems;
-            using (var db = new DbCacheContext(ConnectionFactory))
-            using (var tr = db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                dbCacheItems = db.CacheItems
-                    .Include(x => x.Value)
-                    .Where(x => partition == null || x.Partition == partition)
-                    .Where(x => x.UtcExpiry >= utcNow)
-                    .ToArray();
+                Partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength),
+                IgnoreExpiryDate = true,
+                UtcExpiry = Clock.UnixTime
+            };
 
-                // Since we are in a "get" operation, we should also update the expiry.
-                foreach (var dbCacheItem in dbCacheItems)
+            DbCacheEntry[] dbCacheEntries;
+            using (var db = ConnectionFactory.Open())
+            using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntryQuery, dbCacheEntryGroup, buffered: false).ToArray();
+                
+                foreach (var dbCacheEntry in dbCacheEntries)
                 {
-                    if (dbCacheItem.UtcExpiry < utcNow)
+                    if (dbCacheEntry.UtcExpiry < dbCacheEntryGroup.UtcExpiry)
                     {
                         // When an item expires, we should remove it from the cache.
-                        RemoveInternal(dbCacheItem.Partition, dbCacheItem.Key);
+                        db.Execute(ConnectionFactory.DeleteCacheEntryCommand, new DbCacheEntry.Single
+                        {
+                            Hash = TruncateAndHash(dbCacheEntry.Partition, dbCacheEntry.Key)
+                        });
                     }
-                    else if (dbCacheItem.Interval > 0L)
+                    else if (dbCacheEntry.Interval > 0L)
                     {
                         // Since we are in a "get" operation, we should also update the expiry.
-                        dbCacheItem.UtcExpiry = utcNow + dbCacheItem.Interval;
+                        db.Execute(ConnectionFactory.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
+                        {
+                            Hash = TruncateAndHash(dbCacheEntry.Partition, dbCacheEntry.Key),
+                            UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
+                        });
                     }
                 }
 
-                TrySaveChanges(db);
                 tr.Commit();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return dbCacheItems
-                .Select(DeserializeCacheItem<TVal>)
+            return dbCacheEntries
+                .Select(DeserializeCacheEntry<TVal>)
                 .Where(i => i.HasValue)
                 .Select(i => i.Value)
                 .ToArray();
@@ -729,12 +732,12 @@ namespace PommaLabs.KVLite
             // Compute all parameters _before_ opening the connection.
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(ref partition, ref key),
+                Hash = TruncateAndHash(partition, key),
                 IgnoreExpiryDate = false,
                 UtcExpiry = Clock.UnixTime
             };
 
-            Core.DbCacheValue dbCacheValue;
+            DbCacheValue dbCacheValue;
             using (var db = ConnectionFactory.Open())
             {
                 dbCacheValue = db.QuerySingleOrDefault<Core.DbCacheValue>(ConnectionFactory.PeekCacheValueQuery, dbCacheEntrySingle);
@@ -764,7 +767,7 @@ namespace PommaLabs.KVLite
             // Compute all parameters _before_ opening the connection.
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(ref partition, ref key),
+                Hash = TruncateAndHash(partition, key),
                 IgnoreExpiryDate = false,
                 UtcExpiry = Clock.UnixTime
             };
@@ -799,21 +802,22 @@ namespace PommaLabs.KVLite
         protected sealed override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
         {
             // Compute all parameters _before_ opening the connection.
-            partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength);
-            var utcNow = Clock.UnixTime;
-
-            DbCacheItem[] dbCacheItems;
-            using (var db = new DbCacheContext(ConnectionFactory))
+            var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                dbCacheItems = db.CacheItems
-                    .Include(x => x.Value)
-                    .Where(x => (partition == null || x.Partition == partition) && x.UtcExpiry >= utcNow)
-                    .ToArray();
+                Partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength),
+                IgnoreExpiryDate = false,
+                UtcExpiry = Clock.UnixTime
+            };
+
+            DbCacheEntry[] dbCacheEntries;
+            using (var db = ConnectionFactory.Open())
+            {
+                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntryQuery, dbCacheEntryGroup, buffered: false).ToArray();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return dbCacheItems
-                .Select(DeserializeCacheItem<TVal>)
+            return dbCacheEntries
+                .Select(DeserializeCacheEntry<TVal>)
                 .Where(i => i.HasValue)
                 .Select(i => i.Value)
                 .ToArray();
@@ -829,7 +833,7 @@ namespace PommaLabs.KVLite
             // Compute all parameters _before_ opening the connection.
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(ref partition, ref key)
+                Hash = TruncateAndHash(partition, key)
             };
             
             using (var db = ConnectionFactory.Open())
@@ -851,7 +855,7 @@ namespace PommaLabs.KVLite
             // Compute all parameters _before_ opening the connection.
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(ref partition, ref key)
+                Hash = TruncateAndHash(partition, key)
             };
             
             using (var db = await ConnectionFactory.OpenAsync(cancellationToken))
@@ -871,40 +875,11 @@ namespace PommaLabs.KVLite
             }
         }
 
-        private TVal UnsafeDeserializeValue<TVal>(DbCacheValue dbCacheValue)
-        {
-            using (var memoryStream = new MemoryStream(dbCacheValue.Value))
-            using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
-            {
-                return Serializer.DeserializeFromStream<TVal>(decompressionStream);
-            }
-        }
-
-        private Option<TVal> DeserializeValue<TVal>(Core.DbCacheValue src, string partition, string key)
-        {
-            try
-            {
-                return Option.Some(UnsafeDeserializeValue<TVal>(src.Value, src.Compressed));
-            }
-            catch (Exception ex)
-            {
-                LastError = ex;
-
-                // Something wrong happened during deserialization. Therefore, we remove the old
-                // element (in order to avoid future errors) and we return None.
-                RemoveInternal(partition, key);
-
-                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
-
-                return Option.None<TVal>();
-            }
-        }
-
         private Option<TVal> DeserializeValue<TVal>(DbCacheValue src, string partition, string key)
         {
             try
             {
-                return Option.Some(UnsafeDeserializeValue<TVal>(src));
+                return Option.Some(UnsafeDeserializeValue<TVal>(src.Value, src.Compressed));
             }
             catch (Exception ex)
             {
@@ -973,57 +948,14 @@ namespace PommaLabs.KVLite
             }
         }
 
-        private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(DbCacheItem src)
+        private long TruncateAndHash(string partition, string key)
         {
-            try
-            {
-                var cacheItem = new CacheItem<TVal>
-                {
-                    Partition = src.Partition,
-                    Key = src.Key,
-                    Value = UnsafeDeserializeValue<TVal>(src.Value),
-                    UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcCreation),
-                    UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry),
-                    Interval = TimeSpan.FromSeconds(src.Interval)
-                };
+            var cf = ConnectionFactory;
 
-                // Quickly read the parent keys, if any.
-                if (src.ParentKey0 != null)
-                {
-                    if (src.ParentKey1 != null)
-                    {
-                        if (src.ParentKey2 != null)
-                        {
-                            if (src.ParentKey3 != null)
-                            {
-                                if (src.ParentKey4 != null)
-                                {
-                                    cacheItem.ParentKeys = new[] { src.ParentKey0, src.ParentKey1, src.ParentKey2, src.ParentKey3, src.ParentKey4 };
-                                }
-                                else cacheItem.ParentKeys = new[] { src.ParentKey0, src.ParentKey1, src.ParentKey2, src.ParentKey3 };
-                            }
-                            else cacheItem.ParentKeys = new[] { src.ParentKey0, src.ParentKey1, src.ParentKey2 };
-                        }
-                        else cacheItem.ParentKeys = new[] { src.ParentKey0, src.ParentKey1 };
-                    }
-                    else cacheItem.ParentKeys = new[] { src.ParentKey0 };
-                }
-                else cacheItem.ParentKeys = CacheExtensions.NoParentKeys;
+            var ph = (long) XXHash.XXH32(Encoding.Default.GetBytes(partition.Truncate(cf.MaxPartitionNameLength)));
+            var kh = (long) XXHash.XXH32(Encoding.Default.GetBytes(key.Truncate(cf.MaxKeyNameLength)));
 
-                return Option.Some<ICacheItem<TVal>>(cacheItem);
-            }
-            catch (Exception ex)
-            {
-                LastError = ex;
-
-                // Something wrong happened during deserialization. Therefore, we remove the old
-                // element (in order to avoid future errors) and we return None.
-                RemoveInternal(src.Partition, src.Key);
-
-                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
-
-                return Option.None<ICacheItem<TVal>>();
-            }
+            return (ph << 32) + kh;
         }
 
         private long TruncateAndHash(ref string partition, ref string key)
@@ -1037,18 +969,6 @@ namespace PommaLabs.KVLite
             var kh = (long) XXHash.XXH32(Encoding.Default.GetBytes(key));
 
             return (ph << 32) + kh;
-        }
-
-        private void TrySaveChanges(DbCacheContext db)
-        {
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                LastError = ex;
-            }
         }
 
         #endregion Private Methods

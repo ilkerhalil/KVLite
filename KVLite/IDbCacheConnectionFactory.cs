@@ -50,6 +50,8 @@ namespace PommaLabs.KVLite
 
         string DeleteCacheEntriesCommand { get; }
 
+        string UpdateCacheEntryExpiryCommand { get; }
+
         #endregion Commands
 
         #region Queries
@@ -57,6 +59,8 @@ namespace PommaLabs.KVLite
         string ContainsCacheEntryQuery { get; }
 
         string CountCacheEntriesQuery { get; }
+
+        string PeekCacheEntriesQuery { get; }
 
         string PeekCacheEntryQuery { get; }
 
@@ -68,12 +72,6 @@ namespace PommaLabs.KVLite
         ///   The connection string used to connect to the cache data provider.
         /// </summary>
         string ConnectionString { get; set; }
-
-        /// <summary>
-        ///   Creates a new connection to the specified data provider.
-        /// </summary>
-        /// <returns>A connection which might be opened.</returns>
-        DbConnection Create();
 
         /// <summary>
         ///   Opens a new connection to the specified data provider.
