@@ -68,13 +68,13 @@ namespace PommaLabs.KVLite.Core
         public override sealed string CacheUri => ConnectionFactory.ConnectionString;
 
         /// <summary>
-        ///   Chances of an automatic cleanup happening tight after an insert operation. Defaults to 1%.
+        ///   Chances of an automatic cleanup happening right after an insert operation. Defaults to 1%.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///   <paramref name="value"/> is greater than one.
+        ///   <paramref name="value"/> is less than zero or greater than one.
         /// </exception>
         /// <remarks>
-        ///   Set this property to a value less than zero if you want automatic cleanups to never
+        ///   Set this property to zero if you want automatic cleanups to never
         ///   happen. Instead, if you want automatic cleanups to happen on every insert operation,
         ///   you should set this value to one.
         /// </remarks>
@@ -86,12 +86,13 @@ namespace PommaLabs.KVLite.Core
                 var result = _chancesOfAutoCleanup;
 
                 // Postconditions
-                Debug.Assert(result <= 1.0);
+                Debug.Assert(result >= 0.0 && result <= 1.0);
                 return result;
             }
             set
             {
                 // Preconditions
+                Raise.ArgumentOutOfRangeException.IfIsLess(value, 0.0, nameof(value));
                 Raise.ArgumentOutOfRangeException.IfIsGreater(value, 1.0, nameof(value));
 
                 _chancesOfAutoCleanup = value;
