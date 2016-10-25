@@ -61,7 +61,8 @@ namespace PommaLabs.KVLite.MySql
                     {DbCacheEntry.ParentHash1Column}, {DbCacheEntry.ParentKey1Column},
                     {DbCacheEntry.ParentHash2Column}, {DbCacheEntry.ParentKey2Column},
                     {DbCacheEntry.ParentHash3Column}, {DbCacheEntry.ParentKey3Column},
-                    {DbCacheEntry.ParentHash4Column}, {DbCacheEntry.ParentKey4Column}
+                    {DbCacheEntry.ParentHash4Column}, {DbCacheEntry.ParentKey4Column},
+                    {DbCacheEntry.ValueColumn}, {DbCacheEntry.CompressedColumn}
                 )
                 values (
                     @{nameof(DbCacheEntry.Hash)},
@@ -72,7 +73,8 @@ namespace PommaLabs.KVLite.MySql
                     @{nameof(DbCacheEntry.ParentHash1)}, @{nameof(DbCacheEntry.ParentKey1)},
                     @{nameof(DbCacheEntry.ParentHash2)}, @{nameof(DbCacheEntry.ParentKey2)},
                     @{nameof(DbCacheEntry.ParentHash3)}, @{nameof(DbCacheEntry.ParentKey3)},
-                    @{nameof(DbCacheEntry.ParentHash4)}, @{nameof(DbCacheEntry.ParentKey4)}
+                    @{nameof(DbCacheEntry.ParentHash4)}, @{nameof(DbCacheEntry.ParentKey4)},
+                    @{nameof(DbCacheEntry.Value)}, @{nameof(DbCacheEntry.Compressed)}
                 )
                 on duplicate key update
                     {DbCacheEntry.UtcCreationColumn} = @{nameof(DbCacheEntry.UtcCreation)},
@@ -87,19 +89,7 @@ namespace PommaLabs.KVLite.MySql
                     {DbCacheEntry.ParentHash3Column} = @{nameof(DbCacheEntry.ParentHash3)},
                     {DbCacheEntry.ParentKey3Column} = @{nameof(DbCacheEntry.ParentKey3)},
                     {DbCacheEntry.ParentHash4Column} = @{nameof(DbCacheEntry.ParentHash4)},
-                    {DbCacheEntry.ParentKey4Column} = @{nameof(DbCacheEntry.ParentKey4)};
-
-                insert into {CacheSchemaName}.{CacheValuesTableName} (
-                    {DbCacheEntry.HashColumn},
-                    {DbCacheEntry.ValueColumn},
-                    {DbCacheEntry.CompressedColumn}
-                )
-                values (
-                    @{nameof(DbCacheEntry.Hash)},
-                    @{nameof(DbCacheEntry.Value)},
-                    @{nameof(DbCacheEntry.Compressed)}
-                )
-                on duplicate key update
+                    {DbCacheEntry.ParentKey4Column} = @{nameof(DbCacheEntry.ParentKey4)},
                     {DbCacheEntry.ValueColumn} = @{nameof(DbCacheEntry.Value)},
                     {DbCacheEntry.CompressedColumn} = @{nameof(DbCacheEntry.Compressed)};
             ");
@@ -155,9 +145,9 @@ namespace PommaLabs.KVLite.MySql
                        item.{DbCacheEntry.ParentKey3Column} `{nameof(DbCacheEntry.ParentKey3)}`,
                        item.{DbCacheEntry.ParentHash4Column} `{nameof(DbCacheEntry.ParentHash4)}`,
                        item.{DbCacheEntry.ParentKey4Column} `{nameof(DbCacheEntry.ParentKey4)}`,
-                       value.{DbCacheEntry.ValueColumn} `{nameof(DbCacheEntry.Value)}`,
-                       value.{DbCacheEntry.CompressedColumn} `{nameof(DbCacheEntry.Compressed)}`
-                  from {CacheSchemaName}.{CacheItemsTableName} item natural join {CacheSchemaName}.{CacheValuesTableName} value
+                       item.{DbCacheEntry.ValueColumn} `{nameof(DbCacheEntry.Value)}`,
+                       item.{DbCacheEntry.CompressedColumn} `{nameof(DbCacheEntry.Compressed)}`
+                  from {CacheSchemaName}.{CacheItemsTableName} item
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or item.{DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or item.{DbCacheEntry.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
@@ -178,9 +168,9 @@ namespace PommaLabs.KVLite.MySql
                        item.{DbCacheEntry.ParentKey3Column} `{nameof(DbCacheEntry.ParentKey3)}`,
                        item.{DbCacheEntry.ParentHash4Column} `{nameof(DbCacheEntry.ParentHash4)}`,
                        item.{DbCacheEntry.ParentKey4Column} `{nameof(DbCacheEntry.ParentKey4)}`,
-                       value.{DbCacheEntry.ValueColumn} `{nameof(DbCacheEntry.Value)}`,
-                       value.{DbCacheEntry.CompressedColumn} `{nameof(DbCacheEntry.Compressed)}`
-                  from {CacheSchemaName}.{CacheItemsTableName} item natural join {CacheSchemaName}.{CacheValuesTableName} value
+                       item.{DbCacheEntry.ValueColumn} `{nameof(DbCacheEntry.Value)}`,
+                       item.{DbCacheEntry.CompressedColumn} `{nameof(DbCacheEntry.Compressed)}`
+                  from {CacheSchemaName}.{CacheItemsTableName} item
                  where item.{DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
                    and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} or item.{DbCacheEntry.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
             ");
@@ -203,8 +193,8 @@ namespace PommaLabs.KVLite.MySql
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = $@"
-                    select round(sum(length(kvlv_value))) as result
-                    from {CacheSchemaName}.{CacheValuesTableName};
+                    select round(sum(length({DbCacheEntry.ValueColumn}))) as result
+                    from {CacheSchemaName}.{CacheItemsTableName};
                 ";
                 
                 using (var reader = command.ExecuteReader())

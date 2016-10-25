@@ -92,11 +92,11 @@ namespace PommaLabs.KVLite.Core
 
         public string ParentKey4 { get; set; }
 
-        public const string ValueColumn = "kvlv_value";
+        public const string ValueColumn = "kvli_value";
 
         public byte[] Value { get; set; }
 
-        public const string CompressedColumn = "kvlv_compressed";
+        public const string CompressedColumn = "kvli_compressed";
 
         public bool Compressed { get; set; }
 

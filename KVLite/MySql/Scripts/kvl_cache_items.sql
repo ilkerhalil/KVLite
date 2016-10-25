@@ -1,6 +1,7 @@
 ﻿DROP TABLE IF EXISTS `kvl_cache_items`;
 
 CREATE TABLE IF NOT EXISTS `kvl_cache_items` (
+	`kvli_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`kvli_hash` BIGINT(20) NOT NULL,
 	`kvli_partition` VARCHAR(255) NOT NULL,
 	`kvli_key` VARCHAR(255) NOT NULL,
@@ -17,7 +18,10 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_items` (
 	`kvli_parent_key3` VARCHAR(255) NULL DEFAULT NULL,
 	`kvli_parent_hash4` BIGINT(20) NULL DEFAULT NULL,
 	`kvli_parent_key4` VARCHAR(255) NULL DEFAULT NULL,
-	PRIMARY KEY (`kvli_hash`),
+    `kvli_value` MEDIUMBLOB NOT NULL,
+	`kvli_compressed` TINYINT(1) NOT NULL,
+	PRIMARY KEY (`kvli_id`),
+	UNIQUE `uk_kvli` (`kvli_hash`),
 	INDEX `ix_kvli_exp_part` (`kvli_expiry`, `kvli_partition`),
 	INDEX `fk_kvli_parent0` (`kvli_parent_hash0`),
 	INDEX `fk_kvli_parent1` (`kvli_parent_hash1`),
@@ -32,4 +36,5 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_items` (
 )
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB
+ROW_FORMAT=DYNAMIC
 ;
