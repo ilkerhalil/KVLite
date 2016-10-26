@@ -699,7 +699,7 @@ namespace PommaLabs.KVLite.Core
             using (var db = ConnectionFactory.Open())
             using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntriesQuery, dbCacheEntryGroup, buffered: false).ToArray();
+                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntriesQuery, dbCacheEntryGroup, tr, false).ToArray();
 
                 foreach (var dbCacheEntry in dbCacheEntries)
                 {
@@ -709,7 +709,7 @@ namespace PommaLabs.KVLite.Core
                         db.Execute(ConnectionFactory.DeleteCacheEntryCommand, new DbCacheEntry.Single
                         {
                             Hash = TruncateAndHash(dbCacheEntry.Partition, dbCacheEntry.Key)
-                        });
+                        }, tr);
                     }
                     else if (dbCacheEntry.Interval > 0L)
                     {
@@ -718,7 +718,7 @@ namespace PommaLabs.KVLite.Core
                         {
                             Hash = TruncateAndHash(dbCacheEntry.Partition, dbCacheEntry.Key),
                             UtcExpiry = dbCacheEntry.UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
-                        });
+                        }, tr);
                     }
                 }
 
