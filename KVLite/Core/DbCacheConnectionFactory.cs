@@ -68,25 +68,25 @@ namespace PommaLabs.KVLite.Core
 
         #region Commands
 
-        public string InsertOrUpdateCacheEntryCommand { get; protected set; }
+        public string InsertOrUpdateCacheItemCommand { get; protected set; }
 
-        public string DeleteCacheEntryCommand { get; protected set; }
+        public string DeleteCacheItemCommand { get; protected set; }
 
-        public string DeleteCacheEntriesCommand { get; protected set; }
+        public string DeleteCacheItemsCommand { get; protected set; }
 
-        public string UpdateCacheEntryExpiryCommand { get; protected set; }
+        public string UpdateCacheItemExpiryCommand { get; protected set; }
 
         #endregion Commands
 
         #region Queries
 
-        public string ContainsCacheEntryQuery { get; protected set; }
+        public string ContainsCacheItemQuery { get; protected set; }
 
-        public string CountCacheEntriesQuery { get; protected set; }
+        public string CountCacheItemsQuery { get; protected set; }
 
-        public string PeekCacheEntriesQuery { get; protected set; }
+        public string PeekCacheItemsQuery { get; protected set; }
 
-        public string PeekCacheEntryQuery { get; protected set; }
+        public string PeekCacheItemQuery { get; protected set; }
 
         public string PeekCacheValueQuery { get; protected set; }
 

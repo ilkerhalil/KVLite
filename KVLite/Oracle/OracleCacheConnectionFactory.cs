@@ -38,7 +38,7 @@ namespace PommaLabs.KVLite.Oracle
         {
             #region Commands
 
-            InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
+            InsertOrUpdateCacheItemCommand = MinifyQuery($@"
                 declare
                 begin
                     insert into {CacheSchemaName}.{CacheItemsTableName} (
@@ -94,18 +94,18 @@ namespace PommaLabs.KVLite.Oracle
                 end
             ");
 
-            DeleteCacheEntryCommand = MinifyQuery($@"
+            DeleteCacheItemCommand = MinifyQuery($@"
                 delete from {CacheSchemaName}.{CacheItemsTableName}
                  where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
             ");
 
-            DeleteCacheEntriesCommand = MinifyQuery($@"
+            DeleteCacheItemsCommand = MinifyQuery($@"
                 delete from {CacheSchemaName}.{CacheItemsTableName}
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheEntry.UtcExpiryColumn} < @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
-            UpdateCacheEntryExpiryCommand = MinifyQuery($@"
+            UpdateCacheItemExpiryCommand = MinifyQuery($@"
                 update {CacheSchemaName}.{CacheItemsTableName}
                    set {DbCacheEntry.UtcExpiryColumn} = @{nameof(DbCacheEntry.Single.UtcExpiry)}
                  where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
@@ -115,21 +115,21 @@ namespace PommaLabs.KVLite.Oracle
 
             #region Queries
 
-            ContainsCacheEntryQuery = MinifyQuery($@"
+            ContainsCacheItemQuery = MinifyQuery($@"
                 select count(*)
                   from {CacheSchemaName}.{CacheItemsTableName}
                  where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
                    and {DbCacheEntry.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)}
             ");
 
-            CountCacheEntriesQuery = MinifyQuery($@"
+            CountCacheItemsQuery = MinifyQuery($@"
                 select count(*)
                   from {CacheSchemaName}.{CacheItemsTableName}
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheEntry.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
-            PeekCacheEntriesQuery = MinifyQuery($@"
+            PeekCacheItemsQuery = MinifyQuery($@"
                 select item.{DbCacheEntry.PartitionColumn} {nameof(DbCacheEntry.Partition)},
                        item.{DbCacheEntry.KeyColumn} {nameof(DbCacheEntry.Key)},
                        item.{DbCacheEntry.UtcCreationColumn} {nameof(DbCacheEntry.UtcCreation)},
@@ -152,7 +152,7 @@ namespace PommaLabs.KVLite.Oracle
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or item.{DbCacheEntry.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
-            PeekCacheEntryQuery = MinifyQuery($@"
+            PeekCacheItemQuery = MinifyQuery($@"
                 select item.{DbCacheEntry.PartitionColumn} {nameof(DbCacheEntry.Partition)},
                        item.{DbCacheEntry.KeyColumn} {nameof(DbCacheEntry.Key)},
                        item.{DbCacheEntry.UtcCreationColumn} {nameof(DbCacheEntry.UtcCreation)},
@@ -180,7 +180,7 @@ namespace PommaLabs.KVLite.Oracle
                        entry.{nameof(DbCacheEntry.Interval)} {nameof(DbCacheValue.Interval)},
                        entry.{nameof(DbCacheEntry.Value)} {nameof(DbCacheValue.Value)},
                        entry.{nameof(DbCacheEntry.Compressed)} {nameof(DbCacheValue.Compressed)}
-                  from ({PeekCacheEntryQuery}) entry
+                  from ({PeekCacheItemQuery}) entry
             ");
 
             #endregion Queries

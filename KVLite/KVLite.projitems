@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)MySql\Scripts\kvl_cache_items.sql" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)MySql\Scripts\kvl_cache_values.sql" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Oracle\Scripts\kvl_cache_items.sql" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)SqlServer\Scripts\kvl_cache_items.sql" />
   </ItemGroup>
