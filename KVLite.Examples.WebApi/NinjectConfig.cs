@@ -27,8 +27,9 @@ using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
-using PommaLabs.KVLite;
 using PommaLabs.KVLite.SQLite;
+using Troschuetz.Random;
+using Troschuetz.Random.Generators;
 
 namespace RestService.WebApi
 {
@@ -59,6 +60,10 @@ namespace RestService.WebApi
             Bind<IMemoryStreamPool>()
                 .ToConstant(MemoryStreamPool.Instance)
                 .InSingletonScope();
+
+            Bind<IGenerator>()
+                .To<StandardGenerator>()
+                .InTransientScope();
         }
     }
 }
