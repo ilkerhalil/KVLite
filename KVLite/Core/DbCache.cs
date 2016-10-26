@@ -469,8 +469,10 @@ namespace PommaLabs.KVLite.Core
             }
 
             using (var db = ConnectionFactory.Open())
+            using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                db.Execute(ConnectionFactory.InsertOrUpdateCacheItemCommand, dbCacheEntry);
+                db.Execute(ConnectionFactory.InsertOrUpdateCacheItemCommand, dbCacheEntry, tr);
+                tr.Commit();
             }
 
             if (RandomGenerator.NextDouble() < Settings.ChancesOfAutoCleanup)
