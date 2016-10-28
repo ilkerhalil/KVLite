@@ -39,6 +39,7 @@ namespace PommaLabs.KVLite.Core
         #region Fields
 
         private double _chancesOfAutoCleanup;
+        private long _minValueLengthForCompression;
 
         #endregion Fields
 
@@ -53,6 +54,7 @@ namespace PommaLabs.KVLite.Core
             DefaultPartition = "kvl.default";
             StaticIntervalInDays = 30;
             ChancesOfAutoCleanup = 0.01;
+            MinValueLengthForCompression = 4096;
         }
 
         internal IDbCacheConnectionFactory ConnectionFactory { get; set; }
@@ -65,7 +67,7 @@ namespace PommaLabs.KVLite.Core
         ///   Gets the cache URI; used for logging.
         /// </summary>
         [IgnoreDataMember]
-        public override sealed string CacheUri => ConnectionFactory.ConnectionString;
+        public override sealed string CacheUri => ConnectionFactory?.ConnectionString ?? "Data Source=UNDEFINED";
 
         /// <summary>
         ///   Chances of an automatic cleanup happening right after an insert operation. Defaults to 1%.
@@ -74,9 +76,9 @@ namespace PommaLabs.KVLite.Core
         ///   <paramref name="value"/> is less than zero or greater than one.
         /// </exception>
         /// <remarks>
-        ///   Set this property to zero if you want automatic cleanups to never
-        ///   happen. Instead, if you want automatic cleanups to happen on every insert operation,
-        ///   you should set this value to one.
+        ///   Set this property to zero if you want automatic cleanups to never happen. Instead, if
+        ///   you want automatic cleanups to happen on every insert operation, you should set this
+        ///   value to one.
         /// </remarks>
         [DataMember]
         public double ChancesOfAutoCleanup
@@ -96,6 +98,34 @@ namespace PommaLabs.KVLite.Core
                 Raise.ArgumentOutOfRangeException.IfIsGreater(value, 1.0, nameof(value));
 
                 _chancesOfAutoCleanup = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        ///   When a serialized value is longer than specified quantity, then the cache will compress
+        ///   it. If a serialized value length is less than or equal to the specified quantity, then
+        ///   the cache will not compress it. Defaults to 4096 bytes.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="value"/> is less than zero.
+        /// </exception>
+        public long MinValueLengthForCompression
+        {
+            get
+            {
+                var result = _minValueLengthForCompression;
+
+                // Postconditions
+                Debug.Assert(result >= 0L);
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                Raise.ArgumentOutOfRangeException.IfIsLess(value, 0L, nameof(value));
+
+                _minValueLengthForCompression = value;
                 OnPropertyChanged();
             }
         }

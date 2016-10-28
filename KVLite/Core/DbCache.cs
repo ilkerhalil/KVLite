@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Specialized;
 using Dapper;
 using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Clock;
@@ -68,9 +67,8 @@ namespace PommaLabs.KVLite.Core
         /// <param name="clock">The clock.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
-        /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="randomGenerator">The random number generator.</param>
-        public DbCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool, IGenerator randomGenerator)
+        public DbCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ISerializer serializer, ICompressor compressor, IGenerator randomGenerator)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -81,7 +79,6 @@ namespace PommaLabs.KVLite.Core
             Clock = clock ?? Constants.DefaultClock;
             Serializer = serializer ?? Constants.DefaultSerializer;
             Compressor = compressor ?? Constants.DefaultCompressor;
-            MemoryStreamPool = memoryStreamPool ?? Constants.DefaultMemoryStreamPool;
             RandomGenerator = randomGenerator ?? Constants.CreateRandomGenerator();
         }
 
@@ -343,15 +340,6 @@ namespace PommaLabs.KVLite.Core
         public sealed override int MaxParentKeyCountPerItem { get; } = 5;
 
         /// <summary>
-        ///   The pool used to retrieve <see cref="MemoryStream"/> instances.
-        /// </summary>
-        /// <remarks>
-        ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance"/>.
-        /// </remarks>
-        public sealed override IMemoryStreamPool MemoryStreamPool { get; }
-
-        /// <summary>
         ///   Gets the serializer used by the cache.
         /// </summary>
         /// <remarks>
@@ -423,15 +411,26 @@ namespace PommaLabs.KVLite.Core
 
             // Serializing may be pretty expensive, therefore we keep it out of the connection.
             byte[] serializedValue;
+            bool compressed;
             try
             {
-                using (var memoryStream = MemoryStreamPool.GetObject().MemoryStream)
+                using (var serializedStream = Serializer.SerializeToStream(value))
                 {
-                    using (var compressionStream = Compressor.CreateCompressionStream(memoryStream))
+                    if (serializedStream.Length > Settings.MinValueLengthForCompression)
                     {
-                        Serializer.SerializeToStream(value, compressionStream);
+                        // Stream is too long, we should compress it.
+                        using (var compressedStream = Compressor.Compress(serializedStream))
+                        {
+                            serializedValue = compressedStream.ToArray();
+                            compressed = true;
+                        }
                     }
-                    serializedValue = memoryStream.ToArray();
+                    else
+                    {
+                        // Stream is shorter than specified threshold, we can store it as it is.
+                        serializedValue = serializedStream.ToArray();
+                        compressed = false;
+                    }
                 }
             }
             catch (Exception ex)
@@ -444,13 +443,13 @@ namespace PommaLabs.KVLite.Core
             var dbCacheEntry = new DbCacheEntry
             {
                 Hash = hash,
+                UtcExpiry = utcExpiry.ToUnixTime(),
+                Interval = (long) interval.TotalSeconds,
+                Value = serializedValue,
+                Compressed = compressed,
                 Partition = partition,
                 Key = key,
                 UtcCreation = Clock.UnixTime,
-                UtcExpiry = utcExpiry.ToUnixTime(),
-                Interval = (long) interval.TotalSeconds,
-                Compressed = true,
-                Value = serializedValue
             };
 
             // Also add the parent keys, if any.
@@ -910,9 +909,18 @@ namespace PommaLabs.KVLite.Core
         private TVal UnsafeDeserializeValue<TVal>(byte[] value, bool compressed)
         {
             using (var memoryStream = new MemoryStream(value))
-            using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
             {
-                return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+                if (!compressed)
+                {
+                    // Handle uncompressed value.
+                    return Serializer.DeserializeFromStream<TVal>(memoryStream);
+                }
+
+                // Handle compressed value.
+                using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
+                {
+                    return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+                }
             }
         }
 
@@ -1012,6 +1020,6 @@ namespace PommaLabs.KVLite.Core
             return (ph << 32) + kh;
         }
 
-#endregion Private Methods
+        #endregion Private Methods
     }
 }
