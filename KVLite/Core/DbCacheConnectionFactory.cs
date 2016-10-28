@@ -29,42 +29,65 @@ using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.Core
 {
+    /// <summary>
+    ///   Base class for cache connection factories.
+    /// </summary>
     public abstract class DbCacheConnectionFactory : IDbCacheConnectionFactory
-    {        
+    {
         private readonly DbProviderFactory _dbProviderFactory;
 
-        protected DbCacheConnectionFactory(DbProviderFactory dbProviderFactory, string cacheSchemaName, string cacheItemsTableName, string cacheValuesTableName)
+        /// <summary>
+        ///   Initializes the cache connection factory.
+        /// </summary>
+        /// <param name="dbProviderFactory">Provider used to open connection.</param>
+        /// <param name="cacheSchemaName">Optional cache schema name.</param>
+        /// <param name="cacheEntriesTableName">Optional cache entries table name.</param>
+        protected DbCacheConnectionFactory(DbProviderFactory dbProviderFactory, string cacheSchemaName, string cacheEntriesTableName)
         {
+            var sqlNameRegex = new Regex("[a-z0-9_]+", RegexOptions.IgnoreCase);
+
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(dbProviderFactory, nameof(dbProviderFactory));
-            Raise.ArgumentException.If(cacheSchemaName != null && !SqlNameRegex.IsMatch(cacheSchemaName));
-            Raise.ArgumentException.If(cacheItemsTableName != null && !SqlNameRegex.IsMatch(cacheItemsTableName));
-            Raise.ArgumentException.If(cacheValuesTableName != null && !SqlNameRegex.IsMatch(cacheValuesTableName));
+            Raise.ArgumentException.If(cacheSchemaName != null && !sqlNameRegex.IsMatch(cacheSchemaName));
+            Raise.ArgumentException.If(cacheEntriesTableName != null && !sqlNameRegex.IsMatch(cacheEntriesTableName));
 
             _dbProviderFactory = dbProviderFactory;
 
             CacheSchemaName = cacheSchemaName ?? DefaultCacheSchemaName;
-            CacheItemsTableName = cacheItemsTableName ?? DefaultCacheItemsTableName;
-            CacheValuesTableName = cacheValuesTableName ?? DefaultCacheValuesTableName;
+            CacheEntriesTableName = cacheEntriesTableName ?? DefaultCacheEntriesTableName;
         }
 
         #region Configuration
 
+        /// <summary>
+        ///   Default cache schema name.
+        /// </summary>
         public static string DefaultCacheSchemaName { get; } = "kvlite";
 
-        public static string DefaultCacheItemsTableName { get; } = "kvl_cache_items";
+        /// <summary>
+        ///   Default cache entries table name.
+        /// </summary>
+        public static string DefaultCacheEntriesTableName { get; } = "kvl_cache_entries";
 
-        public static string DefaultCacheValuesTableName { get; } = "kvl_cache_values";
-
+        /// <summary>
+        ///   The schema which holds cache entries table.
+        /// </summary>
         public string CacheSchemaName { get; set; }
 
-        public string CacheItemsTableName { get; set; }
+        /// <summary>
+        ///   The name of the table which holds cache entries.
+        /// </summary>
+        public string CacheEntriesTableName { get; set; }
 
-        public string CacheValuesTableName { get; set; }
-
-        public int MaxKeyNameLength { get; } = 255;
-
+        /// <summary>
+        ///   The maximum length a partition can have. Longer partitions will be truncated.
+        /// </summary>
         public int MaxPartitionNameLength { get; } = 255;
+
+        /// <summary>
+        ///   The maximum length a key can have. Longer keys will be truncated.
+        /// </summary>
+        public int MaxKeyNameLength { get; } = 255;
 
         /// <summary>
         ///   The connection string used to connect to the cache data provider.
@@ -75,26 +98,53 @@ namespace PommaLabs.KVLite.Core
 
         #region Commands
 
-        public string InsertOrUpdateCacheItemCommand { get; protected set; }
+        /// <summary>
+        ///   Inserts or updates a cache entry.
+        /// </summary>
+        public string InsertOrUpdateCacheEntryCommand { get; protected set; }
 
-        public string DeleteCacheItemCommand { get; protected set; }
+        /// <summary>
+        ///   Deletes a cache entry using specified hash.
+        /// </summary>
+        public string DeleteCacheEntryCommand { get; protected set; }
 
-        public string DeleteCacheItemsCommand { get; protected set; }
+        /// <summary>
+        ///   Deletes a set of cache entries.
+        /// </summary>
+        public string DeleteCacheEntriesCommand { get; protected set; }
 
-        public string UpdateCacheItemExpiryCommand { get; protected set; }
+        /// <summary>
+        ///   Updates the expiry time of one cache entry.
+        /// </summary>
+        public string UpdateCacheEntryExpiryCommand { get; protected set; }
 
         #endregion Commands
 
         #region Queries
 
-        public string ContainsCacheItemQuery { get; protected set; }
+        /// <summary>
+        ///   Checks whether a valid entry with given hash exists.
+        /// </summary>
+        public string ContainsCacheEntryQuery { get; protected set; }
 
-        public string CountCacheItemsQuery { get; protected set; }
+        /// <summary>
+        ///   Counts valid or invalid cache entries.
+        /// </summary>
+        public string CountCacheEntriesQuery { get; protected set; }
 
-        public string PeekCacheItemsQuery { get; protected set; }
+        /// <summary>
+        ///   Returns all valid cache entries without updating their expiry time.
+        /// </summary>
+        public string PeekCacheEntriesQuery { get; protected set; }
 
-        public string PeekCacheItemQuery { get; protected set; }
+        /// <summary>
+        ///   Returns a valid cache entry with given hash.
+        /// </summary>
+        public string PeekCacheEntryQuery { get; protected set; }
 
+        /// <summary>
+        ///   Returns a valid cache value with given hash.
+        /// </summary>
         public string PeekCacheValueQuery { get; protected set; }
 
         /// <summary>
@@ -145,22 +195,25 @@ namespace PommaLabs.KVLite.Core
 
 #endif
 
-        #region Private Methods
+        #region Query optimization
 
-        private static readonly Regex SqlNameRegex = new Regex("[a-z0-9_]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
+        /// <summary>
+        ///   Minifies specified query.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns>A query without comments and unnecessary blank characters.</returns>
         protected static string MinifyQuery(string query)
         {
             // Removes all SQL comments. Multiline excludes '/n' from '.' matches.
-            query = Regex.Replace(query, @"--.*", string.Empty, RegexOptions.Multiline | RegexOptions.Compiled);
+            query = Regex.Replace(query, @"--.*", string.Empty, RegexOptions.Multiline);
 
             // Removes all multiple blanks.
-            query = Regex.Replace(query, @"\s+", " ", RegexOptions.Compiled);
+            query = Regex.Replace(query, @"\s+", " ");
 
             // Removes initial and ending blanks.
             return query.Trim();
         }
 
-        #endregion Private Methods
+        #endregion Query optimization
     }
 }

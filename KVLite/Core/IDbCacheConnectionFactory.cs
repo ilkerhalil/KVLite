@@ -34,14 +34,24 @@ namespace PommaLabs.KVLite.Core
     {
         #region Configuration
 
+        /// <summary>
+        ///   The schema which holds cache entries table.
+        /// </summary>
         string CacheSchemaName { get; set; }
 
-        string CacheItemsTableName { get; set; }
+        /// <summary>
+        ///   The name of the table which holds cache entries.
+        /// </summary>
+        string CacheEntriesTableName { get; set; }
 
-        string CacheValuesTableName { get; set; }
-
+        /// <summary>
+        ///   The maximum length a partition can have. Longer partitions will be truncated.
+        /// </summary>
         int MaxPartitionNameLength { get; }
 
+        /// <summary>
+        ///   The maximum length a key can have. Longer keys will be truncated.
+        /// </summary>
         int MaxKeyNameLength { get; }
 
         /// <summary>
@@ -53,26 +63,53 @@ namespace PommaLabs.KVLite.Core
 
         #region Commands
 
-        string InsertOrUpdateCacheItemCommand { get; }
+        /// <summary>
+        ///   Inserts or updates a cache entry.
+        /// </summary>
+        string InsertOrUpdateCacheEntryCommand { get; }
 
-        string DeleteCacheItemCommand { get; }
+        /// <summary>
+        ///   Deletes a cache entry using specified hash.
+        /// </summary>
+        string DeleteCacheEntryCommand { get; }
 
-        string DeleteCacheItemsCommand { get; }
+        /// <summary>
+        ///   Deletes a set of cache entries.
+        /// </summary>
+        string DeleteCacheEntriesCommand { get; }
 
-        string UpdateCacheItemExpiryCommand { get; }
+        /// <summary>
+        ///   Updates the expiry time of one cache entry.
+        /// </summary>
+        string UpdateCacheEntryExpiryCommand { get; }
 
         #endregion Commands
 
         #region Queries
 
-        string ContainsCacheItemQuery { get; }
+        /// <summary>
+        ///   Checks whether a valid entry with given hash exists.
+        /// </summary>
+        string ContainsCacheEntryQuery { get; }
 
-        string CountCacheItemsQuery { get; }
+        /// <summary>
+        ///   Counts valid or invalid cache entries.
+        /// </summary>
+        string CountCacheEntriesQuery { get; }
 
-        string PeekCacheItemsQuery { get; }
+        /// <summary>
+        ///   Returns all valid cache entries without updating their expiry time.
+        /// </summary>
+        string PeekCacheEntriesQuery { get; }
 
-        string PeekCacheItemQuery { get; }
+        /// <summary>
+        ///   Returns a valid cache entry with given hash.
+        /// </summary>
+        string PeekCacheEntryQuery { get; }
 
+        /// <summary>
+        ///   Returns a valid cache value with given hash.
+        /// </summary>
         string PeekCacheValueQuery { get; }
 
         /// <summary>

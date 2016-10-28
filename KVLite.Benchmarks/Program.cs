@@ -62,7 +62,7 @@ namespace PommaLabs.KVLite.Benchmarks
             MySqlCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString;
 
             OracleCache.DefaultInstance.ConnectionFactory.CacheSchemaName = "CARAVAN";
-            OracleCache.DefaultInstance.ConnectionFactory.CacheItemsTableName = "CRVN_KVL_CACHE_ITEMS";
+            OracleCache.DefaultInstance.ConnectionFactory.CacheEntriesTableName = "CRVN_KVL_CACHE_ITEMS";
             OracleCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings["Oracle"].ConnectionString;
 
             Console.WriteLine(@"Running vacuum on DB...");

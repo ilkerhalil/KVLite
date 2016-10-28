@@ -51,8 +51,8 @@ namespace PommaLabs.KVLite.MySql
         {
             #region Commands
 
-            InsertOrUpdateCacheItemCommand = MinifyQuery($@"
-                insert into {CacheSchemaName}.{CacheItemsTableName} (
+            InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
+                insert into {CacheSchemaName}.{CacheEntriesTableName} (
                     {DbCacheEntry.HashColumn}, {DbCacheEntry.UtcExpiryColumn}, {DbCacheEntry.IntervalColumn},
                     {DbCacheEntry.ValueColumn}, {DbCacheEntry.CompressedColumn},
                     {DbCacheEntry.PartitionColumn}, {DbCacheEntry.KeyColumn}, {DbCacheEntry.UtcCreationColumn},
@@ -90,19 +90,19 @@ namespace PommaLabs.KVLite.MySql
                     {DbCacheEntry.ParentKey4Column} = @{nameof(DbCacheEntry.ParentKey4)};
             ");
 
-            DeleteCacheItemCommand = MinifyQuery($@"
-                delete from {CacheSchemaName}.{CacheItemsTableName}
+            DeleteCacheEntryCommand = MinifyQuery($@"
+                delete from {CacheSchemaName}.{CacheEntriesTableName}
                  where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
             ");
 
-            DeleteCacheItemsCommand = MinifyQuery($@"
-                delete from {CacheSchemaName}.{CacheItemsTableName}
+            DeleteCacheEntriesCommand = MinifyQuery($@"
+                delete from {CacheSchemaName}.{CacheEntriesTableName}
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheEntry.UtcExpiryColumn} < @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
-            UpdateCacheItemExpiryCommand = MinifyQuery($@"
-                update {CacheSchemaName}.{CacheItemsTableName}
+            UpdateCacheEntryExpiryCommand = MinifyQuery($@"
+                update {CacheSchemaName}.{CacheEntriesTableName}
                    set {DbCacheEntry.UtcExpiryColumn} = @{nameof(DbCacheEntry.Single.UtcExpiry)}
                  where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
             ");
@@ -111,21 +111,21 @@ namespace PommaLabs.KVLite.MySql
 
             #region Queries
 
-            ContainsCacheItemQuery = MinifyQuery($@"
+            ContainsCacheEntryQuery = MinifyQuery($@"
                 select count(*)
-                  from {CacheSchemaName}.{CacheItemsTableName}
+                  from {CacheSchemaName}.{CacheEntriesTableName}
                  where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
                    and {DbCacheEntry.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)}
             ");
 
-            CountCacheItemsQuery = MinifyQuery($@"
+            CountCacheEntriesQuery = MinifyQuery($@"
                 select count(*)
-                  from {CacheSchemaName}.{CacheItemsTableName}
+                  from {CacheSchemaName}.{CacheEntriesTableName}
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheEntry.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
-            PeekCacheItemsQuery = MinifyQuery($@"
+            PeekCacheEntriesQuery = MinifyQuery($@"
                 select x.{DbCacheEntry.PartitionColumn} `{nameof(DbCacheEntry.Partition)}`,
                        x.{DbCacheEntry.KeyColumn} `{nameof(DbCacheEntry.Key)}`,
                        x.{DbCacheEntry.UtcCreationColumn} `{nameof(DbCacheEntry.UtcCreation)}`,
@@ -143,12 +143,12 @@ namespace PommaLabs.KVLite.MySql
                        x.{DbCacheEntry.ParentKey4Column} `{nameof(DbCacheEntry.ParentKey4)}`,
                        x.{DbCacheEntry.ValueColumn} `{nameof(DbCacheEntry.Value)}`,
                        x.{DbCacheEntry.CompressedColumn} `{nameof(DbCacheEntry.Compressed)}`
-                  from {CacheSchemaName}.{CacheItemsTableName} x
+                  from {CacheSchemaName}.{CacheEntriesTableName} x
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or x.{DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or x.{DbCacheEntry.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
-            PeekCacheItemQuery = MinifyQuery($@"
+            PeekCacheEntryQuery = MinifyQuery($@"
                 select x.{DbCacheEntry.PartitionColumn} `{nameof(DbCacheEntry.Partition)}`,
                        x.{DbCacheEntry.KeyColumn} `{nameof(DbCacheEntry.Key)}`,
                        x.{DbCacheEntry.UtcCreationColumn} `{nameof(DbCacheEntry.UtcCreation)}`,
@@ -166,7 +166,7 @@ namespace PommaLabs.KVLite.MySql
                        x.{DbCacheEntry.ParentKey4Column} `{nameof(DbCacheEntry.ParentKey4)}`,
                        x.{DbCacheEntry.ValueColumn} `{nameof(DbCacheEntry.Value)}`,
                        x.{DbCacheEntry.CompressedColumn} `{nameof(DbCacheEntry.Compressed)}`
-                  from {CacheSchemaName}.{CacheItemsTableName} x
+                  from {CacheSchemaName}.{CacheEntriesTableName} x
                  where x.{DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
                    and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} or x.{DbCacheEntry.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
             ");
@@ -176,12 +176,12 @@ namespace PommaLabs.KVLite.MySql
                        y.`{nameof(DbCacheEntry.Interval)}` `{nameof(DbCacheValue.Interval)}`,
                        y.`{nameof(DbCacheEntry.Value)}` `{nameof(DbCacheValue.Value)}`,
                        y.`{nameof(DbCacheEntry.Compressed)}` `{nameof(DbCacheValue.Compressed)}`
-                  from ({PeekCacheItemQuery}) y
+                  from ({PeekCacheEntryQuery}) y
             ");
 
             GetCacheSizeInBytesQuery = MinifyQuery($@"
                 select round(sum(length({DbCacheEntry.ValueColumn})))
-                  from {CacheSchemaName}.{CacheItemsTableName};
+                  from {CacheSchemaName}.{CacheEntriesTableName};
             ");
 
             #endregion Queries

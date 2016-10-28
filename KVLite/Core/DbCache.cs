@@ -393,6 +393,7 @@ namespace PommaLabs.KVLite.Core
         ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
         ///   therefore, it does not need to be extremely accurate.
         /// </summary>
+        /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns>An estimate of cache size in bytes.</returns>
         protected sealed override async Task<long> GetCacheSizeInBytesAsyncInternal(CancellationToken cancellationToken)
         {
@@ -511,7 +512,7 @@ namespace PommaLabs.KVLite.Core
             using (var db = ConnectionFactory.Open())
             using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                db.Execute(ConnectionFactory.InsertOrUpdateCacheItemCommand, dbCacheEntry, tr);
+                db.Execute(ConnectionFactory.InsertOrUpdateCacheEntryCommand, dbCacheEntry, tr);
                 tr.Commit();
             }
 
@@ -542,7 +543,7 @@ namespace PommaLabs.KVLite.Core
 
             using (var db = ConnectionFactory.Open())
             {
-                return db.Execute(ConnectionFactory.DeleteCacheItemsCommand, dbCacheEntryGroup);
+                return db.Execute(ConnectionFactory.DeleteCacheEntriesCommand, dbCacheEntryGroup);
             }
         }
 
@@ -565,7 +566,7 @@ namespace PommaLabs.KVLite.Core
             using (var db = ConnectionFactory.Open())
             {
                 // Search for at least one valid item.
-                return db.QuerySingle<long>(ConnectionFactory.ContainsCacheItemQuery, dbCacheEntrySingle) > 0L;
+                return db.QuerySingle<long>(ConnectionFactory.ContainsCacheEntryQuery, dbCacheEntrySingle) > 0L;
             }
         }
 
@@ -591,7 +592,7 @@ namespace PommaLabs.KVLite.Core
             using (var db = await ConnectionFactory.OpenAsync(cancellationToken))
             {
                 // Search for at least one valid item.
-                return (await db.QuerySingleAsync<long>(ConnectionFactory.ContainsCacheItemQuery, dbCacheEntrySingle)) > 0L;
+                return (await db.QuerySingleAsync<long>(ConnectionFactory.ContainsCacheEntryQuery, dbCacheEntrySingle)) > 0L;
             }
         }
 
@@ -616,7 +617,7 @@ namespace PommaLabs.KVLite.Core
 
             using (var db = ConnectionFactory.Open())
             {
-                return db.QuerySingle<long>(ConnectionFactory.CountCacheItemsQuery, dbCacheEntryGroup);
+                return db.QuerySingle<long>(ConnectionFactory.CountCacheEntriesQuery, dbCacheEntryGroup);
             }
         }
 
@@ -652,7 +653,7 @@ namespace PommaLabs.KVLite.Core
                 if (dbCacheValue.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
                 {
                     // When an item expires, we should remove it from the cache.
-                    db.Execute(ConnectionFactory.DeleteCacheItemCommand, dbCacheEntrySingle);
+                    db.Execute(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
 
                     // Nothing to deserialize, return None.
                     return Option.None<TVal>();
@@ -662,7 +663,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     // Since we are in a "get" operation, we should also update the expiry.
                     dbCacheEntrySingle.UtcExpiry += dbCacheValue.Interval;
-                    db.Execute(ConnectionFactory.UpdateCacheItemExpiryCommand, dbCacheEntrySingle);
+                    db.Execute(ConnectionFactory.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
                 }
             }
 
@@ -691,7 +692,7 @@ namespace PommaLabs.KVLite.Core
             DbCacheEntry dbCacheEntry;
             using (var db = ConnectionFactory.Open())
             {
-                dbCacheEntry = db.QuerySingleOrDefault<DbCacheEntry>(ConnectionFactory.PeekCacheItemQuery, dbCacheEntrySingle);
+                dbCacheEntry = db.QuerySingleOrDefault<DbCacheEntry>(ConnectionFactory.PeekCacheEntryQuery, dbCacheEntrySingle);
 
                 if (dbCacheEntry == null)
                 {
@@ -702,7 +703,7 @@ namespace PommaLabs.KVLite.Core
                 if (dbCacheEntry.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
                 {
                     // When an item expires, we should remove it from the cache.
-                    db.Execute(ConnectionFactory.DeleteCacheItemCommand, dbCacheEntrySingle);
+                    db.Execute(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
 
                     // Nothing to deserialize, return None.
                     return Option.None<ICacheItem<TVal>>();
@@ -712,7 +713,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     // Since we are in a "get" operation, we should also update the expiry.
                     dbCacheEntry.UtcExpiry = (dbCacheEntrySingle.UtcExpiry += dbCacheEntry.Interval);
-                    db.Execute(ConnectionFactory.UpdateCacheItemExpiryCommand, dbCacheEntrySingle);
+                    db.Execute(ConnectionFactory.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
                 }
             }
 
@@ -741,14 +742,14 @@ namespace PommaLabs.KVLite.Core
             using (var db = ConnectionFactory.Open())
             using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheItemsQuery, dbCacheEntryGroup, tr, false).ToArray();
+                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntriesQuery, dbCacheEntryGroup, tr, false).ToArray();
 
                 foreach (var dbCacheEntry in dbCacheEntries)
                 {
                     if (dbCacheEntry.UtcExpiry < dbCacheEntryGroup.UtcExpiry)
                     {
                         // When an item expires, we should remove it from the cache.
-                        db.Execute(ConnectionFactory.DeleteCacheItemCommand, new DbCacheEntry.Single
+                        db.Execute(ConnectionFactory.DeleteCacheEntryCommand, new DbCacheEntry.Single
                         {
                             Hash = TruncateAndHash(dbCacheEntry.Partition, dbCacheEntry.Key)
                         }, tr);
@@ -756,7 +757,7 @@ namespace PommaLabs.KVLite.Core
                     else if (dbCacheEntry.Interval > 0L)
                     {
                         // Since we are in a "get" operation, we should also update the expiry.
-                        db.Execute(ConnectionFactory.UpdateCacheItemExpiryCommand, new DbCacheEntry.Single
+                        db.Execute(ConnectionFactory.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
                         {
                             Hash = TruncateAndHash(dbCacheEntry.Partition, dbCacheEntry.Key),
                             UtcExpiry = dbCacheEntry.UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
@@ -833,7 +834,7 @@ namespace PommaLabs.KVLite.Core
             DbCacheEntry dbCacheEntry;
             using (var db = ConnectionFactory.Open())
             {
-                dbCacheEntry = db.QuerySingleOrDefault<DbCacheEntry>(ConnectionFactory.PeekCacheItemQuery, dbCacheEntrySingle);
+                dbCacheEntry = db.QuerySingleOrDefault<DbCacheEntry>(ConnectionFactory.PeekCacheEntryQuery, dbCacheEntrySingle);
             }
 
             if (dbCacheEntry == null)
@@ -870,7 +871,7 @@ namespace PommaLabs.KVLite.Core
             DbCacheEntry[] dbCacheEntries;
             using (var db = ConnectionFactory.Open())
             {
-                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheItemsQuery, dbCacheEntryGroup, buffered: false).ToArray();
+                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntriesQuery, dbCacheEntryGroup, buffered: false).ToArray();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -896,7 +897,7 @@ namespace PommaLabs.KVLite.Core
 
             using (var db = ConnectionFactory.Open())
             {
-                db.Execute(ConnectionFactory.DeleteCacheItemCommand, dbCacheEntrySingle);
+                db.Execute(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
             }
         }
 
@@ -918,7 +919,7 @@ namespace PommaLabs.KVLite.Core
 
             using (var db = await ConnectionFactory.OpenAsync(cancellationToken))
             {
-                await db.ExecuteAsync(ConnectionFactory.DeleteCacheItemCommand, dbCacheEntrySingle);
+                await db.ExecuteAsync(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
             }
         }
 

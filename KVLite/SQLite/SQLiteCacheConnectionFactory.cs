@@ -78,8 +78,8 @@ namespace PommaLabs.KVLite.SQLite
 
             #region Commands
 
-            InsertOrUpdateCacheItemCommand = MinifyQuery($@"
-                insert or ignore into {CacheItemsTableName} (
+            InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
+                insert or ignore into {CacheEntriesTableName} (
                     {DbCacheEntry.HashColumn},
                     {DbCacheValue.UtcExpiryColumn}, {DbCacheValue.IntervalColumn},
                     {DbCacheValue.ValueColumn}, {DbCacheValue.CompressedColumn},
@@ -102,7 +102,7 @@ namespace PommaLabs.KVLite.SQLite
                     @{nameof(DbCacheEntry.ParentHash4)}, @{nameof(DbCacheEntry.ParentKey4)}
                 );
 
-                update {CacheItemsTableName}
+                update {CacheEntriesTableName}
                    set {DbCacheValue.UtcExpiryColumn} = @{nameof(DbCacheEntry.UtcExpiry)},
                        {DbCacheValue.IntervalColumn} = @{nameof(DbCacheEntry.Interval)},
                        {DbCacheValue.ValueColumn} = @{nameof(DbCacheEntry.Value)},
@@ -122,19 +122,19 @@ namespace PommaLabs.KVLite.SQLite
                    and changes() = 0 -- Above INSERT has failed
             ");
 
-            DeleteCacheItemCommand = MinifyQuery($@"
-                delete from {CacheItemsTableName}
+            DeleteCacheEntryCommand = MinifyQuery($@"
+                delete from {CacheEntriesTableName}
                  where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
             ");
 
-            DeleteCacheItemsCommand = MinifyQuery($@"
-                delete from {CacheItemsTableName}
+            DeleteCacheEntriesCommand = MinifyQuery($@"
+                delete from {CacheEntriesTableName}
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheValue.UtcExpiryColumn} < @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
-            UpdateCacheItemExpiryCommand = MinifyQuery($@"
-                update {CacheItemsTableName}
+            UpdateCacheEntryExpiryCommand = MinifyQuery($@"
+                update {CacheEntriesTableName}
                    set {DbCacheValue.UtcExpiryColumn} = @{nameof(DbCacheEntry.Single.UtcExpiry)}
                  where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
             ");
@@ -143,21 +143,21 @@ namespace PommaLabs.KVLite.SQLite
 
             #region Queries
 
-            ContainsCacheItemQuery = MinifyQuery($@"
+            ContainsCacheEntryQuery = MinifyQuery($@"
                 select count(*)
-                  from {CacheItemsTableName}
+                  from {CacheEntriesTableName}
                  where {DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
                    and {DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)}
             ");
 
-            CountCacheItemsQuery = MinifyQuery($@"
+            CountCacheEntriesQuery = MinifyQuery($@"
                 select count(*)
-                  from {CacheItemsTableName}
+                  from {CacheEntriesTableName}
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
-            PeekCacheItemsQuery = MinifyQuery($@"
+            PeekCacheEntriesQuery = MinifyQuery($@"
                 select x.{DbCacheValue.UtcExpiryColumn} {nameof(DbCacheEntry.UtcExpiry)},
                        x.{DbCacheValue.IntervalColumn} {nameof(DbCacheEntry.Interval)},
                        x.{DbCacheValue.ValueColumn} {nameof(DbCacheEntry.Value)},
@@ -175,12 +175,12 @@ namespace PommaLabs.KVLite.SQLite
                        x.{DbCacheEntry.ParentKey3Column} {nameof(DbCacheEntry.ParentKey3)},
                        x.{DbCacheEntry.ParentHash4Column} {nameof(DbCacheEntry.ParentHash4)},
                        x.{DbCacheEntry.ParentKey4Column} {nameof(DbCacheEntry.ParentKey4)}
-                  from {CacheItemsTableName} x
+                  from {CacheEntriesTableName} x
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or x.{DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
                    and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
-            PeekCacheItemQuery = MinifyQuery($@"
+            PeekCacheEntryQuery = MinifyQuery($@"
                 select x.{DbCacheValue.UtcExpiryColumn} {nameof(DbCacheEntry.UtcExpiry)},
                        x.{DbCacheValue.IntervalColumn} {nameof(DbCacheEntry.Interval)},
                        x.{DbCacheValue.ValueColumn} {nameof(DbCacheEntry.Value)},
@@ -198,22 +198,24 @@ namespace PommaLabs.KVLite.SQLite
                        x.{DbCacheEntry.ParentKey3Column} {nameof(DbCacheEntry.ParentKey3)},
                        x.{DbCacheEntry.ParentHash4Column} {nameof(DbCacheEntry.ParentHash4)},
                        x.{DbCacheEntry.ParentKey4Column} {nameof(DbCacheEntry.ParentKey4)}
-                  from {CacheItemsTableName} x
+                  from {CacheEntriesTableName} x
                  where x.{DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
                    and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
             ");
 
             PeekCacheValueQuery = MinifyQuery($@"
-                select y.{nameof(DbCacheEntry.UtcExpiry)} {nameof(DbCacheValue.UtcExpiry)},
-                       y.{nameof(DbCacheEntry.Interval)} {nameof(DbCacheValue.Interval)},
-                       y.{nameof(DbCacheEntry.Value)} {nameof(DbCacheValue.Value)},
-                       y.{nameof(DbCacheEntry.Compressed)} {nameof(DbCacheValue.Compressed)}
-                  from ({PeekCacheItemQuery}) y
+                select x.{DbCacheValue.UtcExpiryColumn} {nameof(DbCacheEntry.UtcExpiry)},
+                       x.{DbCacheValue.IntervalColumn} {nameof(DbCacheEntry.Interval)},
+                       x.{DbCacheValue.ValueColumn} {nameof(DbCacheEntry.Value)},
+                       x.{DbCacheValue.CompressedColumn} {nameof(DbCacheEntry.Compressed)}
+                  from {CacheEntriesTableName} x
+                 where x.{DbCacheEntry.HashColumn} = @{nameof(DbCacheEntry.Single.Hash)}
+                   and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
             ");
 
             GetCacheSizeInBytesQuery = MinifyQuery($@"
                 select round(sum(length({DbCacheValue.ValueColumn})))
-                  from {CacheSchemaName}.{CacheItemsTableName};
+                  from {CacheSchemaName}.{CacheEntriesTableName};
             ");
 
             #endregion Queries

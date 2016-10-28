@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite.SqlServer
 
             GetCacheSizeInBytesQuery = MinifyQuery($@"
                 select round(sum(length({DbCacheEntry.ValueColumn})))
-                  from {CacheSchemaName}.{CacheItemsTableName};
+                  from {CacheSchemaName}.{CacheEntriesTableName};
             ");
 
             #endregion Queries
