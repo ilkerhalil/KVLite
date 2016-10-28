@@ -26,7 +26,7 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Represents a flat entry stored inside the cache.
     /// </summary>
-    internal sealed class DbCacheEntry
+    internal sealed class DbCacheEntry : DbCacheValue
     {
         public const string HashColumn = "kvli_hash";
 
@@ -43,14 +43,6 @@ namespace PommaLabs.KVLite.Core
         public const string UtcCreationColumn = "kvli_creation";
 
         public long UtcCreation { get; set; }
-
-        public const string UtcExpiryColumn = "kvli_expiry";
-
-        public long UtcExpiry { get; set; }
-
-        public const string IntervalColumn = "kvli_interval";
-
-        public long Interval { get; set; }
 
         public const string ParentHash0Column = "kvli_parent_hash0";
 
@@ -91,14 +83,6 @@ namespace PommaLabs.KVLite.Core
         public const string ParentKey4Column = "kvli_parent_key4";
 
         public string ParentKey4 { get; set; }
-
-        public const string ValueColumn = "kvli_value";
-
-        public byte[] Value { get; set; }
-
-        public const string CompressedColumn = "kvli_compressed";
-
-        public bool Compressed { get; set; }
 
         public sealed class Group
         {

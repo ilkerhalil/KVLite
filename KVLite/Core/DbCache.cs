@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using CodeProject.ObjectPool.Specialized;
 using Dapper;
 using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Clock;
@@ -67,8 +68,9 @@ namespace PommaLabs.KVLite.Core
         /// <param name="clock">The clock.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
+        /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="randomGenerator">The random number generator.</param>
-        public DbCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ISerializer serializer, ICompressor compressor, IGenerator randomGenerator)
+        public DbCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool, IGenerator randomGenerator)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -79,6 +81,7 @@ namespace PommaLabs.KVLite.Core
             Clock = clock ?? Constants.DefaultClock;
             Serializer = serializer ?? Constants.DefaultSerializer;
             Compressor = compressor ?? Constants.DefaultCompressor;
+            MemoryStreamPool = memoryStreamPool ?? Constants.DefaultMemoryStreamPool;
             RandomGenerator = randomGenerator ?? Constants.CreateRandomGenerator();
         }
 
@@ -340,6 +343,15 @@ namespace PommaLabs.KVLite.Core
         public sealed override int MaxParentKeyCountPerItem { get; } = 5;
 
         /// <summary>
+        ///   The pool used to retrieve <see cref="MemoryStream"/> instances.
+        /// </summary>
+        /// <remarks>
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance"/>.
+        /// </remarks>
+        public sealed override IMemoryStreamPool MemoryStreamPool { get; }
+
+        /// <summary>
         ///   Gets the serializer used by the cache.
         /// </summary>
         /// <remarks>
@@ -414,13 +426,19 @@ namespace PommaLabs.KVLite.Core
             bool compressed;
             try
             {
-                using (var serializedStream = Serializer.SerializeToStream(value))
+                using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
                 {
+                    Serializer.SerializeToStream(value, serializedStream);
+
                     if (serializedStream.Length > Settings.MinValueLengthForCompression)
                     {
                         // Stream is too long, we should compress it.
-                        using (var compressedStream = Compressor.Compress(serializedStream))
+                        using (var compressedStream = MemoryStreamPool.GetObject().MemoryStream)
                         {
+                            using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
+                            {
+                                serializedStream.CopyTo(compressionStream);
+                            }
                             serializedValue = compressedStream.ToArray();
                             compressed = true;
                         }
@@ -906,29 +924,28 @@ namespace PommaLabs.KVLite.Core
 
 #endif
 
-        private TVal UnsafeDeserializeValue<TVal>(byte[] value, bool compressed)
+        private TVal UnsafeDeserializeValue<TVal>(DbCacheValue dbCacheValue)
         {
-            using (var memoryStream = new MemoryStream(value))
+            using (var memoryStream = new MemoryStream(dbCacheValue.Value))
             {
-                if (!compressed)
+                if (!dbCacheValue.Compressed)
                 {
                     // Handle uncompressed value.
                     return Serializer.DeserializeFromStream<TVal>(memoryStream);
                 }
-
-                // Handle compressed value.
                 using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
                 {
+                    // Handle compressed value.
                     return Serializer.DeserializeFromStream<TVal>(decompressionStream);
                 }
-            }
+            }            
         }
 
-        private Option<TVal> DeserializeValue<TVal>(DbCacheValue src, string partition, string key)
+        private Option<TVal> DeserializeValue<TVal>(DbCacheValue dbCacheValue, string partition, string key)
         {
             try
             {
-                return Option.Some(UnsafeDeserializeValue<TVal>(src.Value, src.Compressed));
+                return Option.Some(UnsafeDeserializeValue<TVal>(dbCacheValue));
             }
             catch (Exception ex)
             {
@@ -944,40 +961,40 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private Option<ICacheItem<TVal>> DeserializeCacheEntry<TVal>(DbCacheEntry src)
+        private Option<ICacheItem<TVal>> DeserializeCacheEntry<TVal>(DbCacheEntry dbCacheItem)
         {
             try
             {
                 var cacheItem = new CacheItem<TVal>
                 {
-                    Partition = src.Partition,
-                    Key = src.Key,
-                    Value = UnsafeDeserializeValue<TVal>(src.Value, src.Compressed),
-                    UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcCreation),
-                    UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(src.UtcExpiry),
-                    Interval = TimeSpan.FromSeconds(src.Interval)
+                    Partition = dbCacheItem.Partition,
+                    Key = dbCacheItem.Key,
+                    Value = UnsafeDeserializeValue<TVal>(dbCacheItem),
+                    UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(dbCacheItem.UtcCreation),
+                    UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(dbCacheItem.UtcExpiry),
+                    Interval = TimeSpan.FromSeconds(dbCacheItem.Interval)
                 };
 
                 // Quickly read the parent keys, if any.
-                if (src.ParentKey0 != null)
+                if (dbCacheItem.ParentKey0 != null)
                 {
-                    if (src.ParentKey1 != null)
+                    if (dbCacheItem.ParentKey1 != null)
                     {
-                        if (src.ParentKey2 != null)
+                        if (dbCacheItem.ParentKey2 != null)
                         {
-                            if (src.ParentKey3 != null)
+                            if (dbCacheItem.ParentKey3 != null)
                             {
-                                if (src.ParentKey4 != null)
+                                if (dbCacheItem.ParentKey4 != null)
                                 {
-                                    cacheItem.ParentKeys = new[] { src.ParentKey0, src.ParentKey1, src.ParentKey2, src.ParentKey3, src.ParentKey4 };
+                                    cacheItem.ParentKeys = new[] { dbCacheItem.ParentKey0, dbCacheItem.ParentKey1, dbCacheItem.ParentKey2, dbCacheItem.ParentKey3, dbCacheItem.ParentKey4 };
                                 }
-                                else cacheItem.ParentKeys = new[] { src.ParentKey0, src.ParentKey1, src.ParentKey2, src.ParentKey3 };
+                                else cacheItem.ParentKeys = new[] { dbCacheItem.ParentKey0, dbCacheItem.ParentKey1, dbCacheItem.ParentKey2, dbCacheItem.ParentKey3 };
                             }
-                            else cacheItem.ParentKeys = new[] { src.ParentKey0, src.ParentKey1, src.ParentKey2 };
+                            else cacheItem.ParentKeys = new[] { dbCacheItem.ParentKey0, dbCacheItem.ParentKey1, dbCacheItem.ParentKey2 };
                         }
-                        else cacheItem.ParentKeys = new[] { src.ParentKey0, src.ParentKey1 };
+                        else cacheItem.ParentKeys = new[] { dbCacheItem.ParentKey0, dbCacheItem.ParentKey1 };
                     }
-                    else cacheItem.ParentKeys = new[] { src.ParentKey0 };
+                    else cacheItem.ParentKeys = new[] { dbCacheItem.ParentKey0 };
                 }
                 else cacheItem.ParentKeys = CacheExtensions.NoParentKeys;
 
@@ -989,7 +1006,7 @@ namespace PommaLabs.KVLite.Core
 
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
-                RemoveInternal(src.Partition, src.Key);
+                RemoveInternal(dbCacheItem.Partition, dbCacheItem.Key);
 
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
 
@@ -1020,6 +1037,6 @@ namespace PommaLabs.KVLite.Core
             return (ph << 32) + kh;
         }
 
-        #endregion Private Methods
+#endregion Private Methods
     }
 }

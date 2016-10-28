@@ -40,8 +40,9 @@ namespace PommaLabs.KVLite.Memory
     {
         #region Fields
 
-        string _cacheName = nameof(MemoryCache);
+        private string _cacheName = nameof(MemoryCache);
         private int _maxCacheSizeInMB;
+        private long _minValueLengthForCompression;
 
         #endregion Fields
 
@@ -55,6 +56,7 @@ namespace PommaLabs.KVLite.Memory
             DefaultPartition = "KVLite.DefaultPartition";
             StaticIntervalInDays = 30;
             MaxCacheSizeInMB = 256;
+            MinValueLengthForCompression = 4096;
         }
 
         #endregion Construction
@@ -129,6 +131,34 @@ namespace PommaLabs.KVLite.Memory
         /// <value>The cache URI.</value>
         [IgnoreDataMember]
         public override string CacheUri => CacheName;
+
+        /// <summary>
+        ///   When a serialized value is longer than specified quantity, then the cache will compress
+        ///   it. If a serialized value length is less than or equal to the specified quantity, then
+        ///   the cache will not compress it. Defaults to 4096 bytes.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="value"/> is less than zero.
+        /// </exception>
+        public long MinValueLengthForCompression
+        {
+            get
+            {
+                var result = _minValueLengthForCompression;
+
+                // Postconditions
+                Debug.Assert(result >= 0L);
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                Raise.ArgumentOutOfRangeException.IfIsLess(value, 0L, nameof(value));
+
+                _minValueLengthForCompression = value;
+                OnPropertyChanged();
+            }
+        }
 
         #endregion Settings
     }

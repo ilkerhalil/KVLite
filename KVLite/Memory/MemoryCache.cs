@@ -74,7 +74,6 @@ namespace PommaLabs.KVLite.Memory
         ///   Initializes a new instance of the <see cref="MemoryCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
-        /// <param name="log">The log.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
@@ -199,15 +198,32 @@ namespace PommaLabs.KVLite.Memory
         protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
             byte[] serializedValue;
+            bool compressed;
             try
             {
-                using (var memoryStream = MemoryStreamPool.GetObject().MemoryStream)
+                using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
                 {
-                    using (var compressionStream = Compressor.CreateCompressionStream(memoryStream))
+                    Serializer.SerializeToStream(value, serializedStream);
+
+                    if (serializedStream.Length > Settings.MinValueLengthForCompression)
                     {
-                        Serializer.SerializeToStream(value, compressionStream);
+                        // Stream is too long, we should compress it.
+                        using (var compressedStream = MemoryStreamPool.GetObject().MemoryStream)
+                        {
+                            using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
+                            {
+                                serializedStream.CopyTo(compressionStream);
+                            }
+                            serializedValue = compressedStream.ToArray();
+                            compressed = true;
+                        }
                     }
-                    serializedValue = memoryStream.ToArray();
+                    else
+                    {
+                        // Stream is shorter than specified threshold, we can store it as it is.
+                        serializedValue = serializedStream.ToArray();
+                        compressed = false;
+                    }
                 }
             }
             catch (Exception ex)
@@ -226,7 +242,7 @@ namespace PommaLabs.KVLite.Memory
                 policy.ChangeMonitors.Add(_store.CreateCacheEntryChangeMonitor(parentKeys.Select(pk => SerializeCacheKey(partition, pk))));
             }
 
-            var cacheValue = new CacheValue { SerializedValue = serializedValue, UtcCreation = Clock.UtcNow };
+            var cacheValue = new CacheValue { Value = serializedValue, Compressed = compressed, UtcCreation = Clock.UtcNow };
             _store.Set(SerializeCacheKey(partition, key), cacheValue, policy);
         }
 
@@ -462,7 +478,7 @@ namespace PommaLabs.KVLite.Memory
         protected override long GetCacheSizeInBytesInternal() => _store
             .Select(x => x.Value as CacheValue)
             .Where(x => x != null)
-            .Sum(x => x.SerializedValue.LongLength);
+            .Sum(x => x.Value.LongLength);
 
         #endregion Cache size estimation
 
@@ -481,10 +497,13 @@ namespace PommaLabs.KVLite.Memory
         [Serializable, DataContract]
         private sealed class CacheValue
         {
-            [DataMember(Name = "v", Order = 0, EmitDefaultValue = false)]
-            public byte[] SerializedValue { get; set; }
+            [DataMember(Name = "vl", Order = 0, EmitDefaultValue = false)]
+            public byte[] Value { get; set; }
 
-            [DataMember(Name = "c", Order = 1, EmitDefaultValue = false)]
+            [DataMember(Name = "co", Order = 1, EmitDefaultValue = false)]
+            public bool Compressed { get; set; }
+
+            [DataMember(Name = "cr", Order = 2, EmitDefaultValue = false)]
             public DateTime UtcCreation { get; set; }
         }
 
@@ -506,27 +525,33 @@ namespace PommaLabs.KVLite.Memory
             };
         }
 
-        private TVal UnsafeDeserializeCacheValue<TVal>(byte[] serializedValue)
+        private TVal UnsafeDeserializeCacheValue<TVal>(CacheValue cacheValue)
         {
-            // Here we cannot safely use a recyclable stream because the byte array is still used by
-            // existing cache value.
-            using (var memoryStream = new MemoryStream(serializedValue))
-            using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
+            using (var memoryStream = new MemoryStream(cacheValue.Value))
             {
-                return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+                if (!cacheValue.Compressed)
+                {
+                    // Handle uncompressed value.
+                    return Serializer.DeserializeFromStream<TVal>(memoryStream);
+                }
+                using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
+                {
+                    // Handle compressed value.
+                    return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+                }
             }
         }
 
         private Option<TVal> DeserializeCacheValue<TVal>(CacheValue cacheValue)
         {
-            if (cacheValue == null || cacheValue.SerializedValue == null)
+            if (cacheValue == null || cacheValue.Value == null)
             {
                 // Nothing to deserialize, return None.
                 return Option.None<TVal>();
             }
             try
             {
-                return Option.Some(UnsafeDeserializeCacheValue<TVal>(cacheValue.SerializedValue));
+                return Option.Some(UnsafeDeserializeCacheValue<TVal>(cacheValue));
             }
             catch (Exception ex)
             {
@@ -538,7 +563,7 @@ namespace PommaLabs.KVLite.Memory
 
         private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(CacheValue cacheValue, string partition, string key)
         {
-            if (cacheValue == null || cacheValue.SerializedValue == null)
+            if (cacheValue == null || cacheValue.Value == null)
             {
                 // Nothing to deserialize, return None.
                 return Option.None<ICacheItem<TVal>>();
@@ -551,7 +576,7 @@ namespace PommaLabs.KVLite.Memory
                 {
                     Partition = partition,
                     Key = key,
-                    Value = UnsafeDeserializeCacheValue<TVal>(cacheValue.SerializedValue),
+                    Value = UnsafeDeserializeCacheValue<TVal>(cacheValue),
                     UtcCreation = cacheValue.UtcCreation
                 });
             }

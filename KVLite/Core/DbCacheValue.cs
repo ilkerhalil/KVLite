@@ -26,7 +26,7 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Represents a flat value stored inside the cache.
     /// </summary>
-    internal sealed class DbCacheValue
+    internal class DbCacheValue
     {
         public const string UtcExpiryColumn = "kvli_expiry";
 
@@ -36,11 +36,11 @@ namespace PommaLabs.KVLite.Core
 
         public long Interval { get; set; }
 
-        public const string ValueColumn = "kvlv_value";
+        public const string ValueColumn = "kvli_value";
 
         public byte[] Value { get; set; }
 
-        public const string CompressedColumn = "kvlv_compressed";
+        public const string CompressedColumn = "kvli_compressed";
 
         public bool Compressed { get; set; }
     }
