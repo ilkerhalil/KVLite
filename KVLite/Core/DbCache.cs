@@ -379,7 +379,30 @@ namespace PommaLabs.KVLite.Core
         ///   therefore, it does not need to be extremely accurate.
         /// </summary>
         /// <returns>An estimate of cache size in bytes.</returns>
-        protected sealed override long GetCacheSizeInBytesInternal() => ConnectionFactory.GetCacheSizeInBytes();
+        protected sealed override long GetCacheSizeInBytesInternal()
+        {
+            using (var db = ConnectionFactory.Open())
+            {
+                return db.ExecuteScalar<long>(ConnectionFactory.GetCacheSizeInBytesQuery);
+            }
+        }
+
+#if !NET40
+
+        /// <summary>
+        ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
+        ///   therefore, it does not need to be extremely accurate.
+        /// </summary>
+        /// <returns>An estimate of cache size in bytes.</returns>
+        protected sealed override async Task<long> GetCacheSizeInBytesAsyncInternal(CancellationToken cancellationToken)
+        {
+            using (var db = await ConnectionFactory.OpenAsync(cancellationToken))
+            {
+                return await db.ExecuteScalarAsync<long>(ConnectionFactory.GetCacheSizeInBytesQuery);
+            }
+        }
+
+#endif
 
         /// <summary>
         ///   Adds given value with the specified expiry time and refresh internal.
@@ -989,6 +1012,6 @@ namespace PommaLabs.KVLite.Core
             return (ph << 32) + kh;
         }
 
-        #endregion Private Methods
+#endregion Private Methods
     }
 }

@@ -32,6 +32,8 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     public interface IDbCacheConnectionFactory
     {
+        #region Configuration
+
         string CacheSchemaName { get; set; }
 
         string CacheItemsTableName { get; set; }
@@ -41,6 +43,13 @@ namespace PommaLabs.KVLite.Core
         int MaxPartitionNameLength { get; }
 
         int MaxKeyNameLength { get; }
+
+        /// <summary>
+        ///   The connection string used to connect to the cache data provider.
+        /// </summary>
+        string ConnectionString { get; set; }
+
+        #endregion Configuration
 
         #region Commands
 
@@ -66,12 +75,12 @@ namespace PommaLabs.KVLite.Core
 
         string PeekCacheValueQuery { get; }
 
-        #endregion
-
         /// <summary>
-        ///   The connection string used to connect to the cache data provider.
+        ///   Returns current cache size in bytes.
         /// </summary>
-        string ConnectionString { get; set; }
+        string GetCacheSizeInBytesQuery { get; }
+
+        #endregion Queries
 
         /// <summary>
         ///   Opens a new connection to the specified data provider.
@@ -85,11 +94,5 @@ namespace PommaLabs.KVLite.Core
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns>An open connection.</returns>
         Task<DbConnection> OpenAsync(CancellationToken cancellationToken);
-
-        /// <summary>
-        ///   Returns current cache size in kilobytes.
-        /// </summary>
-        /// <returns>Current cache size in kilobytes.</returns>
-        long GetCacheSizeInBytes();
     }
 }

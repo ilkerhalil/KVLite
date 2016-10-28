@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.KVLite.Core;
-using System.Data;
 using System.Data.SqlClient;
 
 namespace PommaLabs.KVLite.SqlServer
@@ -32,24 +31,14 @@ namespace PommaLabs.KVLite.SqlServer
         public SqlServerCacheConnectionFactory()
             : base(SqlClientFactory.Instance, null, null, null)
         {
-        }
+            #region Queries
 
-        public override long GetCacheSizeInBytes()
-        {
-            using (var connection = Open())
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandType = CommandType.Text;
-                command.CommandText = $@"
-                    select round(sum(length(kvlv_value))) as result
-                    from {CacheSchemaName}.{CacheValuesTableName};
-                ";
+            GetCacheSizeInBytesQuery = MinifyQuery($@"
+                select round(sum(length({DbCacheEntry.ValueColumn})))
+                  from {CacheSchemaName}.{CacheItemsTableName};
+            ");
 
-                using (var reader = command.ExecuteReader())
-                {
-                    return (reader.Read() && !reader.IsDBNull(0)) ? reader.GetInt64(0) : 0L;
-                }
-            }
+            #endregion Queries
         }
     }
 }

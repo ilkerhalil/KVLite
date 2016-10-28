@@ -30,9 +30,7 @@ using System.Threading.Tasks;
 namespace PommaLabs.KVLite.Core
 {
     public abstract class DbCacheConnectionFactory : IDbCacheConnectionFactory
-    {
-        private static readonly Regex SqlNameRegex = new Regex("[a-z0-9_]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
+    {        
         private readonly DbProviderFactory _dbProviderFactory;
 
         protected DbCacheConnectionFactory(DbProviderFactory dbProviderFactory, string cacheSchemaName, string cacheItemsTableName, string cacheValuesTableName)
@@ -50,6 +48,8 @@ namespace PommaLabs.KVLite.Core
             CacheValuesTableName = cacheValuesTableName ?? DefaultCacheValuesTableName;
         }
 
+        #region Configuration
+
         public static string DefaultCacheSchemaName { get; } = "kvlite";
 
         public static string DefaultCacheItemsTableName { get; } = "kvl_cache_items";
@@ -65,6 +65,13 @@ namespace PommaLabs.KVLite.Core
         public int MaxKeyNameLength { get; } = 255;
 
         public int MaxPartitionNameLength { get; } = 255;
+
+        /// <summary>
+        ///   The connection string used to connect to the cache data provider.
+        /// </summary>
+        public virtual string ConnectionString { get; set; }
+
+        #endregion Configuration
 
         #region Commands
 
@@ -90,49 +97,57 @@ namespace PommaLabs.KVLite.Core
 
         public string PeekCacheValueQuery { get; protected set; }
 
-        #endregion Queries
-
         /// <summary>
-        ///   The connection string used to connect to the cache data provider.
+        ///   Returns current cache size in bytes.
         /// </summary>
-        public virtual string ConnectionString { get; set; }
+        public string GetCacheSizeInBytesQuery { get; protected set; }
+
+        #endregion Queries
 
         /// <summary>
         ///   Opens a new connection to the specified data provider.
         /// </summary>
         /// <returns>An open connection.</returns>
-        public virtual DbConnection Open()
+        public DbConnection Open()
         {
             var connection = _dbProviderFactory.CreateConnection();
             connection.ConnectionString = ConnectionString;
             connection.Open();
             return connection;
         }
+
+#if !NET40
 
         /// <summary>
         ///   Opens a new connection to the specified data provider.
         /// </summary>
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns>An open connection.</returns>
-        public virtual async Task<DbConnection> OpenAsync(CancellationToken cancellationToken)
+        public async Task<DbConnection> OpenAsync(CancellationToken cancellationToken)
         {
             var connection = _dbProviderFactory.CreateConnection();
             connection.ConnectionString = ConnectionString;
-#if !NET40
             await connection.OpenAsync(cancellationToken);
-#else
-            connection.Open();
-#endif
             return connection;
         }
 
-        /// <summary>
-        ///   Returns current cache size in kilobytes.
-        /// </summary>
-        /// <returns>Current cache size in kilobytes.</returns>
-        public abstract long GetCacheSizeInBytes();
+#else
 
-#region Private Methods
+        /// <summary>
+        ///   Opens a new connection to the specified data provider.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation instruction.</param>
+        /// <returns>An open connection.</returns>
+        public Task<DbConnection> OpenAsync(CancellationToken cancellationToken)
+        {
+            return TaskEx.FromResult(Open());
+        }
+
+#endif
+
+        #region Private Methods
+
+        private static readonly Regex SqlNameRegex = new Regex("[a-z0-9_]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         protected static string MinifyQuery(string query)
         {
@@ -146,6 +161,6 @@ namespace PommaLabs.KVLite.Core
             return query.Trim();
         }
 
-#endregion Private Methods
+        #endregion Private Methods
     }
 }

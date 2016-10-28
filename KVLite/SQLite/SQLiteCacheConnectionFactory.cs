@@ -207,6 +207,11 @@ namespace PommaLabs.KVLite.SQLite
                   from ({PeekCacheItemQuery}) y
             ");
 
+            GetCacheSizeInBytesQuery = MinifyQuery($@"
+                select round(sum(length({DbCacheEntry.ValueColumn})))
+                  from {CacheSchemaName}.{CacheItemsTableName};
+            ");
+
             #endregion Queries
         }
 
@@ -219,25 +224,6 @@ namespace PommaLabs.KVLite.SQLite
         {
             get { return _connectionString; }
             set { throw new NotSupportedException(); }
-        }
-
-        public override long GetCacheSizeInBytes()
-        {
-            // No need for a transaction, since it is just a select.
-            using (var conn = Open())
-            using (var cmd = conn.CreateCommand())
-            {
-                cmd.CommandText = "PRAGMA page_count;";
-                var pageCount = (long) cmd.ExecuteScalar();
-
-                cmd.CommandText = "PRAGMA freelist_count;";
-                var freelistCount = (long) cmd.ExecuteScalar();
-
-                cmd.CommandText = "PRAGMA page_size;";
-                var pageSizeInKB = (long) cmd.ExecuteScalar();
-
-                return (pageCount - freelistCount) * pageSizeInKB;
-            }
         }
 
         #endregion IDbCacheConnectionFactory members

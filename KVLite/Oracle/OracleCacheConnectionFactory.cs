@@ -23,7 +23,6 @@
 
 using PommaLabs.KVLite.Core;
 using System;
-using System.Data;
 using System.Data.Common;
 using System.Reflection;
 
@@ -32,6 +31,19 @@ namespace PommaLabs.KVLite.Oracle
     public class OracleCacheConnectionFactory : DbCacheConnectionFactory
     {
         private static readonly DbProviderFactory DbProviderFactory;
+
+        static OracleCacheConnectionFactory()
+        {
+            try
+            {
+                var factoryType = Type.GetType("Oracle.ManagedDataAccess.Client.OracleClientFactory, Oracle.ManagedDataAccess");
+                DbProviderFactory = factoryType.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null) as DbProviderFactory;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorMessages.MissingOracleDriver, ex);
+            }
+        }
 
         public OracleCacheConnectionFactory()
             : base(DbProviderFactory, null, null, null)
@@ -183,38 +195,12 @@ namespace PommaLabs.KVLite.Oracle
                   from ({PeekCacheItemQuery}) entry
             ");
 
+            GetCacheSizeInBytesQuery = MinifyQuery($@"
+                select round(sum(length({DbCacheEntry.ValueColumn})))
+                  from {CacheSchemaName}.{CacheItemsTableName};
+            ");
+
             #endregion Queries
-        }
-
-        static OracleCacheConnectionFactory()
-        {
-            try
-            {
-                var factoryType = Type.GetType("Oracle.ManagedDataAccess.Client.OracleClientFactory, Oracle.ManagedDataAccess");
-                DbProviderFactory = factoryType.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null) as DbProviderFactory;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ErrorMessages.MissingOracleDriver, ex);
-            }
-        }
-
-        public override long GetCacheSizeInBytes()
-        {
-            using (var connection = Open())
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandType = CommandType.Text;
-                command.CommandText = $@"
-                    select round(sum(length(kvlv_value))) as result
-                    from {CacheSchemaName}.{CacheValuesTableName};
-                ";
-
-                using (var reader = command.ExecuteReader())
-                {
-                    return (reader.Read() && !reader.IsDBNull(0)) ? reader.GetInt64(0) : 0L;
-                }
-            }
         }
     }
 }
