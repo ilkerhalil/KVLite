@@ -1,46 +1,53 @@
-﻿DROP TABLE IF EXISTS `kvl_cache_entries`;
+﻿CREATE TABLE [dbo].[kvl_cache_entries] (
+    [kvle_partition]   NVARCHAR (255)  NOT NULL,
+    [kvle_key]         NVARCHAR (255)  NOT NULL,
+    [kvle_expiry]      BIGINT          NOT NULL,
+    [kvle_interval]    BIGINT          NOT NULL,
+    [kvle_value]       VARBINARY (MAX) NOT NULL,
+    [kvle_compressed]  BIT             NOT NULL,
+    [kvle_creation]    BIGINT          NOT NULL,
+    [kvle_parent_key0] NVARCHAR (255)  NULL,
+    [kvle_parent_key1] NVARCHAR (255)  NULL,
+    [kvle_parent_key2] NVARCHAR (255)  NULL,
+    [kvle_parent_key3] NVARCHAR (255)  NULL,
+    [kvle_parent_key4] NVARCHAR (255)  NULL,
+    PRIMARY KEY CLUSTERED ([kvle_partition] ASC, [kvle_key] ASC), 
+    CONSTRAINT [fk_kvle_parent0] FOREIGN KEY ([kvle_partition], [kvle_parent_key0]) REFERENCES [dbo].[kvl_cache_entries]([kvle_partition], [kvle_key]),
+    CONSTRAINT [fk_kvle_parent1] FOREIGN KEY ([kvle_partition], [kvle_parent_key1]) REFERENCES [dbo].[kvl_cache_entries]([kvle_partition], [kvle_key]),
+    CONSTRAINT [fk_kvle_parent2] FOREIGN KEY ([kvle_partition], [kvle_parent_key2]) REFERENCES [dbo].[kvl_cache_entries]([kvle_partition], [kvle_key]),
+    CONSTRAINT [fk_kvle_parent3] FOREIGN KEY ([kvle_partition], [kvle_parent_key3]) REFERENCES [dbo].[kvl_cache_entries]([kvle_partition], [kvle_key]),
+    CONSTRAINT [fk_kvle_parent4] FOREIGN KEY ([kvle_partition], [kvle_parent_key4]) REFERENCES [dbo].[kvl_cache_entries]([kvle_partition], [kvle_key])
+);
 
-CREATE TABLE IF NOT EXISTS `kvl_cache_entries` (
-  `kvle_hash` bigint(20) NOT NULL,
-  `kvle_partition` varchar(255) NOT NULL,
-  `kvle_key` varchar(255) NOT NULL,
-  `kvle_creation` bigint(20) unsigned NOT NULL,
-  `kvle_expiry` bigint(20) unsigned NOT NULL,
-  `kvle_interval` bigint(20) unsigned NOT NULL,
-  `kvle_compressed` boolean NOT NULL,
-  `kvle_parent_hash0` bigint(20) DEFAULT NULL,
-  `kvle_parent_key0` varchar(255) DEFAULT NULL,
-  `kvle_parent_hash1` bigint(20) DEFAULT NULL,
-  `kvle_parent_key1` varchar(255) DEFAULT NULL,
-  `kvle_parent_hash2` bigint(20) DEFAULT NULL,
-  `kvle_parent_key2` varchar(255) DEFAULT NULL,
-  `kvle_parent_hash3` bigint(20) DEFAULT NULL,
-  `kvle_parent_key3` varchar(255) DEFAULT NULL,
-  `kvle_parent_hash4` bigint(20) DEFAULT NULL,
-  `kvle_parent_key4` varchar(255) DEFAULT NULL,
-  `kvle_value` mediumblob NOT NULL,
-  PRIMARY KEY (`kvle_hash`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `kvl_cache_entries`
-  ADD INDEX `ix_kvle_exp_part` (`kvle_expiry`, `kvle_partition`);
+CREATE INDEX [ix_kvle_exp_part] ON [dbo].[kvl_cache_entries] ([kvle_expiry], [kvle_partition])
+GO
 
-ALTER TABLE `kvl_cache_entries`
-  ADD CONSTRAINT `fk_kvle_parent0` FOREIGN KEY (`kvle_parent_hash0`) 
-  REFERENCES `kvl_cache_entries` (`kvle_hash`) ON UPDATE CASCADE ON DELETE CASCADE;
 
-ALTER TABLE `kvl_cache_entries`
-  ADD CONSTRAINT `fk_kvle_parent1` FOREIGN KEY (`kvle_parent_hash1`) 
-  REFERENCES `kvl_cache_entries` (`kvle_hash`) ON UPDATE CASCADE ON DELETE CASCADE;
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = '', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'crvn_kvl_entries', @level2type = N'COLUMN', @level2name = N'kvle_compressed';
 
-ALTER TABLE `kvl_cache_entries`
-  ADD CONSTRAINT `fk_kvle_parent2` FOREIGN KEY (`kvle_parent_hash2`) 
-  REFERENCES `kvl_cache_entries` (`kvle_hash`) ON UPDATE CASCADE ON DELETE CASCADE;
 
-ALTER TABLE `kvl_cache_entries`
-  ADD CONSTRAINT `fk_kvle_parent3` FOREIGN KEY (`kvle_parent_hash3`) 
-  REFERENCES `kvl_cache_entries` (`kvle_hash`) ON UPDATE CASCADE ON DELETE CASCADE;
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = '', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'crvn_kvl_entries', @level2type = N'COLUMN', @level2name = N'kvle_creation';
 
-ALTER TABLE `kvl_cache_entries`
-  ADD CONSTRAINT `fk_kvle_parent4` FOREIGN KEY (`kvle_parent_hash4`) 
-  REFERENCES `kvl_cache_entries` (`kvle_hash`) ON UPDATE CASCADE ON DELETE CASCADE;
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = '', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'crvn_kvl_entries', @level2type = N'COLUMN', @level2name = N'kvle_parent_key0';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = '', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'crvn_kvl_entries', @level2type = N'COLUMN', @level2name = N'kvle_parent_key1';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = '', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'crvn_kvl_entries', @level2type = N'COLUMN', @level2name = N'kvle_parent_key2';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = '', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'crvn_kvl_entries', @level2type = N'COLUMN', @level2name = N'kvle_parent_key3';
+
+
+GO
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = '', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'crvn_kvl_entries', @level2type = N'COLUMN', @level2name = N'kvle_parent_key4';
+
