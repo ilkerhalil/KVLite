@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Dapper;
 using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
@@ -44,34 +45,19 @@ namespace PommaLabs.KVLite.SQLite
 
         #endregion Constants
 
-#pragma warning disable RECS0108 // Warns about static fields in generic types
-        private static readonly DbProviderFactory DbProviderFactory;
-#pragma warning restore RECS0108 // Warns about static fields in generic types
-
-        static SQLiteCacheConnectionFactory()
-        {
-            try
-            {
-                var factoryType = Type.GetType("System.Data.SQLite.SQLiteFactory, System.Data.SQLite");
-                DbProviderFactory = factoryType.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null) as DbProviderFactory;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ErrorMessages.MissingSQLiteDriver, ex);
-            }
-        }
+        private readonly TSettings _settings;
+        private readonly SQLiteJournalMode _journalMode;
+        private readonly string _vacuumCommand;
+        private readonly string _createCacheSchemaCommand;
+        private readonly string _getCacheEntriesSchemaQuery;
 
         /// <summary>
         ///   The connection string used to connect to the SQLite database.
         /// </summary>
         private string _connectionString;
 
-        private readonly TSettings _settings;
-
-        private readonly SQLiteJournalMode _journalMode;
-
         public SQLiteCacheConnectionFactory(TSettings settings, SQLiteJournalMode journalMode)
-            : base(DbProviderFactory, null, null)
+            : base(GetDbProviderFactory(), null, null)
         {
             _settings = settings;
             _journalMode = journalMode;
@@ -216,6 +202,48 @@ namespace PommaLabs.KVLite.SQLite
             ");
 
             #endregion Queries
+
+            #region Specific queries and commands
+
+            _vacuumCommand = MinifyQuery(@"
+                vacuum; -- Clears free list and makes DB file smaller
+            ");
+
+            _createCacheSchemaCommand = MinifyQuery(@"        
+                DROP TABLE IF EXISTS kvl_cache_entries;
+                CREATE TABLE kvl_cache_entries (
+                    kvle_partition TEXT NOT NULL,
+                    kvle_key TEXT NOT NULL,
+                    kvle_expiry BIGINT NOT NULL,
+                    kvle_interval BIGINT NOT NULL,
+                    kvle_value BLOB NOT NULL,
+                    kvle_compressed BOOLEAN NOT NULL,
+                    kvle_creation BIGINT NOT NULL,
+                    kvle_parent_key0 TEXT,
+                    kvle_parent_key1 TEXT,
+                    kvle_parent_key2 TEXT,
+                    kvle_parent_key3 TEXT,
+                    kvle_parent_key4 TEXT,
+                    CONSTRAINT pk_kvle PRIMARY KEY (kvle_partition, kvle_key),
+                    CONSTRAINT fk_kvle_parent0 FOREIGN KEY (kvle_partition, kvle_parent_key0) REFERENCES kvl_cache_entries (kvle_partition, kvle_key) ON DELETE CASCADE,
+                    CONSTRAINT fk_kvle_parent1 FOREIGN KEY (kvle_partition, kvle_parent_key1) REFERENCES kvl_cache_entries (kvle_partition, kvle_key) ON DELETE CASCADE,
+                    CONSTRAINT fk_kvle_parent2 FOREIGN KEY (kvle_partition, kvle_parent_key2) REFERENCES kvl_cache_entries (kvle_partition, kvle_key) ON DELETE CASCADE,
+                    CONSTRAINT fk_kvle_parent3 FOREIGN KEY (kvle_partition, kvle_parent_key3) REFERENCES kvl_cache_entries (kvle_partition, kvle_key) ON DELETE CASCADE,
+                    CONSTRAINT fk_kvle_parent4 FOREIGN KEY (kvle_partition, kvle_parent_key4) REFERENCES kvl_cache_entries (kvle_partition, kvle_key) ON DELETE CASCADE
+                );
+                CREATE INDEX ix_kvle_exp_part ON kvl_cache_entries (kvle_expiry DESC, kvle_partition ASC);
+                CREATE INDEX ix_kvle_parent0 ON kvl_cache_entries (kvle_partition, kvle_parent_key0);
+                CREATE INDEX ix_kvle_parent1 ON kvl_cache_entries (kvle_partition, kvle_parent_key1);
+                CREATE INDEX ix_kvle_parent2 ON kvl_cache_entries (kvle_partition, kvle_parent_key2);
+                CREATE INDEX ix_kvle_parent3 ON kvl_cache_entries (kvle_partition, kvle_parent_key3);
+                CREATE INDEX ix_kvle_parent4 ON kvl_cache_entries (kvle_partition, kvle_parent_key4);
+            ");
+
+            _getCacheEntriesSchemaQuery = MinifyQuery(@"
+                PRAGMA table_info(kvl_cache_entries)
+            ");
+
+            #endregion Specific queries and commands
         }
 
         #region IDbCacheConnectionFactory members
@@ -237,11 +265,9 @@ namespace PommaLabs.KVLite.SQLite
         public void Vacuum()
         {
             // Vacuum cannot be run within a transaction.
-            using (var conn = Open())
-            using (var cmd = conn.CreateCommand())
+            using (var db = Open())
             {
-                cmd.CommandText = SQLiteQueries.Vacuum;
-                cmd.ExecuteNonQuery();
+                db.Execute(_vacuumCommand);
             }
         }
 
@@ -257,7 +283,7 @@ namespace PommaLabs.KVLite.SQLite
             {
                 var isSchemaReady = true;
 
-                cmd.CommandText = SQLiteQueries.IsCacheEntriesTableReady;
+                cmd.CommandText = _getCacheEntriesSchemaQuery;
                 using (var dataReader = cmd.ExecuteReader())
                 {
                     isSchemaReady = IsCacheEntriesTableReady(dataReader);
@@ -266,7 +292,7 @@ namespace PommaLabs.KVLite.SQLite
                 if (!isSchemaReady)
                 {
                     // Creates cache entries table and required indexes.
-                    cmd.CommandText = SQLiteQueries.CacheSchema;
+                    cmd.CommandText = _createCacheSchemaCommand;
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -294,6 +320,19 @@ namespace PommaLabs.KVLite.SQLite
                 && columns.Contains(DbCacheEntry.ParentKey2Column)
                 && columns.Contains(DbCacheEntry.ParentKey3Column)
                 && columns.Contains(DbCacheEntry.ParentKey4Column);
+        }
+
+        private static DbProviderFactory GetDbProviderFactory()
+        {
+            try
+            {
+                var factoryType = Type.GetType("System.Data.SQLite.SQLiteFactory, System.Data.SQLite");
+                return factoryType.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null) as DbProviderFactory;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorMessages.MissingSQLiteDriver, ex);
+            }
         }
     }
 

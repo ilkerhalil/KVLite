@@ -28,25 +28,16 @@ using System.Reflection;
 
 namespace PommaLabs.KVLite.MySql
 {
+    /// <summary>
+    ///   Cache connection factory specialized for MySQL.
+    /// </summary>
     public class MySqlCacheConnectionFactory : DbCacheConnectionFactory
     {
-        private static readonly DbProviderFactory DbProviderFactory;
-
-        static MySqlCacheConnectionFactory()
-        {
-            try
-            {
-                var factoryType = Type.GetType("MySql.Data.MySqlClient.MySqlClientFactory, MySql.Data");
-                DbProviderFactory = factoryType.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null) as DbProviderFactory;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ErrorMessages.MissingMySqlDriver, ex);
-            }
-        }
-
+        /// <summary>
+        ///   Cache connection factory specialized for MySQL.
+        /// </summary>
         public MySqlCacheConnectionFactory()
-            : base(DbProviderFactory, null, null)
+            : base(GetDbProviderFactory(), null, null)
         {
             #region Commands
 
@@ -184,6 +175,19 @@ namespace PommaLabs.KVLite.MySql
             ");
 
             #endregion Queries
+        }
+
+        private static DbProviderFactory GetDbProviderFactory()
+        {
+            try
+            {
+                var factoryType = Type.GetType("MySql.Data.MySqlClient.MySqlClientFactory, MySql.Data");
+                return factoryType.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null) as DbProviderFactory;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorMessages.MissingMySqlDriver, ex);
+            }
         }
     }
 }

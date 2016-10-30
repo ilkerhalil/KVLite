@@ -1,21 +1,28 @@
-﻿using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Common.Portability;
-using Microsoft.Owin;
+﻿using Microsoft.Owin;
 using Ninject;
 using Ninject.Web.Common.OwinHost;
 using Ninject.Web.WebApi.OwinHost;
 using Owin;
-using PommaLabs.KVLite;
+using PommaLabs.CodeServices.Caching;
+using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.KVLite.WebApi;
 using RestService.WebApi;
 using Swashbuckle.Application;
 using System.Web.Http;
 
 [assembly: OwinStartup(typeof(Startup))]
+
 namespace RestService.WebApi
 {
+    /// <summary>
+    ///   Configures the example service.
+    /// </summary>
     public sealed class Startup
     {
+        /// <summary>
+        ///   Configures the example service.
+        /// </summary>
+        /// <param name="app">OWIN builder.</param>
         public void Configuration(IAppBuilder app)
         {
             var config = new HttpConfiguration();
@@ -23,9 +30,11 @@ namespace RestService.WebApi
             ConfigureWebApi(app, config);
         }
 
-        static StandardKernel CreateKernel() => new StandardKernel(new NinjectConfig());
+#pragma warning disable CC0022 // Should dispose object
+        private static StandardKernel CreateKernel() => new StandardKernel(new NinjectConfig());
+#pragma warning restore CC0022 // Should dispose object
 
-        static void ConfigureWebApi(IAppBuilder app, HttpConfiguration config)
+        private static void ConfigureWebApi(IAppBuilder app, HttpConfiguration config)
         {
             // REQUIRED TO ENABLE HELP PAGES :)
             config.MapHttpAttributeRoutes();

@@ -28,6 +28,9 @@ using System.Runtime.Serialization;
 
 namespace PommaLabs.KVLite.MySql
 {
+    /// <summary>
+    ///   Settings used by <see cref="MySqlCache"/>.
+    /// </summary>
     [Serializable, DataContract]
     public class MySqlCacheSettings : DbCacheSettings<MySqlCacheSettings>
     {

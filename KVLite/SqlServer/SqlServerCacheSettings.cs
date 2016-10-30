@@ -28,6 +28,9 @@ using System.Runtime.Serialization;
 
 namespace PommaLabs.KVLite.SqlServer
 {
+    /// <summary>
+    ///   Settings used by <see cref="SqlServerCache"/>.
+    /// </summary>
     [Serializable, DataContract]
     public class SqlServerCacheSettings : DbCacheSettings<SqlServerCacheSettings>
     {

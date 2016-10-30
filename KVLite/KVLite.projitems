@@ -29,7 +29,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)SQLite\PersistentCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteQueries.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SQLite\VolatileCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SQLite\VolatileCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCache.cs" />

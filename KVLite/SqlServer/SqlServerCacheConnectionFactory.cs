@@ -26,8 +26,14 @@ using System.Data.SqlClient;
 
 namespace PommaLabs.KVLite.SqlServer
 {
+    /// <summary>
+    ///   Cache connection factory specialized for SQL Server.
+    /// </summary>
     public class SqlServerCacheConnectionFactory : DbCacheConnectionFactory
     {
+        /// <summary>
+        ///   Cache connection factory specialized for SQL Server.
+        /// </summary>
         public SqlServerCacheConnectionFactory()
             : base(SqlClientFactory.Instance, null, null)
         {

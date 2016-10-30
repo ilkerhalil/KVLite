@@ -110,7 +110,7 @@ namespace PommaLabs.KVLite.UnitTests
         {
             Cache = new PersistentCache(new PersistentCacheSettings());
             Cache.Dispose();
-            Assert.Throws<NotSupportedException>(() => { Cache.Count(); });         
+            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });         
         }
 
         #endregion Cache creation and disposal

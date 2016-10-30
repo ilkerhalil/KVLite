@@ -28,6 +28,9 @@ using System.Runtime.Serialization;
 
 namespace PommaLabs.KVLite.Oracle
 {
+    /// <summary>
+    ///   Settings used by <see cref="OracleCache"/>.
+    /// </summary>
     [Serializable, DataContract]
     public class OracleCacheSettings : DbCacheSettings<OracleCacheSettings>
     {

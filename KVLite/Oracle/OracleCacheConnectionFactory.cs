@@ -28,25 +28,16 @@ using System.Reflection;
 
 namespace PommaLabs.KVLite.Oracle
 {
+    /// <summary>
+    ///   Cache connection factory specialized for Oracle.
+    /// </summary>
     public class OracleCacheConnectionFactory : DbCacheConnectionFactory
     {
-        private static readonly DbProviderFactory DbProviderFactory;
-
-        static OracleCacheConnectionFactory()
-        {
-            try
-            {
-                var factoryType = Type.GetType("Oracle.ManagedDataAccess.Client.OracleClientFactory, Oracle.ManagedDataAccess");
-                DbProviderFactory = factoryType.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null) as DbProviderFactory;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ErrorMessages.MissingOracleDriver, ex);
-            }
-        }
-
+        /// <summary>
+        ///   Cache connection factory specialized for Oracle.
+        /// </summary>
         public OracleCacheConnectionFactory()
-            : base(DbProviderFactory, null, null)
+            : base(GetDbProviderFactory(), null, null)
         {
             #region Commands
 
@@ -191,6 +182,19 @@ namespace PommaLabs.KVLite.Oracle
             ");
 
             #endregion Queries
+        }
+
+        private static DbProviderFactory GetDbProviderFactory()
+        {
+            try
+            {
+                var factoryType = Type.GetType("Oracle.ManagedDataAccess.Client.OracleClientFactory, Oracle.ManagedDataAccess");
+                return factoryType.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null) as DbProviderFactory;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorMessages.MissingOracleDriver, ex);
+            }
         }
     }
 }

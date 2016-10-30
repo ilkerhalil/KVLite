@@ -134,5 +134,16 @@
             </summary>
             <returns>Total memory used by GC.</returns>
         </member>
+        <member name="T:RestService.WebApi.Startup">
+            <summary>
+              Configures the example service.
+            </summary>
+        </member>
+        <member name="M:RestService.WebApi.Startup.Configuration(Owin.IAppBuilder)">
+            <summary>
+              Configures the example service.
+            </summary>
+            <param name="app">OWIN builder.</param>
+        </member>
     </members>
 </doc>

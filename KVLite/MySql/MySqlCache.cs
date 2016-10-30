@@ -31,6 +31,9 @@ using Troschuetz.Random;
 
 namespace PommaLabs.KVLite.MySql
 {
+    /// <summary>
+    ///   Cache backed by MySQL.
+    /// </summary>
     public class MySqlCache : DbCache<MySqlCacheSettings>
     {
         #region Default Instance
@@ -48,11 +51,31 @@ namespace PommaLabs.KVLite.MySql
 
         #endregion Default Instance
 
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="MySqlCache"/> class with given settings.
+        /// </summary>
+        /// <param name="settings">Cache settings.</param>
+        /// <param name="clock">The clock.</param>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="compressor">The compressor.</param>
+        /// <param name="memoryStreamPool">The memory stream pool.</param>
+        /// <param name="randomGenerator">The random number generator.</param>
         public MySqlCache(MySqlCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IGenerator randomGenerator = null)
             : this(settings, new MySqlCacheConnectionFactory(), clock, serializer, compressor, memoryStreamPool, randomGenerator)
         {
         }
 
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="MySql"/> class with given settings and
+        ///   specified connection factory.
+        /// </summary>
+        /// <param name="settings">Cache settings.</param>
+        /// <param name="connectionFactory">Cache connection factory.</param>
+        /// <param name="clock">The clock.</param>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="compressor">The compressor.</param>
+        /// <param name="memoryStreamPool">The memory stream pool.</param>
+        /// <param name="randomGenerator">The random number generator.</param>
         public MySqlCache(MySqlCacheSettings settings, MySqlCacheConnectionFactory connectionFactory, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IGenerator randomGenerator = null)
             : base(settings, connectionFactory, clock, serializer, compressor, memoryStreamPool, randomGenerator)
         {
