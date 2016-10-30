@@ -172,23 +172,33 @@ namespace PommaLabs.KVLite.UnitTests
 
         #region Multiple Caches
 
-        [Test]
+        [Test, Repeat(50)]
         public void AddStatic_TwoCaches_NoMix()
         {
             const string key = "key";
             using (var another = new VolatileCache(new VolatileCacheSettings { CacheName = "another" }, clock: Kernel.Get<IClock>()))
             {
-                Cache.AddStaticToDefaultPartition(key, 1);
-                another.AddStaticToDefaultPartition(key, 2);
-                Assert.True(Cache.DefaultPartitionContains(key));
-                Assert.True(another.DefaultPartitionContains(key));
-                Assert.AreEqual(1, ((VolatileCache) Cache)[Cache.Settings.DefaultPartition, key].Value);
-                Assert.AreEqual(2, another[Cache.Settings.DefaultPartition, key].Value);
+                try
+                {
+                    Cache.AddStaticToDefaultPartition(key, 1);
+                    another.AddStaticToDefaultPartition(key, 2);
+                    Assert.True(Cache.DefaultPartitionContains(key));
+                    Assert.True(another.DefaultPartitionContains(key));
+                    Assert.AreEqual(1, ((VolatileCache) Cache)[Cache.Settings.DefaultPartition, key].Value);
+                    Assert.AreEqual(2, another[Cache.Settings.DefaultPartition, key].Value);
 
-                another.AddStaticToDefaultPartition(key + key, 3);
-                Assert.False(Cache.DefaultPartitionContains(key + key));
-                Assert.True(another.DefaultPartitionContains(key + key));
-                Assert.AreEqual(3, another[Cache.Settings.DefaultPartition, key + key].Value);
+                    another.AddStaticToDefaultPartition(key + key, 3);
+                    Assert.False(Cache.DefaultPartitionContains(key + key));
+                    Assert.True(another.DefaultPartitionContains(key + key));
+                    Assert.AreEqual(3, another[Cache.Settings.DefaultPartition, key + key].Value);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(Cache.LastError.Message);
+                    Console.WriteLine(another.LastError.Message);
+                    throw;
+                }               
             }
         }
 
