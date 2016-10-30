@@ -386,7 +386,7 @@ namespace PommaLabs.KVLite.Core
 
             using (var db = cf.Open())
             {
-                return db.ExecuteScalar<long>(cf.GetCacheSizeInBytesQuery);
+                return db.QuerySingle<long>(cf.GetCacheSizeInBytesQuery);
             }
         }
 
@@ -405,7 +405,7 @@ namespace PommaLabs.KVLite.Core
 
             using (var db = await cf.OpenAsync(cancellationToken))
             {
-                return await db.ExecuteScalarAsync<long>(cf.GetCacheSizeInBytesQuery);
+                return await db.QuerySingleAsync<long>(cf.GetCacheSizeInBytesQuery);
             }
         }
 
