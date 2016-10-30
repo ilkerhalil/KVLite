@@ -29,12 +29,12 @@ namespace PommaLabs.KVLite.SqlServer
     public class SqlServerCacheConnectionFactory : DbCacheConnectionFactory
     {
         public SqlServerCacheConnectionFactory()
-            : base(SqlClientFactory.Instance, null, null, null)
+            : base(SqlClientFactory.Instance, null, null)
         {
             #region Queries
 
             GetCacheSizeInBytesQuery = MinifyQuery($@"
-                select round(sum(length({DbCacheEntry.ValueColumn})))
+                select round(sum(length({DbCacheValue.ValueColumn})))
                   from {CacheSchemaName}.{CacheEntriesTableName};
             ");
 

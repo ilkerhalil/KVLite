@@ -77,7 +77,7 @@ namespace PommaLabs.KVLite.Core
             Raise.ArgumentNullException.IfIsNull(connectionFactory, nameof(connectionFactory));
 
             Settings = settings;
-            ConnectionFactory = Settings.ConnectionFactory = connectionFactory;
+            Settings.ConnectionFactory = connectionFactory;
             Clock = clock ?? Constants.DefaultClock;
             Serializer = serializer ?? Constants.DefaultSerializer;
             Compressor = compressor ?? Constants.DefaultCompressor;
@@ -92,7 +92,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   The connection factory used to retrieve connections to the cache data store.
         /// </summary>
-        public IDbCacheConnectionFactory ConnectionFactory { get; }
+        public IDbCacheConnectionFactory ConnectionFactory => Settings.ConnectionFactory;
 
         /// <summary>
         ///   Generates random numbers. Used to determine when to perform automatic soft cleanups.
@@ -381,9 +381,12 @@ namespace PommaLabs.KVLite.Core
         /// <returns>An estimate of cache size in bytes.</returns>
         protected sealed override long GetCacheSizeInBytesInternal()
         {
-            using (var db = ConnectionFactory.Open())
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+
+            using (var db = cf.Open())
             {
-                return db.ExecuteScalar<long>(ConnectionFactory.GetCacheSizeInBytesQuery);
+                return db.ExecuteScalar<long>(cf.GetCacheSizeInBytesQuery);
             }
         }
 
@@ -397,9 +400,12 @@ namespace PommaLabs.KVLite.Core
         /// <returns>An estimate of cache size in bytes.</returns>
         protected sealed override async Task<long> GetCacheSizeInBytesAsyncInternal(CancellationToken cancellationToken)
         {
-            using (var db = await ConnectionFactory.OpenAsync(cancellationToken))
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+
+            using (var db = await cf.OpenAsync(cancellationToken))
             {
-                return await db.ExecuteScalarAsync<long>(ConnectionFactory.GetCacheSizeInBytesQuery);
+                return await db.ExecuteScalarAsync<long>(cf.GetCacheSizeInBytesQuery);
             }
         }
 
@@ -420,7 +426,9 @@ namespace PommaLabs.KVLite.Core
         protected sealed override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
             // Compute all parameters _before_ opening the connection.
-            var hash = TruncateAndHash(ref partition, ref key);
+            var cf = Settings.ConnectionFactory;
+            partition = partition.Truncate(cf.MaxPartitionNameLength);
+            key = key.Truncate(cf.MaxKeyNameLength);
 
             // Serializing may be pretty expensive, therefore we keep it out of the connection.
             byte[] serializedValue;
@@ -461,58 +469,42 @@ namespace PommaLabs.KVLite.Core
 
             var dbCacheEntry = new DbCacheEntry
             {
-                Hash = hash,
+                Partition = partition,
+                Key = key,
                 UtcExpiry = utcExpiry.ToUnixTime(),
                 Interval = (long) interval.TotalSeconds,
                 Value = serializedValue,
                 Compressed = compressed,
-                Partition = partition,
-                Key = key,
                 UtcCreation = Clock.UnixTime,
             };
 
             // Also add the parent keys, if any.
-            string parentKey;
             var parentKeyCount = parentKeys?.Count ?? 0;
             if (parentKeyCount > 0)
             {
-                parentKey = parentKeys[0];
-                dbCacheEntry.ParentHash0 = TruncateAndHash(ref partition, ref parentKey);
-                dbCacheEntry.ParentKey0 = parentKey;
-
+                dbCacheEntry.ParentKey0 = parentKeys[0].Truncate(cf.MaxKeyNameLength);
                 if (parentKeyCount > 1)
                 {
-                    parentKey = parentKeys[1];
-                    dbCacheEntry.ParentHash1 = TruncateAndHash(ref partition, ref parentKey);
-                    dbCacheEntry.ParentKey1 = parentKey;
-
+                    dbCacheEntry.ParentKey1 = parentKeys[1].Truncate(cf.MaxKeyNameLength);
                     if (parentKeyCount > 2)
                     {
-                        parentKey = parentKeys[2];
-                        dbCacheEntry.ParentHash2 = TruncateAndHash(ref partition, ref parentKey);
-                        dbCacheEntry.ParentKey2 = parentKey;
-
+                        dbCacheEntry.ParentKey2 = parentKeys[2].Truncate(cf.MaxKeyNameLength);
                         if (parentKeyCount > 3)
                         {
-                            parentKey = parentKeys[3];
-                            dbCacheEntry.ParentHash3 = TruncateAndHash(ref partition, ref parentKey);
-                            dbCacheEntry.ParentKey3 = parentKey;
-
+                            dbCacheEntry.ParentKey3 = parentKeys[3].Truncate(cf.MaxKeyNameLength);
                             if (parentKeyCount > 4)
                             {
-                                parentKey = parentKeys[4];
-                                dbCacheEntry.ParentHash4 = TruncateAndHash(ref partition, ref parentKey);
-                                dbCacheEntry.ParentKey4 = parentKey;
+                                dbCacheEntry.ParentKey4 = parentKeys[4].Truncate(cf.MaxKeyNameLength);
                             }
                         }
                     }
                 }
             }
 
-            using (var db = ConnectionFactory.Open())
+            using (var db = cf.Open())
             using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                db.Execute(ConnectionFactory.InsertOrUpdateCacheEntryCommand, dbCacheEntry, tr);
+                db.Execute(cf.InsertOrUpdateCacheEntryCommand, dbCacheEntry, tr);
                 tr.Commit();
             }
 
@@ -534,16 +526,17 @@ namespace PommaLabs.KVLite.Core
         protected sealed override long ClearInternal(string partition, CacheReadMode cacheReadMode)
         {
             // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength),
+                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate),
                 UtcExpiry = Clock.UnixTime
             };
 
-            using (var db = ConnectionFactory.Open())
+            using (var db = cf.Open())
             {
-                return db.Execute(ConnectionFactory.DeleteCacheEntriesCommand, dbCacheEntryGroup);
+                return db.Execute(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
             }
         }
 
@@ -557,16 +550,18 @@ namespace PommaLabs.KVLite.Core
         protected sealed override bool ContainsInternal(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(partition, key),
+                Partition = partition.Truncate(cf.MaxPartitionNameLength),
+                Key = key.Truncate(cf.MaxKeyNameLength),
                 UtcExpiry = Clock.UnixTime
             };
 
-            using (var db = ConnectionFactory.Open())
+            using (var db = cf.Open())
             {
                 // Search for at least one valid item.
-                return db.QuerySingle<long>(ConnectionFactory.ContainsCacheEntryQuery, dbCacheEntrySingle) > 0L;
+                return db.QuerySingle<long>(cf.ContainsCacheEntryQuery, dbCacheEntrySingle) > 0L;
             }
         }
 
@@ -583,16 +578,18 @@ namespace PommaLabs.KVLite.Core
         protected sealed override async Task<bool> ContainsAsyncInternal(string partition, string key, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(partition, key),
+                Partition = partition.Truncate(cf.MaxPartitionNameLength),
+                Key = key.Truncate(cf.MaxKeyNameLength),
                 UtcExpiry = Clock.UnixTime
             };
 
-            using (var db = await ConnectionFactory.OpenAsync(cancellationToken))
+            using (var db = await cf.OpenAsync(cancellationToken))
             {
                 // Search for at least one valid item.
-                return (await db.QuerySingleAsync<long>(ConnectionFactory.ContainsCacheEntryQuery, dbCacheEntrySingle)) > 0L;
+                return (await db.QuerySingleAsync<long>(cf.ContainsCacheEntryQuery, dbCacheEntrySingle)) > 0L;
             }
         }
 
@@ -608,16 +605,17 @@ namespace PommaLabs.KVLite.Core
         protected sealed override long CountInternal(string partition, CacheReadMode cacheReadMode)
         {
             // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength),
+                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate),
                 UtcExpiry = Clock.UnixTime
             };
 
-            using (var db = ConnectionFactory.Open())
+            using (var db = cf.Open())
             {
-                return db.QuerySingle<long>(ConnectionFactory.CountCacheEntriesQuery, dbCacheEntryGroup);
+                return db.QuerySingle<long>(cf.CountCacheEntriesQuery, dbCacheEntryGroup);
             }
         }
 
@@ -632,17 +630,19 @@ namespace PommaLabs.KVLite.Core
         protected sealed override Option<TVal> GetInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(partition, key),
+                Partition = partition.Truncate(cf.MaxPartitionNameLength),
+                Key = key.Truncate(cf.MaxKeyNameLength),
                 IgnoreExpiryDate = true,
                 UtcExpiry = Clock.UnixTime
             };
 
             DbCacheValue dbCacheValue;
-            using (var db = ConnectionFactory.Open())
+            using (var db = cf.Open())
             {
-                dbCacheValue = db.QuerySingleOrDefault<Core.DbCacheValue>(ConnectionFactory.PeekCacheValueQuery, dbCacheEntrySingle);
+                dbCacheValue = db.QuerySingleOrDefault<Core.DbCacheValue>(cf.PeekCacheValueQuery, dbCacheEntrySingle);
 
                 if (dbCacheValue == null)
                 {
@@ -653,7 +653,7 @@ namespace PommaLabs.KVLite.Core
                 if (dbCacheValue.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
                 {
                     // When an item expires, we should remove it from the cache.
-                    db.Execute(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
+                    db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
 
                     // Nothing to deserialize, return None.
                     return Option.None<TVal>();
@@ -663,7 +663,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     // Since we are in a "get" operation, we should also update the expiry.
                     dbCacheEntrySingle.UtcExpiry += dbCacheValue.Interval;
-                    db.Execute(ConnectionFactory.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
+                    db.Execute(cf.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
                 }
             }
 
@@ -682,17 +682,19 @@ namespace PommaLabs.KVLite.Core
         protected sealed override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(partition, key),
+                Partition = partition.Truncate(cf.MaxPartitionNameLength),
+                Key = key.Truncate(cf.MaxKeyNameLength),
                 IgnoreExpiryDate = true,
                 UtcExpiry = Clock.UnixTime
             };
 
             DbCacheEntry dbCacheEntry;
-            using (var db = ConnectionFactory.Open())
+            using (var db = cf.Open())
             {
-                dbCacheEntry = db.QuerySingleOrDefault<DbCacheEntry>(ConnectionFactory.PeekCacheEntryQuery, dbCacheEntrySingle);
+                dbCacheEntry = db.QuerySingleOrDefault<DbCacheEntry>(cf.PeekCacheEntryQuery, dbCacheEntrySingle);
 
                 if (dbCacheEntry == null)
                 {
@@ -703,7 +705,7 @@ namespace PommaLabs.KVLite.Core
                 if (dbCacheEntry.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
                 {
                     // When an item expires, we should remove it from the cache.
-                    db.Execute(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
+                    db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
 
                     // Nothing to deserialize, return None.
                     return Option.None<ICacheItem<TVal>>();
@@ -713,7 +715,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     // Since we are in a "get" operation, we should also update the expiry.
                     dbCacheEntry.UtcExpiry = (dbCacheEntrySingle.UtcExpiry += dbCacheEntry.Interval);
-                    db.Execute(ConnectionFactory.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
+                    db.Execute(cf.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
                 }
             }
 
@@ -731,35 +733,38 @@ namespace PommaLabs.KVLite.Core
         protected sealed override IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition)
         {
             // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength),
+                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
                 IgnoreExpiryDate = true,
                 UtcExpiry = Clock.UnixTime
             };
 
             DbCacheEntry[] dbCacheEntries;
-            using (var db = ConnectionFactory.Open())
+            using (var db = cf.Open())
             using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntriesQuery, dbCacheEntryGroup, tr, false).ToArray();
+                dbCacheEntries = db.Query<DbCacheEntry>(cf.PeekCacheEntriesQuery, dbCacheEntryGroup, tr, false).ToArray();
 
                 foreach (var dbCacheEntry in dbCacheEntries)
                 {
                     if (dbCacheEntry.UtcExpiry < dbCacheEntryGroup.UtcExpiry)
                     {
                         // When an item expires, we should remove it from the cache.
-                        db.Execute(ConnectionFactory.DeleteCacheEntryCommand, new DbCacheEntry.Single
+                        db.Execute(cf.DeleteCacheEntryCommand, new DbCacheEntry.Single
                         {
-                            Hash = TruncateAndHash(dbCacheEntry.Partition, dbCacheEntry.Key)
+                            Partition = dbCacheEntry.Partition,
+                            Key = dbCacheEntry.Key
                         }, tr);
                     }
                     else if (dbCacheEntry.Interval > 0L)
                     {
                         // Since we are in a "get" operation, we should also update the expiry.
-                        db.Execute(ConnectionFactory.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
+                        db.Execute(cf.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
                         {
-                            Hash = TruncateAndHash(dbCacheEntry.Partition, dbCacheEntry.Key),
+                            Partition = dbCacheEntry.Partition,
+                            Key = dbCacheEntry.Key,
                             UtcExpiry = dbCacheEntry.UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
                         }, tr);
                     }
@@ -789,17 +794,19 @@ namespace PommaLabs.KVLite.Core
         protected sealed override Option<TVal> PeekInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(partition, key),
+                Partition = partition.Truncate(cf.MaxPartitionNameLength),
+                Key = key.Truncate(cf.MaxKeyNameLength),
                 IgnoreExpiryDate = false,
                 UtcExpiry = Clock.UnixTime
             };
 
             DbCacheValue dbCacheValue;
-            using (var db = ConnectionFactory.Open())
+            using (var db = cf.Open())
             {
-                dbCacheValue = db.QuerySingleOrDefault<Core.DbCacheValue>(ConnectionFactory.PeekCacheValueQuery, dbCacheEntrySingle);
+                dbCacheValue = db.QuerySingleOrDefault<Core.DbCacheValue>(cf.PeekCacheValueQuery, dbCacheEntrySingle);
             }
 
             if (dbCacheValue == null)
@@ -824,17 +831,19 @@ namespace PommaLabs.KVLite.Core
         protected sealed override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(partition, key),
+                Partition = partition.Truncate(cf.MaxPartitionNameLength),
+                Key = key.Truncate(cf.MaxKeyNameLength),
                 IgnoreExpiryDate = false,
                 UtcExpiry = Clock.UnixTime
             };
 
             DbCacheEntry dbCacheEntry;
-            using (var db = ConnectionFactory.Open())
+            using (var db = cf.Open())
             {
-                dbCacheEntry = db.QuerySingleOrDefault<DbCacheEntry>(ConnectionFactory.PeekCacheEntryQuery, dbCacheEntrySingle);
+                dbCacheEntry = db.QuerySingleOrDefault<DbCacheEntry>(cf.PeekCacheEntryQuery, dbCacheEntrySingle);
             }
 
             if (dbCacheEntry == null)
@@ -861,17 +870,18 @@ namespace PommaLabs.KVLite.Core
         protected sealed override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
         {
             // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition?.Truncate(ConnectionFactory.MaxPartitionNameLength),
+                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
                 IgnoreExpiryDate = false,
                 UtcExpiry = Clock.UnixTime
             };
 
             DbCacheEntry[] dbCacheEntries;
-            using (var db = ConnectionFactory.Open())
+            using (var db = cf.Open())
             {
-                dbCacheEntries = db.Query<DbCacheEntry>(ConnectionFactory.PeekCacheEntriesQuery, dbCacheEntryGroup, buffered: false).ToArray();
+                dbCacheEntries = db.Query<DbCacheEntry>(cf.PeekCacheEntriesQuery, dbCacheEntryGroup, buffered: false).ToArray();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -890,14 +900,16 @@ namespace PommaLabs.KVLite.Core
         protected sealed override void RemoveInternal(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(partition, key)
+                Partition = partition.Truncate(cf.MaxPartitionNameLength),
+                Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            using (var db = ConnectionFactory.Open())
+            using (var db = cf.Open())
             {
-                db.Execute(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
+                db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
             }
         }
 
@@ -912,14 +924,16 @@ namespace PommaLabs.KVLite.Core
         protected sealed override async Task RemoveAsyncInternal(string partition, string key, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Hash = TruncateAndHash(partition, key)
+                Partition = partition.Truncate(cf.MaxPartitionNameLength),
+                Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            using (var db = await ConnectionFactory.OpenAsync(cancellationToken))
+            using (var db = await cf.OpenAsync(cancellationToken))
             {
-                await db.ExecuteAsync(ConnectionFactory.DeleteCacheEntryCommand, dbCacheEntrySingle);
+                await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
             }
         }
 
@@ -962,40 +976,40 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private Option<ICacheItem<TVal>> DeserializeCacheEntry<TVal>(DbCacheEntry dbCacheItem)
+        private Option<ICacheItem<TVal>> DeserializeCacheEntry<TVal>(DbCacheEntry dbCacheEntry)
         {
             try
             {
                 var cacheItem = new CacheItem<TVal>
                 {
-                    Partition = dbCacheItem.Partition,
-                    Key = dbCacheItem.Key,
-                    Value = UnsafeDeserializeValue<TVal>(dbCacheItem),
-                    UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(dbCacheItem.UtcCreation),
-                    UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(dbCacheItem.UtcExpiry),
-                    Interval = TimeSpan.FromSeconds(dbCacheItem.Interval)
+                    Partition = dbCacheEntry.Partition,
+                    Key = dbCacheEntry.Key,
+                    Value = UnsafeDeserializeValue<TVal>(dbCacheEntry),
+                    UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(dbCacheEntry.UtcCreation),
+                    UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(dbCacheEntry.UtcExpiry),
+                    Interval = TimeSpan.FromSeconds(dbCacheEntry.Interval)
                 };
 
                 // Quickly read the parent keys, if any.
-                if (dbCacheItem.ParentKey0 != null)
+                if (dbCacheEntry.ParentKey0 != null)
                 {
-                    if (dbCacheItem.ParentKey1 != null)
+                    if (dbCacheEntry.ParentKey1 != null)
                     {
-                        if (dbCacheItem.ParentKey2 != null)
+                        if (dbCacheEntry.ParentKey2 != null)
                         {
-                            if (dbCacheItem.ParentKey3 != null)
+                            if (dbCacheEntry.ParentKey3 != null)
                             {
-                                if (dbCacheItem.ParentKey4 != null)
+                                if (dbCacheEntry.ParentKey4 != null)
                                 {
-                                    cacheItem.ParentKeys = new[] { dbCacheItem.ParentKey0, dbCacheItem.ParentKey1, dbCacheItem.ParentKey2, dbCacheItem.ParentKey3, dbCacheItem.ParentKey4 };
+                                    cacheItem.ParentKeys = new[] { dbCacheEntry.ParentKey0, dbCacheEntry.ParentKey1, dbCacheEntry.ParentKey2, dbCacheEntry.ParentKey3, dbCacheEntry.ParentKey4 };
                                 }
-                                else cacheItem.ParentKeys = new[] { dbCacheItem.ParentKey0, dbCacheItem.ParentKey1, dbCacheItem.ParentKey2, dbCacheItem.ParentKey3 };
+                                else cacheItem.ParentKeys = new[] { dbCacheEntry.ParentKey0, dbCacheEntry.ParentKey1, dbCacheEntry.ParentKey2, dbCacheEntry.ParentKey3 };
                             }
-                            else cacheItem.ParentKeys = new[] { dbCacheItem.ParentKey0, dbCacheItem.ParentKey1, dbCacheItem.ParentKey2 };
+                            else cacheItem.ParentKeys = new[] { dbCacheEntry.ParentKey0, dbCacheEntry.ParentKey1, dbCacheEntry.ParentKey2 };
                         }
-                        else cacheItem.ParentKeys = new[] { dbCacheItem.ParentKey0, dbCacheItem.ParentKey1 };
+                        else cacheItem.ParentKeys = new[] { dbCacheEntry.ParentKey0, dbCacheEntry.ParentKey1 };
                     }
-                    else cacheItem.ParentKeys = new[] { dbCacheItem.ParentKey0 };
+                    else cacheItem.ParentKeys = new[] { dbCacheEntry.ParentKey0 };
                 }
                 else cacheItem.ParentKeys = CacheExtensions.NoParentKeys;
 
@@ -1007,35 +1021,12 @@ namespace PommaLabs.KVLite.Core
 
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
-                RemoveInternal(dbCacheItem.Partition, dbCacheItem.Key);
+                RemoveInternal(dbCacheEntry.Partition, dbCacheEntry.Key);
 
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
 
                 return Option.None<ICacheItem<TVal>>();
             }
-        }
-
-        private long TruncateAndHash(string partition, string key)
-        {
-            var cf = ConnectionFactory;
-
-            var ph = (long) XXHash.XXH32(Encoding.Default.GetBytes(partition.Truncate(cf.MaxPartitionNameLength)));
-            var kh = (long) XXHash.XXH32(Encoding.Default.GetBytes(key.Truncate(cf.MaxKeyNameLength)));
-
-            return (ph << 32) + kh;
-        }
-
-        private long TruncateAndHash(ref string partition, ref string key)
-        {
-            var cf = ConnectionFactory;
-
-            partition = partition.Truncate(cf.MaxPartitionNameLength);
-            key = key.Truncate(cf.MaxKeyNameLength);
-
-            var ph = (long) XXHash.XXH32(Encoding.Default.GetBytes(partition));
-            var kh = (long) XXHash.XXH32(Encoding.Default.GetBytes(key));
-
-            return (ph << 32) + kh;
         }
 
 #endregion Private Methods

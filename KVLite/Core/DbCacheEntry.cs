@@ -28,59 +28,35 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     internal sealed class DbCacheEntry : DbCacheValue
     {
-        public const string HashColumn = "kvli_hash";
-
-        public long Hash { get; set; }
-
-        public const string PartitionColumn = "kvli_partition";
+        public const string PartitionColumn = "kvle_partition";
 
         public string Partition { get; set; }
 
-        public const string KeyColumn = "kvli_key";
+        public const string KeyColumn = "kvle_key";
 
         public string Key { get; set; }
 
-        public const string UtcCreationColumn = "kvli_creation";
+        public const string UtcCreationColumn = "kvle_creation";
 
         public long UtcCreation { get; set; }
 
-        public const string ParentHash0Column = "kvli_parent_hash0";
-
-        public long? ParentHash0 { get; set; }
-
-        public const string ParentKey0Column = "kvli_parent_key0";
+        public const string ParentKey0Column = "kvle_parent_key0";
 
         public string ParentKey0 { get; set; }
 
-        public const string ParentHash1Column = "kvli_parent_hash1";
-
-        public long? ParentHash1 { get; set; }
-
-        public const string ParentKey1Column = "kvli_parent_key1";
+        public const string ParentKey1Column = "kvle_parent_key1";
 
         public string ParentKey1 { get; set; }
 
-        public const string ParentHash2Column = "kvli_parent_hash2";
-
-        public long? ParentHash2 { get; set; }
-
-        public const string ParentKey2Column = "kvli_parent_key2";
+        public const string ParentKey2Column = "kvle_parent_key2";
 
         public string ParentKey2 { get; set; }
 
-        public const string ParentHash3Column = "kvli_parent_hash3";
-
-        public long? ParentHash3 { get; set; }
-
-        public const string ParentKey3Column = "kvli_parent_key3";
+        public const string ParentKey3Column = "kvle_parent_key3";
 
         public string ParentKey3 { get; set; }
 
-        public const string ParentHash4Column = "kvli_parent_hash4";
-
-        public long? ParentHash4 { get; set; }
-
-        public const string ParentKey4Column = "kvli_parent_key4";
+        public const string ParentKey4Column = "kvle_parent_key4";
 
         public string ParentKey4 { get; set; }
 
@@ -95,7 +71,9 @@ namespace PommaLabs.KVLite.Core
 
         public sealed class Single
         {
-            public long Hash { get; set; }
+            public string Partition { get; set; }
+
+            public string Key { get; set; }
 
             public bool IgnoreExpiryDate { get; set; }
 

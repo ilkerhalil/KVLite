@@ -28,19 +28,19 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     internal class DbCacheValue
     {
-        public const string UtcExpiryColumn = "kvli_expiry";
+        public const string UtcExpiryColumn = "kvle_expiry";
 
         public long UtcExpiry { get; set; }
 
-        public const string IntervalColumn = "kvli_interval";
+        public const string IntervalColumn = "kvle_interval";
 
         public long Interval { get; set; }
 
-        public const string ValueColumn = "kvli_value";
+        public const string ValueColumn = "kvle_value";
 
         public byte[] Value { get; set; }
 
-        public const string CompressedColumn = "kvli_compressed";
+        public const string CompressedColumn = "kvle_compressed";
 
         public bool Compressed { get; set; }
     }
