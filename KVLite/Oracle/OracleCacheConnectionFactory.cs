@@ -175,7 +175,7 @@ namespace PommaLabs.KVLite.Oracle
             ");
 
             PeekCacheValueQuery = MinifyQuery($@"
-                       x.{DbCacheValue.UtcExpiryColumn} ""{nameof(DbCacheEntry.UtcExpiry)}"",
+                select x.{DbCacheValue.UtcExpiryColumn} ""{nameof(DbCacheEntry.UtcExpiry)}"",
                        x.{DbCacheValue.IntervalColumn} ""{nameof(DbCacheEntry.Interval)}"",
                        x.{DbCacheValue.ValueColumn} ""{nameof(DbCacheEntry.Value)}"",
                        x.{DbCacheValue.CompressedColumn} ""{nameof(DbCacheEntry.Compressed)}""

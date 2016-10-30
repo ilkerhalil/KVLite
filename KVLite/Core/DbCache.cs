@@ -643,7 +643,7 @@ namespace PommaLabs.KVLite.Core
             DbCacheValue dbCacheValue;
             using (var db = cf.Open())
             {
-                dbCacheValue = db.QuerySingleOrDefault<Core.DbCacheValue>(cf.PeekCacheValueQuery, dbCacheEntrySingle);
+                dbCacheValue = db.QuerySingleOrDefault<DbCacheValue>(cf.PeekCacheValueQuery, dbCacheEntrySingle);
 
                 if (dbCacheValue == null)
                 {
@@ -807,7 +807,7 @@ namespace PommaLabs.KVLite.Core
             DbCacheValue dbCacheValue;
             using (var db = cf.Open())
             {
-                dbCacheValue = db.QuerySingleOrDefault<Core.DbCacheValue>(cf.PeekCacheValueQuery, dbCacheEntrySingle);
+                dbCacheValue = db.QuerySingleOrDefault<DbCacheValue>(cf.PeekCacheValueQuery, dbCacheEntrySingle);
             }
 
             if (dbCacheValue == null)
