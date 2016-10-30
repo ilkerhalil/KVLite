@@ -27,7 +27,6 @@ using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using System.IO.Compression;
-using System.Reflection;
 using System.Runtime.Serialization.Formatters;
 using Troschuetz.Random;
 using Troschuetz.Random.Generators;
@@ -40,9 +39,9 @@ namespace PommaLabs.KVLite.Core
     public static class CacheConstants
     {
         /// <summary>
-        ///   The name of the assembly from which KVLite is used.
+        ///   The name of KVLite assembly, used to prefix all partitions defined in this project.
         /// </summary>
-        public static string EntryAssemblyName { get; } = Assembly.GetEntryAssembly().GetName().Name;
+        public static string PartitionPrefix { get; } = typeof(CacheConstants).Assembly.GetName().Name;
 
         /// <summary>
         ///   Default memory stream pool.
