@@ -91,6 +91,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 FullyCleanCache();
                 StoreEachDataTableAsync(MySqlCache.DefaultInstance, tables, i);
+                StoreEachDataTableAsync(OracleCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 StoreEachDataTableAsync(PersistentCache.DefaultInstance, tables, i);

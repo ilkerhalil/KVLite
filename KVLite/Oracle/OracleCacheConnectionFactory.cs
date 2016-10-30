@@ -73,20 +73,21 @@ namespace PommaLabs.KVLite.Oracle
                         @{nameof(DbCacheEntry.ParentKey4)}
                     );
 
-                    update {CacheSchemaName}.{CacheEntriesTableName}
-                       set {DbCacheValue.UtcExpiryColumn} = @{nameof(DbCacheEntry.UtcExpiry)},
-                           {DbCacheValue.IntervalColumn} = @{nameof(DbCacheEntry.Interval)},
-                           {DbCacheValue.ValueColumn} = @{nameof(DbCacheEntry.Value)},
-                           {DbCacheValue.CompressedColumn} = @{nameof(DbCacheEntry.Compressed)},
-                           {DbCacheEntry.UtcCreationColumn} = @{nameof(DbCacheEntry.UtcCreation)},
-                           {DbCacheEntry.ParentKey0Column} = @{nameof(DbCacheEntry.ParentKey0)},
-                           {DbCacheEntry.ParentKey1Column} = @{nameof(DbCacheEntry.ParentKey1)},
-                           {DbCacheEntry.ParentKey2Column} = @{nameof(DbCacheEntry.ParentKey2)},
-                           {DbCacheEntry.ParentKey3Column} = @{nameof(DbCacheEntry.ParentKey3)},
-                           {DbCacheEntry.ParentKey4Column} = @{nameof(DbCacheEntry.ParentKey4)}
-                     where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Partition)}
-                       and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Key)}
-                       and changes() = 0; -- Above INSERT has failed
+                    exception 
+                        when dup_val_on_index then -- Above INSERT has failed
+                        update {CacheSchemaName}.{CacheEntriesTableName}
+                           set {DbCacheValue.UtcExpiryColumn} = @{nameof(DbCacheEntry.UtcExpiry)},
+                               {DbCacheValue.IntervalColumn} = @{nameof(DbCacheEntry.Interval)},
+                               {DbCacheValue.ValueColumn} = @{nameof(DbCacheEntry.Value)},
+                               {DbCacheValue.CompressedColumn} = @{nameof(DbCacheEntry.Compressed)},
+                               {DbCacheEntry.UtcCreationColumn} = @{nameof(DbCacheEntry.UtcCreation)},
+                               {DbCacheEntry.ParentKey0Column} = @{nameof(DbCacheEntry.ParentKey0)},
+                               {DbCacheEntry.ParentKey1Column} = @{nameof(DbCacheEntry.ParentKey1)},
+                               {DbCacheEntry.ParentKey2Column} = @{nameof(DbCacheEntry.ParentKey2)},
+                               {DbCacheEntry.ParentKey3Column} = @{nameof(DbCacheEntry.ParentKey3)},
+                               {DbCacheEntry.ParentKey4Column} = @{nameof(DbCacheEntry.ParentKey4)}
+                         where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Partition)}
+                           and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Key)};
                 end
             ");
 
