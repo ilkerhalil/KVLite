@@ -212,6 +212,7 @@ namespace PommaLabs.KVLite.Memory
                         {
                             using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
                             {
+                                serializedStream.Position = 0L;
                                 serializedStream.CopyTo(compressionStream);
                             }
                             serializedValue = compressedStream.ToArray();

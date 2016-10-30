@@ -22,13 +22,13 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_entries` (
 	INDEX `fk_kvle_parent2` (`kvle_partition`, `kvle_parent_key2`),
 	INDEX `fk_kvle_parent3` (`kvle_partition`, `kvle_parent_key3`),
 	INDEX `fk_kvle_parent4` (`kvle_partition`, `kvle_parent_key4`),
-	CONSTRAINT `fk_kvle_parent0` FOREIGN KEY (`kvle_partition`, `kvle_parent_hash0`) REFERENCES `kvl_cache_entries` (`kvle_partition`, `kvle_key`) ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT `fk_kvle_parent1` FOREIGN KEY (`kvle_partition`, `kvle_parent_hash1`) REFERENCES `kvl_cache_entries` (`kvle_partition`, `kvle_key`) ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT `fk_kvle_parent2` FOREIGN KEY (`kvle_partition`, `kvle_parent_hash2`) REFERENCES `kvl_cache_entries` (`kvle_partition`, `kvle_key`) ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT `fk_kvle_parent3` FOREIGN KEY (`kvle_partition`, `kvle_parent_hash3`) REFERENCES `kvl_cache_entries` (`kvle_partition`, `kvle_key`) ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT `fk_kvle_parent4` FOREIGN KEY (`kvle_partition`, `kvle_parent_hash4`) REFERENCES `kvl_cache_entries` (`kvle_partition`, `kvle_key`) ON UPDATE CASCADE ON DELETE CASCADE
+	CONSTRAINT `fk_kvle_parent0` FOREIGN KEY (`kvle_partition`, `kvle_parent_key0`) REFERENCES `kvl_cache_entries` (`kvle_partition`, `kvle_key`) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT `fk_kvle_parent1` FOREIGN KEY (`kvle_partition`, `kvle_parent_key1`) REFERENCES `kvl_cache_entries` (`kvle_partition`, `kvle_key`) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT `fk_kvle_parent2` FOREIGN KEY (`kvle_partition`, `kvle_parent_key2`) REFERENCES `kvl_cache_entries` (`kvle_partition`, `kvle_key`) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT `fk_kvle_parent3` FOREIGN KEY (`kvle_partition`, `kvle_parent_key3`) REFERENCES `kvl_cache_entries` (`kvle_partition`, `kvle_key`) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT `fk_kvle_parent4` FOREIGN KEY (`kvle_partition`, `kvle_parent_key4`) REFERENCES `kvl_cache_entries` (`kvle_partition`, `kvle_key`) ON UPDATE CASCADE ON DELETE CASCADE
 )
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB
-ROW_FORMAT=COMPRESSED
+ROW_FORMAT=DYNAMIC
 ;
