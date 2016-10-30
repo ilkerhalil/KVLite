@@ -53,7 +53,7 @@ namespace PommaLabs.KVLite.Memory
         /// </summary>
         public MemoryCacheSettings()
         {
-            DefaultPartition = "KVLite.DefaultPartition";
+            DefaultPartition = $"{CacheConstants.EntryAssemblyName}.Default";
             StaticIntervalInDays = 30;
             MaxCacheSizeInMB = 256;
             MinValueLengthForCompression = 4096;

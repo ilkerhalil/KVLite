@@ -51,7 +51,7 @@ namespace PommaLabs.KVLite.Core
         public DbCacheSettings()
         {
             // Default values.
-            DefaultPartition = "kvl.default";
+            DefaultPartition = $"{CacheConstants.EntryAssemblyName}.Default";
             StaticIntervalInDays = 30;
             ChancesOfAutoCleanup = 0.01;
             MinValueLengthForCompression = 4096;

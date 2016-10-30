@@ -38,7 +38,7 @@ namespace PommaLabs.KVLite.WebForms
         /// <summary>
         ///   The partition used by output cache provider items.
         /// </summary>
-        public const string OutputCachePartition = "KVL.Web.OC";
+        public static readonly string OutputCachePartition = $"{CacheConstants.EntryAssemblyName}.WebFormsResponses";
 
         /// <summary>
         ///   Initializes the provider using the specified cache.

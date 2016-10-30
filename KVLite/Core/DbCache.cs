@@ -78,11 +78,11 @@ namespace PommaLabs.KVLite.Core
 
             Settings = settings;
             Settings.ConnectionFactory = connectionFactory;
-            Clock = clock ?? Constants.DefaultClock;
-            Serializer = serializer ?? Constants.DefaultSerializer;
-            Compressor = compressor ?? Constants.DefaultCompressor;
-            MemoryStreamPool = memoryStreamPool ?? Constants.DefaultMemoryStreamPool;
-            RandomGenerator = randomGenerator ?? Constants.CreateRandomGenerator();
+            Clock = clock ?? CacheConstants.DefaultClock;
+            Serializer = serializer ?? CacheConstants.DefaultSerializer;
+            Compressor = compressor ?? CacheConstants.DefaultCompressor;
+            MemoryStreamPool = memoryStreamPool ?? CacheConstants.DefaultMemoryStreamPool;
+            RandomGenerator = randomGenerator ?? CacheConstants.CreateRandomGenerator();
         }
 
         #endregion Construction

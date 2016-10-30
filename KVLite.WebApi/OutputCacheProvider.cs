@@ -53,7 +53,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <summary>
         ///   The partition used by Web API output cache provider items.
         /// </summary>
-        public const string ResponseCachePartition = "KVL.WebApi.OCP";
+        public static readonly string ResponseCachePartition = $"{CacheConstants.EntryAssemblyName}.WebApiResponses";
 
         #endregion Constants
 

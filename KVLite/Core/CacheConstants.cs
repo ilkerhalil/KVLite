@@ -27,6 +27,7 @@ using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using System.IO.Compression;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters;
 using Troschuetz.Random;
 using Troschuetz.Random.Generators;
@@ -36,8 +37,13 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Shared constants.
     /// </summary>
-    internal static class Constants
+    public static class CacheConstants
     {
+        /// <summary>
+        ///   The name of the assembly from which KVLite is used.
+        /// </summary>
+        public static string EntryAssemblyName { get; } = Assembly.GetEntryAssembly().GetName().Name;
+
         /// <summary>
         ///   Default memory stream pool.
         /// </summary>
