@@ -105,12 +105,12 @@ namespace PommaLabs.KVLite.UnitTests
             }
         }
 
-        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        [Test]
         public void Dispose_ObjectDisposedExceptionAfterDispose()
         {
             Cache = new PersistentCache(new PersistentCacheSettings());
             Cache.Dispose();
-            Cache.Count();
+            Assert.Throws<NotSupportedException>(() => { Cache.Count(); });         
         }
 
         #endregion Cache creation and disposal

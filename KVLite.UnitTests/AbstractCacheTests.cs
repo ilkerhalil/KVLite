@@ -115,80 +115,78 @@ namespace PommaLabs.KVLite.UnitTests
 
         #region Parent keys management
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void AddSliding_TooManyParentKeys()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Cache.AddSliding(p, k, v, TimeSpan.FromDays(1), t);
+            Assert.Throws<NotSupportedException>(() => { Cache.AddSliding(p, k, v, TimeSpan.FromDays(1), t); });            
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void AddStatic_TooManyParentKeys()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Cache.AddStatic(p, k, v, t);
+            Assert.Throws<NotSupportedException>(() => { Cache.AddStatic(p, k, v, t); });           
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void AddTimed_TooManyParentKeys()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Cache.AddTimed(p, k, v, TimeSpan.FromDays(1), t);
+            Assert.Throws<NotSupportedException>(() => { Cache.AddTimed(p, k, v, TimeSpan.FromDays(1), t); });           
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void GetOrAddSliding_TooManyParentKeys()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Cache.GetOrAddSliding(p, k, () => v, TimeSpan.FromDays(1), t);
+            Assert.Throws<NotSupportedException>(() => { Cache.GetOrAddSliding(p, k, () => v, TimeSpan.FromDays(1), t); });        
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void GetOrAddStatic_TooManyParentKeys()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Cache.GetOrAddStatic(p, k, () => v, t);
+            Assert.Throws<NotSupportedException>(() => { Cache.GetOrAddStatic(p, k, () => v, t); });  
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void GetOrAddTimed_TooManyParentKeys()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Cache.GetOrAddTimed(p, k, () => v, TimeSpan.FromDays(1), t);
+            Assert.Throws<NotSupportedException>(() => { Cache.GetOrAddTimed(p, k, () => v, TimeSpan.FromDays(1), t); });         
         }
 
         #endregion
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddSliding_NullKey()
         {
-            Cache.AddSlidingToDefaultPartition(null, StringItems[1], TimeSpan.FromSeconds(10));
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddSlidingToDefaultPartition(null, StringItems[1], TimeSpan.FromSeconds(10)); });         
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddSliding_NullPartition()
         {
-            Cache.AddSliding(null, StringItems[0], StringItems[1], TimeSpan.FromSeconds(10));
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddSliding(null, StringItems[0], StringItems[1], TimeSpan.FromSeconds(10)); });        
         }
 
         [Test]
@@ -332,17 +330,15 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddStatic_NullKey()
         {
-            Cache.AddStaticToDefaultPartition(null, StringItems[1]);
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddStaticToDefaultPartition(null, StringItems[1]); });           
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddStatic_NullPartition()
         {
-            Cache.AddStatic(null, StringItems[0], StringItems[1]);
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddStatic(null, StringItems[0], StringItems[1]); });       
         }
 
         [Test]
@@ -529,17 +525,15 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddTimed_NullKey()
         {
-            Cache.AddTimedToDefaultPartition(null, StringItems[1], Cache.Clock.UtcNow);
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddTimedToDefaultPartition(null, StringItems[1], Cache.Clock.UtcNow); });          
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddTimed_NullPartition()
         {
-            Cache.AddTimed(null, StringItems[0], StringItems[1], Cache.Clock.UtcNow);
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddTimed(null, StringItems[0], StringItems[1], Cache.Clock.UtcNow); });          
         }
 
         [Test]

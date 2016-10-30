@@ -110,12 +110,12 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.That(cache.Disposed, Is.True);
         }
 
-        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        [Test]
         public void Dispose_ObjectDisposedExceptionAfterDispose()
         {
             Cache = new VolatileCache(new VolatileCacheSettings());
             Cache.Dispose();
-            Cache.Count();
+            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });      
         }
 
         #endregion Cache creation and disposal

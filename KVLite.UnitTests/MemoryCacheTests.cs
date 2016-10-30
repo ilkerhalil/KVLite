@@ -174,12 +174,12 @@ namespace PommaLabs.KVLite.UnitTests
             Cache.Dispose();
         }
 
-        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        [Test]
         public void Dispose_DefaultSystemMemoryCache_CannotWorkAfterDispose()
         {
             Cache = new MemoryCache(new MemoryCacheSettings());
             Cache.Dispose();
-            Cache.Count();
+            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });        
         }
 
         [Test]
@@ -197,74 +197,74 @@ namespace PommaLabs.KVLite.UnitTests
             Cache.Dispose();
         }
 
-        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        [Test]
         public void Dispose_CustomSystemMemoryCache_ObjectDisposedExceptionAfterDispose()
         {
             Cache = new MemoryCache(new MemoryCacheSettings { CacheName = "PINO" });
             Cache.Dispose();
-            Cache.Count();
+            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });         
         }
 
         #endregion SystemMemoryCache disposal
 
         #region Peek - Not supported
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void Peek_ShouldThrowNotSupportedException()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             Cache.AddStatic(p, k, v);
-            Cache.Peek<string>(p, k);
+            Assert.Throws<NotSupportedException>(() => { Cache.Peek<string>(p, k); });        
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void PeekIntoDefaultPartition_ShouldThrowNotSupportedException()
         {
             var k = StringItems[1];
             var v = StringItems[2];
             Cache.AddStaticToDefaultPartition(k, v);
-            Cache.PeekIntoDefaultPartition<string>(k);
+            Assert.Throws<NotSupportedException>(() => { Cache.PeekIntoDefaultPartition<string>(k); });        
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void PeekItem_ShouldThrowNotSupportedException()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             Cache.AddStatic(p, k, v);
-            Cache.PeekItem<string>(p, k);
+            Assert.Throws<NotSupportedException>(() => { Cache.PeekItem<string>(p, k); });          
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void PeekItemIntoDefaultPartition_ShouldThrowNotSupportedException()
         {
             var k = StringItems[1];
             var v = StringItems[2];
             Cache.AddStaticToDefaultPartition(k, v);
-            Cache.PeekItemIntoDefaultPartition<string>(k);
+            Assert.Throws<NotSupportedException>(() => { Cache.PeekItemIntoDefaultPartition<string>(k); });        
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void PeekItems_AllCache_ShouldThrowNotSupportedException()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             Cache.AddStatic(p, k, v);
-            Cache.PeekItems<string>();
+            Assert.Throws<NotSupportedException>(() => { Cache.PeekItems<string>(); });      
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void PeekItems_OnePartition_ShouldThrowNotSupportedException()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             Cache.AddStatic(p, k, v);
-            Cache.PeekItems<string>(p);
+            Assert.Throws<NotSupportedException>(() => { Cache.PeekItems<string>(p); });          
         }
 
         #endregion
