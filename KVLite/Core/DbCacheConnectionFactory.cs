@@ -350,7 +350,7 @@ namespace PommaLabs.KVLite.Core
                 select sum(length({DbCacheEntry.PartitionColumn}))
                      + sum(length({DbCacheEntry.KeyColumn}))
                      + sum(length({DbCacheValue.ValueColumn}))
-                     + 3*8 -- Three fields of 8 bytes: expiry, interval, creation
+                     + count(*) * (3*8) -- Three fields of 8 bytes: expiry, interval, creation
                   from {CacheSchemaName}.{CacheEntriesTableName};
             ");
 
