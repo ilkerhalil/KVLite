@@ -20,7 +20,7 @@
 );
 
 
-CREATE INDEX [ix_kvle_exp_part] ON [dbo].[kvl_cache_entries] ([kvle_expiry], [kvle_partition])
+CREATE INDEX [ix_kvle_exp_part] ON [dbo].[kvl_cache_entries] ([kvle_expiry] DESC, [kvle_partition] ASC)
 GO
 
 

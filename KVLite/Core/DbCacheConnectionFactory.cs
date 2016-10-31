@@ -23,6 +23,7 @@
 
 using PommaLabs.Thrower;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,7 +35,11 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     public abstract class DbCacheConnectionFactory : IDbCacheConnectionFactory
     {
+        private static readonly Regex IsValidSqlNameRegex = new Regex("[a-z0-9_]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         private readonly DbProviderFactory _dbProviderFactory;
+        private string _cacheSchemaName;
+        private string _cacheEntriesTableName;
 
         /// <summary>
         ///   Initializes the cache connection factory.
@@ -44,17 +49,19 @@ namespace PommaLabs.KVLite.Core
         /// <param name="cacheEntriesTableName">Optional cache entries table name.</param>
         protected DbCacheConnectionFactory(DbProviderFactory dbProviderFactory, string cacheSchemaName, string cacheEntriesTableName)
         {
-            var sqlNameRegex = new Regex("[a-z0-9_]+", RegexOptions.IgnoreCase);
-
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(dbProviderFactory, nameof(dbProviderFactory));
-            Raise.ArgumentException.If(cacheSchemaName != null && !sqlNameRegex.IsMatch(cacheSchemaName));
-            Raise.ArgumentException.If(cacheEntriesTableName != null && !sqlNameRegex.IsMatch(cacheEntriesTableName));
+            Raise.ArgumentException.If(cacheSchemaName != null && !IsValidSqlNameRegex.IsMatch(cacheSchemaName));
+            Raise.ArgumentException.If(cacheEntriesTableName != null && !IsValidSqlNameRegex.IsMatch(cacheEntriesTableName));
 
             _dbProviderFactory = dbProviderFactory;
 
-            CacheSchemaName = cacheSchemaName ?? DefaultCacheSchemaName;
-            CacheEntriesTableName = cacheEntriesTableName ?? DefaultCacheEntriesTableName;
+            _cacheSchemaName = cacheSchemaName ?? DefaultCacheSchemaName;
+            _cacheEntriesTableName = cacheEntriesTableName ?? DefaultCacheEntriesTableName;
+
+#pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
+            UpdateCommandsAndQueries();
+#pragma warning restore RECS0021 // Warns about calls to virtual member functions occuring in the constructor
         }
 
         #region Configuration
@@ -72,12 +79,48 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   The schema which holds cache entries table.
         /// </summary>
-        public string CacheSchemaName { get; set; }
+        public string CacheSchemaName
+        {
+            get
+            {
+                var result = _cacheSchemaName;
+
+                // Postconditions
+                Debug.Assert(IsValidSqlNameRegex.IsMatch(result));
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                Raise.ArgumentException.IfNot(IsValidSqlNameRegex.IsMatch(value));
+
+                _cacheSchemaName = value;
+                UpdateCommandsAndQueries();
+            }
+        }
 
         /// <summary>
         ///   The name of the table which holds cache entries.
         /// </summary>
-        public string CacheEntriesTableName { get; set; }
+        public string CacheEntriesTableName
+        {
+            get
+            {
+                var result = _cacheEntriesTableName;
+
+                // Postconditions
+                Debug.Assert(IsValidSqlNameRegex.IsMatch(result));
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                Raise.ArgumentException.IfNot(IsValidSqlNameRegex.IsMatch(value));
+
+                _cacheEntriesTableName = value;
+                UpdateCommandsAndQueries();
+            }
+        }
 
         /// <summary>
         ///   The maximum length a partition can have. Longer partitions will be truncated.
@@ -196,6 +239,123 @@ namespace PommaLabs.KVLite.Core
 #endif
 
         #region Query optimization
+
+        /// <summary>
+        ///   The symbol used to enclose an identifier (left side).
+        /// </summary>
+        protected virtual string LeftIdentifierEncloser { get; } = string.Empty;
+
+        /// <summary>
+        ///   The symbol used to enclose an identifier (right side).
+        /// </summary>
+        protected virtual string RightIdentifierEncloser { get; } = string.Empty;
+
+        /// <summary>
+        ///   This method is called when either the cache schema name or the cache entries table name have been changed by the user.
+        /// </summary>
+        protected virtual void UpdateCommandsAndQueries()
+        {
+            var l = LeftIdentifierEncloser;
+            var r = RightIdentifierEncloser;
+
+            #region Commands
+
+            DeleteCacheEntryCommand = MinifyQuery($@"
+                delete from {CacheSchemaName}.{CacheEntriesTableName}
+                 where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Single.Partition)}
+                   and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Single.Key)}
+            ");
+
+            DeleteCacheEntriesCommand = MinifyQuery($@"
+                delete from {CacheSchemaName}.{CacheEntriesTableName}
+                 where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
+                   and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheValue.UtcExpiryColumn} < @{nameof(DbCacheEntry.Group.UtcExpiry)})
+            ");
+
+            UpdateCacheEntryExpiryCommand = MinifyQuery($@"
+                update {CacheSchemaName}.{CacheEntriesTableName}
+                   set {DbCacheValue.UtcExpiryColumn} = @{nameof(DbCacheEntry.Single.UtcExpiry)}
+                 where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Single.Partition)}
+                   and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Single.Key)}
+            ");
+
+            #endregion
+
+            #region Queries
+
+            ContainsCacheEntryQuery = MinifyQuery($@"
+                select count(*)
+                  from {CacheSchemaName}.{CacheEntriesTableName}
+                 where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Single.Partition)}
+                   and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Single.Key)}
+                   and {DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)}
+            ");
+
+            CountCacheEntriesQuery = MinifyQuery($@"
+                select count(*)
+                  from {CacheSchemaName}.{CacheEntriesTableName}
+                 where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
+                   and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
+            ");
+
+            PeekCacheEntriesQuery = MinifyQuery($@"
+                select x.{DbCacheEntry.PartitionColumn}   {l}{nameof(DbCacheEntry.Partition)}{r},
+                       x.{DbCacheEntry.KeyColumn}         {l}{nameof(DbCacheEntry.Key)}{r},
+                       x.{DbCacheValue.UtcExpiryColumn}   {l}{nameof(DbCacheEntry.UtcExpiry)}{r},
+                       x.{DbCacheValue.IntervalColumn}    {l}{nameof(DbCacheEntry.Interval)}{r},
+                       x.{DbCacheValue.ValueColumn}       {l}{nameof(DbCacheEntry.Value)}{r},
+                       x.{DbCacheValue.CompressedColumn}  {l}{nameof(DbCacheEntry.Compressed)}{r},
+                       x.{DbCacheEntry.UtcCreationColumn} {l}{nameof(DbCacheEntry.UtcCreation)}{r},
+                       x.{DbCacheEntry.ParentKey0Column}  {l}{nameof(DbCacheEntry.ParentKey0)}{r},
+                       x.{DbCacheEntry.ParentKey1Column}  {l}{nameof(DbCacheEntry.ParentKey1)}{r},
+                       x.{DbCacheEntry.ParentKey2Column}  {l}{nameof(DbCacheEntry.ParentKey2)}{r},
+                       x.{DbCacheEntry.ParentKey3Column}  {l}{nameof(DbCacheEntry.ParentKey3)}{r},
+                       x.{DbCacheEntry.ParentKey4Column}  {l}{nameof(DbCacheEntry.ParentKey4)}{r}
+                  from {CacheSchemaName}.{CacheEntriesTableName} x
+                 where (@{nameof(DbCacheEntry.Group.Partition)} is null or x.{DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
+                   and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
+            ");
+
+            PeekCacheEntryQuery = MinifyQuery($@"
+                select x.{DbCacheEntry.PartitionColumn}   {l}{nameof(DbCacheEntry.Partition)}{r},
+                       x.{DbCacheEntry.KeyColumn}         {l}{nameof(DbCacheEntry.Key)}{r},
+                       x.{DbCacheValue.UtcExpiryColumn}   {l}{nameof(DbCacheEntry.UtcExpiry)}{r},
+                       x.{DbCacheValue.IntervalColumn}    {l}{nameof(DbCacheEntry.Interval)}{r},
+                       x.{DbCacheValue.ValueColumn}       {l}{nameof(DbCacheEntry.Value)}{r},
+                       x.{DbCacheValue.CompressedColumn}  {l}{nameof(DbCacheEntry.Compressed)}{r},
+                       x.{DbCacheEntry.UtcCreationColumn} {l}{nameof(DbCacheEntry.UtcCreation)}{r},
+                       x.{DbCacheEntry.ParentKey0Column}  {l}{nameof(DbCacheEntry.ParentKey0)}{r},
+                       x.{DbCacheEntry.ParentKey1Column}  {l}{nameof(DbCacheEntry.ParentKey1)}{r},
+                       x.{DbCacheEntry.ParentKey2Column}  {l}{nameof(DbCacheEntry.ParentKey2)}{r},
+                       x.{DbCacheEntry.ParentKey3Column}  {l}{nameof(DbCacheEntry.ParentKey3)}{r},
+                       x.{DbCacheEntry.ParentKey4Column}  {l}{nameof(DbCacheEntry.ParentKey4)}{r}
+                  from {CacheSchemaName}.{CacheEntriesTableName} x
+                 where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Single.Partition)}
+                   and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Single.Key)}
+                   and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
+            ");
+
+            PeekCacheValueQuery = MinifyQuery($@"
+                select x.{DbCacheValue.UtcExpiryColumn}  {l}{nameof(DbCacheEntry.UtcExpiry)}{r},
+                       x.{DbCacheValue.IntervalColumn}   {l}{nameof(DbCacheEntry.Interval)}{r},
+                       x.{DbCacheValue.ValueColumn}      {l}{nameof(DbCacheEntry.Value)}{r},
+                       x.{DbCacheValue.CompressedColumn} {l}{nameof(DbCacheEntry.Compressed)}{r}
+                  from {CacheSchemaName}.{CacheEntriesTableName} x
+                 where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Single.Partition)}
+                   and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Single.Key)}
+                   and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
+            ");
+
+            GetCacheSizeInBytesQuery = MinifyQuery($@"
+                select sum(length({DbCacheEntry.PartitionColumn}))
+                     + sum(length({DbCacheEntry.KeyColumn}))
+                     + sum(length({DbCacheValue.ValueColumn}))
+                     + 3*8 -- Three fields of 8 bytes: expiry, interval, creation
+                  from {CacheSchemaName}.{CacheEntriesTableName};
+            ");
+
+            #endregion
+        }
 
         /// <summary>
         ///   Minifies specified query.

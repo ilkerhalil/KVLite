@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_entries` (
 	`kvle_parent_key4` VARCHAR(255) NULL DEFAULT NULL,
 	PRIMARY KEY (`kvle_id`),
 	UNIQUE `uk_kvle` (`kvle_partition`, `kvle_key`),
-	INDEX `ix_kvle_exp_part` (`kvle_expiry`, `kvle_partition`),
+	INDEX `ix_kvle_exp_part` (`kvle_expiry` DESC, `kvle_partition` ASC),
 	INDEX `fk_kvle_parent0` (`kvle_partition`, `kvle_parent_key0`),
 	INDEX `fk_kvle_parent1` (`kvle_partition`, `kvle_parent_key1`),
 	INDEX `fk_kvle_parent2` (`kvle_partition`, `kvle_parent_key2`),

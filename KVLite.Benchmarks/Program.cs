@@ -81,17 +81,11 @@ namespace PommaLabs.KVLite.Benchmarks
 
             for (var i = 0; i < IterationCount; ++i)
             {
-                //FullyCleanCache();
-                //StoreEachDataTable(OracleCache.DefaultInstance, tables, i);
-
-                //FullyCleanCache();
-                //PeekEachDataTable(OracleCache.DefaultInstance, tables, i);
-
                 /*** STORE EACH DATA TABLE ASYNC ***/
 
                 FullyCleanCache();
                 StoreEachDataTableAsync(MySqlCache.DefaultInstance, tables, i);
-                StoreEachDataTableAsync(OracleCache.DefaultInstance, tables, i);
+                //StoreEachDataTableAsync(OracleCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 StoreEachDataTableAsync(PersistentCache.DefaultInstance, tables, i);
