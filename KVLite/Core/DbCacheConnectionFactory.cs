@@ -241,6 +241,11 @@ namespace PommaLabs.KVLite.Core
         #region Query optimization
 
         /// <summary>
+        ///   Function used to estimate cache size.
+        /// </summary>
+        protected virtual string LengthSqlFunction { get; } = "length";
+
+        /// <summary>
         ///   The symbol used to enclose an identifier (left side).
         /// </summary>
         protected virtual string LeftIdentifierEncloser { get; } = string.Empty;
@@ -269,7 +274,7 @@ namespace PommaLabs.KVLite.Core
             DeleteCacheEntriesCommand = MinifyQuery($@"
                 delete from {CacheSchemaName}.{CacheEntriesTableName}
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
-                   and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheValue.UtcExpiryColumn} < @{nameof(DbCacheEntry.Group.UtcExpiry)})
+                   and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} < @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
             UpdateCacheEntryExpiryCommand = MinifyQuery($@"
@@ -295,7 +300,7 @@ namespace PommaLabs.KVLite.Core
                 select count(*)
                   from {CacheSchemaName}.{CacheEntriesTableName}
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
-                   and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or {DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
+                   and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
             PeekCacheEntriesQuery = MinifyQuery($@"
@@ -313,7 +318,7 @@ namespace PommaLabs.KVLite.Core
                        x.{DbCacheEntry.ParentKey4Column}  {l}{nameof(DbCacheEntry.ParentKey4)}{r}
                   from {CacheSchemaName}.{CacheEntriesTableName} x
                  where (@{nameof(DbCacheEntry.Group.Partition)} is null or x.{DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
-                   and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
+                   and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
             PeekCacheEntryQuery = MinifyQuery($@"
@@ -332,7 +337,7 @@ namespace PommaLabs.KVLite.Core
                   from {CacheSchemaName}.{CacheEntriesTableName} x
                  where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Single.Partition)}
                    and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Single.Key)}
-                   and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
+                   and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
             ");
 
             PeekCacheValueQuery = MinifyQuery($@"
@@ -343,13 +348,13 @@ namespace PommaLabs.KVLite.Core
                   from {CacheSchemaName}.{CacheEntriesTableName} x
                  where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Single.Partition)}
                    and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Single.Key)}
-                   and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
+                   and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
             ");
 
             GetCacheSizeInBytesQuery = MinifyQuery($@"
-                select sum(length({DbCacheEntry.PartitionColumn}))
-                     + sum(length({DbCacheEntry.KeyColumn}))
-                     + sum(length({DbCacheValue.ValueColumn}))
+                select sum({LengthSqlFunction}({DbCacheEntry.PartitionColumn}))
+                     + sum({LengthSqlFunction}({DbCacheEntry.KeyColumn}))
+                     + sum({LengthSqlFunction}({DbCacheValue.ValueColumn}))
                      + count(*) * (3*8) -- Three fields of 8 bytes: expiry, interval, creation
                   from {CacheSchemaName}.{CacheEntriesTableName};
             ");

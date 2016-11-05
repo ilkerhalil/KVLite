@@ -30,6 +30,7 @@ using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.MySql;
 using PommaLabs.KVLite.Oracle;
 using PommaLabs.KVLite.SQLite;
+using PommaLabs.KVLite.SqlServer;
 using PommaLabs.KVLite.UnitTests;
 using System;
 using System.Collections.Generic;
@@ -59,11 +60,12 @@ namespace PommaLabs.KVLite.Benchmarks
                 return;
             }
 
-            MySqlCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString;
+            MySqlCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(MySql)].ConnectionString;
+            SqlServerCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(SqlServer)].ConnectionString;
 
             OracleCache.DefaultInstance.ConnectionFactory.CacheSchemaName = "CARAVAN";
             OracleCache.DefaultInstance.ConnectionFactory.CacheEntriesTableName = "CRVN_KVL_CACHE_ITEMS";
-            OracleCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings["Oracle"].ConnectionString;
+            OracleCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(Oracle)].ConnectionString;
 
             Console.WriteLine(@"Running vacuum on DB...");
             PersistentCache.DefaultInstance.Vacuum();
@@ -85,7 +87,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 FullyCleanCache();
                 StoreEachDataTableAsync(MySqlCache.DefaultInstance, tables, i);
-                //StoreEachDataTableAsync(OracleCache.DefaultInstance, tables, i);
+                StoreEachDataTableAsync(SqlServerCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 StoreEachDataTableAsync(PersistentCache.DefaultInstance, tables, i);
@@ -100,6 +102,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 FullyCleanCache();
                 StoreEachDataTable(MySqlCache.DefaultInstance, tables, i);
+                StoreEachDataTable(SqlServerCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 StoreEachDataTable(PersistentCache.DefaultInstance, tables, i);
@@ -114,6 +117,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 FullyCleanCache();
                 StoreEachDataTableTwoTimes(MySqlCache.DefaultInstance, tables, i);
+                StoreEachDataTableTwoTimes(SqlServerCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 StoreEachDataTableTwoTimes(PersistentCache.DefaultInstance, tables, i);
@@ -128,6 +132,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 FullyCleanCache();
                 RemoveEachDataTable(MySqlCache.DefaultInstance, tables, i);
+                RemoveEachDataTable(SqlServerCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 RemoveEachDataTable(PersistentCache.DefaultInstance, tables, i);
@@ -142,6 +147,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 FullyCleanCache();
                 RemoveEachDataTableAsync(MySqlCache.DefaultInstance, tables, i);
+                RemoveEachDataTableAsync(SqlServerCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 RemoveEachDataTableAsync(PersistentCache.DefaultInstance, tables, i);
@@ -156,6 +162,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 FullyCleanCache();
                 PeekEachDataTable(MySqlCache.DefaultInstance, tables, i);
+                PeekEachDataTable(SqlServerCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 PeekEachDataTable(PersistentCache.DefaultInstance, tables, i);
@@ -170,6 +177,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 FullyCleanCache();
                 RetrieveEachDataTable(MySqlCache.DefaultInstance, tables, i);
+                RetrieveEachDataTable(SqlServerCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 RetrieveEachDataTable(PersistentCache.DefaultInstance, tables, i);
@@ -184,6 +192,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 FullyCleanCache();
                 RetrieveEachDataTableItem(MySqlCache.DefaultInstance, tables, i);
+                RetrieveEachDataTableItem(SqlServerCache.DefaultInstance, tables, i);
 
                 FullyCleanCache();
                 RetrieveEachDataTableItem(PersistentCache.DefaultInstance, tables, i);
@@ -244,6 +253,7 @@ namespace PommaLabs.KVLite.Benchmarks
             VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             MySqlCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             OracleCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            SqlServerCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             MemoryCache.DefaultInstance.Clear();
             Console.WriteLine(@"Cache cleaned!");
         }
