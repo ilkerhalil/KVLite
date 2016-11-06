@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite.SqlServer</id>
-    <version>6.0.2</version>
+    <version>6.0.3</version>
     <title>KVLite - SQL Server driver</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
@@ -26,7 +26,7 @@ KVLite is a partition-based key-value store built on SQL and Entity Framework. T
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
-      <dependency id="PommaLabs.KVLite" version="6.0.2" />
+      <dependency id="PommaLabs.KVLite" version="6.0.3" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>
