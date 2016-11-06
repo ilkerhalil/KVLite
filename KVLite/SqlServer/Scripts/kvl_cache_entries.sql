@@ -5,7 +5,7 @@ DROP TABLE [kvlite].[kvl_cache_entries];
 
 GO
 CREATE TABLE [kvlite].[kvl_cache_entries] (
-    [kvle_id]          UNIQUEIDENTIFIER ROWGUIDCOL NOT NULL,
+    [kvle_id]          UNIQUEIDENTIFIER ROWGUIDCOL NOT NULL DEFAULT NEWSEQUENTIALID(),
     [kvle_partition]   NVARCHAR (255) NOT NULL,
     [kvle_key]         NVARCHAR (255) NOT NULL,
     [kvle_expiry]      BIGINT NOT NULL,
