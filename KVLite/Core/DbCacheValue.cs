@@ -28,20 +28,44 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     internal class DbCacheValue
     {
+        /// <summary>
+        ///   SQL column name of <see cref="UtcExpiry"/>.
+        /// </summary>
         public const string UtcExpiryColumn = "kvle_expiry";
 
+        /// <summary>
+        ///   When the entry will expire, expressed as seconds after UNIX epoch.
+        /// </summary>
         public long UtcExpiry { get; set; }
 
+        /// <summary>
+        ///   SQL column name of <see cref="Interval"/>.
+        /// </summary>
         public const string IntervalColumn = "kvle_interval";
 
+        /// <summary>
+        ///   How many seconds should be used to extend expiry time when the entry is retrieved.
+        /// </summary>
         public long Interval { get; set; }
 
+        /// <summary>
+        ///   SQL column name of <see cref="Value"/>.
+        /// </summary>
         public const string ValueColumn = "kvle_value";
 
+        /// <summary>
+        ///   Serialized and optionally compressed content of this entry.
+        /// </summary>
         public byte[] Value { get; set; }
 
+        /// <summary>
+        ///   SQL column name of <see cref="Compressed"/>.
+        /// </summary>
         public const string CompressedColumn = "kvle_compressed";
 
+        /// <summary>
+        ///   Whether the entry content was compressed or not.
+        /// </summary>
         public bool Compressed { get; set; }
     }
 }

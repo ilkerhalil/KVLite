@@ -35,14 +35,9 @@ namespace PommaLabs.KVLite.SqlServer
         ///   Cache connection factory specialized for SQL Server.
         /// </summary>
         public SqlServerCacheConnectionFactory()
-            : base(SqlClientFactory.Instance, DefaultCacheSchemaName, null)
+            : base(SqlClientFactory.Instance, null, null)
         {
         }
-
-        /// <summary>
-        ///   Default cache schema name for SQL Server.
-        /// </summary>
-        public static new string DefaultCacheSchemaName { get; } = $"{DbCacheConnectionFactory.DefaultCacheSchemaName}.dbo";
 
         /// <summary>
         ///   Function used to estimate cache size.

@@ -28,36 +28,84 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     internal sealed class DbCacheEntry : DbCacheValue
     {
+        /// <summary>
+        ///   SQL column name of <see cref="Partition"/>.
+        /// </summary>
         public const string PartitionColumn = "kvle_partition";
 
+        /// <summary>
+        ///   A partition holds a group of related keys.
+        /// </summary>
         public string Partition { get; set; }
 
+        /// <summary>
+        ///   SQL column name of <see cref="Key"/>.
+        /// </summary>
         public const string KeyColumn = "kvle_key";
 
+        /// <summary>
+        ///   A key uniquely identifies an entry inside a partition.
+        /// </summary>
         public string Key { get; set; }
 
+        /// <summary>
+        ///   SQL column name of <see cref="UtcCreation"/>.
+        /// </summary>
         public const string UtcCreationColumn = "kvle_creation";
 
+        /// <summary>
+        ///   When the entry was created, expressed as seconds after UNIX epoch.
+        /// </summary>
         public long UtcCreation { get; set; }
 
+        /// <summary>
+        ///   SQL column name of <see cref="ParentKey0"/>.
+        /// </summary>
         public const string ParentKey0Column = "kvle_parent_key0";
 
+        /// <summary>
+        ///   Optional parent entry, used to link entries in a hierarchical way.
+        /// </summary>
         public string ParentKey0 { get; set; }
 
+        /// <summary>
+        ///   SQL column name of <see cref="ParentKey1"/>.
+        /// </summary>
         public const string ParentKey1Column = "kvle_parent_key1";
 
+        /// <summary>
+        ///   Optional parent entry, used to link entries in a hierarchical way.
+        /// </summary>
         public string ParentKey1 { get; set; }
 
+        /// <summary>
+        ///   SQL column name of <see cref="ParentKey2"/>.
+        /// </summary>
         public const string ParentKey2Column = "kvle_parent_key2";
 
+        /// <summary>
+        ///   Optional parent entry, used to link entries in a hierarchical way.
+        /// </summary>
         public string ParentKey2 { get; set; }
 
+        /// <summary>
+        ///   SQL column name of <see cref="ParentKey3"/>.
+        /// </summary>
         public const string ParentKey3Column = "kvle_parent_key3";
 
+        /// <summary>
+        ///   Optional parent entry, used to link entries in a hierarchical way.
+        /// </summary>
         public string ParentKey3 { get; set; }
 
+        /// <summary>
+        ///   SQL column name of <see cref="ParentKey4"/>.
+        /// </summary>
         public const string ParentKey4Column = "kvle_parent_key4";
 
+        /// <summary>
+        ///   Optional parent entry, used to link entries in a hierarchical way.
+        /// </summary>
         public string ParentKey4 { get; set; }
 
         public sealed class Group
