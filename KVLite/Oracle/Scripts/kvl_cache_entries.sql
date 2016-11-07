@@ -36,15 +36,15 @@ CREATE INDEX "KVLITE"."FK_KVLE_PARENT2" ON "KVLITE"."KVL_CACHE_ENTRIES" ("KVLE_P
 CREATE INDEX "KVLITE"."FK_KVLE_PARENT3" ON "KVLITE"."KVL_CACHE_ENTRIES" ("KVLE_PARTITION", "KVLE_PARENT_KEY3");
 CREATE INDEX "KVLITE"."FK_KVLE_PARENT4" ON "KVLITE"."KVL_CACHE_ENTRIES" ("KVLE_PARTITION", "KVLE_PARENT_KEY4");
 
-COMMENT ON COLUMN "KVLITE"."KVLE_PARTITION" IS 'A partition holds a group of related keys.';
-COMMENT ON COLUMN "KVLITE"."KVLE_KEY" IS 'A key uniquely identifies an entry inside a partition.';
-COMMENT ON COLUMN "KVLITE"."KVLE_EXPIRY" IS 'When the entry will expire, expressed as seconds after UNIX epoch.';
-COMMENT ON COLUMN "KVLITE"."KVLE_INTERVAL" IS 'How many seconds should be used to extend expiry time when the entry is retrieved.';
-COMMENT ON COLUMN "KVLITE"."KVLE_VALUE" IS 'Serialized and optionally compressed content of this entry.';
-COMMENT ON COLUMN "KVLITE"."KVLE_COMPRESSED" IS 'Whether the entry content was compressed or not.';
-COMMENT ON COLUMN "KVLITE"."KVLE_CREATION" IS 'When the entry was created, expressed as seconds after UNIX epoch.';
-COMMENT ON COLUMN "KVLITE"."KVLE_PARENT_KEY0" IS 'Optional parent entry, used to link entries in a hierarchical way.';
-COMMENT ON COLUMN "KVLITE"."KVLE_PARENT_KEY1" IS 'Optional parent entry, used to link entries in a hierarchical way.';
-COMMENT ON COLUMN "KVLITE"."KVLE_PARENT_KEY2" IS 'Optional parent entry, used to link entries in a hierarchical way.';
-COMMENT ON COLUMN "KVLITE"."KVLE_PARENT_KEY3" IS 'Optional parent entry, used to link entries in a hierarchical way.';
-COMMENT ON COLUMN "KVLITE"."KVLE_PARENT_KEY4" IS 'Optional parent entry, used to link entries in a hierarchical way.';
+COMMENT ON COLUMN "KVLITE"."KVL_CACHE_ENTRIES"."KVLE_PARTITION" IS 'A partition holds a group of related keys.';
+COMMENT ON COLUMN "KVLITE"."KVL_CACHE_ENTRIES"."KVLE_KEY" IS 'A key uniquely identifies an entry inside a partition.';
+COMMENT ON COLUMN "KVLITE"."KVL_CACHE_ENTRIES"."KVLE_EXPIRY" IS 'When the entry will expire, expressed as seconds after UNIX epoch.';
+COMMENT ON COLUMN "KVLITE"."KVL_CACHE_ENTRIES"."KVLE_INTERVAL" IS 'How many seconds should be used to extend expiry time when the entry is retrieved.';
+COMMENT ON COLUMN "KVLITE"."KVL_CACHE_ENTRIES"."KVLE_VALUE" IS 'Serialized and optionally compressed content of this entry.';
+COMMENT ON COLUMN "KVLITE"."KVL_CACHE_ENTRIES"."KVLE_COMPRESSED" IS 'Whether the entry content was compressed or not.';
+COMMENT ON COLUMN "KVLITE"."KVL_CACHE_ENTRIES"."KVLE_CREATION" IS 'When the entry was created, expressed as seconds after UNIX epoch.';
+COMMENT ON COLUMN "KVLITE"."KVL_CACHE_ENTRIES"."KVLE_PARENT_KEY0" IS 'Optional parent entry, used to link entries in a hierarchical way.';
+COMMENT ON COLUMN "KVLITE"."KVL_CACHE_ENTRIES"."KVLE_PARENT_KEY1" IS 'Optional parent entry, used to link entries in a hierarchical way.';
+COMMENT ON COLUMN "KVLITE"."KVL_CACHE_ENTRIES"."KVLE_PARENT_KEY2" IS 'Optional parent entry, used to link entries in a hierarchical way.';
+COMMENT ON COLUMN "KVLITE"."KVL_CACHE_ENTRIES"."KVLE_PARENT_KEY3" IS 'Optional parent entry, used to link entries in a hierarchical way.';
+COMMENT ON COLUMN "KVLITE"."KVL_CACHE_ENTRIES"."KVLE_PARENT_KEY4" IS 'Optional parent entry, used to link entries in a hierarchical way.';

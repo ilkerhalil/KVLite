@@ -64,7 +64,7 @@ namespace PommaLabs.KVLite.Benchmarks
             SqlServerCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(SqlServer)].ConnectionString;
 
             OracleCache.DefaultInstance.ConnectionFactory.CacheSchemaName = "CARAVAN";
-            OracleCache.DefaultInstance.ConnectionFactory.CacheEntriesTableName = "CRVN_KVL_CACHE_ITEMS";
+            OracleCache.DefaultInstance.ConnectionFactory.CacheEntriesTableName = "CRVN_KVL_ENTRIES";
             OracleCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(Oracle)].ConnectionString;
 
             Console.WriteLine(@"Running vacuum on DB...");
@@ -86,6 +86,7 @@ namespace PommaLabs.KVLite.Benchmarks
                 /*** STORE EACH DATA TABLE ASYNC ***/
 
                 FullyCleanCache();
+                StoreEachDataTableAsync(OracleCache.DefaultInstance, tables, i);
                 StoreEachDataTableAsync(MySqlCache.DefaultInstance, tables, i);
                 StoreEachDataTableAsync(SqlServerCache.DefaultInstance, tables, i);
 

@@ -62,22 +62,24 @@ namespace PommaLabs.KVLite.SqlServer
         {
             base.UpdateCommandsAndQueries();
 
+            var p = ParameterPrefix;
+
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
                 update {CacheSchemaName}.{CacheEntriesTableName} 
-                   set {DbCacheValue.UtcExpiryColumn} = @{nameof(DbCacheEntry.UtcExpiry)},
-                       {DbCacheValue.IntervalColumn} = @{nameof(DbCacheEntry.Interval)},
-                       {DbCacheValue.ValueColumn} = @{nameof(DbCacheEntry.Value)},
-                       {DbCacheValue.CompressedColumn} = @{nameof(DbCacheEntry.Compressed)},
-                       {DbCacheEntry.UtcCreationColumn} = @{nameof(DbCacheEntry.UtcCreation)},
-                       {DbCacheEntry.ParentKey0Column} = @{nameof(DbCacheEntry.ParentKey0)},
-                       {DbCacheEntry.ParentKey1Column} = @{nameof(DbCacheEntry.ParentKey1)},
-                       {DbCacheEntry.ParentKey2Column} = @{nameof(DbCacheEntry.ParentKey2)},
-                       {DbCacheEntry.ParentKey3Column} = @{nameof(DbCacheEntry.ParentKey3)},
-                       {DbCacheEntry.ParentKey4Column} = @{nameof(DbCacheEntry.ParentKey4)}
-                 where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Partition)}
-                   and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Key)}
+                   set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheEntry.UtcExpiry)},
+                       {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheEntry.Interval)},
+                       {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheEntry.Value)},
+                       {DbCacheValue.CompressedColumn} = {p}{nameof(DbCacheEntry.Compressed)},
+                       {DbCacheEntry.UtcCreationColumn} = {p}{nameof(DbCacheEntry.UtcCreation)},
+                       {DbCacheEntry.ParentKey0Column} = {p}{nameof(DbCacheEntry.ParentKey0)},
+                       {DbCacheEntry.ParentKey1Column} = {p}{nameof(DbCacheEntry.ParentKey1)},
+                       {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)},
+                       {DbCacheEntry.ParentKey3Column} = {p}{nameof(DbCacheEntry.ParentKey3)},
+                       {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)}
+                 where {DbCacheEntry.PartitionColumn} = {p}{nameof(DbCacheEntry.Partition)}
+                   and {DbCacheEntry.KeyColumn} = {p}{nameof(DbCacheEntry.Key)}
                 
                 if @@rowcount = 0
                 begin
@@ -96,18 +98,18 @@ namespace PommaLabs.KVLite.SqlServer
                         {DbCacheEntry.ParentKey4Column}
                     )
                     values (
-                        @{nameof(DbCacheEntry.Partition)}, 
-                        @{nameof(DbCacheEntry.Key)}, 
-                        @{nameof(DbCacheEntry.UtcExpiry)}, 
-                        @{nameof(DbCacheEntry.Interval)},
-                        @{nameof(DbCacheEntry.Value)}, 
-                        @{nameof(DbCacheEntry.Compressed)},
-                        @{nameof(DbCacheEntry.UtcCreation)},
-                        @{nameof(DbCacheEntry.ParentKey0)},
-                        @{nameof(DbCacheEntry.ParentKey1)},
-                        @{nameof(DbCacheEntry.ParentKey2)},
-                        @{nameof(DbCacheEntry.ParentKey3)},
-                        @{nameof(DbCacheEntry.ParentKey4)}
+                        {p}{nameof(DbCacheEntry.Partition)}, 
+                        {p}{nameof(DbCacheEntry.Key)}, 
+                        {p}{nameof(DbCacheEntry.UtcExpiry)}, 
+                        {p}{nameof(DbCacheEntry.Interval)},
+                        {p}{nameof(DbCacheEntry.Value)}, 
+                        {p}{nameof(DbCacheEntry.Compressed)},
+                        {p}{nameof(DbCacheEntry.UtcCreation)},
+                        {p}{nameof(DbCacheEntry.ParentKey0)},
+                        {p}{nameof(DbCacheEntry.ParentKey1)},
+                        {p}{nameof(DbCacheEntry.ParentKey2)},
+                        {p}{nameof(DbCacheEntry.ParentKey3)},
+                        {p}{nameof(DbCacheEntry.ParentKey4)}
                     )
                 end
             ");

@@ -246,6 +246,11 @@ namespace PommaLabs.KVLite.Core
         protected virtual string LengthSqlFunction { get; } = "length";
 
         /// <summary>
+        ///   Prefix used to identify parameters inside a SQL query or command.
+        /// </summary>
+        protected virtual string ParameterPrefix { get; } = "@";
+
+        /// <summary>
         ///   The symbol used to enclose an identifier (left side).
         /// </summary>
         protected virtual string LeftIdentifierEncloser { get; } = string.Empty;
@@ -260,6 +265,7 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         protected virtual void UpdateCommandsAndQueries()
         {
+            var p = ParameterPrefix;
             var l = LeftIdentifierEncloser;
             var r = RightIdentifierEncloser;
 
@@ -267,21 +273,21 @@ namespace PommaLabs.KVLite.Core
 
             DeleteCacheEntryCommand = MinifyQuery($@"
                 delete from {CacheSchemaName}.{CacheEntriesTableName}
-                 where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Single.Partition)}
-                   and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Single.Key)}
+                 where {DbCacheEntry.PartitionColumn} = {p}{nameof(DbCacheEntry.Single.Partition)}
+                   and {DbCacheEntry.KeyColumn} = {p}{nameof(DbCacheEntry.Single.Key)}
             ");
 
             DeleteCacheEntriesCommand = MinifyQuery($@"
                 delete from {CacheSchemaName}.{CacheEntriesTableName}
-                 where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
-                   and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} < @{nameof(DbCacheEntry.Group.UtcExpiry)})
+                 where ({p}{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = {p}{nameof(DbCacheEntry.Group.Partition)})
+                   and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
             UpdateCacheEntryExpiryCommand = MinifyQuery($@"
                 update {CacheSchemaName}.{CacheEntriesTableName}
-                   set {DbCacheValue.UtcExpiryColumn} = @{nameof(DbCacheEntry.Single.UtcExpiry)}
-                 where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Single.Partition)}
-                   and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Single.Key)}
+                   set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheEntry.Single.UtcExpiry)}
+                 where {DbCacheEntry.PartitionColumn} = {p}{nameof(DbCacheEntry.Single.Partition)}
+                   and {DbCacheEntry.KeyColumn} = {p}{nameof(DbCacheEntry.Single.Key)}
             ");
 
             #endregion
@@ -291,16 +297,16 @@ namespace PommaLabs.KVLite.Core
             ContainsCacheEntryQuery = MinifyQuery($@"
                 select count(*)
                   from {CacheSchemaName}.{CacheEntriesTableName}
-                 where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Single.Partition)}
-                   and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Single.Key)}
-                   and {DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)}
+                 where {DbCacheEntry.PartitionColumn} = {p}{nameof(DbCacheEntry.Single.Partition)}
+                   and {DbCacheEntry.KeyColumn} = {p}{nameof(DbCacheEntry.Single.Key)}
+                   and {DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}
             ");
 
             CountCacheEntriesQuery = MinifyQuery($@"
                 select count(*)
                   from {CacheSchemaName}.{CacheEntriesTableName}
-                 where (@{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
-                   and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
+                 where ({p}{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheEntry.PartitionColumn} = {p}{nameof(DbCacheEntry.Group.Partition)})
+                   and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
             PeekCacheEntriesQuery = MinifyQuery($@"
@@ -317,8 +323,8 @@ namespace PommaLabs.KVLite.Core
                        x.{DbCacheEntry.ParentKey3Column}  {l}{nameof(DbCacheEntry.ParentKey3)}{r},
                        x.{DbCacheEntry.ParentKey4Column}  {l}{nameof(DbCacheEntry.ParentKey4)}{r}
                   from {CacheSchemaName}.{CacheEntriesTableName} x
-                 where (@{nameof(DbCacheEntry.Group.Partition)} is null or x.{DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Group.Partition)})
-                   and (@{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Group.UtcExpiry)})
+                 where ({p}{nameof(DbCacheEntry.Group.Partition)} is null or x.{DbCacheEntry.PartitionColumn} = {p}{nameof(DbCacheEntry.Group.Partition)})
+                   and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
             PeekCacheEntryQuery = MinifyQuery($@"
@@ -335,9 +341,9 @@ namespace PommaLabs.KVLite.Core
                        x.{DbCacheEntry.ParentKey3Column}  {l}{nameof(DbCacheEntry.ParentKey3)}{r},
                        x.{DbCacheEntry.ParentKey4Column}  {l}{nameof(DbCacheEntry.ParentKey4)}{r}
                   from {CacheSchemaName}.{CacheEntriesTableName} x
-                 where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Single.Partition)}
-                   and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Single.Key)}
-                   and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
+                 where {DbCacheEntry.PartitionColumn} = {p}{nameof(DbCacheEntry.Single.Partition)}
+                   and {DbCacheEntry.KeyColumn} = {p}{nameof(DbCacheEntry.Single.Key)}
+                   and ({p}{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)})
             ");
 
             PeekCacheValueQuery = MinifyQuery($@"
@@ -346,9 +352,9 @@ namespace PommaLabs.KVLite.Core
                        x.{DbCacheValue.ValueColumn}      {l}{nameof(DbCacheEntry.Value)}{r},
                        x.{DbCacheValue.CompressedColumn} {l}{nameof(DbCacheEntry.Compressed)}{r}
                   from {CacheSchemaName}.{CacheEntriesTableName} x
-                 where {DbCacheEntry.PartitionColumn} = @{nameof(DbCacheEntry.Single.Partition)}
-                   and {DbCacheEntry.KeyColumn} = @{nameof(DbCacheEntry.Single.Key)}
-                   and (@{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= @{nameof(DbCacheEntry.Single.UtcExpiry)})
+                 where {DbCacheEntry.PartitionColumn} = {p}{nameof(DbCacheEntry.Single.Partition)}
+                   and {DbCacheEntry.KeyColumn} = {p}{nameof(DbCacheEntry.Single.Key)}
+                   and ({p}{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)})
             ");
 
             GetCacheSizeInBytesQuery = MinifyQuery($@"
