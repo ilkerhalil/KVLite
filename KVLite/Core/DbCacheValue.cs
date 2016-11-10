@@ -66,6 +66,6 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   Whether the entry content was compressed or not.
         /// </summary>
-        public bool Compressed { get; set; }
+        public int Compressed { get; set; }
     }
 }

@@ -475,7 +475,7 @@ namespace PommaLabs.KVLite.Core
                 UtcExpiry = utcExpiry.ToUnixTime(),
                 Interval = (long) interval.TotalSeconds,
                 Value = serializedValue,
-                Compressed = compressed,
+                Compressed = compressed ? 1 : 0,
                 UtcCreation = Clock.UnixTime,
             };
 
@@ -531,7 +531,7 @@ namespace PommaLabs.KVLite.Core
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
-                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate),
+                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? 1 : 0,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -610,7 +610,7 @@ namespace PommaLabs.KVLite.Core
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
-                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate),
+                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? 1 : 0,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -636,7 +636,7 @@ namespace PommaLabs.KVLite.Core
             {
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
-                IgnoreExpiryDate = true,
+                IgnoreExpiryDate = 1,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -688,7 +688,7 @@ namespace PommaLabs.KVLite.Core
             {
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
-                IgnoreExpiryDate = true,
+                IgnoreExpiryDate = 1,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -738,7 +738,7 @@ namespace PommaLabs.KVLite.Core
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
-                IgnoreExpiryDate = true,
+                IgnoreExpiryDate = 1,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -800,7 +800,7 @@ namespace PommaLabs.KVLite.Core
             {
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
-                IgnoreExpiryDate = false,
+                IgnoreExpiryDate = 0,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -837,7 +837,7 @@ namespace PommaLabs.KVLite.Core
             {
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
-                IgnoreExpiryDate = false,
+                IgnoreExpiryDate = 0,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -875,7 +875,7 @@ namespace PommaLabs.KVLite.Core
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
-                IgnoreExpiryDate = false,
+                IgnoreExpiryDate = 0,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -944,7 +944,7 @@ namespace PommaLabs.KVLite.Core
         {
             using (var memoryStream = new MemoryStream(dbCacheValue.Value))
             {
-                if (!dbCacheValue.Compressed)
+                if (dbCacheValue.Compressed == 0)
                 {
                     // Handle uncompressed value.
                     return Serializer.DeserializeFromStream<TVal>(memoryStream);

@@ -112,7 +112,7 @@ namespace PommaLabs.KVLite.Core
         {
             public string Partition { get; set; }
 
-            public bool IgnoreExpiryDate { get; set; }
+            public int IgnoreExpiryDate { get; set; }
 
             public long UtcExpiry { get; set; }
         }
@@ -123,7 +123,7 @@ namespace PommaLabs.KVLite.Core
 
             public string Key { get; set; }
 
-            public bool IgnoreExpiryDate { get; set; }
+            public int IgnoreExpiryDate { get; set; }
 
             public long UtcExpiry { get; set; }
         }

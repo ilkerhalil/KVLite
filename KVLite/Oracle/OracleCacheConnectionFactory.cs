@@ -115,7 +115,7 @@ namespace PommaLabs.KVLite.Oracle
                                {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)}
                          where {DbCacheEntry.PartitionColumn} = {p}{nameof(DbCacheEntry.Partition)}
                            and {DbCacheEntry.KeyColumn} = {p}{nameof(DbCacheEntry.Key)};
-                end
+                end;
             ");
 
             #endregion Commands
