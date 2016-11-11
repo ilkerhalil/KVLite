@@ -38,7 +38,6 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Troschuetz.Random;
 
 #if !NET40
@@ -475,7 +474,7 @@ namespace PommaLabs.KVLite.Core
                 UtcExpiry = utcExpiry.ToUnixTime(),
                 Interval = (long) interval.TotalSeconds,
                 Value = serializedValue,
-                Compressed = compressed ? 1 : 0,
+                Compressed = compressed ? DbCacheValue.True : DbCacheValue.False,
                 UtcCreation = Clock.UnixTime,
             };
 
@@ -531,7 +530,7 @@ namespace PommaLabs.KVLite.Core
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
-                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? 1 : 0,
+                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -610,7 +609,7 @@ namespace PommaLabs.KVLite.Core
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
-                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? 1 : 0,
+                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -636,7 +635,7 @@ namespace PommaLabs.KVLite.Core
             {
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
-                IgnoreExpiryDate = 1,
+                IgnoreExpiryDate = DbCacheValue.True,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -688,7 +687,7 @@ namespace PommaLabs.KVLite.Core
             {
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
-                IgnoreExpiryDate = 1,
+                IgnoreExpiryDate = DbCacheValue.True,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -738,7 +737,7 @@ namespace PommaLabs.KVLite.Core
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
-                IgnoreExpiryDate = 1,
+                IgnoreExpiryDate = DbCacheValue.True,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -800,7 +799,7 @@ namespace PommaLabs.KVLite.Core
             {
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
-                IgnoreExpiryDate = 0,
+                IgnoreExpiryDate = DbCacheValue.False,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -837,7 +836,7 @@ namespace PommaLabs.KVLite.Core
             {
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
-                IgnoreExpiryDate = 0,
+                IgnoreExpiryDate = DbCacheValue.False,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -875,7 +874,7 @@ namespace PommaLabs.KVLite.Core
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
-                IgnoreExpiryDate = 0,
+                IgnoreExpiryDate = DbCacheValue.False,
                 UtcExpiry = Clock.UnixTime
             };
 
@@ -944,7 +943,7 @@ namespace PommaLabs.KVLite.Core
         {
             using (var memoryStream = new MemoryStream(dbCacheValue.Value))
             {
-                if (dbCacheValue.Compressed == 0)
+                if (dbCacheValue.Compressed == DbCacheValue.False)
                 {
                     // Handle uncompressed value.
                     return Serializer.DeserializeFromStream<TVal>(memoryStream);

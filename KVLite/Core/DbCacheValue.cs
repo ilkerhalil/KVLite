@@ -29,6 +29,16 @@ namespace PommaLabs.KVLite.Core
     internal class DbCacheValue
     {
         /// <summary>
+        ///   Database agnostic "true".
+        /// </summary>
+        public const byte True = 1;
+
+        /// <summary>
+        ///   Database agnostic "false".
+        /// </summary>
+        public const byte False = 0;
+
+        /// <summary>
         ///   SQL column name of <see cref="UtcExpiry"/>.
         /// </summary>
         public const string UtcExpiryColumn = "kvle_expiry";
@@ -66,6 +76,6 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   Whether the entry content was compressed or not.
         /// </summary>
-        public int Compressed { get; set; }
+        public byte Compressed { get; set; }
     }
 }
