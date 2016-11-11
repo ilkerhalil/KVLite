@@ -362,7 +362,7 @@ namespace PommaLabs.KVLite.Core
                      + sum({LengthSqlFunction}({DbCacheEntry.KeyColumn}))
                      + sum({LengthSqlFunction}({DbCacheValue.ValueColumn}))
                      + count(*) * (3*8) -- Three fields of 8 bytes: expiry, interval, creation
-                  from {CacheSchemaName}.{CacheEntriesTableName};
+                  from {CacheSchemaName}.{CacheEntriesTableName}
             ");
 
             #endregion

@@ -102,6 +102,7 @@ namespace PommaLabs.KVLite.Benchmarks
                 /*** STORE EACH DATA TABLE ***/
 
                 FullyCleanCache();
+                //StoreEachDataTable(OracleCache.DefaultInstance, tables, i);
                 StoreEachDataTable(MySqlCache.DefaultInstance, tables, i);
                 StoreEachDataTable(SqlServerCache.DefaultInstance, tables, i);
 
@@ -117,6 +118,7 @@ namespace PommaLabs.KVLite.Benchmarks
                 /*** STORE EACH DATA TABLE TWO TIMES ***/
 
                 FullyCleanCache();
+                //StoreEachDataTableTwoTimes(OracleCache.DefaultInstance, tables, i);
                 StoreEachDataTableTwoTimes(MySqlCache.DefaultInstance, tables, i);
                 StoreEachDataTableTwoTimes(SqlServerCache.DefaultInstance, tables, i);
 
@@ -132,6 +134,7 @@ namespace PommaLabs.KVLite.Benchmarks
                 /*** REMOVE EACH DATA TABLE ***/
 
                 FullyCleanCache();
+                //RemoveEachDataTable(OracleCache.DefaultInstance, tables, i);
                 RemoveEachDataTable(MySqlCache.DefaultInstance, tables, i);
                 RemoveEachDataTable(SqlServerCache.DefaultInstance, tables, i);
 
@@ -177,6 +180,7 @@ namespace PommaLabs.KVLite.Benchmarks
                 /*** RETRIEVE EACH DATA TABLE ***/
 
                 FullyCleanCache();
+                //RetrieveEachDataTable(OracleCache.DefaultInstance, tables, i);
                 RetrieveEachDataTable(MySqlCache.DefaultInstance, tables, i);
                 RetrieveEachDataTable(SqlServerCache.DefaultInstance, tables, i);
 
