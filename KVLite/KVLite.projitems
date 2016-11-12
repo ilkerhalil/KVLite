@@ -9,19 +9,38 @@
     <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Core\AbstractSQLiteCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\AbstractSQLiteCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\DbCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\IDbCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CacheConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\SQLiteQueries.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MemoryCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MemoryCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PersistentCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PersistentCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)VolatileCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Oracle\OracleCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Oracle\OracleCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Oracle\OracleCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\PersistentCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\PersistentCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\VolatileCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLite\VolatileCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCacheSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)doxyfile.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)MySql\Scripts\kvl_cache_entries.sql" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Oracle\Scripts\kvl_cache_entries.sql" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)SqlServer\Scripts\kvl_cache_entries.sql" />
   </ItemGroup>
 </Project>

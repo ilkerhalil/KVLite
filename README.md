@@ -1,13 +1,13 @@
 ![](https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-64.png "KVLite Logo") KVLite
 ===============================================================================================================
 
-*KVLite is a partition-based key-value store built on SQLite.*
+*KVLite is a partition-based key-value cache built for SQL.*
 
 KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
 
 ## Summary ##
 
-* Latest release version: `v5.2.6`
+* Latest release version: `v6.0.3`
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/7qgv5o7or96rr8a2?svg=true)](https://ci.appveyor.com/project/pomma89/kvlite)
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: TODO
 * [NuGet](https://www.nuget.org) package(s):

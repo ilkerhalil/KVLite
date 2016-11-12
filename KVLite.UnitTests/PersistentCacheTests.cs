@@ -1,38 +1,39 @@
 ﻿// File name: PersistentCacheTests.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Finsa.CodeServices.Caching;
-using Finsa.CodeServices.Clock;
 using Ninject;
 using NUnit.Framework;
+using PommaLabs.CodeServices.Caching;
+using PommaLabs.CodeServices.Clock;
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.SQLite;
 using System;
 
 namespace PommaLabs.KVLite.UnitTests
 {
-    sealed class PersistentCacheTests : AbstractCacheTests<PersistentCacheSettings>
+    internal sealed class PersistentCacheTests : AbstractCacheTests<PersistentCacheSettings>
     {
-        const string BlankPath = "   ";
+        private const string BlankPath = "   ";
 
         #region Setup/Teardown
 
@@ -60,7 +61,7 @@ namespace PommaLabs.KVLite.UnitTests
             try
             {
 #pragma warning disable CC0022 // Should dispose object
-                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = BlankPath }, Kernel.Get<IClock>());
+                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = BlankPath }, clock: Kernel.Get<IClock>());
 #pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)
@@ -77,7 +78,7 @@ namespace PommaLabs.KVLite.UnitTests
             try
             {
 #pragma warning disable CC0022 // Should dispose object
-                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = string.Empty }, Kernel.Get<IClock>());
+                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = string.Empty }, clock: Kernel.Get<IClock>());
 #pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)
@@ -94,7 +95,7 @@ namespace PommaLabs.KVLite.UnitTests
             try
             {
 #pragma warning disable CC0022 // Should dispose object
-                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = null }, Kernel.Get<IClock>());
+                cache = new PersistentCache(new PersistentCacheSettings { CacheFile = null }, clock: Kernel.Get<IClock>());
 #pragma warning restore CC0022 // Should dispose object
             }
             catch (Exception ex)
@@ -104,12 +105,12 @@ namespace PommaLabs.KVLite.UnitTests
             }
         }
 
-        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        [Test]
         public void Dispose_ObjectDisposedExceptionAfterDispose()
         {
             Cache = new PersistentCache(new PersistentCacheSettings());
             Cache.Dispose();
-            Cache.Count();
+            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });         
         }
 
         #endregion Cache creation and disposal

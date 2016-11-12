@@ -1,12 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet", "NuGet Packagers\KVLite.NuGet\KVLite.NuGet.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CB218631-52E1-43BC-971F-94784A43B73E}"
 	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
 		appveyor.yml = appveyor.yml
 		CHANGELOG.md = CHANGELOG.md
 		LICENSE.md = LICENSE.md
@@ -130,30 +132,40 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet.SQLite", "NuGe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.WebForms", "KVLite.Examples.WebForms\KVLite.Examples.WebForms.csproj", "{02AE0BEA-762D-4034-AB7C-F7A165E282F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet.Oracle", "NuGet Packagers\KVLite.NuGet.Oracle\KVLite.NuGet.Oracle.csproj", "{3C2AFC7F-0EC1-4BD1-B152-A8763B16BDEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet.MySql", "NuGet Packagers\KVLite.NuGet.MySql\KVLite.NuGet.MySql.csproj", "{30557A42-B21C-4D95-BC6A-C472D9183EE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NuGet.SqlServer", "NuGet Packagers\KVLite.NuGet.SqlServer\KVLite.NuGet.SqlServer.csproj", "{C0C58B27-4855-4637-9377-9EF01C5EB2FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.NETSTD13", "Platform Specific\KVLite.NETSTD13\KVLite.NETSTD13.csproj", "{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.UnitTests.NET40", "Platform Specific\KVLite.UnitTests.NET40\KVLite.UnitTests.NET40.csproj", "{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{20b7f10e-aa70-4de6-839a-00978375d290}*SharedItemsImports = 13
-		KVLite.Nancy\KVLite.Nancy.projitems*{6f8516a0-5e50-44b2-aa8f-a3ab285f513e}*SharedItemsImports = 4
-		KVLite\KVLite.projitems*{0fc92c9c-b90c-4d2f-9ee7-2f3c4b06fdd2}*SharedItemsImports = 13
-		KVLite.WebForms\KVLite.WebForms.projitems*{3183fee9-f71c-48b6-b485-64ae2f208c73}*SharedItemsImports = 4
-		KVLite.WebForms\KVLite.WebForms.projitems*{2b0dfd0c-5762-46d2-bbdb-da11d31a3acc}*SharedItemsImports = 13
-		KVLite\KVLite.projitems*{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}*SharedItemsImports = 4
-		KVLite.WebApi\KVLite.WebApi.projitems*{23b87a0b-df68-432b-b75c-4d73aecfa6e3}*SharedItemsImports = 4
-		KVLite.WebApi\KVLite.WebApi.projitems*{cc96ea69-dcc3-4d9e-bb6a-aced0c479ef3}*SharedItemsImports = 4
-		KVLite.WebForms\KVLite.WebForms.projitems*{6de6294a-ced3-4e53-85fb-60b9fead1fe7}*SharedItemsImports = 4
-		KVLite.WebForms\KVLite.WebForms.projitems*{130b3de5-0e0f-440d-982e-cfc1fc4ac4fa}*SharedItemsImports = 4
-		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{0aa94325-2bfb-449a-a6a6-c10e9c0fa65b}*SharedItemsImports = 4
-		KVLite\KVLite.projitems*{b81fca47-a533-4ffb-b202-f6e07668eb66}*SharedItemsImports = 4
-		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{bc14baf7-bbb6-4fbc-b472-0517ac48881c}*SharedItemsImports = 4
 		KVLite.WebApi\KVLite.WebApi.projitems*{09d76014-4670-4977-b9db-6445649c862b}*SharedItemsImports = 13
-		KVLite.Nancy\KVLite.Nancy.projitems*{7f11c0e7-f781-4543-a013-b129a72646a4}*SharedItemsImports = 13
+		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{0aa94325-2bfb-449a-a6a6-c10e9c0fa65b}*SharedItemsImports = 4
+		KVLite\KVLite.projitems*{0fc92c9c-b90c-4d2f-9ee7-2f3c4b06fdd2}*SharedItemsImports = 13
+		KVLite.WebForms\KVLite.WebForms.projitems*{130b3de5-0e0f-440d-982e-cfc1fc4ac4fa}*SharedItemsImports = 4
+		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{20b7f10e-aa70-4de6-839a-00978375d290}*SharedItemsImports = 13
+		KVLite.WebApi\KVLite.WebApi.projitems*{23b87a0b-df68-432b-b75c-4d73aecfa6e3}*SharedItemsImports = 4
+		KVLite.WebForms\KVLite.WebForms.projitems*{2b0dfd0c-5762-46d2-bbdb-da11d31a3acc}*SharedItemsImports = 13
+		KVLite.WebForms\KVLite.WebForms.projitems*{3183fee9-f71c-48b6-b485-64ae2f208c73}*SharedItemsImports = 4
 		KVLite.WebApi\KVLite.WebApi.projitems*{3463d66a-bac1-4e3c-ae69-b3d1cd12c13d}*SharedItemsImports = 4
-		KVLite.Nancy\KVLite.Nancy.projitems*{64145a81-f369-4863-b02b-d4c14adb883e}*SharedItemsImports = 4
-		KVLite.UnitTests\KVLite.UnitTests.projitems*{bbe6492a-198e-499e-add5-e8c904ec8182}*SharedItemsImports = 4
 		KVLite\KVLite.projitems*{3768ff1c-ade5-4c9d-9c00-cacb0ce40809}*SharedItemsImports = 4
-		KVLite.UnitTests\KVLite.UnitTests.projitems*{50e7c4c0-0723-41aa-bd2d-0b31ca2cc67d}*SharedItemsImports = 13
-		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{d3f95e04-5400-46b2-af46-d8809fb8bcb0}*SharedItemsImports = 4
 		KVLite.Nancy\KVLite.Nancy.projitems*{442146be-4713-4d3f-be9d-635fd50d70bb}*SharedItemsImports = 4
+		KVLite.UnitTests\KVLite.UnitTests.projitems*{50e7c4c0-0723-41aa-bd2d-0b31ca2cc67d}*SharedItemsImports = 13
+		KVLite.Nancy\KVLite.Nancy.projitems*{64145a81-f369-4863-b02b-d4c14adb883e}*SharedItemsImports = 4
+		KVLite.WebForms\KVLite.WebForms.projitems*{6de6294a-ced3-4e53-85fb-60b9fead1fe7}*SharedItemsImports = 4
+		KVLite.Nancy\KVLite.Nancy.projitems*{6f8516a0-5e50-44b2-aa8f-a3ab285f513e}*SharedItemsImports = 4
+		KVLite.Nancy\KVLite.Nancy.projitems*{7f11c0e7-f781-4543-a013-b129a72646a4}*SharedItemsImports = 13
+		KVLite\KVLite.projitems*{b81fca47-a533-4ffb-b202-f6e07668eb66}*SharedItemsImports = 4
+		KVLite.UnitTests\KVLite.UnitTests.projitems*{bbe6492a-198e-499e-add5-e8c904ec8182}*SharedItemsImports = 4
+		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{bc14baf7-bbb6-4fbc-b472-0517ac48881c}*SharedItemsImports = 4
+		KVLite.WebApi\KVLite.WebApi.projitems*{cc96ea69-dcc3-4d9e-bb6a-aced0c479ef3}*SharedItemsImports = 4
+		KVLite.EntityFramework\KVLite.EntityFramework.projitems*{d3f95e04-5400-46b2-af46-d8809fb8bcb0}*SharedItemsImports = 4
+		KVLite\KVLite.projitems*{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -457,6 +469,60 @@ Global
 		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|x86.ActiveCfg = Release|Any CPU
 		{02AE0BEA-762D-4034-AB7C-F7A165E282F7}.Release|x86.Build.0 = Release|Any CPU
+		{3C2AFC7F-0EC1-4BD1-B152-A8763B16BDEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C2AFC7F-0EC1-4BD1-B152-A8763B16BDEB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3C2AFC7F-0EC1-4BD1-B152-A8763B16BDEB}.Debug|x86.Build.0 = Debug|Any CPU
+		{3C2AFC7F-0EC1-4BD1-B152-A8763B16BDEB}.Publish|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C2AFC7F-0EC1-4BD1-B152-A8763B16BDEB}.Publish|Any CPU.Build.0 = Debug|Any CPU
+		{3C2AFC7F-0EC1-4BD1-B152-A8763B16BDEB}.Publish|x86.ActiveCfg = Release|Any CPU
+		{3C2AFC7F-0EC1-4BD1-B152-A8763B16BDEB}.Publish|x86.Build.0 = Release|Any CPU
+		{3C2AFC7F-0EC1-4BD1-B152-A8763B16BDEB}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C2AFC7F-0EC1-4BD1-B152-A8763B16BDEB}.Release|x86.ActiveCfg = Release|Any CPU
+		{3C2AFC7F-0EC1-4BD1-B152-A8763B16BDEB}.Release|x86.Build.0 = Release|Any CPU
+		{30557A42-B21C-4D95-BC6A-C472D9183EE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30557A42-B21C-4D95-BC6A-C472D9183EE8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{30557A42-B21C-4D95-BC6A-C472D9183EE8}.Debug|x86.Build.0 = Debug|Any CPU
+		{30557A42-B21C-4D95-BC6A-C472D9183EE8}.Publish|Any CPU.ActiveCfg = Debug|Any CPU
+		{30557A42-B21C-4D95-BC6A-C472D9183EE8}.Publish|Any CPU.Build.0 = Debug|Any CPU
+		{30557A42-B21C-4D95-BC6A-C472D9183EE8}.Publish|x86.ActiveCfg = Release|Any CPU
+		{30557A42-B21C-4D95-BC6A-C472D9183EE8}.Publish|x86.Build.0 = Release|Any CPU
+		{30557A42-B21C-4D95-BC6A-C472D9183EE8}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{30557A42-B21C-4D95-BC6A-C472D9183EE8}.Release|x86.ActiveCfg = Release|Any CPU
+		{30557A42-B21C-4D95-BC6A-C472D9183EE8}.Release|x86.Build.0 = Release|Any CPU
+		{C0C58B27-4855-4637-9377-9EF01C5EB2FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0C58B27-4855-4637-9377-9EF01C5EB2FB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C0C58B27-4855-4637-9377-9EF01C5EB2FB}.Debug|x86.Build.0 = Debug|Any CPU
+		{C0C58B27-4855-4637-9377-9EF01C5EB2FB}.Publish|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0C58B27-4855-4637-9377-9EF01C5EB2FB}.Publish|Any CPU.Build.0 = Debug|Any CPU
+		{C0C58B27-4855-4637-9377-9EF01C5EB2FB}.Publish|x86.ActiveCfg = Release|Any CPU
+		{C0C58B27-4855-4637-9377-9EF01C5EB2FB}.Publish|x86.Build.0 = Release|Any CPU
+		{C0C58B27-4855-4637-9377-9EF01C5EB2FB}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0C58B27-4855-4637-9377-9EF01C5EB2FB}.Release|x86.ActiveCfg = Release|Any CPU
+		{C0C58B27-4855-4637-9377-9EF01C5EB2FB}.Release|x86.Build.0 = Release|Any CPU
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}.Debug|x86.Build.0 = Debug|Any CPU
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}.Publish|Any CPU.Build.0 = Release|Any CPU
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}.Publish|x86.ActiveCfg = Release|Any CPU
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}.Publish|x86.Build.0 = Release|Any CPU
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}.Release|x86.ActiveCfg = Release|Any CPU
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE}.Release|x86.Build.0 = Release|Any CPU
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}.Debug|x86.Build.0 = Debug|Any CPU
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}.Publish|Any CPU.Build.0 = Release|Any CPU
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}.Publish|x86.ActiveCfg = Release|Any CPU
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}.Publish|x86.Build.0 = Release|Any CPU
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}.Release|x86.ActiveCfg = Release|Any CPU
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -485,5 +551,10 @@ Global
 		{6DE6294A-CED3-4E53-85FB-60B9FEAD1FE7} = {58F3B79E-836C-4A4C-B993-DF9983AEF5AA}
 		{E40332D9-D540-4582-825C-008E2F125D42} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
 		{3A60BAC5-2B90-4749-8D49-0CEFB2D2054D} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
+		{3C2AFC7F-0EC1-4BD1-B152-A8763B16BDEB} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
+		{30557A42-B21C-4D95-BC6A-C472D9183EE8} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
+		{C0C58B27-4855-4637-9377-9EF01C5EB2FB} = {A4471ECD-23FA-4D4E-B343-E2478BCABAE2}
+		{88C1AFA5-36ED-4027-8F0E-AD146A9FC9FE} = {58F3B79E-836C-4A4C-B993-DF9983AEF5AA}
+		{7380CCC9-8A6E-4A65-AB48-393E8B0816DC} = {58F3B79E-836C-4A4C-B993-DF9983AEF5AA}
 	EndGlobalSection
 EndGlobal

@@ -1,43 +1,42 @@
 <?xml version="1.0"?>
 
 <package>
-    <metadata>
-        <id>PommaLabs.KVLite</id>
-        <version>5.2.6</version>
-        <title>KVLite - Key-value store built on SQLite</title>
-        <authors>Alessio Parma</authors>
-        <owners>Alessio Parma</owners>
-        <description>
-KVLite is a partition-based key-value store built on SQLite. 
+  <metadata>
+    <id>PommaLabs.KVLite</id>
+    <version>6.0.3</version>
+    <title>KVLite - SQL-based cache</title>
+    <authors>Alessio Parma</authors>
+    <owners>Alessio Parma</owners>
+    <description>
+KVLite is a partition-based key-value cache built for SQL.
 KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
 
 This package contains the dependencies needed by KVLite at runtime.
-        </description>
-        <releaseNotes>
-* [UPD] Updated System.Data.SQLite to version 1.0.102.0.
-* [UPD] Moved interfaces and core classes to Finsa.CodeServices.Caching package.
-        </releaseNotes>
-        <summary>
-KVLite is a partition-based key-value store built on SQLite. This package contains the dependencies needed by KVLite at runtime.
-        </summary>
-        <language>en-US</language>
-        <projectUrl>https://github.com/pomma89/KVLite</projectUrl>
-        <iconUrl>https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-128.png</iconUrl>
-        <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
-        <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
-        <dependencies>
-            <dependency id="CodeProject.ObjectPool" version="1.10.1" />
-            <dependency id="Finsa.CodeServices.Serialization.Json" version="4.1.6" />
-            <dependency id="PommaLabs.KVLite.Core" version="5.2.6" />
-            <dependency id="PommaLabs.KVLite.SQLite" version="1.0.102.0" />
-            <dependency id="Thrower" version="2.2.4" />
-        </dependencies>
-        <references></references>
-        <frameworkAssemblies></frameworkAssemblies>
-        <tags>sqlite partition key value store concurrent persistent volatile memory timed sliding</tags>
-    </metadata>
-    <files>
-        <file src="LICENSE.md" target="LICENSE.md" />
-    </files>
+    </description>
+    <releaseNotes>
+* [UPD] Complete library rewrite.
+    </releaseNotes>
+    <summary>
+KVLite is a partition-based key-value cache built for SQL. This package contains the dependencies needed by KVLite at runtime.
+    </summary>
+    <language>en-US</language>
+    <projectUrl>https://github.com/pomma89/KVLite</projectUrl>
+    <iconUrl>http://pomma89.altervista.org/kvlite/logo-128.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
+    <dependencies>
+      <dependency id="CodeProject.ObjectPool" version="2.1.1" />
+      <dependency id="Dapper.StrongName" version="1.50.2" />
+      <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.7" />
+      <dependency id="PommaLabs.KVLite.Core" version="6.0.3" />
+      <dependency id="Thrower" version="3.0.4" />
+    </dependencies>
+    <references></references>
+    <frameworkAssemblies></frameworkAssemblies>
+    <tags>kvlite partition key value store concurrent timed sliding ef entity framework</tags>
+  </metadata>
+  <files>
+    <file src="LICENSE.md" target="LICENSE.md" />
+  </files>
 </package>

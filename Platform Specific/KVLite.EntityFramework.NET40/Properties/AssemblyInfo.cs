@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following set of attributes.
 // Change these attribute values to modify the information associated with an assembly.
 [assembly: AssemblyTitle("PommaLabs.KVLite.EntityFramework")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Entity Framework query cache provider.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("PommaLabs")]
 [assembly: AssemblyProduct("PommaLabs.KVLite.EntityFramework")]
@@ -47,8 +47,8 @@ using System.Runtime.InteropServices;
 // 
 // You can specify all the values or you can default the Build and Revision Numbers by using the '*'
 // as shown below: [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("5.2.0")]
-[assembly: AssemblyFileVersion("5.2.6")]
+[assembly: AssemblyVersion("6.0.0")]
+[assembly: AssemblyFileVersion("6.0.3")]
 
 // To allow simpler unit testing.
 [assembly: InternalsVisibleTo("PommaLabs.KVLite.UnitTests")]

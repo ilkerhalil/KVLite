@@ -49,10 +49,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="build\net40\PommaLabs.KVLite.SQLite.targets" />
-    <None Include="build\net451\PommaLabs.KVLite.SQLite.targets" />
-    <None Include="build\net45\PommaLabs.KVLite.SQLite.targets" />
-    <None Include="build\net46\PommaLabs.KVLite.SQLite.targets" />
     <None Include="LICENSE.md" />
     <None Include="NuGetPackage.ps1" />
     <None Include="NuGetSetup.ps1" />
@@ -60,24 +56,10 @@
     <None Include="NuGet.config" />
     <None Include="Package.nuspec" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Content Include="build\net40\x64\SQLite.Interop.dll" />
-    <Content Include="build\net40\x86\SQLite.Interop.dll" />
-    <Content Include="build\net451\x64\SQLite.Interop.dll" />
-    <Content Include="build\net451\x86\SQLite.Interop.dll" />
-    <Content Include="build\net45\x64\SQLite.Interop.dll" />
-    <Content Include="build\net45\x86\SQLite.Interop.dll" />
-    <Content Include="build\net46\x64\SQLite.Interop.dll" />
-    <Content Include="build\net46\x86\SQLite.Interop.dll" />
-    <Content Include="lib\net40\System.Data.SQLite.dll" />
-    <Content Include="lib\net40\System.Data.SQLite.xml" />
-    <Content Include="lib\net451\System.Data.SQLite.dll" />
-    <Content Include="lib\net451\System.Data.SQLite.xml" />
-    <Content Include="lib\net45\System.Data.SQLite.dll" />
-    <Content Include="lib\net45\System.Data.SQLite.xml" />
-    <Content Include="lib\net46\System.Data.SQLite.dll" />
-    <Content Include="lib\net46\System.Data.SQLite.xml" />
+    <Folder Include="lib\net40\" />
+    <Folder Include="lib\net45\" />
+    <Folder Include="lib\net46\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

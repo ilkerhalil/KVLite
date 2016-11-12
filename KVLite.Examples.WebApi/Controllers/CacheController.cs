@@ -1,5 +1,5 @@
-﻿using Finsa.CodeServices.Caching;
-using Finsa.CodeServices.Common;
+﻿using PommaLabs.CodeServices.Caching;
+using PommaLabs.CodeServices.Common;
 using PommaLabs.KVLite.WebApi;
 using System;
 using System.Collections.Generic;

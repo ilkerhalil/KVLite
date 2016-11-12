@@ -21,27 +21,48 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Common.Logging;
-using Common.Logging.Simple;
-using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Compression;
-using Finsa.CodeServices.Serialization;
+using CodeProject.ObjectPool.Specialized;
 using Ninject.Modules;
+using PommaLabs.CodeServices.Clock;
+using PommaLabs.CodeServices.Compression;
+using PommaLabs.CodeServices.Serialization;
+using Troschuetz.Random;
+using Troschuetz.Random.Generators;
 
 namespace PommaLabs.KVLite.UnitTests
 {
     /// <summary>
     ///   Bindings for KVLite.
     /// </summary>
-    sealed class NinjectConfig : NinjectModule
+    internal sealed class NinjectConfig : NinjectModule
     {
         public override void Load()
         {
-            Bind<IClock>().To<MockClock>().InSingletonScope();
-            Bind<ICompressor>().To<DeflateCompressor>().InSingletonScope();
-            Bind<ILog>().To<NoOpLogger>().InSingletonScope();
-            Bind<ISerializer>().To<JsonSerializer>().InSingletonScope();
-            Bind<JsonSerializerSettings>().ToMethod(ctx => new JsonSerializerSettings());
+            Bind<IMemoryStreamPool>()
+                .ToConstant(MemoryStreamPool.Instance)
+                .InSingletonScope();
+
+            Bind<IClock>()
+                .To<MockClock>()
+                .InSingletonScope();
+
+            Bind<ICompressor>()
+                .To<DeflateCompressor>()
+                .InSingletonScope();
+
+            Bind<ISerializer>()
+                .To<JsonSerializer>()
+                .InSingletonScope();
+
+            Bind<JsonSerializerSettings>()
+                .ToConstant(new JsonSerializerSettings())
+                .InSingletonScope();
+
+            Bind<IGenerator>()
+                .To<StandardGenerator>()
+                .InTransientScope();
+
+            System.Data.Entity.Infrastructure.Interception.DbInterception.Add(new DbCommandInterceptor());
         }
     }
 }

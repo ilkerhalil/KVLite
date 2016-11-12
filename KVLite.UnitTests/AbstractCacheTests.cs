@@ -21,10 +21,10 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Finsa.CodeServices.Caching;
-using Finsa.CodeServices.Clock;
-using Finsa.CodeServices.Common;
-using Finsa.CodeServices.Common.Threading.Tasks;
+using PommaLabs.CodeServices.Caching;
+using PommaLabs.CodeServices.Clock;
+using PommaLabs.CodeServices.Common;
+using PommaLabs.CodeServices.Common.Threading.Tasks;
 using Ninject;
 using NUnit.Framework;
 using PommaLabs.KVLite.Core;
@@ -41,11 +41,12 @@ using Task = System.Threading.Tasks.Task;
 namespace PommaLabs.KVLite.UnitTests
 {
     [TestFixture]
-    abstract class AbstractCacheTests<TSettings> where TSettings : AbstractSQLiteCacheSettings<TSettings>
+    abstract class AbstractCacheTests<TSettings> : AbstractTests
+        where TSettings : DbCacheSettings<TSettings>
     {
         #region Setup/Teardown
 
-        protected AbstractSQLiteCache<TSettings> Cache;
+        protected DbCache<TSettings> Cache;
 
         [SetUp]
         public virtual void SetUp()
@@ -90,10 +91,6 @@ namespace PommaLabs.KVLite.UnitTests
             .Select(x => x.ToString(CultureInfo.InvariantCulture))
             .ToList();
 
-#pragma warning disable CC0033 // Dispose Fields Properly
-        protected readonly IKernel Kernel = new StandardKernel(new NinjectConfig());
-#pragma warning restore CC0033 // Dispose Fields Properly
-
         #endregion Constants
 
         #region Option serialization
@@ -118,80 +115,78 @@ namespace PommaLabs.KVLite.UnitTests
 
         #region Parent keys management
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void AddSliding_TooManyParentKeys()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Cache.AddSliding(p, k, v, TimeSpan.FromDays(1), t);
+            Assert.Throws<NotSupportedException>(() => { Cache.AddSliding(p, k, v, TimeSpan.FromDays(1), t); });            
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void AddStatic_TooManyParentKeys()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Cache.AddStatic(p, k, v, t);
+            Assert.Throws<NotSupportedException>(() => { Cache.AddStatic(p, k, v, t); });           
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void AddTimed_TooManyParentKeys()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Cache.AddTimed(p, k, v, TimeSpan.FromDays(1), t);
+            Assert.Throws<NotSupportedException>(() => { Cache.AddTimed(p, k, v, TimeSpan.FromDays(1), t); });           
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void GetOrAddSliding_TooManyParentKeys()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Cache.GetOrAddSliding(p, k, () => v, TimeSpan.FromDays(1), t);
+            Assert.Throws<NotSupportedException>(() => { Cache.GetOrAddSliding(p, k, () => v, TimeSpan.FromDays(1), t); });        
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void GetOrAddStatic_TooManyParentKeys()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Cache.GetOrAddStatic(p, k, () => v, t);
+            Assert.Throws<NotSupportedException>(() => { Cache.GetOrAddStatic(p, k, () => v, t); });  
         }
 
-        [Test, ExpectedException(typeof(NotSupportedException))]
+        [Test]
         public void GetOrAddTimed_TooManyParentKeys()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Cache.GetOrAddTimed(p, k, () => v, TimeSpan.FromDays(1), t);
+            Assert.Throws<NotSupportedException>(() => { Cache.GetOrAddTimed(p, k, () => v, TimeSpan.FromDays(1), t); });         
         }
 
         #endregion
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddSliding_NullKey()
         {
-            Cache.AddSlidingToDefaultPartition(null, StringItems[1], TimeSpan.FromSeconds(10));
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddSlidingToDefaultPartition(null, StringItems[1], TimeSpan.FromSeconds(10)); });         
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddSliding_NullPartition()
         {
-            Cache.AddSliding(null, StringItems[0], StringItems[1], TimeSpan.FromSeconds(10));
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddSliding(null, StringItems[0], StringItems[1], TimeSpan.FromSeconds(10)); });        
         }
 
         [Test]
@@ -335,17 +330,15 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddStatic_NullKey()
         {
-            Cache.AddStaticToDefaultPartition(null, StringItems[1]);
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddStaticToDefaultPartition(null, StringItems[1]); });           
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddStatic_NullPartition()
         {
-            Cache.AddStatic(null, StringItems[0], StringItems[1]);
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddStatic(null, StringItems[0], StringItems[1]); });       
         }
 
         [Test]
@@ -532,17 +525,15 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddTimed_NullKey()
         {
-            Cache.AddTimedToDefaultPartition(null, StringItems[1], Cache.Clock.UtcNow);
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddTimedToDefaultPartition(null, StringItems[1], Cache.Clock.UtcNow); });          
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddTimed_NullPartition()
         {
-            Cache.AddTimed(null, StringItems[0], StringItems[1], Cache.Clock.UtcNow);
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddTimed(null, StringItems[0], StringItems[1], Cache.Clock.UtcNow); });          
         }
 
         [Test]
@@ -1202,7 +1193,8 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_InvalidValues()
         {
-            for (var i = 0; i < Cache.Settings.InsertionCountBeforeAutoClean; ++i)
+            const int fixedValue = 64;
+            for (var i = 0; i < fixedValue; ++i)
             {
                 Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
@@ -1212,20 +1204,21 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_ValidValues()
         {
-            for (var i = 0; i < Cache.Settings.InsertionCountBeforeAutoClean - 1; ++i)
+            const int fixedValue = 64;
+            for (var i = 0; i < fixedValue - 1; ++i)
             {
                 Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
             }
-            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count());
-            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
+            Assert.AreEqual(fixedValue - 1, Cache.Count());
+            Assert.AreEqual(fixedValue - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
 
             // Advance the clock, in order to make items not valid.
             ((MockClock) Cache.Clock).AdvanceMinutes(15);
 
-            // Add a new item, which should trigger the async cleanup.
+            // Add a new item, and then trigger a soft cleanup.
             Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
-            // Wait for the task to complete...
-            Thread.Sleep(1000);
+            Cache.Clear(CacheReadMode.ConsiderExpiryDate);
+
             Assert.AreEqual(1, Cache.Count());
             Assert.AreEqual(1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
         }
@@ -1233,7 +1226,8 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_InvalidValues_Async()
         {
-            Parallel.For(0, Cache.Settings.InsertionCountBeforeAutoClean, i =>
+            const int fixedValue = 64;
+            Parallel.For(0, fixedValue, i =>
             {
                 Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             });
@@ -1243,20 +1237,21 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void Clean_AfterFixedNumberOfInserts_ValidValues_Async()
         {
-            Parallel.For(0, Cache.Settings.InsertionCountBeforeAutoClean - 1, i =>
+            const int fixedValue = 64;
+            Parallel.For(0, fixedValue - 1, i =>
             {
                 Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.UtcNow.AddMinutes(10));
             });
-            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count());
-            Assert.AreEqual(Cache.Settings.InsertionCountBeforeAutoClean - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
+            Assert.AreEqual(fixedValue - 1, Cache.Count());
+            Assert.AreEqual(fixedValue - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
 
             // Advance the clock, in order to make items not valid.
             ((MockClock) Cache.Clock).AdvanceMinutes(15);
 
-            // Add a new item, which should trigger the async cleanup.
+            // Add a new item, and then trigger a soft cleanup.
             Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
-            // Wait for the task to complete...
-            Thread.Sleep(1000);
+            Cache.Clear(CacheReadMode.ConsiderExpiryDate);
+
             Assert.AreEqual(1, Cache.Count());
             Assert.AreEqual(1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
         }
