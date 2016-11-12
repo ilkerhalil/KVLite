@@ -8,16 +8,16 @@
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
     <description>
-KVLite is a partition-based key-value store built on SQL and Entity Framework.
+KVLite is a partition-based key-value cache built for SQL.
 KVLite can be stored on any Entity Framework compatible database, and each key/value pair can have its own lifetime and refresh mode.
 
 This package contains the Oracle driver used by KVLite.
     </description>
     <releaseNotes>
-* [UPD] Moved interfaces and core classes to PommaLabs.CodeServices.Caching package.
+* [UPD] Complete library rewrite.
     </releaseNotes>
     <summary>
-KVLite is a partition-based key-value store built on SQL and Entity Framework. This package contains the Oracle driver used by KVLite.
+KVLite is a partition-based key-value cache built for SQL. This package contains the Oracle driver used by KVLite.
     </summary>
     <language>en-US</language>
     <projectUrl>https://github.com/pomma89/KVLite</projectUrl>

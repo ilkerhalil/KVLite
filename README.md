@@ -1,7 +1,7 @@
 ![](https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-64.png "KVLite Logo") KVLite
 ===============================================================================================================
 
-*KVLite is a partition-based key-value store built on SQL and Entity Framework.*
+*KVLite is a partition-based key-value cache built for SQL.*
 
 KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
 
