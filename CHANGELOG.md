@@ -1,5 +1,9 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.0.? (2016-12-??) ###
+
+* [UPD] Complete library rewrite.
+
 ### v5.2.6 (2016-06-26) ###
 
 * [UPD] Updated System.Data.SQLite to version 1.0.102.0.
