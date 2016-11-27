@@ -39,6 +39,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using Troschuetz.Random;
+using Polly;
 
 #if !NET40
 
@@ -501,12 +502,18 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
-            using (var db = cf.Open())
-            using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                db.Execute(cf.InsertOrUpdateCacheEntryCommand, dbCacheEntry, tr);
-                tr.Commit();
-            }
+            Policy
+                .Handle<Exception>()
+                .WaitAndRetry(3, _ => TimeSpan.FromMilliseconds(100))
+                .Execute(() =>
+                {
+                    using (var db = cf.Open())
+                    using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
+                    {
+                        db.Execute(cf.InsertOrUpdateCacheEntryCommand, dbCacheEntry, tr);
+                        tr.Commit();
+                    }
+                });
 
             if (RandomGenerator.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
@@ -953,7 +960,7 @@ namespace PommaLabs.KVLite.Core
                     // Handle compressed value.
                     return Serializer.DeserializeFromStream<TVal>(decompressionStream);
                 }
-            }            
+            }
         }
 
         private Option<TVal> DeserializeValue<TVal>(DbCacheValue dbCacheValue, string partition, string key)
@@ -1029,6 +1036,6 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-#endregion Private Methods
+        #endregion Private Methods
     }
 }
