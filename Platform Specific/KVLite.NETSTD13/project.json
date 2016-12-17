@@ -5,8 +5,8 @@
     "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
     "NETStandard.Library": "1.6.1",
     "System.Data.Common": "4.3.0",
-    "Thrower": "3.0.4",
-    "Troschuetz.Random": "4.0.8"
+    "Thrower": "4.0.4",
+    "Troschuetz.Random": "4.1.1"
   },
   "frameworks": {
     "netstandard1.3": {}
