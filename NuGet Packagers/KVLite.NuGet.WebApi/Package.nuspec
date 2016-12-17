@@ -8,16 +8,17 @@
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
     <description>
-KVLite is a partition-based key-value cache built for SQL.
-KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
+      KVLite is a partition-based key-value cache built for SQL.
 
-This package contains the code and the references required to use the Web API output cache provider.
+      KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
+
+      This package contains the code and the references required to use the Web API output cache provider.
     </description>
     <releaseNotes>
-* [UPD] Complete library rewrite.
+      * [UPD] Complete library rewrite.
     </releaseNotes>
     <summary>
-KVLite is a partition-based key-value cache built for SQL. This package contains the code and the references required to use the Web API output cache provider.
+      KVLite is a partition-based key-value cache built for SQL. This package contains the code and the references required to use the Web API output cache provider.
     </summary>
     <language>en-US</language>
     <projectUrl>https://github.com/pomma89/KVLite</projectUrl>
@@ -26,11 +27,6 @@ KVLite is a partition-based key-value cache built for SQL. This package contains
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
-      <group>
-        <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.0.3" />
-        <dependency id="Strathweb.CacheOutput.WebApi2" version="0.10.0" />
-      </group>
       <group targetFramework="net46">
         <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
         <dependency id="PommaLabs.KVLite.Core" version="6.0.3" />
