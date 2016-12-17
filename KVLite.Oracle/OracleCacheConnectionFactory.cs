@@ -21,10 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Oracle.ManagedDataAccess.Client;
 using PommaLabs.KVLite.Core;
-using System;
-using System.Data.Common;
-using System.Reflection;
 
 namespace PommaLabs.KVLite.Oracle
 {
@@ -37,7 +35,7 @@ namespace PommaLabs.KVLite.Oracle
         ///   Cache connection factory specialized for Oracle.
         /// </summary>
         public OracleCacheConnectionFactory()
-            : base(GetDbProviderFactory(), null, null)
+            : base(OracleClientFactory.Instance, null, null)
         {
         }
 
@@ -119,19 +117,6 @@ namespace PommaLabs.KVLite.Oracle
             ");
 
             #endregion Commands
-        }
-
-        private static DbProviderFactory GetDbProviderFactory()
-        {
-            try
-            {
-                var factoryType = Type.GetType("Oracle.ManagedDataAccess.Client.OracleClientFactory, Oracle.ManagedDataAccess");
-                return factoryType.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null) as DbProviderFactory;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ErrorMessages.MissingOracleDriver, ex);
-            }
         }
     }
 }

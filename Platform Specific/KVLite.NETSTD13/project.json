@@ -1,9 +1,7 @@
 ﻿{
   "supports": {},
   "dependencies": {
-    "Dapper": "1.50.2",
-    "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
-    "NETStandard.Library": "1.6.1",
+    "Dapper.StrongName": "1.50.2",
     "System.Data.Common": "4.3.0",
     "Thrower": "4.0.4",
     "Troschuetz.Random": "4.1.1"

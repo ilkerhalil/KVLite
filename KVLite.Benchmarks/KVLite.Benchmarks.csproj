@@ -315,6 +315,10 @@
       <Project>{3768ff1c-ade5-4c9d-9c00-cacb0ce40809}</Project>
       <Name>KVLite.NET46</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Platform Specific\KVLite.Oracle.NET46\KVLite.Oracle.NET46.csproj">
+      <Project>{700d48bb-ee18-47b1-bdd4-7a7b87a8e7f7}</Project>
+      <Name>KVLite.Oracle.NET46</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Platform Specific\KVLite.UnitTests.NET45\KVLite.UnitTests.NET45.csproj">
       <Project>{bbe6492a-198e-499e-add5-e8c904ec8182}</Project>
       <Name>KVLite.UnitTests.NET45</Name>

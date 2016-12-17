@@ -26,7 +26,7 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Represents a flat entry stored inside the cache.
     /// </summary>
-    internal sealed class DbCacheEntry : DbCacheValue
+    public sealed class DbCacheEntry : DbCacheValue
     {
         /// <summary>
         ///   SQL column name of <see cref="Partition"/>.

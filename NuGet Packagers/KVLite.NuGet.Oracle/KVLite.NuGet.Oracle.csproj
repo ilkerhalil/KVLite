@@ -57,7 +57,9 @@
     <None Include="Package.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="lib\" />
+    <Folder Include="lib\net40\" />
+    <Folder Include="lib\net45\" />
+    <Folder Include="lib\net46\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -79,4 +81,23 @@
     <Message Text="SUCCESS: Created package." Condition=" '$(Configuration)|$(Platform)|$(ExitCode)' == 'Debug|AnyCPU|0' " Importance="High" />
     <Message Text="SUCCESS: Published package." Condition=" '$(Configuration)|$(Platform)|$(ExitCode)' == 'Release|AnyCPU|0' " Importance="High" />
   </Target>
+  <PropertyGroup>
+    <PreBuildEvent>del "$(ProjectDir)*.nupkg"
+del "$(ProjectDir)*.nupkg.bak"
+
+if not exist "$(ProjectDir)lib\net40" mkdir "$(ProjectDir)lib\net40"
+copy "$(SolutionDir)Platform Specific\KVLite.Oracle.NET40\bin\Release\PommaLabs.KVLite.Oracle.dll" "$(ProjectDir)lib\net40"
+copy "$(SolutionDir)Platform Specific\KVLite.Oracle.NET40\bin\Release\PommaLabs.KVLite.Oracle.pdb" "$(ProjectDir)lib\net40"
+copy "$(SolutionDir)Platform Specific\KVLite.Oracle.NET40\bin\Release\PommaLabs.KVLite.Oracle.xml" "$(ProjectDir)lib\net40"
+
+if not exist "$(ProjectDir)lib\net45" mkdir "$(ProjectDir)lib\net45"
+copy "$(SolutionDir)Platform Specific\KVLite.Oracle.NET45\bin\Release\PommaLabs.KVLite.Oracle.dll" "$(ProjectDir)lib\net45"
+copy "$(SolutionDir)Platform Specific\KVLite.Oracle.NET45\bin\Release\PommaLabs.KVLite.Oracle.pdb" "$(ProjectDir)lib\net45"
+copy "$(SolutionDir)Platform Specific\KVLite.Oracle.NET45\bin\Release\PommaLabs.KVLite.Oracle.xml" "$(ProjectDir)lib\net45"
+
+if not exist "$(ProjectDir)lib\net46" mkdir "$(ProjectDir)lib\net46"
+copy "$(SolutionDir)Platform Specific\KVLite.Oracle.NET46\bin\Release\PommaLabs.KVLite.Oracle.dll" "$(ProjectDir)lib\net46"
+copy "$(SolutionDir)Platform Specific\KVLite.Oracle.NET46\bin\Release\PommaLabs.KVLite.Oracle.pdb" "$(ProjectDir)lib\net46"
+copy "$(SolutionDir)Platform Specific\KVLite.Oracle.NET46\bin\Release\PommaLabs.KVLite.Oracle.xml" "$(ProjectDir)lib\net46"</PreBuildEvent>
+  </PropertyGroup>
 </Project>
