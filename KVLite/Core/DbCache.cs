@@ -502,6 +502,8 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
+            var dynamicParameters = ToDynamicParameters(dbCacheEntry);
+
             Policy
                 .Handle<Exception>()
                 .WaitAndRetry(3, _ => TimeSpan.FromMilliseconds(100))
@@ -510,7 +512,7 @@ namespace PommaLabs.KVLite.Core
                     using (var db = cf.Open())
                     using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
                     {
-                        db.Execute(cf.InsertOrUpdateCacheEntryCommand, dbCacheEntry, tr);
+                        db.Execute(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr);
                         tr.Commit();
                     }
                 });
@@ -945,6 +947,13 @@ namespace PommaLabs.KVLite.Core
         }
 
 #endif
+
+        /// <summary>
+        ///   Converts given cache entry into dynamic parameters.
+        /// </summary>
+        /// <param name="dbCacheEntry">Cache entry.</param>
+        /// <returns>Given cache entry converted into dynamic parameters.</returns>
+        protected virtual SqlMapper.IDynamicParameters ToDynamicParameters(DbCacheEntry dbCacheEntry) => new DynamicParameters(dbCacheEntry);
 
         private TVal UnsafeDeserializeValue<TVal>(DbCacheValue dbCacheValue)
         {
