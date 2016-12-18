@@ -44,9 +44,9 @@ namespace PommaLabs.KVLite.Benchmarks
 {
     public static class Program
     {
-        private const int RowCount = 10000;
+        private const int RowCount = 100;
         private const int IterationCount = 5;
-        private const int RandomDataTablesCount = 10;
+        private const int RandomDataTablesCount = 1000;
 
         private static readonly string[] ColumnNames = { "A", "B", "C", "D", "E" };
 
@@ -86,7 +86,7 @@ namespace PommaLabs.KVLite.Benchmarks
                 /*** STORE EACH DATA TABLE ASYNC ***/
 
                 FullyCleanCache();
-                StoreEachDataTableAsync(OracleCache.DefaultInstance, tables, i);
+                //StoreEachDataTableAsync(OracleCache.DefaultInstance, tables, i);
                 StoreEachDataTableAsync(MySqlCache.DefaultInstance, tables, i);
                 StoreEachDataTableAsync(SqlServerCache.DefaultInstance, tables, i);
 
