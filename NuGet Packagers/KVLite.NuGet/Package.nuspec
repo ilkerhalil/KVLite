@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>6.0.3</version>
+    <version>6.0.4</version>
     <title>KVLite - SQL-based cache</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
@@ -31,7 +31,7 @@
       <dependency id="Dapper.StrongName" version="1.50.2" />
       <dependency id="Polly-Signed" version="4.3.0" />
       <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
-      <dependency id="PommaLabs.KVLite.Core" version="6.0.3" />
+      <dependency id="PommaLabs.KVLite.Core" version="6.0.4" />
       <dependency id="Thrower" version="4.0.4" />
     </dependencies>
     <references></references>
