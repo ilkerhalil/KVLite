@@ -1,4 +1,4 @@
-![](https://googledrive.com/host/0B8v0ikF4z2BiR29YQmxfSlE1Sms/Progetti/KVLite/logo-64.png "KVLite Logo") KVLite
+![](http://pomma89.altervista.org/kvlite/logo-64.png "KVLite Logo") KVLite
 ===============================================================================================================
 
 *KVLite is a partition-based key-value cache built for SQL.*
