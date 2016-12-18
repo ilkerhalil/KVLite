@@ -3,21 +3,22 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>6.0.3</version>
+    <version>6.0.4</version>
     <title>KVLite - SQL-based cache</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
     <description>
-KVLite is a partition-based key-value cache built for SQL.
-KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
+      KVLite is a partition-based key-value cache built for SQL.
 
-This package contains the dependencies needed by KVLite at runtime.
+      KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
+
+      This package contains the dependencies needed by KVLite at runtime.
     </description>
     <releaseNotes>
-* [UPD] Complete library rewrite.
+      * [UPD] Complete library rewrite.
     </releaseNotes>
     <summary>
-KVLite is a partition-based key-value cache built for SQL. This package contains the dependencies needed by KVLite at runtime.
+      KVLite is a partition-based key-value cache built for SQL. This package contains the dependencies needed by KVLite at runtime.
     </summary>
     <language>en-US</language>
     <projectUrl>https://github.com/pomma89/KVLite</projectUrl>
@@ -26,11 +27,12 @@ KVLite is a partition-based key-value cache built for SQL. This package contains
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
-      <dependency id="CodeProject.ObjectPool" version="2.1.1" />
+      <dependency id="CodeProject.ObjectPool" version="2.2.1" />
       <dependency id="Dapper.StrongName" version="1.50.2" />
-      <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.7" />
-      <dependency id="PommaLabs.KVLite.Core" version="6.0.3" />
-      <dependency id="Thrower" version="3.0.4" />
+      <dependency id="Polly-Signed" version="4.3.0" />
+      <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
+      <dependency id="PommaLabs.KVLite.Core" version="6.0.4" />
+      <dependency id="Thrower" version="4.0.4" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>

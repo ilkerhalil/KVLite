@@ -39,6 +39,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using Troschuetz.Random;
+using Polly;
 
 #if !NET40
 
@@ -107,7 +108,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
             try
             {
@@ -140,7 +141,7 @@ namespace PommaLabs.KVLite.Core
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
             try
             {
@@ -172,7 +173,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
             try
             {
@@ -202,7 +203,7 @@ namespace PommaLabs.KVLite.Core
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
             try
             {
@@ -230,7 +231,7 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
             try
             {
@@ -260,7 +261,7 @@ namespace PommaLabs.KVLite.Core
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentException.IfNot(Enum.IsDefined(typeof(CacheReadMode), cacheReadMode), nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
 
             try
             {
@@ -501,12 +502,20 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
-            using (var db = cf.Open())
-            using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                db.Execute(cf.InsertOrUpdateCacheEntryCommand, dbCacheEntry, tr);
-                tr.Commit();
-            }
+            var dynamicParameters = ToDynamicParameters(dbCacheEntry);
+
+            Policy
+                .Handle<Exception>()
+                .WaitAndRetry(3, _ => TimeSpan.FromMilliseconds(100))
+                .Execute(() =>
+                {
+                    using (var db = cf.Open())
+                    using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
+                    {
+                        db.Execute(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr);
+                        tr.Commit();
+                    }
+                });
 
             if (RandomGenerator.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
@@ -939,6 +948,13 @@ namespace PommaLabs.KVLite.Core
 
 #endif
 
+        /// <summary>
+        ///   Converts given cache entry into dynamic parameters.
+        /// </summary>
+        /// <param name="dbCacheEntry">Cache entry.</param>
+        /// <returns>Given cache entry converted into dynamic parameters.</returns>
+        protected virtual SqlMapper.IDynamicParameters ToDynamicParameters(DbCacheEntry dbCacheEntry) => new DynamicParameters(dbCacheEntry);
+
         private TVal UnsafeDeserializeValue<TVal>(DbCacheValue dbCacheValue)
         {
             using (var memoryStream = new MemoryStream(dbCacheValue.Value))
@@ -953,7 +969,7 @@ namespace PommaLabs.KVLite.Core
                     // Handle compressed value.
                     return Serializer.DeserializeFromStream<TVal>(decompressionStream);
                 }
-            }            
+            }
         }
 
         private Option<TVal> DeserializeValue<TVal>(DbCacheValue dbCacheValue, string partition, string key)
@@ -1029,6 +1045,6 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-#endregion Private Methods
+        #endregion Private Methods
     }
 }

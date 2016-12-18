@@ -22,6 +22,8 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
+using Dapper;
+using Oracle.ManagedDataAccess.Client;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
@@ -79,6 +81,18 @@ namespace PommaLabs.KVLite.Oracle
         public OracleCache(OracleCacheSettings settings, OracleCacheConnectionFactory connectionFactory, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IGenerator randomGenerator = null)
             : base(settings, connectionFactory, clock, serializer, compressor, memoryStreamPool, randomGenerator)
         {
+        }
+
+        /// <summary>
+        ///   Converts given cache entry into dynamic parameters.
+        /// </summary>
+        /// <param name="dbCacheEntry">Cache entry.</param>
+        /// <returns>Given cache entry converted into dynamic parameters.</returns>
+        protected override SqlMapper.IDynamicParameters ToDynamicParameters(DbCacheEntry dbCacheEntry)
+        {
+            var p = new OracleDynamicParameters(dbCacheEntry);
+            p.Add(nameof(DbCacheValue.Value), dbCacheEntry.Value, OracleDbType.Blob);
+            return p;
         }
     }
 }

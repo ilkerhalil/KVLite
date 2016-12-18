@@ -26,7 +26,7 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Represents a flat value stored inside the cache.
     /// </summary>
-    internal class DbCacheValue
+    public class DbCacheValue
     {
         /// <summary>
         ///   Database agnostic "true".
