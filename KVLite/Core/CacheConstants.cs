@@ -39,9 +39,9 @@ namespace PommaLabs.KVLite.Core
     public static class CacheConstants
     {
         /// <summary>
-        ///   The name of KVLite assembly, used to prefix all partitions defined in this project.
+        ///   The prefix used by all partitions defined in this project.
         /// </summary>
-        public static string PartitionPrefix { get; } = typeof(CacheConstants).Assembly.GetName().Name;
+        public static string PartitionPrefix { get; } = nameof(KVLite);
 
         /// <summary>
         ///   Default memory stream pool.
