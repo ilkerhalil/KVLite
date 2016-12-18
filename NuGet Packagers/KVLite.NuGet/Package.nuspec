@@ -39,6 +39,6 @@
     <tags>kvlite partition key value store concurrent timed sliding ef entity framework</tags>
   </metadata>
   <files>
-    <file src="LICENSE.md" target="LICENSE.md" />
+    <file src="..\..\LICENSE.md" target="LICENSE.md" />
   </files>
 </package>
