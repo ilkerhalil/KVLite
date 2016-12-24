@@ -34,7 +34,7 @@ namespace PommaLabs.KVLite.MySql
     /// <summary>
     ///   Cache backed by MySQL.
     /// </summary>
-    public class MySqlCache : DbCache<MySqlCacheSettings>
+    public class MySqlCache : DbCache<MySqlCacheSettings, MySqlConnection>
     {
         #region Default Instance
 

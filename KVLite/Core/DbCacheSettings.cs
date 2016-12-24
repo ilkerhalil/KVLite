@@ -24,6 +24,7 @@
 using PommaLabs.CodeServices.Caching;
 using PommaLabs.Thrower;
 using System;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
@@ -32,9 +33,12 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Base class for cache settings. Contains settings shared among different caches.
     /// </summary>
+    /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
+    /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
     [Serializable, DataContract]
-    public class DbCacheSettings<TSettings> : AbstractCacheSettings<TSettings>
-        where TSettings : DbCacheSettings<TSettings>
+    public class DbCacheSettings<TSettings, TConnection> : AbstractCacheSettings<TSettings>
+        where TSettings : DbCacheSettings<TSettings, TConnection>
+        where TConnection : DbConnection
     {
         #region Fields
 
@@ -57,7 +61,7 @@ namespace PommaLabs.KVLite.Core
             MinValueLengthForCompression = 4096;
         }
 
-        internal IDbCacheConnectionFactory ConnectionFactory { get; set; }
+        internal IDbCacheConnectionFactory<TConnection> ConnectionFactory { get; set; }
 
         #endregion Construction
 

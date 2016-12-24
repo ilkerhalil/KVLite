@@ -33,10 +33,10 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Base class for cache connection factories.
     /// </summary>
-    public abstract class DbCacheConnectionFactory : IDbCacheConnectionFactory
+    /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
+    public abstract class DbCacheConnectionFactory<TConnection> : IDbCacheConnectionFactory<TConnection>
+        where TConnection : DbConnection
     {
-        private static readonly Regex IsValidSqlNameRegex = new Regex("[a-z0-9_]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
         private readonly DbProviderFactory _dbProviderFactory;
         private string _cacheSchemaName;
         private string _cacheEntriesTableName;
@@ -51,8 +51,8 @@ namespace PommaLabs.KVLite.Core
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(dbProviderFactory, nameof(dbProviderFactory));
-            Raise.ArgumentException.If(cacheSchemaName != null && !IsValidSqlNameRegex.IsMatch(cacheSchemaName));
-            Raise.ArgumentException.If(cacheEntriesTableName != null && !IsValidSqlNameRegex.IsMatch(cacheEntriesTableName));
+            Raise.ArgumentException.If(cacheSchemaName != null && !CacheConstants.IsValidSqlNameRegex.IsMatch(cacheSchemaName));
+            Raise.ArgumentException.If(cacheEntriesTableName != null && !CacheConstants.IsValidSqlNameRegex.IsMatch(cacheEntriesTableName));
 
             _dbProviderFactory = dbProviderFactory;
 
@@ -86,13 +86,13 @@ namespace PommaLabs.KVLite.Core
                 var result = _cacheSchemaName;
 
                 // Postconditions
-                Debug.Assert(IsValidSqlNameRegex.IsMatch(result));
+                Debug.Assert(CacheConstants.IsValidSqlNameRegex.IsMatch(result));
                 return result;
             }
             set
             {
                 // Preconditions
-                Raise.ArgumentException.IfNot(IsValidSqlNameRegex.IsMatch(value));
+                Raise.ArgumentException.IfNot(CacheConstants.IsValidSqlNameRegex.IsMatch(value));
 
                 _cacheSchemaName = value;
                 UpdateCommandsAndQueries();
@@ -109,13 +109,13 @@ namespace PommaLabs.KVLite.Core
                 var result = _cacheEntriesTableName;
 
                 // Postconditions
-                Debug.Assert(IsValidSqlNameRegex.IsMatch(result));
+                Debug.Assert(CacheConstants.IsValidSqlNameRegex.IsMatch(result));
                 return result;
             }
             set
             {
                 // Preconditions
-                Raise.ArgumentException.IfNot(IsValidSqlNameRegex.IsMatch(value));
+                Raise.ArgumentException.IfNot(CacheConstants.IsValidSqlNameRegex.IsMatch(value));
 
                 _cacheEntriesTableName = value;
                 UpdateCommandsAndQueries();
@@ -201,9 +201,9 @@ namespace PommaLabs.KVLite.Core
         ///   Opens a new connection to the specified data provider.
         /// </summary>
         /// <returns>An open connection.</returns>
-        public DbConnection Open()
+        public TConnection Open()
         {
-            var connection = _dbProviderFactory.CreateConnection();
+            var connection = _dbProviderFactory.CreateConnection() as TConnection;
             connection.ConnectionString = ConnectionString;
             connection.Open();
             return connection;
@@ -216,9 +216,9 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns>An open connection.</returns>
-        public async Task<DbConnection> OpenAsync(CancellationToken cancellationToken)
+        public async Task<TConnection> OpenAsync(CancellationToken cancellationToken)
         {
-            var connection = _dbProviderFactory.CreateConnection();
+            var connection = _dbProviderFactory.CreateConnection() as TConnection;
             connection.ConnectionString = ConnectionString;
             await connection.OpenAsync(cancellationToken);
             return connection;
@@ -261,7 +261,8 @@ namespace PommaLabs.KVLite.Core
         protected virtual string RightIdentifierEncloser { get; } = string.Empty;
 
         /// <summary>
-        ///   This method is called when either the cache schema name or the cache entries table name have been changed by the user.
+        ///   This method is called when either the cache schema name or the cache entries table name
+        ///   have been changed by the user.
         /// </summary>
         protected virtual void UpdateCommandsAndQueries()
         {
@@ -290,7 +291,7 @@ namespace PommaLabs.KVLite.Core
                    and {DbCacheEntry.KeyColumn} = {p}{nameof(DbCacheEntry.Single.Key)}
             ");
 
-            #endregion
+            #endregion Commands
 
             #region Queries
 
@@ -365,7 +366,7 @@ namespace PommaLabs.KVLite.Core
                   from {CacheSchemaName}.{CacheEntriesTableName}
             ");
 
-            #endregion
+            #endregion Queries
         }
 
         /// <summary>

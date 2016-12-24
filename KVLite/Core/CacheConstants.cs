@@ -28,6 +28,7 @@ using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
+using System.Text.RegularExpressions;
 using Troschuetz.Random;
 using Troschuetz.Random.Generators;
 
@@ -88,5 +89,10 @@ namespace PommaLabs.KVLite.Core
         ///   Creates a random number generator.
         /// </summary>
         public static IGenerator CreateRandomGenerator() => new XorShift128Generator();
+
+        /// <summary>
+        ///   Used to validate SQL names.
+        /// </summary>
+        internal static Regex IsValidSqlNameRegex { get; } = new Regex("[a-z0-9_]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     }
 }
