@@ -21,17 +21,17 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following set of attributes.
 // Change these attribute values to modify the information associated with an assembly.
-[assembly: AssemblyTitle("PommaLabs.KVLite.EntityFramework")]
-[assembly: AssemblyDescription("Entity Framework query cache provider.")]
+[assembly: AssemblyTitle("PommaLabs.KVLite.SqlServer")]
+[assembly: AssemblyDescription("SQL Server driver used by KVLite.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("PommaLabs")]
-[assembly: AssemblyProduct("PommaLabs.KVLite.EntityFramework")]
+[assembly: AssemblyProduct("PommaLabs.KVLite.SqlServer")]
 [assembly: AssemblyCopyright("Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -39,6 +39,9 @@ using System.Runtime.InteropServices;
 // Setting ComVisible to false makes the types in this assembly not visible to COM components. If you
 // need to access a type in this assembly from COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
+
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("c7c387c6-b6f5-259f-9ce7-73136bee7b43")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -48,6 +51,3 @@ using System.Runtime.InteropServices;
 // as shown below: [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("6.0.0")]
 [assembly: AssemblyFileVersion("6.0.4")]
-
-// To allow simpler unit testing.
-[assembly: InternalsVisibleTo("PommaLabs.KVLite.UnitTests")]
