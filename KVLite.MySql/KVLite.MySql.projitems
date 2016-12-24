@@ -9,5 +9,11 @@
     <Import_RootNamespace>KVLite.MySql</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Scripts\kvl_cache_entries.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)MySqlCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MySqlCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MySqlCacheSettings.cs" />
   </ItemGroup>
 </Project>

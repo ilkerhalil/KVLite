@@ -9,5 +9,11 @@
     <Import_RootNamespace>KVLite.SQLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)PersistentCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PersistentCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLiteCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SQLiteCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VolatileCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VolatileCacheSettings.cs" />
   </ItemGroup>
 </Project>
