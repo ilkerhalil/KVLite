@@ -217,6 +217,7 @@ Global
 		KVLite.WebForms\KVLite.WebForms.projitems*{6de6294a-ced3-4e53-85fb-60b9fead1fe7}*SharedItemsImports = 4
 		KVLite.Nancy\KVLite.Nancy.projitems*{6f8516a0-5e50-44b2-aa8f-a3ab285f513e}*SharedItemsImports = 4
 		KVLite.Oracle\KVLite.Oracle.projitems*{700d48bb-ee18-47b1-bdd4-7a7b87a8e7f7}*SharedItemsImports = 4
+		KVLite.UnitTests\KVLite.UnitTests.projitems*{7380ccc9-8a6e-4a65-ab48-393e8b0816dc}*SharedItemsImports = 4
 		KVLite.PostgreSql\KVLite.PostgreSql.projitems*{7434a6f1-a1ca-4406-8ce4-5b91c1f956b6}*SharedItemsImports = 4
 		KVLite.SqlServer\KVLite.SqlServer.projitems*{776b236c-9c7c-4d2f-8f76-0d70fd643e83}*SharedItemsImports = 4
 		KVLite.SqlServer\KVLite.SqlServer.projitems*{7b52091a-0782-4487-bde3-5e45c47d5e99}*SharedItemsImports = 13

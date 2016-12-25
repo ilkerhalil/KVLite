@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using MySql.Data.MySqlClient;
 using PommaLabs.KVLite.Core;
 using System;
 using System.Diagnostics.Contracts;
@@ -32,7 +33,7 @@ namespace PommaLabs.KVLite.MySql
     ///   Settings used by <see cref="MySqlCache"/>.
     /// </summary>
     [Serializable, DataContract]
-    public class MySqlCacheSettings : DbCacheSettings<MySqlCacheSettings>
+    public class MySqlCacheSettings : DbCacheSettings<MySqlCacheSettings, MySqlConnection>
     {
         #region Properties
 
