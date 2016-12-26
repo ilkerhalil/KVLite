@@ -130,6 +130,10 @@
       <Project>{b81fca47-a533-4ffb-b202-f6e07668eb66}</Project>
       <Name>KVLite.NET40</Name>
     </ProjectReference>
+    <ProjectReference Include="..\KVLite.SQLite.NET40\KVLite.SQLite.NET40.csproj">
+      <Project>{642c0f9c-64d3-485b-955f-ad5de2dacf02}</Project>
+      <Name>KVLite.SQLite.NET40</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
