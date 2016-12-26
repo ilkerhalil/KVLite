@@ -1,52 +1,52 @@
 ﻿// File name: AbstractCacheTests.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Ninject;
+using NUnit.Framework;
 using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
-using Ninject;
-using NUnit.Framework;
 using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
-using Task = System.Threading.Tasks.Task;
 
 namespace PommaLabs.KVLite.UnitTests
 {
     [TestFixture]
-    abstract class AbstractCacheTests<TSettings> : AbstractTests
-        where TSettings : DbCacheSettings<TSettings>
+    internal abstract class AbstractCacheTests<TSettings, TConnection> : AbstractTests
+        where TSettings : DbCacheSettings<TSettings, TConnection>
+        where TConnection : DbConnection
     {
         #region Setup/Teardown
 
-        protected DbCache<TSettings> Cache;
+        protected DbCache<TSettings, TConnection> Cache;
 
         [SetUp]
         public virtual void SetUp()
@@ -78,13 +78,13 @@ namespace PommaLabs.KVLite.UnitTests
 
         #region Constants
 
-        const int LargeItemCount = 1000;
+        private const int LargeItemCount = 1000;
 
-        const int MediumItemCount = 100;
+        private const int MediumItemCount = 100;
 
-        const int SmallItemCount = 10;
+        private const int SmallItemCount = 10;
 
-        const int MinItem = 10000;
+        private const int MinItem = 10000;
 
         protected readonly List<string> StringItems = Enumerable
             .Range(MinItem, LargeItemCount)
@@ -111,7 +111,7 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.That(info.Value.Value, Is.EqualTo(v));
         }
 
-        #endregion
+        #endregion Option serialization
 
         #region Parent keys management
 
@@ -122,7 +122,7 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Assert.Throws<NotSupportedException>(() => { Cache.AddSliding(p, k, v, TimeSpan.FromDays(1), t); });            
+            Assert.Throws<NotSupportedException>(() => { Cache.AddSliding(p, k, v, TimeSpan.FromDays(1), t); });
         }
 
         [Test]
@@ -132,7 +132,7 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Assert.Throws<NotSupportedException>(() => { Cache.AddStatic(p, k, v, t); });           
+            Assert.Throws<NotSupportedException>(() => { Cache.AddStatic(p, k, v, t); });
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Assert.Throws<NotSupportedException>(() => { Cache.AddTimed(p, k, v, TimeSpan.FromDays(1), t); });           
+            Assert.Throws<NotSupportedException>(() => { Cache.AddTimed(p, k, v, TimeSpan.FromDays(1), t); });
         }
 
         [Test]
@@ -152,7 +152,7 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Assert.Throws<NotSupportedException>(() => { Cache.GetOrAddSliding(p, k, () => v, TimeSpan.FromDays(1), t); });        
+            Assert.Throws<NotSupportedException>(() => { Cache.GetOrAddSliding(p, k, () => v, TimeSpan.FromDays(1), t); });
         }
 
         [Test]
@@ -162,7 +162,7 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Assert.Throws<NotSupportedException>(() => { Cache.GetOrAddStatic(p, k, () => v, t); });  
+            Assert.Throws<NotSupportedException>(() => { Cache.GetOrAddStatic(p, k, () => v, t); });
         }
 
         [Test]
@@ -172,21 +172,21 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v = StringItems[2];
             var t = new string[Cache.MaxParentKeyCountPerItem + 1];
-            Assert.Throws<NotSupportedException>(() => { Cache.GetOrAddTimed(p, k, () => v, TimeSpan.FromDays(1), t); });         
+            Assert.Throws<NotSupportedException>(() => { Cache.GetOrAddTimed(p, k, () => v, TimeSpan.FromDays(1), t); });
         }
 
-        #endregion
+        #endregion Parent keys management
 
         [Test]
         public void AddSliding_NullKey()
         {
-            Assert.Throws<ArgumentNullException>(() => { Cache.AddSlidingToDefaultPartition(null, StringItems[1], TimeSpan.FromSeconds(10)); });         
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddSlidingToDefaultPartition(null, StringItems[1], TimeSpan.FromSeconds(10)); });
         }
 
         [Test]
         public void AddSliding_NullPartition()
         {
-            Assert.Throws<ArgumentNullException>(() => { Cache.AddSliding(null, StringItems[0], StringItems[1], TimeSpan.FromSeconds(10)); });        
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddSliding(null, StringItems[0], StringItems[1], TimeSpan.FromSeconds(10)); });
         }
 
         [Test]
@@ -332,13 +332,13 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void AddStatic_NullKey()
         {
-            Assert.Throws<ArgumentNullException>(() => { Cache.AddStaticToDefaultPartition(null, StringItems[1]); });           
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddStaticToDefaultPartition(null, StringItems[1]); });
         }
 
         [Test]
         public void AddStatic_NullPartition()
         {
-            Assert.Throws<ArgumentNullException>(() => { Cache.AddStatic(null, StringItems[0], StringItems[1]); });       
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddStatic(null, StringItems[0], StringItems[1]); });
         }
 
         [Test]
@@ -527,13 +527,13 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void AddTimed_NullKey()
         {
-            Assert.Throws<ArgumentNullException>(() => { Cache.AddTimedToDefaultPartition(null, StringItems[1], Cache.Clock.UtcNow); });          
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddTimedToDefaultPartition(null, StringItems[1], Cache.Clock.UtcNow); });
         }
 
         [Test]
         public void AddTimed_NullPartition()
         {
-            Assert.Throws<ArgumentNullException>(() => { Cache.AddTimed(null, StringItems[0], StringItems[1], Cache.Clock.UtcNow); });          
+            Assert.Throws<ArgumentNullException>(() => { Cache.AddTimed(null, StringItems[0], StringItems[1], Cache.Clock.UtcNow); });
         }
 
         [Test]
@@ -691,7 +691,7 @@ namespace PommaLabs.KVLite.UnitTests
             var v2 = StringItems[3];
             var l = TimeSpan.FromMinutes(10);
 
-            var r = await Cache.GetOrAddTimedAsync(p, k, () => Task.FromResult(Tuple.Create(v1, v2)), l);
+            var r = await Cache.GetOrAddTimedAsync(p, k, () => TaskHelper.ResultTask(Tuple.Create(v1, v2)), l);
 
             var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
             Assert.IsNotNull(info);
@@ -1438,7 +1438,7 @@ namespace PommaLabs.KVLite.UnitTests
 
         #region Private Methods
 
-        void AddSliding(ICache instance, int itemCount, TimeSpan interval)
+        private void AddSliding(ICache instance, int itemCount, TimeSpan interval)
         {
             for (var i = 0; i < itemCount; ++i)
             {
@@ -1446,7 +1446,7 @@ namespace PommaLabs.KVLite.UnitTests
             }
         }
 
-        void AddStatic(ICache instance, int itemCount)
+        private void AddStatic(ICache instance, int itemCount)
         {
             for (var i = 0; i < itemCount; ++i)
             {
@@ -1454,7 +1454,7 @@ namespace PommaLabs.KVLite.UnitTests
             }
         }
 
-        void AddTimed(ICache instance, int itemCount, DateTime utcTime)
+        private void AddTimed(ICache instance, int itemCount, DateTime utcTime)
         {
             for (var i = 0; i < itemCount; ++i)
             {

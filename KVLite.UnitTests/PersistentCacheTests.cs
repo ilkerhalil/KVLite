@@ -28,10 +28,11 @@ using PommaLabs.CodeServices.Clock;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.SQLite;
 using System;
+using System.Data.SQLite;
 
 namespace PommaLabs.KVLite.UnitTests
 {
-    internal sealed class PersistentCacheTests : AbstractCacheTests<PersistentCacheSettings>
+    internal sealed class PersistentCacheTests : AbstractCacheTests<PersistentCacheSettings, SQLiteConnection>
     {
         private const string BlankPath = "   ";
 
@@ -110,7 +111,7 @@ namespace PommaLabs.KVLite.UnitTests
         {
             Cache = new PersistentCache(new PersistentCacheSettings());
             Cache.Dispose();
-            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });         
+            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });
         }
 
         #endregion Cache creation and disposal
