@@ -195,9 +195,9 @@ namespace PommaLabs.KVLite.UnitTests
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine(Cache.LastError.Message);
-                    Console.WriteLine(another.LastError.Message);
+                    Console.Error.WriteLine($"{ex.Message} - {ex.GetType().Name} - {ex.StackTrace}");
+                    Console.Error.WriteLine(Cache.LastError?.Message ?? "First cache has no errors");
+                    Console.Error.WriteLine(another.LastError?.Message ?? "Second cache has no errors");
                     throw;
                 }
             }

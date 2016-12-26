@@ -56,7 +56,7 @@ build/
 [Bb]uild[Ll]og.*
 
 # NUnit test Results
-[Tt]est[Rr]esults.xml
+[Tt]est[Rr]esult.xml
 .artifacts
 
 *_i.c
