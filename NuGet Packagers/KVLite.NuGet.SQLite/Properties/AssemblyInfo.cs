@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("KVLite.NuGet.SQLite")]
-[assembly: AssemblyDescription("Project template made by EyeCatch (http://www.eyecatch.no/)")]
+[assembly: AssemblyTitle("KVLite.NuGet.SQLiteNew")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("KVLite.NuGet.SQLite")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2016")]
+[assembly: AssemblyCompany("Hewlett-Packard")]
+[assembly: AssemblyProduct("KVLite.NuGet.SQLiteNew")]
+[assembly: AssemblyCopyright("Copyright © Hewlett-Packard 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("5b586874-8d3e-4137-9ba8-e982413416d5")]
+[assembly: Guid("51d7cd6d-aff4-4539-bfa5-24c90a7af72f")]
 
 // Version information for an assembly consists of the following four values:
 //

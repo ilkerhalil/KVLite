@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("NuGet_Packager__Core_")]
-[assembly: AssemblyDescription("Project template made by EyeCatch (http://www.eyecatch.no/)")]
+[assembly: AssemblyTitle("KVLite.NuGet.NancyNew")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("NuGet_Packager__Core_")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCompany("Hewlett-Packard")]
+[assembly: AssemblyProduct("KVLite.NuGet.NancyNew")]
+[assembly: AssemblyCopyright("Copyright © Hewlett-Packard 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("5b586874-8d3e-4137-9ba8-e982413416d5")]
+[assembly: Guid("eb421e30-5bf5-4a95-8b67-3a93841259e7")]
 
 // Version information for an assembly consists of the following four values:
 //
