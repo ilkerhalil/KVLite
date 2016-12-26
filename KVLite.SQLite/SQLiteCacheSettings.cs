@@ -24,6 +24,7 @@
 using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
+using System.Data.SQLite;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
@@ -33,7 +34,7 @@ namespace PommaLabs.KVLite.SQLite
     ///   Settings used by SQLite caches.
     /// </summary>
     [Serializable, DataContract]
-    public abstract class SQLiteCacheSettings<TSettings> : DbCacheSettings<TSettings>
+    public abstract class SQLiteCacheSettings<TSettings> : DbCacheSettings<TSettings, SQLiteConnection>
         where TSettings : SQLiteCacheSettings<TSettings>
     {
         #region Fields

@@ -36,7 +36,7 @@ namespace PommaLabs.KVLite.Oracle
     /// <summary>
     ///   Cache backed by Oracle.
     /// </summary>
-    public class OracleCache : DbCache<OracleCacheSettings>
+    public class OracleCache : DbCache<OracleCacheSettings, OracleConnection>
     {
         #region Default Instance
 

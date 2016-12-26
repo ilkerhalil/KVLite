@@ -27,12 +27,32 @@
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
-      <dependency id="CodeProject.ObjectPool" version="2.2.1" />
-      <dependency id="Dapper.StrongName" version="1.50.2" />
-      <dependency id="Polly-Signed" version="4.3.0" />
-      <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
-      <dependency id="PommaLabs.KVLite.Core" version="6.0.4" />
-      <dependency id="Thrower" version="4.0.4" />
+      <group targetFramework="net46">
+        <dependency id="CodeProject.ObjectPool" version="2.2.1" />
+        <dependency id="Dapper.StrongName" version="1.50.2" />
+        <dependency id="Polly-Signed" version="4.3.0" />
+        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.0.4" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
+        <dependency id="Thrower" version="4.0.5" />
+      </group>
+      <group targetFramework="net45">
+        <dependency id="CodeProject.ObjectPool" version="2.2.1" />
+        <dependency id="Dapper.StrongName" version="1.50.2" />
+        <dependency id="Polly-Signed" version="4.3.0" />
+        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.0.4" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
+        <dependency id="Thrower" version="4.0.5" />
+      </group>
+      <group targetFramework="net40">
+        <dependency id="CodeProject.ObjectPool" version="2.2.1" />
+        <dependency id="Dapper.StrongName" version="1.50.2" />
+        <dependency id="Polly-Signed" version="4.3.0" />
+        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.0.4" />
+        <dependency id="Thrower" version="4.0.5" />
+      </group>
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>

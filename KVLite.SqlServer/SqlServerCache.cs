@@ -26,6 +26,7 @@ using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
+using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
 using Troschuetz.Random;
 
@@ -34,7 +35,7 @@ namespace PommaLabs.KVLite.SqlServer
     /// <summary>
     ///   Cache backed by SQL Server.
     /// </summary>
-    public class SqlServerCache : DbCache<SqlServerCacheSettings>
+    public class SqlServerCache : DbCache<SqlServerCacheSettings, SqlConnection>
     {
         #region Default Instance
 

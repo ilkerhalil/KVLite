@@ -29,6 +29,7 @@ using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using System;
+using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using System.IO;
 using Troschuetz.Random;
@@ -39,7 +40,7 @@ namespace PommaLabs.KVLite.SQLite
     ///   An SQLite-based persistent cache.
     /// </summary>
     /// <remarks>SQLite-based caches do not allow more than ten parent keys per item.</remarks>
-    public sealed class PersistentCache : DbCache<PersistentCacheSettings>
+    public sealed class PersistentCache : DbCache<PersistentCacheSettings, SQLiteConnection>
     {
         #region Default Instance
 
@@ -68,10 +69,10 @@ namespace PommaLabs.KVLite.SQLite
         /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="randomGenerator">The random number generator.</param>
         public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IGenerator randomGenerator = null)
-            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, SQLiteJournalMode.Wal), clock, serializer, compressor, memoryStreamPool, randomGenerator)
+            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, SQLiteJournalModeEnum.Wal), clock, serializer, compressor, memoryStreamPool, randomGenerator)
         {
             // Connection string must be customized by each cache.
-            UpdateConnectionString();            
+            UpdateConnectionString();
 
             Settings.PropertyChanged += (sender, args) =>
             {
@@ -103,7 +104,7 @@ namespace PommaLabs.KVLite.SQLite
             }
         }
 
-        #endregion
+        #endregion Public members
 
         #region Private members
 

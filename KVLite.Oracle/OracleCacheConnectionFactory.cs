@@ -29,7 +29,7 @@ namespace PommaLabs.KVLite.Oracle
     /// <summary>
     ///   Cache connection factory specialized for Oracle.
     /// </summary>
-    public class OracleCacheConnectionFactory : DbCacheConnectionFactory
+    public class OracleCacheConnectionFactory : DbCacheConnectionFactory<OracleConnection>
     {
         /// <summary>
         ///   Cache connection factory specialized for Oracle.

@@ -61,7 +61,10 @@ namespace PommaLabs.KVLite.Core
             MinValueLengthForCompression = 4096;
         }
 
-        internal IDbCacheConnectionFactory<TConnection> ConnectionFactory { get; set; }
+        /// <summary>
+        ///   The DB connection factory.
+        /// </summary>
+        public IDbCacheConnectionFactory<TConnection> ConnectionFactory { get; internal set; }
 
         #endregion Construction
 

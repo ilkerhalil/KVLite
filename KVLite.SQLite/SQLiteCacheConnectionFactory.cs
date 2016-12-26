@@ -26,12 +26,11 @@ using PommaLabs.KVLite.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Reflection;
+using System.Data.SQLite;
 
 namespace PommaLabs.KVLite.SQLite
 {
-    internal sealed class SQLiteCacheConnectionFactory<TSettings> : DbCacheConnectionFactory
+    internal sealed class SQLiteCacheConnectionFactory<TSettings> : DbCacheConnectionFactory<SQLiteConnection>
         where TSettings : SQLiteCacheSettings<TSettings>
     {
         #region Constants
@@ -46,7 +45,7 @@ namespace PommaLabs.KVLite.SQLite
         #endregion Constants
 
         private readonly TSettings _settings;
-        private readonly SQLiteJournalMode _journalMode;
+        private readonly SQLiteJournalModeEnum _journalMode;
         private string _vacuumCommand;
         private string _createCacheSchemaCommand;
         private string _getCacheEntriesSchemaQuery;
@@ -56,8 +55,8 @@ namespace PommaLabs.KVLite.SQLite
         /// </summary>
         private string _connectionString;
 
-        public SQLiteCacheConnectionFactory(TSettings settings, SQLiteJournalMode journalMode)
-            : base(GetDbProviderFactory(), null, null)
+        public SQLiteCacheConnectionFactory(TSettings settings, SQLiteJournalModeEnum journalMode)
+            : base(SQLiteFactory.Instance, null, null)
         {
             _settings = settings;
             _journalMode = journalMode;
@@ -77,11 +76,11 @@ namespace PommaLabs.KVLite.SQLite
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
                 insert or ignore into {CacheEntriesTableName} (
-                    {DbCacheEntry.PartitionColumn}, 
-                    {DbCacheEntry.KeyColumn}, 
-                    {DbCacheValue.UtcExpiryColumn}, 
+                    {DbCacheEntry.PartitionColumn},
+                    {DbCacheEntry.KeyColumn},
+                    {DbCacheValue.UtcExpiryColumn},
                     {DbCacheValue.IntervalColumn},
-                    {DbCacheValue.ValueColumn}, 
+                    {DbCacheValue.ValueColumn},
                     {DbCacheValue.CompressedColumn},
                     {DbCacheEntry.UtcCreationColumn},
                     {DbCacheEntry.ParentKey0Column},
@@ -91,11 +90,11 @@ namespace PommaLabs.KVLite.SQLite
                     {DbCacheEntry.ParentKey4Column}
                 )
                 values (
-                    {p}{nameof(DbCacheEntry.Partition)}, 
-                    {p}{nameof(DbCacheEntry.Key)}, 
-                    {p}{nameof(DbCacheEntry.UtcExpiry)}, 
+                    {p}{nameof(DbCacheEntry.Partition)},
+                    {p}{nameof(DbCacheEntry.Key)},
+                    {p}{nameof(DbCacheEntry.UtcExpiry)},
                     {p}{nameof(DbCacheEntry.Interval)},
-                    {p}{nameof(DbCacheEntry.Value)}, 
+                    {p}{nameof(DbCacheEntry.Value)},
                     {p}{nameof(DbCacheEntry.Compressed)},
                     {p}{nameof(DbCacheEntry.UtcCreation)},
                     {p}{nameof(DbCacheEntry.ParentKey0)},
@@ -129,7 +128,7 @@ namespace PommaLabs.KVLite.SQLite
                 vacuum; -- Clears free list and makes DB file smaller
             ");
 
-            _createCacheSchemaCommand = MinifyQuery($@"        
+            _createCacheSchemaCommand = MinifyQuery($@"
                 DROP TABLE IF EXISTS {CacheSchemaName}.{CacheEntriesTableName};
                 CREATE TABLE {CacheSchemaName}.{CacheEntriesTableName} (
                     kvle_partition TEXT NOT NULL,
@@ -241,29 +240,5 @@ namespace PommaLabs.KVLite.SQLite
                 && columns.Contains(DbCacheEntry.ParentKey3Column)
                 && columns.Contains(DbCacheEntry.ParentKey4Column);
         }
-
-        private static DbProviderFactory GetDbProviderFactory()
-        {
-            try
-            {
-                var factoryType = Type.GetType("System.Data.SQLite.SQLiteFactory, System.Data.SQLite");
-                return factoryType.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null) as DbProviderFactory;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ErrorMessages.MissingSQLiteDriver, ex);
-            }
-        }
-    }
-
-    internal enum SQLiteJournalMode
-    {
-        Default = -1,
-        Delete = 0,
-        Persist = 1,
-        Off = 2,
-        Truncate = 3,
-        Memory = 4,
-        Wal = 5
     }
 }

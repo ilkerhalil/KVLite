@@ -28,6 +28,7 @@ using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using System;
 using System.Data;
+using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using Troschuetz.Random;
 
@@ -37,7 +38,7 @@ namespace PommaLabs.KVLite.SQLite
     ///   An SQLite-based in-memory cache.
     /// </summary>
     /// <remarks>SQLite-based caches do not allow more than ten parent keys per item.</remarks>
-    public sealed class VolatileCache : DbCache<VolatileCacheSettings>
+    public sealed class VolatileCache : DbCache<VolatileCacheSettings, SQLiteConnection>
     {
         #region Default Instance
 
@@ -76,7 +77,7 @@ namespace PommaLabs.KVLite.SQLite
         /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="randomGenerator">The random number generator.</param>
         public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IGenerator randomGenerator = null)
-            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, SQLiteJournalMode.Memory), clock, serializer, compressor, memoryStreamPool, randomGenerator)
+            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, SQLiteJournalModeEnum.Memory), clock, serializer, compressor, memoryStreamPool, randomGenerator)
         {
             // Connection string must be customized by each cache.
             UpdateConnectionString();

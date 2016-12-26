@@ -29,7 +29,7 @@ namespace PommaLabs.KVLite.SqlServer
     /// <summary>
     ///   Cache connection factory specialized for SQL Server.
     /// </summary>
-    public class SqlServerCacheConnectionFactory : DbCacheConnectionFactory
+    public class SqlServerCacheConnectionFactory : DbCacheConnectionFactory<SqlConnection>
     {
         /// <summary>
         ///   Cache connection factory specialized for SQL Server.
@@ -67,7 +67,7 @@ namespace PommaLabs.KVLite.SqlServer
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
-                update {CacheSchemaName}.{CacheEntriesTableName} 
+                update {CacheSchemaName}.{CacheEntriesTableName}
                    set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheEntry.UtcExpiry)},
                        {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheEntry.Interval)},
                        {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheEntry.Value)},
@@ -80,15 +80,15 @@ namespace PommaLabs.KVLite.SqlServer
                        {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)}
                  where {DbCacheEntry.PartitionColumn} = {p}{nameof(DbCacheEntry.Partition)}
                    and {DbCacheEntry.KeyColumn} = {p}{nameof(DbCacheEntry.Key)}
-                
+
                 if @@rowcount = 0
                 begin
                     insert into {CacheSchemaName}.{CacheEntriesTableName} (
-                        {DbCacheEntry.PartitionColumn}, 
-                        {DbCacheEntry.KeyColumn}, 
-                        {DbCacheValue.UtcExpiryColumn}, 
+                        {DbCacheEntry.PartitionColumn},
+                        {DbCacheEntry.KeyColumn},
+                        {DbCacheValue.UtcExpiryColumn},
                         {DbCacheValue.IntervalColumn},
-                        {DbCacheValue.ValueColumn}, 
+                        {DbCacheValue.ValueColumn},
                         {DbCacheValue.CompressedColumn},
                         {DbCacheEntry.UtcCreationColumn},
                         {DbCacheEntry.ParentKey0Column},
@@ -98,11 +98,11 @@ namespace PommaLabs.KVLite.SqlServer
                         {DbCacheEntry.ParentKey4Column}
                     )
                     values (
-                        {p}{nameof(DbCacheEntry.Partition)}, 
-                        {p}{nameof(DbCacheEntry.Key)}, 
-                        {p}{nameof(DbCacheEntry.UtcExpiry)}, 
+                        {p}{nameof(DbCacheEntry.Partition)},
+                        {p}{nameof(DbCacheEntry.Key)},
+                        {p}{nameof(DbCacheEntry.UtcExpiry)},
                         {p}{nameof(DbCacheEntry.Interval)},
-                        {p}{nameof(DbCacheEntry.Value)}, 
+                        {p}{nameof(DbCacheEntry.Value)},
                         {p}{nameof(DbCacheEntry.Compressed)},
                         {p}{nameof(DbCacheEntry.UtcCreation)},
                         {p}{nameof(DbCacheEntry.ParentKey0)},

@@ -231,7 +231,7 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns>An open connection.</returns>
-        public Task<DbConnection> OpenAsync(CancellationToken cancellationToken)
+        public Task<TConnection> OpenAsync(CancellationToken cancellationToken)
         {
             return TaskEx.FromResult(Open());
         }
