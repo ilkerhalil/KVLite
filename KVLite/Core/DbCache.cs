@@ -40,10 +40,6 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using Troschuetz.Random;
-using Polly;
-using System.Runtime.Serialization;
-using System.Runtime.InteropServices;
-using Polly.Retry;
 
 #if !NET40
 
