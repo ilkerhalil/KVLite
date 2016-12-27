@@ -78,23 +78,50 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         public string ParentKey4 { get; set; }
 
+        /// <summary>
+        ///   Used to query a group of entries.
+        /// </summary>
         public sealed class Group
         {
+            /// <summary>
+            ///   A partition holds a group of related keys.
+            /// </summary>
             public string Partition { get; set; }
 
+            /// <summary>
+            ///   Retrieve an entry even if it has expired.
+            /// </summary>
             public byte IgnoreExpiryDate { get; set; }
 
+            /// <summary>
+            ///   When the entry will expire, expressed as seconds after UNIX epoch.
+            /// </summary>
             public long UtcExpiry { get; set; }
         }
 
+        /// <summary>
+        ///   Used to query a single entry.
+        /// </summary>
         public sealed class Single
         {
+            /// <summary>
+            ///   A partition holds a group of related keys.
+            /// </summary>
             public string Partition { get; set; }
 
+            /// <summary>
+            ///   A key uniquely identifies an entry inside a partition.
+            /// </summary>
             public string Key { get; set; }
 
+            /// <summary>
+            ///   Retrieve an entry even if it has expired.
+            /// </summary>
             public byte IgnoreExpiryDate { get; set; }
 
+            /// <summary>
+            ///   When the entry will expire, expressed as seconds after UNIX epoch.
+            /// </summary>
             public long UtcExpiry { get; set; }
         }
     }
