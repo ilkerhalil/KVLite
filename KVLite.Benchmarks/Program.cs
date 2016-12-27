@@ -85,93 +85,93 @@ namespace PommaLabs.KVLite.Benchmarks
             {
                 /*** STORE EACH DATA TABLE ASYNC ***/
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 //StoreEachDataTableAsync(OracleCache.DefaultInstance, tables, i);
                 StoreEachDataTableAsync(MySqlCache.DefaultInstance, tables, i);
                 StoreEachDataTableAsync(SqlServerCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreEachDataTableAsync(PersistentCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreEachDataTableAsync(VolatileCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreEachDataTableAsync(MemoryCache.DefaultInstance, tables, i);
 
                 /*** STORE EACH DATA TABLE ***/
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 //StoreEachDataTable(OracleCache.DefaultInstance, tables, i);
                 StoreEachDataTable(MySqlCache.DefaultInstance, tables, i);
                 StoreEachDataTable(SqlServerCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreEachDataTable(PersistentCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreEachDataTable(VolatileCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreEachDataTable(MemoryCache.DefaultInstance, tables, i);
 
                 /*** STORE EACH DATA TABLE TWO TIMES ***/
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 //StoreEachDataTableTwoTimes(OracleCache.DefaultInstance, tables, i);
                 StoreEachDataTableTwoTimes(MySqlCache.DefaultInstance, tables, i);
                 StoreEachDataTableTwoTimes(SqlServerCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreEachDataTableTwoTimes(PersistentCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreEachDataTableTwoTimes(VolatileCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreEachDataTableTwoTimes(MemoryCache.DefaultInstance, tables, i);
 
                 /*** REMOVE EACH DATA TABLE ***/
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 //RemoveEachDataTable(OracleCache.DefaultInstance, tables, i);
                 RemoveEachDataTable(MySqlCache.DefaultInstance, tables, i);
                 RemoveEachDataTable(SqlServerCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RemoveEachDataTable(PersistentCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RemoveEachDataTable(VolatileCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RemoveEachDataTable(MemoryCache.DefaultInstance, tables, i);
 
                 /*** REMOVE EACH DATA TABLE ASYNC ***/
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RemoveEachDataTableAsync(MySqlCache.DefaultInstance, tables, i);
                 RemoveEachDataTableAsync(SqlServerCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RemoveEachDataTableAsync(PersistentCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RemoveEachDataTableAsync(VolatileCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RemoveEachDataTableAsync(MemoryCache.DefaultInstance, tables, i);
 
                 /*** PEEK EACH DATA TABLE ***/
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 PeekEachDataTable(MySqlCache.DefaultInstance, tables, i);
                 PeekEachDataTable(SqlServerCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 PeekEachDataTable(PersistentCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 PeekEachDataTable(VolatileCache.DefaultInstance, tables, i);
 
                 //FullyCleanCache(); < --Memory cache does not allow peeking!
@@ -179,60 +179,60 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 /*** RETRIEVE EACH DATA TABLE ***/
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 //RetrieveEachDataTable(OracleCache.DefaultInstance, tables, i);
                 RetrieveEachDataTable(MySqlCache.DefaultInstance, tables, i);
                 RetrieveEachDataTable(SqlServerCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RetrieveEachDataTable(PersistentCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RetrieveEachDataTable(VolatileCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RetrieveEachDataTable(MemoryCache.DefaultInstance, tables, i);
 
                 /*** RETRIEVE EACH DATA TABLE ITEM ***/
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RetrieveEachDataTableItem(MySqlCache.DefaultInstance, tables, i);
                 RetrieveEachDataTableItem(SqlServerCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RetrieveEachDataTableItem(PersistentCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RetrieveEachDataTableItem(VolatileCache.DefaultInstance, tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RetrieveEachDataTableItem(MemoryCache.DefaultInstance, tables, i);
 
                 /*** TODO ***/
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreEachDataTableAsync_Volatile(tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreEachDataTableAsync_Memory(tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 RetrieveEachDataTableAsync(tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreEachDataTableTwoTimesAsync(tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreAndRetrieveEachDataTableAsync(tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreAndRetrieveEachDataTableAsync_Volatile(tables, i);
 
-                FullyCleanCache();
+                FullyCleanCaches();
                 StoreDataTableList(tables, i);
             }
 
-            FullyCleanCache();
+            FullyCleanCaches();
 
             Console.WriteLine();
             Console.Write(@"Press any key to exit...");
@@ -250,17 +250,17 @@ namespace PommaLabs.KVLite.Benchmarks
             return list;
         }
 
-        private static void FullyCleanCache()
+        private static void FullyCleanCaches()
         {
             Console.WriteLine(); // Spacer
-            Console.WriteLine(@"Fully cleaning cache...");
+            Console.WriteLine(@"Fully cleaning all caches...");
             PersistentCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            //OracleCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             MySqlCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
-            OracleCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             SqlServerCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             MemoryCache.DefaultInstance.Clear();
-            Console.WriteLine(@"Cache cleaned!");
+            Console.WriteLine(@"All cache have been cleaned!");
         }
 
         private static void StoreDataTableList(ICollection<DataTable> tables, int iteration)

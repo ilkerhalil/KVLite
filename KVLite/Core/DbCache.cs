@@ -435,14 +435,32 @@ namespace PommaLabs.KVLite.Core
             partition = partition.Truncate(cf.MaxPartitionNameLength);
             key = key.Truncate(cf.MaxKeyNameLength);
 
+            // Create the new entry here, before the serialization, so that we can use its hash code
+            // to perform some anti-tampering checks when the value will be read.
+            var dbCacheEntry = new DbCacheEntry
+            {
+                Partition = partition,
+                Key = key,
+                UtcExpiry = utcExpiry.ToUnixTime(),
+                Interval = (long) interval.TotalSeconds,
+                UtcCreation = Clock.UnixTime
+            };
+
             // Serializing may be pretty expensive, therefore we keep it out of the connection.
-            byte[] serializedValue;
-            bool compressed;
             try
             {
                 using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
                 {
-                    Serializer.SerializeToStream(value, serializedStream);
+                    // Wraps cache value inside an anti-tampering structure, so that future reads
+                    // might rely on that structure to perform shallow checks.
+                    var antiTampering = new ShallowAntiTamperingCacheValue<TVal>
+                    {
+                        Hash = dbCacheEntry.GetHashCode(),
+                        Value = value
+                    };
+
+                    // Serialize the anti-tampering structure instead of the original value.
+                    Serializer.SerializeToStream(antiTampering, serializedStream);
 
                     if (serializedStream.Length > Settings.MinValueLengthForCompression)
                     {
@@ -454,15 +472,15 @@ namespace PommaLabs.KVLite.Core
                                 serializedStream.Position = 0L;
                                 serializedStream.CopyTo(compressionStream);
                             }
-                            serializedValue = compressedStream.ToArray();
-                            compressed = true;
+                            dbCacheEntry.Value = compressedStream.ToArray();
+                            dbCacheEntry.Compressed = DbCacheValue.True;
                         }
                     }
                     else
                     {
                         // Stream is shorter than specified threshold, we can store it as it is.
-                        serializedValue = serializedStream.ToArray();
-                        compressed = false;
+                        dbCacheEntry.Value = serializedStream.ToArray();
+                        dbCacheEntry.Compressed = DbCacheValue.False;
                     }
                 }
             }
@@ -472,17 +490,6 @@ namespace PommaLabs.KVLite.Core
                 Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
-
-            var dbCacheEntry = new DbCacheEntry
-            {
-                Partition = partition,
-                Key = key,
-                UtcExpiry = utcExpiry.ToUnixTime(),
-                Interval = (long) interval.TotalSeconds,
-                Value = serializedValue,
-                Compressed = compressed ? DbCacheValue.True : DbCacheValue.False,
-                UtcCreation = Clock.UnixTime,
-            };
 
             // Also add the parent keys, if any.
             var parentKeyCount = parentKeys?.Count ?? 0;
@@ -1066,20 +1073,7 @@ namespace PommaLabs.KVLite.Core
 
                 return Option.None<ICacheItem<TVal>>();
             }
-        }
-
-        /// <summary>
-        ///   A shallow structure which prevents quick and dirty copy/paste operations on DB cache values.
-        /// </summary>
-        [Serializable, DataContract]
-        private struct ShallowAntiTamperingCacheValue<TVal>
-        {
-            [DataMember(Name = "h")]
-            public int Hash { get; set; }
-
-            [DataMember(Name = "v")]
-            public TVal Value { get; set; }
-        }
+        }        
 
         #endregion Serialization and deserialization
     }
