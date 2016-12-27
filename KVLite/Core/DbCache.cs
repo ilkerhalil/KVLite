@@ -549,17 +549,45 @@ namespace PommaLabs.KVLite.Core
                 UtcExpiry = Clock.UnixTime
             };
 
-            var result = 0L;
-            CacheConstants.RetryPolicy.Execute(() =>
+            return CacheConstants.RetryPolicy.Execute(() =>
             {
                 using (var db = cf.Open())
                 {
-                    result = db.Execute(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
+                    return db.Execute(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
                 }
             });
-
-            return result;
         }
+
+#if !NET40
+
+        /// <summary>
+        ///   Clears this instance or a partition, if specified.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <param name="cacheReadMode">The cache read mode.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>The number of items that have been removed.</returns>
+        protected sealed override async Task<long> ClearAsyncInternal(string partition, CacheReadMode cacheReadMode, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+            var dbCacheEntryGroup = new DbCacheEntry.Group
+            {
+                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
+                UtcExpiry = Clock.UnixTime
+            };
+
+            return await CacheConstants.RetryPolicy.ExecuteAsync(async () =>
+            {
+                using (var db = await cf.OpenAsync(cancellationToken))
+                {
+                    return await db.ExecuteAsync(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
+                }
+            });
+        }
+
+#endif
 
         /// <summary>
         ///   Determines whether cache contains the specified partition and key.
@@ -639,6 +667,35 @@ namespace PommaLabs.KVLite.Core
                 return db.QuerySingle<long>(cf.CountCacheEntriesQuery, dbCacheEntryGroup);
             }
         }
+
+#if !NET40
+
+        /// <summary>
+        ///   The number of items in the cache or in a partition, if specified.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <param name="cacheReadMode">The cache read mode.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>The number of items in the cache.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        protected sealed override async Task<long> CountAsyncInternal(string partition, CacheReadMode cacheReadMode, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+            var dbCacheEntryGroup = new DbCacheEntry.Group
+            {
+                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
+                UtcExpiry = Clock.UnixTime
+            };
+
+            using (var db = await cf.OpenAsync(cancellationToken))
+            {
+                return await db.QuerySingleAsync<long>(cf.CountCacheEntriesQuery, dbCacheEntryGroup);
+            }
+        }
+
+#endif
 
         /// <summary>
         ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
