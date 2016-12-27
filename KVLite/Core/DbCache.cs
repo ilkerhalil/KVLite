@@ -43,6 +43,7 @@ using Troschuetz.Random;
 using Polly;
 using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
+using Polly.Retry;
 
 #if !NET40
 
@@ -512,18 +513,15 @@ namespace PommaLabs.KVLite.Core
 
             var dynamicParameters = ToDynamicParameters(dbCacheEntry);
 
-            Policy
-                .Handle<Exception>()
-                .WaitAndRetry(3, _ => TimeSpan.FromMilliseconds(100))
-                .Execute(() =>
+            CacheConstants.RetryPolicy.Execute(() =>
+            {
+                using (var db = cf.Open())
+                using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    using (var db = cf.Open())
-                    using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
-                    {
-                        db.Execute(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr);
-                        tr.Commit();
-                    }
-                });
+                    db.Execute(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr);
+                    tr.Commit();
+                }
+            });
 
             if (RandomGenerator.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
@@ -551,10 +549,16 @@ namespace PommaLabs.KVLite.Core
                 UtcExpiry = Clock.UnixTime
             };
 
-            using (var db = cf.Open())
+            var result = 0L;
+            CacheConstants.RetryPolicy.Execute(() =>
             {
-                return db.Execute(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
-            }
+                using (var db = cf.Open())
+                {
+                    result = db.Execute(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
+                }
+            });
+
+            return result;
         }
 
         /// <summary>
@@ -924,10 +928,13 @@ namespace PommaLabs.KVLite.Core
                 Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            using (var db = cf.Open())
+            CacheConstants.RetryPolicy.Execute(() =>
             {
-                db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
-            }
+                using (var db = cf.Open())
+                {
+                    db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
+                }
+            });
         }
 
 #if !NET40
@@ -948,10 +955,13 @@ namespace PommaLabs.KVLite.Core
                 Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            using (var db = await cf.OpenAsync(cancellationToken))
+            await CacheConstants.RetryPolicy.ExecuteAsync(async () =>
             {
-                await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
-            }
+                using (var db = await cf.OpenAsync(cancellationToken))
+                {
+                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
+                }
+            });
         }
 
 #endif

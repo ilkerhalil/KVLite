@@ -22,10 +22,13 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
+using Polly;
+using Polly.Retry;
 using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
+using System;
 using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
 using System.Text.RegularExpressions;
@@ -90,9 +93,20 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         public static IGenerator CreateRandomGenerator() => new XorShift128Generator();
 
+        #region Internal constants
+
         /// <summary>
         ///   Used to validate SQL names.
         /// </summary>
         internal static Regex IsValidSqlNameRegex { get; } = new Regex("[a-z0-9_]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        /// <summary>
+        ///   Retry policy for DB cache operations.
+        /// </summary>
+        internal static RetryPolicy RetryPolicy { get; } = Policy
+            .Handle<Exception>()
+            .WaitAndRetry(3, i => TimeSpan.FromMilliseconds(10 * i * i));
+
+        #endregion Internal constants
     }
 }
