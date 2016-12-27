@@ -437,7 +437,7 @@ namespace PommaLabs.KVLite.Core
             key = key.Truncate(cf.MaxKeyNameLength);
 
             // Create the new entry here, before the serialization, so that we can use its hash code
-            // to perform some anti-tampering checks when the value will be read.
+            // to perform some anti-tamper checks when the value will be read.
             var dbCacheEntry = new DbCacheEntry
             {
                 Partition = partition,
@@ -452,8 +452,8 @@ namespace PommaLabs.KVLite.Core
             {
                 using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
                 {
-                    // First write the anti-tampering hash code...
-                    AntiTampering.WriteAntiTamperingHashCode(serializedStream, dbCacheEntry);
+                    // First write the anti-tamper hash code...
+                    AntiTamper.WriteAntiTamperHashCode(serializedStream, dbCacheEntry);
 
                     // Then serialize the new value.
                     Serializer.SerializeToStream(value, serializedStream);
@@ -974,7 +974,7 @@ namespace PommaLabs.KVLite.Core
                 if (dbCacheValue.Compressed == DbCacheValue.False)
                 {
                     // Handle uncompressed value.
-                    AntiTampering.ReadAntiTamperingHashCode(memoryStream, dbCacheValue);
+                    AntiTamper.ReadAntiTamperHashCode(memoryStream, dbCacheValue);
                     return Serializer.DeserializeFromStream<TVal>(memoryStream);
                 }
                 else
@@ -982,7 +982,7 @@ namespace PommaLabs.KVLite.Core
                     // Handle compressed value.
                     using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
                     {
-                        AntiTampering.ReadAntiTamperingHashCode(decompressionStream, dbCacheValue);
+                        AntiTamper.ReadAntiTamperHashCode(decompressionStream, dbCacheValue);
                         return Serializer.DeserializeFromStream<TVal>(decompressionStream);
                     }
                 }

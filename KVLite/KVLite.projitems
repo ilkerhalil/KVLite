@@ -9,7 +9,7 @@
     <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Core\AntiTampering.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\AntiTamper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheSettings.cs" />

@@ -1,4 +1,4 @@
-﻿// File name: AntiTampering.cs
+﻿// File name: AntiTamper.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -28,11 +28,11 @@ using System.Runtime.InteropServices;
 namespace PommaLabs.KVLite.Core
 {
     /// <summary>
-    ///   Writes and validates anti-tampering hash codes.
+    ///   Writes and validates anti-tamper hash codes.
     /// </summary>
-    internal static class AntiTampering
+    internal static class AntiTamper
     {
-        public static void WriteAntiTamperingHashCode(Stream s, DbCacheValue v)
+        public static void WriteAntiTamperHashCode(Stream s, DbCacheValue v)
         {
             var c = new IntegerToBytesConverter { Integer = v.GetHashCode() };
 
@@ -42,7 +42,7 @@ namespace PommaLabs.KVLite.Core
             s.WriteByte(c.Byte4);
         }
 
-        public static void ReadAntiTamperingHashCode(Stream s, DbCacheValue v)
+        public static void ReadAntiTamperHashCode(Stream s, DbCacheValue v)
         {
             IntegerToBytesConverter c;
             try
