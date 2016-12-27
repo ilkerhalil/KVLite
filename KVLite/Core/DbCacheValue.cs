@@ -39,6 +39,26 @@ namespace PommaLabs.KVLite.Core
         public const byte False = 0;
 
         /// <summary>
+        ///   SQL column name of <see cref="Partition"/>.
+        /// </summary>
+        public const string PartitionColumn = "kvle_partition";
+
+        /// <summary>
+        ///   A partition holds a group of related keys.
+        /// </summary>
+        public string Partition { get; set; }
+
+        /// <summary>
+        ///   SQL column name of <see cref="Key"/>.
+        /// </summary>
+        public const string KeyColumn = "kvle_key";
+
+        /// <summary>
+        ///   A key uniquely identifies an entry inside a partition.
+        /// </summary>
+        public string Key { get; set; }
+
+        /// <summary>
         ///   SQL column name of <see cref="UtcExpiry"/>.
         /// </summary>
         public const string UtcExpiryColumn = "kvle_expiry";
@@ -77,5 +97,33 @@ namespace PommaLabs.KVLite.Core
         ///   Whether the entry content was compressed or not.
         /// </summary>
         public byte Compressed { get; set; }
+
+        /// <summary>
+        ///   SQL column name of <see cref="UtcCreation"/>.
+        /// </summary>
+        public const string UtcCreationColumn = "kvle_creation";
+
+        /// <summary>
+        ///   When the entry was created, expressed as seconds after UNIX epoch.
+        /// </summary>
+        public long UtcCreation { get; set; }
+
+        /// <summary>
+        ///   Serves as the default hash function.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
+        public sealed override int GetHashCode()
+        {
+            var hash = 797;
+            unchecked
+            {
+                const int bigPrime = 179426549;
+
+                hash = bigPrime * hash + (int) (UtcCreation ^ (UtcCreation >> 32));
+                hash = bigPrime * hash + Partition.GetHashCode();
+                hash = bigPrime * hash + Key.GetHashCode();
+            }
+            return hash;
+        }
     }
 }

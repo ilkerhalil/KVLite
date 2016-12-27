@@ -76,13 +76,13 @@ namespace PommaLabs.KVLite.SQLite
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
                 insert or ignore into {CacheEntriesTableName} (
-                    {DbCacheEntry.PartitionColumn},
-                    {DbCacheEntry.KeyColumn},
+                    {DbCacheValue.PartitionColumn},
+                    {DbCacheValue.KeyColumn},
                     {DbCacheValue.UtcExpiryColumn},
                     {DbCacheValue.IntervalColumn},
                     {DbCacheValue.ValueColumn},
                     {DbCacheValue.CompressedColumn},
-                    {DbCacheEntry.UtcCreationColumn},
+                    {DbCacheValue.UtcCreationColumn},
                     {DbCacheEntry.ParentKey0Column},
                     {DbCacheEntry.ParentKey1Column},
                     {DbCacheEntry.ParentKey2Column},
@@ -90,13 +90,13 @@ namespace PommaLabs.KVLite.SQLite
                     {DbCacheEntry.ParentKey4Column}
                 )
                 values (
-                    {p}{nameof(DbCacheEntry.Partition)},
-                    {p}{nameof(DbCacheEntry.Key)},
-                    {p}{nameof(DbCacheEntry.UtcExpiry)},
-                    {p}{nameof(DbCacheEntry.Interval)},
-                    {p}{nameof(DbCacheEntry.Value)},
-                    {p}{nameof(DbCacheEntry.Compressed)},
-                    {p}{nameof(DbCacheEntry.UtcCreation)},
+                    {p}{nameof(DbCacheValue.Partition)},
+                    {p}{nameof(DbCacheValue.Key)},
+                    {p}{nameof(DbCacheValue.UtcExpiry)},
+                    {p}{nameof(DbCacheValue.Interval)},
+                    {p}{nameof(DbCacheValue.Value)},
+                    {p}{nameof(DbCacheValue.Compressed)},
+                    {p}{nameof(DbCacheValue.UtcCreation)},
                     {p}{nameof(DbCacheEntry.ParentKey0)},
                     {p}{nameof(DbCacheEntry.ParentKey1)},
                     {p}{nameof(DbCacheEntry.ParentKey2)},
@@ -105,18 +105,18 @@ namespace PommaLabs.KVLite.SQLite
                 );
 
                 update {CacheEntriesTableName}
-                   set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheEntry.UtcExpiry)},
-                       {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheEntry.Interval)},
-                       {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheEntry.Value)},
-                       {DbCacheValue.CompressedColumn} = {p}{nameof(DbCacheEntry.Compressed)},
-                       {DbCacheEntry.UtcCreationColumn} = {p}{nameof(DbCacheEntry.UtcCreation)},
+                   set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheValue.UtcExpiry)},
+                       {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
+                       {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},
+                       {DbCacheValue.CompressedColumn} = {p}{nameof(DbCacheValue.Compressed)},
+                       {DbCacheValue.UtcCreationColumn} = {p}{nameof(DbCacheValue.UtcCreation)},
                        {DbCacheEntry.ParentKey0Column} = {p}{nameof(DbCacheEntry.ParentKey0)},
                        {DbCacheEntry.ParentKey1Column} = {p}{nameof(DbCacheEntry.ParentKey1)},
                        {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)},
                        {DbCacheEntry.ParentKey3Column} = {p}{nameof(DbCacheEntry.ParentKey3)},
                        {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)}
-                 where {DbCacheEntry.PartitionColumn} = {p}{nameof(DbCacheEntry.Partition)}
-                   and {DbCacheEntry.KeyColumn} = {p}{nameof(DbCacheEntry.Key)}
+                 where {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheValue.Partition)}
+                   and {DbCacheValue.KeyColumn} = {p}{nameof(DbCacheValue.Key)}
                    and changes() = 0 -- Above INSERT has failed
             ");
 
@@ -227,13 +227,13 @@ namespace PommaLabs.KVLite.SQLite
             }
 
             return columns.Count == 12
-                && columns.Contains(DbCacheEntry.PartitionColumn)
-                && columns.Contains(DbCacheEntry.KeyColumn)
+                && columns.Contains(DbCacheValue.PartitionColumn)
+                && columns.Contains(DbCacheValue.KeyColumn)
                 && columns.Contains(DbCacheValue.UtcExpiryColumn)
                 && columns.Contains(DbCacheValue.IntervalColumn)
                 && columns.Contains(DbCacheValue.ValueColumn)
                 && columns.Contains(DbCacheValue.CompressedColumn)
-                && columns.Contains(DbCacheEntry.UtcCreationColumn)
+                && columns.Contains(DbCacheValue.UtcCreationColumn)
                 && columns.Contains(DbCacheEntry.ParentKey0Column)
                 && columns.Contains(DbCacheEntry.ParentKey1Column)
                 && columns.Contains(DbCacheEntry.ParentKey2Column)

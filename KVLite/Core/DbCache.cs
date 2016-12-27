@@ -41,6 +41,7 @@ using System.IO;
 using System.Linq;
 using Troschuetz.Random;
 using Polly;
+using System.Runtime.Serialization;
 
 #if !NET40
 
@@ -91,7 +92,7 @@ namespace PommaLabs.KVLite.Core
 
         #endregion Construction
 
-        #region Public Members
+        #region Public members
 
         /// <summary>
         ///   The connection factory used to retrieve connections to the cache data store.
@@ -283,7 +284,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        #endregion Public Members
+        #endregion Public members
 
         #region FormattableObject members
 
@@ -320,7 +321,7 @@ namespace PommaLabs.KVLite.Core
 
         #endregion IDisposable members
 
-        #region ICache Members
+        #region ICache members
 
         /// <summary>
         ///   Gets the clock used by the cache.
@@ -374,9 +375,9 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         public override bool CanPeek => true;
 
-        #endregion ICache Members
+        #endregion ICache members
 
-        #region Private Methods
+        #region Protected methods
 
         /// <summary>
         ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
@@ -681,7 +682,7 @@ namespace PommaLabs.KVLite.Core
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeValue<TVal>(dbCacheValue, partition, key);
+            return DeserializeCacheValue<TVal>(dbCacheValue);
         }
 
         /// <summary>
@@ -829,7 +830,7 @@ namespace PommaLabs.KVLite.Core
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeValue<TVal>(dbCacheValue, partition, key);
+            return DeserializeCacheValue<TVal>(dbCacheValue);
         }
 
         /// <summary>
@@ -959,28 +960,46 @@ namespace PommaLabs.KVLite.Core
         /// <returns>Given cache entry converted into dynamic parameters.</returns>
         protected virtual SqlMapper.IDynamicParameters ToDynamicParameters(DbCacheEntry dbCacheEntry) => new DynamicParameters(dbCacheEntry);
 
-        private TVal UnsafeDeserializeValue<TVal>(DbCacheValue dbCacheValue)
+        #endregion Protected methods
+
+        #region Serialization and deserialization
+
+        private TVal UnsafeDeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
         {
             using (var memoryStream = new MemoryStream(dbCacheValue.Value))
             {
+                // Temporary structure used to quickly validate cache entry content.
+                ShallowAntiTamperingCacheValue<TVal> antiTampering;
+
                 if (dbCacheValue.Compressed == DbCacheValue.False)
                 {
                     // Handle uncompressed value.
-                    return Serializer.DeserializeFromStream<TVal>(memoryStream);
+                    antiTampering = Serializer.DeserializeFromStream<ShallowAntiTamperingCacheValue<TVal>>(memoryStream);
                 }
-                using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
+                else
                 {
                     // Handle compressed value.
-                    return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+                    using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
+                    {
+                        antiTampering = Serializer.DeserializeFromStream<ShallowAntiTamperingCacheValue<TVal>>(decompressionStream);
+                    }
                 }
+
+                // Value is valid if hashes match.
+                if (antiTampering.Hash != dbCacheValue.GetHashCode())
+                {
+                    throw new InvalidDataException(string.Format(ErrorMessages.HashMismatch, dbCacheValue.GetHashCode(), antiTampering.Hash));
+                }
+
+                return antiTampering.Value;
             }
         }
 
-        private Option<TVal> DeserializeValue<TVal>(DbCacheValue dbCacheValue, string partition, string key)
+        private Option<TVal> DeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
         {
             try
             {
-                return Option.Some(UnsafeDeserializeValue<TVal>(dbCacheValue));
+                return Option.Some(UnsafeDeserializeCacheValue<TVal>(dbCacheValue));
             }
             catch (Exception ex)
             {
@@ -988,7 +1007,7 @@ namespace PommaLabs.KVLite.Core
 
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
-                RemoveInternal(partition, key);
+                RemoveInternal(dbCacheValue.Partition, dbCacheValue.Key);
 
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
 
@@ -1004,7 +1023,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     Partition = dbCacheEntry.Partition,
                     Key = dbCacheEntry.Key,
-                    Value = UnsafeDeserializeValue<TVal>(dbCacheEntry),
+                    Value = UnsafeDeserializeCacheValue<TVal>(dbCacheEntry),
                     UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(dbCacheEntry.UtcCreation),
                     UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(dbCacheEntry.UtcExpiry),
                     Interval = TimeSpan.FromSeconds(dbCacheEntry.Interval)
@@ -1049,6 +1068,19 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        #endregion Private Methods
+        /// <summary>
+        ///   A shallow structure which prevents quick and dirty copy/paste operations on DB cache values.
+        /// </summary>
+        [Serializable, DataContract]
+        private struct ShallowAntiTamperingCacheValue<TVal>
+        {
+            [DataMember(Name = "h")]
+            public int Hash { get; set; }
+
+            [DataMember(Name = "v")]
+            public TVal Value { get; set; }
+        }
+
+        #endregion Serialization and deserialization
     }
 }
