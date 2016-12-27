@@ -81,7 +81,7 @@ namespace PommaLabs.KVLite.Core
             NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
             PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
             ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-            TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects,
+            TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
             TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
         }, MemoryStreamPool.Instance);
 
