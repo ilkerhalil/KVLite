@@ -42,6 +42,7 @@ using System.Linq;
 using Troschuetz.Random;
 using Polly;
 using System.Runtime.Serialization;
+using System.Runtime.InteropServices;
 
 #if !NET40
 
@@ -451,16 +452,11 @@ namespace PommaLabs.KVLite.Core
             {
                 using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
                 {
-                    // Wraps cache value inside an anti-tampering structure, so that future reads
-                    // might rely on that structure to perform shallow checks.
-                    var antiTampering = new ShallowAntiTamperingCacheValue<TVal>
-                    {
-                        Hash = dbCacheEntry.GetHashCode(),
-                        Value = value
-                    };
+                    // First write the anti-tampering hash code...
+                    AntiTampering.WriteAntiTamperingHashCode(serializedStream, dbCacheEntry);
 
-                    // Serialize the anti-tampering structure instead of the original value.
-                    Serializer.SerializeToStream(antiTampering, serializedStream);
+                    // Then serialize the new value.
+                    Serializer.SerializeToStream(value, serializedStream);
 
                     if (serializedStream.Length > Settings.MinValueLengthForCompression)
                     {
@@ -975,30 +971,21 @@ namespace PommaLabs.KVLite.Core
         {
             using (var memoryStream = new MemoryStream(dbCacheValue.Value))
             {
-                // Temporary structure used to quickly validate cache entry content.
-                ShallowAntiTamperingCacheValue<TVal> antiTampering;
-
                 if (dbCacheValue.Compressed == DbCacheValue.False)
                 {
                     // Handle uncompressed value.
-                    antiTampering = Serializer.DeserializeFromStream<ShallowAntiTamperingCacheValue<TVal>>(memoryStream);
+                    AntiTampering.ReadAntiTamperingHashCode(memoryStream, dbCacheValue);
+                    return Serializer.DeserializeFromStream<TVal>(memoryStream);
                 }
                 else
                 {
                     // Handle compressed value.
                     using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
                     {
-                        antiTampering = Serializer.DeserializeFromStream<ShallowAntiTamperingCacheValue<TVal>>(decompressionStream);
+                        AntiTampering.ReadAntiTamperingHashCode(decompressionStream, dbCacheValue);
+                        return Serializer.DeserializeFromStream<TVal>(decompressionStream);
                     }
                 }
-
-                // Value is valid if hashes match.
-                if (antiTampering.Hash != dbCacheValue.GetHashCode())
-                {
-                    throw new InvalidDataException(string.Format(ErrorMessages.HashMismatch, dbCacheValue.GetHashCode(), antiTampering.Hash));
-                }
-
-                return antiTampering.Value;
             }
         }
 
@@ -1073,7 +1060,7 @@ namespace PommaLabs.KVLite.Core
 
                 return Option.None<ICacheItem<TVal>>();
             }
-        }        
+        }
 
         #endregion Serialization and deserialization
     }

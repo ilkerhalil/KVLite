@@ -9,6 +9,7 @@
     <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Core\AntiTampering.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheSettings.cs" />
@@ -17,7 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\IDbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\CacheConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\ShallowAntiTamperingCacheValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCacheSettings.cs" />
   </ItemGroup>

@@ -161,6 +161,11 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   An error message.
         /// </summary>
+        public const string HashNotFound = "Hash not found inside cache value.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
         public const string HashMismatch = "Hashes do not match! Expected {0}, found {1}.";
     }
 }
