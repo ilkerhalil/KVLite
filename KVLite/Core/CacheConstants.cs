@@ -113,6 +113,17 @@ namespace PommaLabs.KVLite.Core
             .Handle<Exception>()
             .WaitAndRetry(3, i => TimeSpan.FromMilliseconds(10 * i * i));
 
+#if !NET40
+
+        /// <summary>
+        ///   Retry policy for DB cache operations.
+        /// </summary>
+        internal static RetryPolicy AsyncRetryPolicy { get; } = Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(3, i => TimeSpan.FromMilliseconds(10 * i * i));
+
+#endif
+
         #endregion Internal constants
     }
 }
