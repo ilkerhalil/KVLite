@@ -95,6 +95,12 @@ namespace PommaLabs.KVLite.Core
 
         #region Internal constants
 
+#if NET40
+        internal const System.Runtime.CompilerServices.MethodImplOptions MethodImplOptions = default(System.Runtime.CompilerServices.MethodImplOptions);
+#else
+        internal const System.Runtime.CompilerServices.MethodImplOptions MethodImplOptions = System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining;
+#endif
+
         /// <summary>
         ///   Used to validate SQL names.
         /// </summary>

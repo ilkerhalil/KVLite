@@ -40,6 +40,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using Troschuetz.Random;
+using System.Runtime.CompilerServices;
 
 #if !NET40
 
@@ -509,7 +510,7 @@ namespace PommaLabs.KVLite.Core
 
             var dynamicParameters = ToDynamicParameters(dbCacheEntry);
 
-            CacheConstants.RetryPolicy.Execute(() =>
+            ThrowOnFailedRetries(CacheConstants.RetryPolicy.ExecuteAndCapture(() =>
             {
                 using (var db = cf.Open())
                 using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
@@ -517,7 +518,7 @@ namespace PommaLabs.KVLite.Core
                     db.Execute(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr);
                     tr.Commit();
                 }
-            });
+            }));
 
             if (RandomGenerator.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
@@ -545,13 +546,13 @@ namespace PommaLabs.KVLite.Core
                 UtcExpiry = Clock.UnixTime
             };
 
-            return CacheConstants.RetryPolicy.Execute(() =>
+            return ThrowOnFailedRetries(CacheConstants.RetryPolicy.ExecuteAndCapture(() =>
             {
                 using (var db = cf.Open())
                 {
                     return db.Execute(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
                 }
-            });
+            }));
         }
 
 #if !NET40
@@ -574,13 +575,13 @@ namespace PommaLabs.KVLite.Core
                 UtcExpiry = Clock.UnixTime
             };
 
-            return await CacheConstants.RetryPolicy.ExecuteAsync(async () =>
+            return ThrowOnFailedRetries(await CacheConstants.RetryPolicy.ExecuteAndCaptureAsync(async () =>
             {
                 using (var db = await cf.OpenAsync(cancellationToken))
                 {
                     return await db.ExecuteAsync(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
                 }
-            });
+            }));
         }
 
 #endif
@@ -981,13 +982,13 @@ namespace PommaLabs.KVLite.Core
                 Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            CacheConstants.RetryPolicy.Execute(() =>
+            ThrowOnFailedRetries(CacheConstants.RetryPolicy.ExecuteAndCapture(() =>
             {
                 using (var db = cf.Open())
                 {
                     db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
                 }
-            });
+            }));
         }
 
 #if !NET40
@@ -1008,13 +1009,13 @@ namespace PommaLabs.KVLite.Core
                 Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            await CacheConstants.RetryPolicy.ExecuteAsync(async () =>
+            ThrowOnFailedRetries(await CacheConstants.RetryPolicy.ExecuteAndCaptureAsync(async () =>
             {
                 using (var db = await cf.OpenAsync(cancellationToken))
                 {
                     await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
                 }
-            });
+            }));
         }
 
 #endif
@@ -1126,5 +1127,28 @@ namespace PommaLabs.KVLite.Core
         }
 
         #endregion Serialization and deserialization
+
+        #region Retry policy management
+
+        [MethodImpl(CacheConstants.MethodImplOptions)]
+        private static void ThrowOnFailedRetries(Polly.PolicyResult policyResult)
+        {
+            if (policyResult.FinalException != null)
+            {
+                throw policyResult.FinalException;
+            }
+        }
+
+        [MethodImpl(CacheConstants.MethodImplOptions)]
+        private static T ThrowOnFailedRetries<T>(Polly.PolicyResult<T> policyResult)
+        {
+            if (policyResult.FinalException != null)
+            {
+                throw policyResult.FinalException;
+            }
+            return policyResult.Result;
+        }
+
+        #endregion Retry policy management
     }
 }

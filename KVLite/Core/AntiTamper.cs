@@ -23,6 +23,7 @@
 
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace PommaLabs.KVLite.Core
@@ -32,6 +33,7 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     internal static class AntiTamper
     {
+        [MethodImpl(CacheConstants.MethodImplOptions)]
         public static void WriteAntiTamperHashCode(Stream s, DbCacheValue v)
         {
             var c = new IntegerToBytesConverter { Integer = v.GetHashCode() };

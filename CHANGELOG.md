@@ -1,5 +1,9 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.0.6 (2017-01-??) ###
+
+* [FIX] Fixed missing exception logging on failed retries.
+
 ### v6.0.5 (2016-12-27) ###
 
 * [UPD] Complete library rewrite.
