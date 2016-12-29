@@ -81,7 +81,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\Thrower.4.0.4\lib\net45\PommaLabs.Thrower.dll</HintPath>
+      <HintPath>..\packages\Thrower.4.0.5\lib\net45\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -110,7 +110,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Troschuetz.Random, Version=4.0.3.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\Troschuetz.Random.4.1.1\lib\net45\Troschuetz.Random.dll</HintPath>
+      <HintPath>..\packages\Troschuetz.Random.4.1.2\lib\net45\Troschuetz.Random.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -126,6 +126,10 @@
     <ProjectReference Include="..\Platform Specific\KVLite.NET45\KVLite.NET45.csproj">
       <Project>{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}</Project>
       <Name>KVLite.NET45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Platform Specific\KVLite.SQLite.NET45\KVLite.SQLite.NET45.csproj">
+      <Project>{a917ea7f-859c-431b-889e-a47e5eba4392}</Project>
+      <Name>KVLite.SQLite.NET45</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

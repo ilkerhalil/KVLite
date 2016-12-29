@@ -7,7 +7,7 @@ KVLite can be stored either in persistent or volatile fashion, and each key/valu
 
 ## Summary ##
 
-* Latest release version: `v6.0.4`
+* Latest release version: `v6.0.5`
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/7qgv5o7or96rr8a2?svg=true)](https://ci.appveyor.com/project/pomma89/kvlite)
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: TODO
 * [NuGet](https://www.nuget.org) package(s):
@@ -159,3 +159,7 @@ internal static class Program
 ## About this repository and its maintainer ##
 
 Everything done on this repository is freely offered on the terms of the project license. You are free to do everything you want with the code and its related files, as long as you respect the license and use common sense while doing it :-)
+
+I maintain this project during my spare time, so I can offer limited assistance and I can offer **no kind of warranty**.
+
+Development of this project is sponsored by [Finsa SpA](https://www.finsa.it), my current employer.

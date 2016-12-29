@@ -1,8 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
-### v6.0.? (2016-12-??) ###
+### v6.0.5 (2016-12-27) ###
 
 * [UPD] Complete library rewrite.
+* [ADD] Added new simple anti-tamper mechanism.
+* [ADD] Added new retry policy for add and clear operations.
 
 ### v5.2.6 (2016-06-26) ###
 

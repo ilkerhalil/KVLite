@@ -161,16 +161,11 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string MissingMySqlDriver = @"MySQL driver seems to be missing. Please install PommaLabs.KVLite.MySql package in order to receive the proper driver.";
+        public const string HashNotFound = "Hash not found inside cache value.";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string MissingOracleDriver = @"Oracle driver seems to be missing. Please install PommaLabs.KVLite.Oracle package in order to receive the proper driver.";
-
-        /// <summary>
-        ///   An error message.
-        /// </summary>
-        public const string MissingSQLiteDriver = @"SQLite driver seems to be missing. Please install PommaLabs.KVLite.SQLite package in order to receive the proper driver.";
+        public const string HashMismatch = "Hashes do not match! Expected {0}, found {1}.";
     }
 }

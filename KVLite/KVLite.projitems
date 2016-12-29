@@ -9,6 +9,7 @@
     <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Core\AntiTamper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheSettings.cs" />
@@ -19,24 +20,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCacheConnectionFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MySql\MySqlCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SQLite\PersistentCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SQLite\PersistentCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteCacheConnectionFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SQLite\SQLiteCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SQLite\VolatileCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SQLite\VolatileCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCacheConnectionFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SqlServer\SqlServerCacheSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)doxyfile.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)MySql\Scripts\kvl_cache_entries.sql" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)SqlServer\Scripts\kvl_cache_entries.sql" />
   </ItemGroup>
 </Project>

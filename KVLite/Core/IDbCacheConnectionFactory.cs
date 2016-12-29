@@ -30,7 +30,9 @@ namespace PommaLabs.KVLite.Core
     /// <summary>
     ///   Creates new connections to a specified SQL provider.
     /// </summary>
-    public interface IDbCacheConnectionFactory
+    /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
+    public interface IDbCacheConnectionFactory<TConnection>
+        where TConnection : DbConnection
     {
         #region Configuration
 
@@ -123,13 +125,13 @@ namespace PommaLabs.KVLite.Core
         ///   Opens a new connection to the specified data provider.
         /// </summary>
         /// <returns>An open connection.</returns>
-        DbConnection Open();
+        TConnection Open();
 
         /// <summary>
         ///   Opens a new connection to the specified data provider.
         /// </summary>
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns>An open connection.</returns>
-        Task<DbConnection> OpenAsync(CancellationToken cancellationToken);
+        Task<TConnection> OpenAsync(CancellationToken cancellationToken);
     }
 }

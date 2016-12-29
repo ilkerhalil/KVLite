@@ -34,12 +34,12 @@ using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using Troschuetz.Random;
-using Polly;
 
 #if !NET40
 
@@ -54,14 +54,17 @@ namespace PommaLabs.KVLite.Core
     ///   Base class for SQL caches, implements common functionalities.
     /// </summary>
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
+    /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
     [Fody.ConfigureAwait(false)]
-    public class DbCache<TSettings> : AbstractCache<TSettings>
-        where TSettings : DbCacheSettings<TSettings>
+    public class DbCache<TSettings, TConnection> : AbstractCache<TSettings>
+        where TSettings : DbCacheSettings<TSettings, TConnection>
+        where TConnection : DbConnection
     {
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="DbCache{TSettings}"/> class with given settings.
+        ///   Initializes a new instance of the <see cref="DbCache{TSettings, TConnection}"/> class
+        ///   with given settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="connectionFactory">The DB connection factory.</param>
@@ -70,7 +73,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="randomGenerator">The random number generator.</param>
-        public DbCache(TSettings settings, IDbCacheConnectionFactory connectionFactory, IClock clock, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool, IGenerator randomGenerator)
+        public DbCache(TSettings settings, IDbCacheConnectionFactory<TConnection> connectionFactory, IClock clock, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool, IGenerator randomGenerator)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -87,12 +90,12 @@ namespace PommaLabs.KVLite.Core
 
         #endregion Construction
 
-        #region Public Members
+        #region Public members
 
         /// <summary>
         ///   The connection factory used to retrieve connections to the cache data store.
         /// </summary>
-        public IDbCacheConnectionFactory ConnectionFactory => Settings.ConnectionFactory;
+        public IDbCacheConnectionFactory<TConnection> ConnectionFactory => Settings.ConnectionFactory;
 
         /// <summary>
         ///   Generates random numbers. Used to determine when to perform automatic soft cleanups.
@@ -279,7 +282,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        #endregion Public Members
+        #endregion Public members
 
         #region FormattableObject members
 
@@ -316,7 +319,7 @@ namespace PommaLabs.KVLite.Core
 
         #endregion IDisposable members
 
-        #region ICache Members
+        #region ICache members
 
         /// <summary>
         ///   Gets the clock used by the cache.
@@ -370,9 +373,9 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         public override bool CanPeek => true;
 
-        #endregion ICache Members
+        #endregion ICache members
 
-        #region Private Methods
+        #region Protected methods
 
         /// <summary>
         ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
@@ -430,13 +433,26 @@ namespace PommaLabs.KVLite.Core
             partition = partition.Truncate(cf.MaxPartitionNameLength);
             key = key.Truncate(cf.MaxKeyNameLength);
 
+            // Create the new entry here, before the serialization, so that we can use its hash code
+            // to perform some anti-tamper checks when the value will be read.
+            var dbCacheEntry = new DbCacheEntry
+            {
+                Partition = partition,
+                Key = key,
+                UtcExpiry = utcExpiry.ToUnixTime(),
+                Interval = (long) interval.TotalSeconds,
+                UtcCreation = Clock.UnixTime
+            };
+
             // Serializing may be pretty expensive, therefore we keep it out of the connection.
-            byte[] serializedValue;
-            bool compressed;
             try
             {
                 using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
                 {
+                    // First write the anti-tamper hash code...
+                    AntiTamper.WriteAntiTamperHashCode(serializedStream, dbCacheEntry);
+
+                    // Then serialize the new value.
                     Serializer.SerializeToStream(value, serializedStream);
 
                     if (serializedStream.Length > Settings.MinValueLengthForCompression)
@@ -449,15 +465,15 @@ namespace PommaLabs.KVLite.Core
                                 serializedStream.Position = 0L;
                                 serializedStream.CopyTo(compressionStream);
                             }
-                            serializedValue = compressedStream.ToArray();
-                            compressed = true;
+                            dbCacheEntry.Value = compressedStream.ToArray();
+                            dbCacheEntry.Compressed = DbCacheValue.True;
                         }
                     }
                     else
                     {
                         // Stream is shorter than specified threshold, we can store it as it is.
-                        serializedValue = serializedStream.ToArray();
-                        compressed = false;
+                        dbCacheEntry.Value = serializedStream.ToArray();
+                        dbCacheEntry.Compressed = DbCacheValue.False;
                     }
                 }
             }
@@ -467,17 +483,6 @@ namespace PommaLabs.KVLite.Core
                 Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
-
-            var dbCacheEntry = new DbCacheEntry
-            {
-                Partition = partition,
-                Key = key,
-                UtcExpiry = utcExpiry.ToUnixTime(),
-                Interval = (long) interval.TotalSeconds,
-                Value = serializedValue,
-                Compressed = compressed ? DbCacheValue.True : DbCacheValue.False,
-                UtcCreation = Clock.UnixTime,
-            };
 
             // Also add the parent keys, if any.
             var parentKeyCount = parentKeys?.Count ?? 0;
@@ -504,18 +509,15 @@ namespace PommaLabs.KVLite.Core
 
             var dynamicParameters = ToDynamicParameters(dbCacheEntry);
 
-            Policy
-                .Handle<Exception>()
-                .WaitAndRetry(3, _ => TimeSpan.FromMilliseconds(100))
-                .Execute(() =>
+            CacheConstants.RetryPolicy.Execute(() =>
+            {
+                using (var db = cf.Open())
+                using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    using (var db = cf.Open())
-                    using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
-                    {
-                        db.Execute(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr);
-                        tr.Commit();
-                    }
-                });
+                    db.Execute(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr);
+                    tr.Commit();
+                }
+            });
 
             if (RandomGenerator.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
@@ -543,11 +545,45 @@ namespace PommaLabs.KVLite.Core
                 UtcExpiry = Clock.UnixTime
             };
 
-            using (var db = cf.Open())
+            return CacheConstants.RetryPolicy.Execute(() =>
             {
-                return db.Execute(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
-            }
+                using (var db = cf.Open())
+                {
+                    return db.Execute(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
+                }
+            });
         }
+
+#if !NET40
+
+        /// <summary>
+        ///   Clears this instance or a partition, if specified.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <param name="cacheReadMode">The cache read mode.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>The number of items that have been removed.</returns>
+        protected sealed override async Task<long> ClearAsyncInternal(string partition, CacheReadMode cacheReadMode, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+            var dbCacheEntryGroup = new DbCacheEntry.Group
+            {
+                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
+                UtcExpiry = Clock.UnixTime
+            };
+
+            return await CacheConstants.RetryPolicy.ExecuteAsync(async () =>
+            {
+                using (var db = await cf.OpenAsync(cancellationToken))
+                {
+                    return await db.ExecuteAsync(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
+                }
+            });
+        }
+
+#endif
 
         /// <summary>
         ///   Determines whether cache contains the specified partition and key.
@@ -628,6 +664,35 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+#if !NET40
+
+        /// <summary>
+        ///   The number of items in the cache or in a partition, if specified.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <param name="cacheReadMode">The cache read mode.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>The number of items in the cache.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
+        protected sealed override async Task<long> CountAsyncInternal(string partition, CacheReadMode cacheReadMode, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+            var dbCacheEntryGroup = new DbCacheEntry.Group
+            {
+                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
+                UtcExpiry = Clock.UnixTime
+            };
+
+            using (var db = await cf.OpenAsync(cancellationToken))
+            {
+                return await db.QuerySingleAsync<long>(cf.CountCacheEntriesQuery, dbCacheEntryGroup);
+            }
+        }
+
+#endif
+
         /// <summary>
         ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
         ///   value, its lifetime will be increased by the corresponding interval.
@@ -677,7 +742,7 @@ namespace PommaLabs.KVLite.Core
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeValue<TVal>(dbCacheValue, partition, key);
+            return DeserializeCacheValue<TVal>(dbCacheValue);
         }
 
         /// <summary>
@@ -825,7 +890,7 @@ namespace PommaLabs.KVLite.Core
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeValue<TVal>(dbCacheValue, partition, key);
+            return DeserializeCacheValue<TVal>(dbCacheValue);
         }
 
         /// <summary>
@@ -916,10 +981,13 @@ namespace PommaLabs.KVLite.Core
                 Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            using (var db = cf.Open())
+            CacheConstants.RetryPolicy.Execute(() =>
             {
-                db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
-            }
+                using (var db = cf.Open())
+                {
+                    db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
+                }
+            });
         }
 
 #if !NET40
@@ -940,10 +1008,13 @@ namespace PommaLabs.KVLite.Core
                 Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            using (var db = await cf.OpenAsync(cancellationToken))
+            await CacheConstants.RetryPolicy.ExecuteAsync(async () =>
             {
-                await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
-            }
+                using (var db = await cf.OpenAsync(cancellationToken))
+                {
+                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
+                }
+            });
         }
 
 #endif
@@ -955,28 +1026,37 @@ namespace PommaLabs.KVLite.Core
         /// <returns>Given cache entry converted into dynamic parameters.</returns>
         protected virtual SqlMapper.IDynamicParameters ToDynamicParameters(DbCacheEntry dbCacheEntry) => new DynamicParameters(dbCacheEntry);
 
-        private TVal UnsafeDeserializeValue<TVal>(DbCacheValue dbCacheValue)
+        #endregion Protected methods
+
+        #region Serialization and deserialization
+
+        private TVal UnsafeDeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
         {
             using (var memoryStream = new MemoryStream(dbCacheValue.Value))
             {
                 if (dbCacheValue.Compressed == DbCacheValue.False)
                 {
                     // Handle uncompressed value.
+                    AntiTamper.ReadAntiTamperHashCode(memoryStream, dbCacheValue);
                     return Serializer.DeserializeFromStream<TVal>(memoryStream);
                 }
-                using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
+                else
                 {
                     // Handle compressed value.
-                    return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+                    using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
+                    {
+                        AntiTamper.ReadAntiTamperHashCode(decompressionStream, dbCacheValue);
+                        return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+                    }
                 }
             }
         }
 
-        private Option<TVal> DeserializeValue<TVal>(DbCacheValue dbCacheValue, string partition, string key)
+        private Option<TVal> DeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
         {
             try
             {
-                return Option.Some(UnsafeDeserializeValue<TVal>(dbCacheValue));
+                return Option.Some(UnsafeDeserializeCacheValue<TVal>(dbCacheValue));
             }
             catch (Exception ex)
             {
@@ -984,7 +1064,7 @@ namespace PommaLabs.KVLite.Core
 
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
-                RemoveInternal(partition, key);
+                RemoveInternal(dbCacheValue.Partition, dbCacheValue.Key);
 
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
 
@@ -1000,7 +1080,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     Partition = dbCacheEntry.Partition,
                     Key = dbCacheEntry.Key,
-                    Value = UnsafeDeserializeValue<TVal>(dbCacheEntry),
+                    Value = UnsafeDeserializeCacheValue<TVal>(dbCacheEntry),
                     UtcCreation = DateTimeExtensions.UnixTimeStart.AddSeconds(dbCacheEntry.UtcCreation),
                     UtcExpiry = DateTimeExtensions.UnixTimeStart.AddSeconds(dbCacheEntry.UtcExpiry),
                     Interval = TimeSpan.FromSeconds(dbCacheEntry.Interval)
@@ -1045,6 +1125,6 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        #endregion Private Methods
+        #endregion Serialization and deserialization
     }
 }

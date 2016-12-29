@@ -29,36 +29,6 @@ namespace PommaLabs.KVLite.Core
     public sealed class DbCacheEntry : DbCacheValue
     {
         /// <summary>
-        ///   SQL column name of <see cref="Partition"/>.
-        /// </summary>
-        public const string PartitionColumn = "kvle_partition";
-
-        /// <summary>
-        ///   A partition holds a group of related keys.
-        /// </summary>
-        public string Partition { get; set; }
-
-        /// <summary>
-        ///   SQL column name of <see cref="Key"/>.
-        /// </summary>
-        public const string KeyColumn = "kvle_key";
-
-        /// <summary>
-        ///   A key uniquely identifies an entry inside a partition.
-        /// </summary>
-        public string Key { get; set; }
-
-        /// <summary>
-        ///   SQL column name of <see cref="UtcCreation"/>.
-        /// </summary>
-        public const string UtcCreationColumn = "kvle_creation";
-
-        /// <summary>
-        ///   When the entry was created, expressed as seconds after UNIX epoch.
-        /// </summary>
-        public long UtcCreation { get; set; }
-
-        /// <summary>
         ///   SQL column name of <see cref="ParentKey0"/>.
         /// </summary>
         public const string ParentKey0Column = "kvle_parent_key0";
@@ -108,23 +78,50 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         public string ParentKey4 { get; set; }
 
+        /// <summary>
+        ///   Used to query a group of entries.
+        /// </summary>
         public sealed class Group
         {
+            /// <summary>
+            ///   A partition holds a group of related keys.
+            /// </summary>
             public string Partition { get; set; }
 
+            /// <summary>
+            ///   Retrieve an entry even if it has expired.
+            /// </summary>
             public byte IgnoreExpiryDate { get; set; }
 
+            /// <summary>
+            ///   When the entry will expire, expressed as seconds after UNIX epoch.
+            /// </summary>
             public long UtcExpiry { get; set; }
         }
 
+        /// <summary>
+        ///   Used to query a single entry.
+        /// </summary>
         public sealed class Single
         {
+            /// <summary>
+            ///   A partition holds a group of related keys.
+            /// </summary>
             public string Partition { get; set; }
 
+            /// <summary>
+            ///   A key uniquely identifies an entry inside a partition.
+            /// </summary>
             public string Key { get; set; }
 
+            /// <summary>
+            ///   Retrieve an entry even if it has expired.
+            /// </summary>
             public byte IgnoreExpiryDate { get; set; }
 
+            /// <summary>
+            ///   When the entry will expire, expressed as seconds after UNIX epoch.
+            /// </summary>
             public long UtcExpiry { get; set; }
         }
     }

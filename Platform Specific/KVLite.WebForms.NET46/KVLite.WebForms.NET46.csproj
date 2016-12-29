@@ -88,7 +88,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Thrower.4.0.4\lib\net46\PommaLabs.Thrower.dll</HintPath>
+      <HintPath>..\..\packages\Thrower.4.0.5\lib\net46\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -186,7 +186,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Troschuetz.Random, Version=4.0.3.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Troschuetz.Random.4.1.1\lib\net46\Troschuetz.Random.dll</HintPath>
+      <HintPath>..\..\packages\Troschuetz.Random.4.1.2\lib\net46\Troschuetz.Random.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -197,12 +197,17 @@
     <None Include="..\..\pomma89.snk">
       <Link>pomma89.snk</Link>
     </None>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KVLite.NET46\KVLite.NET46.csproj">
       <Project>{3768ff1c-ade5-4c9d-9c00-cacb0ce40809}</Project>
       <Name>KVLite.NET46</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KVLite.SQLite.NET46\KVLite.SQLite.NET46.csproj">
+      <Project>{b45d5251-8c3c-4cb5-8b40-83fe41d0b6cf}</Project>
+      <Name>KVLite.SQLite.NET46</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -28,10 +28,11 @@ using PommaLabs.CodeServices.Clock;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.SQLite;
 using System;
+using System.Data.SQLite;
 
 namespace PommaLabs.KVLite.UnitTests
 {
-    internal sealed class VolatileCacheTests : AbstractCacheTests<VolatileCacheSettings>
+    internal sealed class VolatileCacheTests : AbstractCacheTests<VolatileCacheSettings, SQLiteConnection>
     {
         #region Setup/Teardown
 
@@ -115,7 +116,7 @@ namespace PommaLabs.KVLite.UnitTests
         {
             Cache = new VolatileCache(new VolatileCacheSettings());
             Cache.Dispose();
-            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });      
+            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });
         }
 
         #endregion Cache creation and disposal
@@ -194,11 +195,11 @@ namespace PommaLabs.KVLite.UnitTests
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine(Cache.LastError.Message);
-                    Console.WriteLine(another.LastError.Message);
+                    Console.Error.WriteLine($"{ex.Message} - {ex.GetType().Name} - {ex.StackTrace}");
+                    Console.Error.WriteLine(Cache.LastError?.Message ?? "First cache has no errors");
+                    Console.Error.WriteLine(another.LastError?.Message ?? "Second cache has no errors");
                     throw;
-                }               
+                }
             }
         }
 
