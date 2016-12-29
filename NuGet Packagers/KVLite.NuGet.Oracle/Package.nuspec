@@ -25,7 +25,7 @@
     <iconUrl>http://pomma89.altervista.org/kvlite/logo-128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
-    <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
+    <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <dependency id="Oracle.ManagedDataAccess" version="12.1.24160719" />
       <dependency id="PommaLabs.KVLite" version="6.0.5" />
