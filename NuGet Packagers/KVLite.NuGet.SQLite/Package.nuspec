@@ -15,7 +15,7 @@
       This package contains the SQLite driver used by KVLite.
     </description>
     <releaseNotes>
-      * [UPD] Complete library rewrite.
+      Please visit project site to find updated release notes.
     </releaseNotes>
     <summary>
       KVLite is a partition-based key-value cache built for SQL. This package contains the SQLite driver used by KVLite.
