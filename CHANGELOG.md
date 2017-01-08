@@ -3,7 +3,8 @@
 ### v6.0.6 (2017-01-??) ###
 
 * [FIX] Fixed missing exception logging on failed retries.
-* [ADD] "Add*" methods are now properly async. 
+* [ADD] "Add*" methods are now properly async.
+* [UPD] Updated many dependencies.
 
 ### v6.0.5 (2016-12-27) ###
 
