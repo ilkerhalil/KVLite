@@ -30,7 +30,7 @@
       <group targetFramework="net46">
         <dependency id="CodeProject.ObjectPool" version="2.2.1" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
-        <dependency id="Polly-Signed" version="4.3.0" />
+        <dependency id="Polly-Signed" version="5.0.3" />
         <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
         <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
         <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
@@ -39,7 +39,7 @@
       <group targetFramework="net45">
         <dependency id="CodeProject.ObjectPool" version="2.2.1" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
-        <dependency id="Polly-Signed" version="4.3.0" />
+        <dependency id="Polly-Signed" version="5.0.3" />
         <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
         <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
         <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
