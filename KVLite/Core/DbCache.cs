@@ -42,6 +42,7 @@ using System.Linq;
 using Troschuetz.Random;
 using System.Runtime.CompilerServices;
 using static Dapper.SqlMapper;
+using System.Text;
 
 #if !NET40
 
@@ -1047,7 +1048,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     // Handle uncompressed value.
                     AntiTamper.ReadAntiTamperHashCode(memoryStream, dbCacheValue);
-                    return Serializer.DeserializeFromStream<TVal>(memoryStream);
+                    return BinarySerializer.Deserialize<TVal>(Serializer, memoryStream);
                 }
                 else
                 {
@@ -1055,7 +1056,7 @@ namespace PommaLabs.KVLite.Core
                     using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
                     {
                         AntiTamper.ReadAntiTamperHashCode(decompressionStream, dbCacheValue);
-                        return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+                        return BinarySerializer.Deserialize<TVal>(Serializer, decompressionStream);
                     }
                 }
             }
@@ -1158,7 +1159,7 @@ namespace PommaLabs.KVLite.Core
                     AntiTamper.WriteAntiTamperHashCode(serializedStream, dbCacheEntry);
 
                     // Then serialize the new value.
-                    Serializer.SerializeToStream(value, serializedStream);
+                    BinarySerializer.Serialize(Serializer, serializedStream, value);
 
                     if (serializedStream.Length > Settings.MinValueLengthForCompression)
                     {

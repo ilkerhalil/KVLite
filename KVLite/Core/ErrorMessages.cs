@@ -167,5 +167,10 @@ namespace PommaLabs.KVLite.Core
         ///   An error message.
         /// </summary>
         public const string HashMismatch = "Hashes do not match! Expected {0}, found {1}.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string InvalidDataType = "Value data type is not valid.";
     }
 }
