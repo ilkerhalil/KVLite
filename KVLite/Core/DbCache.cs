@@ -1048,7 +1048,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     // Handle uncompressed value.
                     AntiTamper.ReadAntiTamperHashCode(memoryStream, dbCacheValue);
-                    return BinarySerializer.Deserialize<TVal>(Serializer, memoryStream);
+                    return BinarySerializer.Deserialize<TVal>(Serializer, MemoryStreamPool, memoryStream);
                 }
                 else
                 {
@@ -1056,7 +1056,7 @@ namespace PommaLabs.KVLite.Core
                     using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
                     {
                         AntiTamper.ReadAntiTamperHashCode(decompressionStream, dbCacheValue);
-                        return BinarySerializer.Deserialize<TVal>(Serializer, decompressionStream);
+                        return BinarySerializer.Deserialize<TVal>(Serializer, MemoryStreamPool, decompressionStream);
                     }
                 }
             }
