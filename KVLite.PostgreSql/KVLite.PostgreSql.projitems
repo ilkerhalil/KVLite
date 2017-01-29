@@ -9,5 +9,10 @@
     <Import_RootNamespace>KVLite.PostgreSql</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Scripts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)PostgreSqlCacheConnectionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PostgreSqlCacheSettings.cs" />
   </ItemGroup>
 </Project>
