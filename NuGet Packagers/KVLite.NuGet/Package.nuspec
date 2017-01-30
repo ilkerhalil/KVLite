@@ -34,7 +34,7 @@
         <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
         <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
         <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
-        <dependency id="Thrower" version="4.0.6" />
+        <dependency id="Thrower" version="4.0.7" />
       </group>
       <group targetFramework="net45">
         <dependency id="CodeProject.ObjectPool" version="2.2.2" />
@@ -43,7 +43,7 @@
         <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
         <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
         <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
-        <dependency id="Thrower" version="4.0.6" />
+        <dependency id="Thrower" version="4.0.7" />
       </group>
       <group targetFramework="net40">
         <dependency id="CodeProject.ObjectPool" version="2.2.2" />
@@ -51,7 +51,7 @@
         <dependency id="Polly-Signed" version="4.3.0" />
         <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
         <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
-        <dependency id="Thrower" version="4.0.6" />
+        <dependency id="Thrower" version="4.0.7" />
       </group>
     </dependencies>
     <references></references>
