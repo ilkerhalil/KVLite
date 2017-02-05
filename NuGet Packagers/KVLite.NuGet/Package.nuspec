@@ -31,7 +31,7 @@
         <dependency id="CodeProject.ObjectPool" version="2.2.2" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
         <dependency id="Polly-Signed" version="5.0.5" />
-        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
+        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.9" />
         <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
         <dependency id="Thrower" version="4.0.7" />
       </group>
@@ -39,7 +39,7 @@
         <dependency id="CodeProject.ObjectPool" version="2.2.2" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
         <dependency id="Polly-Signed" version="5.0.5" />
-        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
+        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.9" />
         <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
         <dependency id="Thrower" version="4.0.7" />
       </group>
@@ -47,7 +47,7 @@
         <dependency id="CodeProject.ObjectPool" version="2.2.2" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
         <dependency id="Polly.Net40Async-Signed" version="5.0.5" />
-        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
+        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.9" />
         <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
         <dependency id="Thrower" version="4.0.7" />
       </group>

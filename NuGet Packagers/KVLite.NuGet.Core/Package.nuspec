@@ -27,11 +27,11 @@
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
-      <dependency id="PommaLabs.CodeServices.Caching" version="6.0.8" />
-      <dependency id="PommaLabs.CodeServices.Clock" version="6.0.8" />
-      <dependency id="PommaLabs.CodeServices.Common" version="6.0.8" />
-      <dependency id="PommaLabs.CodeServices.Compression" version="6.0.8" />
-      <dependency id="PommaLabs.CodeServices.Serialization" version="6.0.8" />
+      <dependency id="PommaLabs.CodeServices.Caching" version="6.0.9" />
+      <dependency id="PommaLabs.CodeServices.Clock" version="6.0.9" />
+      <dependency id="PommaLabs.CodeServices.Common" version="6.0.9" />
+      <dependency id="PommaLabs.CodeServices.Compression" version="6.0.9" />
+      <dependency id="PommaLabs.CodeServices.Serialization" version="6.0.9" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>

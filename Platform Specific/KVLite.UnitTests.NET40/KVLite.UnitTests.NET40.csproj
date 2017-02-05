@@ -85,35 +85,35 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Caching, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PommaLabs.CodeServices.Caching.6.0.8\lib\net40\PommaLabs.CodeServices.Caching.dll</HintPath>
+      <HintPath>..\..\packages\PommaLabs.CodeServices.Caching.6.0.9\lib\net40\PommaLabs.CodeServices.Caching.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Clock, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PommaLabs.CodeServices.Clock.6.0.8\lib\net40\PommaLabs.CodeServices.Clock.dll</HintPath>
+      <HintPath>..\..\packages\PommaLabs.CodeServices.Clock.6.0.9\lib\net40\PommaLabs.CodeServices.Clock.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Common, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PommaLabs.CodeServices.Common.6.0.8\lib\net40\PommaLabs.CodeServices.Common.dll</HintPath>
+      <HintPath>..\..\packages\PommaLabs.CodeServices.Common.6.0.9\lib\net40\PommaLabs.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Compression, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PommaLabs.CodeServices.Compression.6.0.8\lib\net40\PommaLabs.CodeServices.Compression.dll</HintPath>
+      <HintPath>..\..\packages\PommaLabs.CodeServices.Compression.6.0.9\lib\net40\PommaLabs.CodeServices.Compression.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Serialization, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PommaLabs.CodeServices.Serialization.6.0.8\lib\net40\PommaLabs.CodeServices.Serialization.dll</HintPath>
+      <HintPath>..\..\packages\PommaLabs.CodeServices.Serialization.6.0.9\lib\net40\PommaLabs.CodeServices.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Serialization.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PommaLabs.CodeServices.Serialization.Json.6.0.8\lib\net40\PommaLabs.CodeServices.Serialization.Json.dll</HintPath>
+      <HintPath>..\..\packages\PommaLabs.CodeServices.Serialization.Json.6.0.9\lib\net40\PommaLabs.CodeServices.Serialization.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Serialization.Xml, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PommaLabs.CodeServices.Serialization.Xml.6.0.8\lib\net40\PommaLabs.CodeServices.Serialization.Xml.dll</HintPath>
+      <HintPath>..\..\packages\PommaLabs.CodeServices.Serialization.Xml.6.0.9\lib\net40\PommaLabs.CodeServices.Serialization.Xml.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Serialization.Yaml, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PommaLabs.CodeServices.Serialization.Yaml.6.0.8\lib\net40\PommaLabs.CodeServices.Serialization.Yaml.dll</HintPath>
+      <HintPath>..\..\packages\PommaLabs.CodeServices.Serialization.Yaml.6.0.9\lib\net40\PommaLabs.CodeServices.Serialization.Yaml.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
@@ -177,8 +177,8 @@
       <HintPath>..\..\packages\Troschuetz.Random.4.1.3\lib\net40\Troschuetz.Random.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="YamlDotNet, Version=4.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\YamlDotNet.Signed.4.0.0\lib\net35\YamlDotNet.dll</HintPath>
+    <Reference Include="YamlDotNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\YamlDotNet.Signed.4.1.0\lib\net35\YamlDotNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
