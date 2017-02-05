@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
+// Copyright (c) 2014-2017 Alessio Parma <alessio.parma@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("PommaLabs")]
 [assembly: AssemblyProduct("PommaLabs.KVLite.Oracle")]
-[assembly: AssemblyCopyright("Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>")]
+[assembly: AssemblyCopyright("Copyright (c) 2014-2017 Alessio Parma <alessio.parma@gmail.com>")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -50,4 +50,4 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers by using the '*'
 // as shown below: [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("6.0.0")]
-[assembly: AssemblyFileVersion("6.0.5")]
+[assembly: AssemblyFileVersion("6.0.6")]

@@ -1,4 +1,4 @@
-﻿// File name: MySqlCacheConnectionFactory.cs
+﻿// File name: PostgreSqlCacheConnectionFactory.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,21 +21,21 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using MySql.Data.MySqlClient;
+using Npgsql;
 using PommaLabs.KVLite.Core;
 
-namespace PommaLabs.KVLite.MySql
+namespace PommaLabs.KVLite.PostgreSql
 {
     /// <summary>
-    ///   Cache connection factory specialized for MySQL.
+    ///   Cache connection factory specialized for PostgreSQL.
     /// </summary>
-    public class MySqlCacheConnectionFactory : DbCacheConnectionFactory<MySqlConnection>
+    public class PostgreSqlCacheConnectionFactory : DbCacheConnectionFactory<NpgsqlConnection>
     {
         /// <summary>
-        ///   Cache connection factory specialized for MySQL.
+        ///   Cache connection factory specialized for PostgreSQL.
         /// </summary>
-        public MySqlCacheConnectionFactory()
-            : base(MySqlClientFactory.Instance, null, null)
+        public PostgreSqlCacheConnectionFactory()
+            : base(NpgsqlFactory.Instance, null, null)
         {
         }
 

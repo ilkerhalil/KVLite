@@ -81,7 +81,7 @@ Target "PerfRelease" (fun _ ->
 )
 
 Target "Default" (fun _ ->
-    trace "Building and publishing Thrower..."
+    trace "Building and publishing KVLite..."
 )
 
 // Dependencies

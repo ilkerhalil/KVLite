@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
+// Copyright (c) 2014-2017 Alessio Parma <alessio.parma@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -40,6 +40,9 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using Troschuetz.Random;
+using System.Runtime.CompilerServices;
+using static Dapper.SqlMapper;
+using System.Text;
 
 #if !NET40
 
@@ -132,6 +135,42 @@ namespace PommaLabs.KVLite.Core
                 return 0L;
             }
         }
+
+#if !NET40
+
+        /// <summary>
+        ///   Clears the cache using the specified cache read mode.
+        /// </summary>
+        /// <param name="cacheReadMode">The cache read mode.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>The number of items that have been removed.</returns>
+        public async Task<long> ClearAsync(CacheReadMode cacheReadMode, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Preconditions
+            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+
+            try
+            {
+                var result = await ClearAsyncInternal(null, cacheReadMode, cancellationToken);
+
+                // Postconditions - NOT VALID: Methods below return counters which are not related to
+                // the number of items the call above actually cleared.
+
+                //Debug.Assert(Count(cacheReadMode) == 0);
+                //Debug.Assert(LongCount(cacheReadMode) == 0L);
+                Debug.Assert(result >= 0L);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex);
+                return 0L;
+            }
+        }
+
+#endif
 
         /// <summary>
         ///   Clears the specified partition using the specified cache read mode.
@@ -433,83 +472,9 @@ namespace PommaLabs.KVLite.Core
             partition = partition.Truncate(cf.MaxPartitionNameLength);
             key = key.Truncate(cf.MaxKeyNameLength);
 
-            // Create the new entry here, before the serialization, so that we can use its hash code
-            // to perform some anti-tamper checks when the value will be read.
-            var dbCacheEntry = new DbCacheEntry
-            {
-                Partition = partition,
-                Key = key,
-                UtcExpiry = utcExpiry.ToUnixTime(),
-                Interval = (long) interval.TotalSeconds,
-                UtcCreation = Clock.UnixTime
-            };
+            var dynamicParameters = PrepareCacheEntryForAdd(partition, key, value, utcExpiry, interval, parentKeys);
 
-            // Serializing may be pretty expensive, therefore we keep it out of the connection.
-            try
-            {
-                using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
-                {
-                    // First write the anti-tamper hash code...
-                    AntiTamper.WriteAntiTamperHashCode(serializedStream, dbCacheEntry);
-
-                    // Then serialize the new value.
-                    Serializer.SerializeToStream(value, serializedStream);
-
-                    if (serializedStream.Length > Settings.MinValueLengthForCompression)
-                    {
-                        // Stream is too long, we should compress it.
-                        using (var compressedStream = MemoryStreamPool.GetObject().MemoryStream)
-                        {
-                            using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
-                            {
-                                serializedStream.Position = 0L;
-                                serializedStream.CopyTo(compressionStream);
-                            }
-                            dbCacheEntry.Value = compressedStream.ToArray();
-                            dbCacheEntry.Compressed = DbCacheValue.True;
-                        }
-                    }
-                    else
-                    {
-                        // Stream is shorter than specified threshold, we can store it as it is.
-                        dbCacheEntry.Value = serializedStream.ToArray();
-                        dbCacheEntry.Compressed = DbCacheValue.False;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
-                throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
-            }
-
-            // Also add the parent keys, if any.
-            var parentKeyCount = parentKeys?.Count ?? 0;
-            if (parentKeyCount > 0)
-            {
-                dbCacheEntry.ParentKey0 = parentKeys[0].Truncate(cf.MaxKeyNameLength);
-                if (parentKeyCount > 1)
-                {
-                    dbCacheEntry.ParentKey1 = parentKeys[1].Truncate(cf.MaxKeyNameLength);
-                    if (parentKeyCount > 2)
-                    {
-                        dbCacheEntry.ParentKey2 = parentKeys[2].Truncate(cf.MaxKeyNameLength);
-                        if (parentKeyCount > 3)
-                        {
-                            dbCacheEntry.ParentKey3 = parentKeys[3].Truncate(cf.MaxKeyNameLength);
-                            if (parentKeyCount > 4)
-                            {
-                                dbCacheEntry.ParentKey4 = parentKeys[4].Truncate(cf.MaxKeyNameLength);
-                            }
-                        }
-                    }
-                }
-            }
-
-            var dynamicParameters = ToDynamicParameters(dbCacheEntry);
-
-            CacheConstants.RetryPolicy.Execute(() =>
+            ThrowOnFailedRetries(CacheConstants.RetryPolicy.ExecuteAndCapture(() =>
             {
                 using (var db = cf.Open())
                 using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
@@ -517,7 +482,7 @@ namespace PommaLabs.KVLite.Core
                     db.Execute(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr);
                     tr.Commit();
                 }
-            });
+            }));
 
             if (RandomGenerator.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
@@ -527,6 +492,51 @@ namespace PommaLabs.KVLite.Core
                 Clear(CacheReadMode.ConsiderExpiryDate);
             }
         }
+
+#if !NET40
+
+        /// <summary>
+        ///   Adds given value with the specified expiry time and refresh internal.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry time.</param>
+        /// <param name="interval">The refresh interval.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        protected sealed override async Task AddAsyncInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+            partition = partition.Truncate(cf.MaxPartitionNameLength);
+            key = key.Truncate(cf.MaxKeyNameLength);
+
+            var dynamicParameters = PrepareCacheEntryForAdd(partition, key, value, utcExpiry, interval, parentKeys);
+
+            ThrowOnFailedRetries(await CacheConstants.AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
+            {
+                using (var db = await cf.OpenAsync(cancellationToken))
+                using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
+                {
+                    await db.ExecuteAsync(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr);
+                    tr.Commit();
+                }
+            }));
+
+            if (RandomGenerator.NextDouble() < Settings.ChancesOfAutoCleanup)
+            {
+                // Run soft cleanup, so that cache is almost always clean. We do not call the
+                // internal version since we need the following method not to throw anything in case
+                // of error. A missed cleanup should not break the insertion.
+                await ClearAsync(CacheReadMode.ConsiderExpiryDate);
+            }
+        }
+
+#endif
 
         /// <summary>
         ///   Clears this instance or a partition, if specified.
@@ -545,13 +555,13 @@ namespace PommaLabs.KVLite.Core
                 UtcExpiry = Clock.UnixTime
             };
 
-            return CacheConstants.RetryPolicy.Execute(() =>
+            return ThrowOnFailedRetries(CacheConstants.RetryPolicy.ExecuteAndCapture(() =>
             {
                 using (var db = cf.Open())
                 {
                     return db.Execute(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
                 }
-            });
+            }));
         }
 
 #if !NET40
@@ -574,13 +584,13 @@ namespace PommaLabs.KVLite.Core
                 UtcExpiry = Clock.UnixTime
             };
 
-            return await CacheConstants.RetryPolicy.ExecuteAsync(async () =>
+            return ThrowOnFailedRetries(await CacheConstants.AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
             {
                 using (var db = await cf.OpenAsync(cancellationToken))
                 {
                     return await db.ExecuteAsync(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
                 }
-            });
+            }));
         }
 
 #endif
@@ -981,13 +991,13 @@ namespace PommaLabs.KVLite.Core
                 Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            CacheConstants.RetryPolicy.Execute(() =>
+            ThrowOnFailedRetries(CacheConstants.RetryPolicy.ExecuteAndCapture(() =>
             {
                 using (var db = cf.Open())
                 {
                     db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
                 }
-            });
+            }));
         }
 
 #if !NET40
@@ -1008,13 +1018,13 @@ namespace PommaLabs.KVLite.Core
                 Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            await CacheConstants.RetryPolicy.ExecuteAsync(async () =>
+            ThrowOnFailedRetries(await CacheConstants.AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
             {
                 using (var db = await cf.OpenAsync(cancellationToken))
                 {
                     await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
                 }
-            });
+            }));
         }
 
 #endif
@@ -1038,7 +1048,7 @@ namespace PommaLabs.KVLite.Core
                 {
                     // Handle uncompressed value.
                     AntiTamper.ReadAntiTamperHashCode(memoryStream, dbCacheValue);
-                    return Serializer.DeserializeFromStream<TVal>(memoryStream);
+                    return BinarySerializer.Deserialize<TVal>(Serializer, MemoryStreamPool, memoryStream);
                 }
                 else
                 {
@@ -1046,7 +1056,7 @@ namespace PommaLabs.KVLite.Core
                     using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
                     {
                         AntiTamper.ReadAntiTamperHashCode(decompressionStream, dbCacheValue);
-                        return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+                        return BinarySerializer.Deserialize<TVal>(Serializer, MemoryStreamPool, decompressionStream);
                     }
                 }
             }
@@ -1125,6 +1135,110 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
+        private IDynamicParameters PrepareCacheEntryForAdd<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
+        {
+            var cf = Settings.ConnectionFactory;
+
+            // Create the new entry here, before the serialization, so that we can use its hash code
+            // to perform some anti-tamper checks when the value will be read.
+            var dbCacheEntry = new DbCacheEntry
+            {
+                Partition = partition,
+                Key = key,
+                UtcExpiry = utcExpiry.ToUnixTime(),
+                Interval = (long) interval.TotalSeconds,
+                UtcCreation = Clock.UnixTime
+            };
+
+            // Serializing may be pretty expensive, therefore we keep it out of the connection.
+            try
+            {
+                using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
+                {
+                    // First write the anti-tamper hash code...
+                    AntiTamper.WriteAntiTamperHashCode(serializedStream, dbCacheEntry);
+
+                    // Then serialize the new value.
+                    BinarySerializer.Serialize(Serializer, serializedStream, value);
+
+                    if (serializedStream.Length > Settings.MinValueLengthForCompression)
+                    {
+                        // Stream is too long, we should compress it.
+                        using (var compressedStream = MemoryStreamPool.GetObject().MemoryStream)
+                        {
+                            using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
+                            {
+                                serializedStream.Position = 0L;
+                                serializedStream.CopyTo(compressionStream);
+                            }
+                            dbCacheEntry.Value = compressedStream.ToArray();
+                            dbCacheEntry.Compressed = DbCacheValue.True;
+                        }
+                    }
+                    else
+                    {
+                        // Stream is shorter than specified threshold, we can store it as it is.
+                        dbCacheEntry.Value = serializedStream.ToArray();
+                        dbCacheEntry.Compressed = DbCacheValue.False;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
+                throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
+            }
+
+            // Also add the parent keys, if any.
+            var parentKeyCount = parentKeys?.Count ?? 0;
+            if (parentKeyCount > 0)
+            {
+                dbCacheEntry.ParentKey0 = parentKeys[0].Truncate(cf.MaxKeyNameLength);
+                if (parentKeyCount > 1)
+                {
+                    dbCacheEntry.ParentKey1 = parentKeys[1].Truncate(cf.MaxKeyNameLength);
+                    if (parentKeyCount > 2)
+                    {
+                        dbCacheEntry.ParentKey2 = parentKeys[2].Truncate(cf.MaxKeyNameLength);
+                        if (parentKeyCount > 3)
+                        {
+                            dbCacheEntry.ParentKey3 = parentKeys[3].Truncate(cf.MaxKeyNameLength);
+                            if (parentKeyCount > 4)
+                            {
+                                dbCacheEntry.ParentKey4 = parentKeys[4].Truncate(cf.MaxKeyNameLength);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return ToDynamicParameters(dbCacheEntry);
+        }
+
         #endregion Serialization and deserialization
+
+        #region Retry policy management
+
+        [MethodImpl(CacheConstants.MethodImplOptions)]
+        private static void ThrowOnFailedRetries(Polly.PolicyResult policyResult)
+        {
+            if (policyResult.FinalException != null)
+            {
+                throw policyResult.FinalException;
+            }
+        }
+
+        [MethodImpl(CacheConstants.MethodImplOptions)]
+        private static T ThrowOnFailedRetries<T>(Polly.PolicyResult<T> policyResult)
+        {
+            if (policyResult.FinalException != null)
+            {
+                throw policyResult.FinalException;
+            }
+            return policyResult.Result;
+        }
+
+        #endregion Retry policy management
     }
 }

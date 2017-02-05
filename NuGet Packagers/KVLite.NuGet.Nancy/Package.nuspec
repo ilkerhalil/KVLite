@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite.Nancy</id>
-    <version>6.0.5</version>
+    <version>6.0.6</version>
     <title>KVLite - Nancy caching bootstrapper</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
@@ -15,7 +15,7 @@
       This package contains the code and the references required to use the Nancy caching bootstrapper.
     </description>
     <releaseNotes>
-      * [UPD] Complete library rewrite.
+      Please visit project site to find updated release notes.
     </releaseNotes>
     <summary>
       KVLite is a partition-based key-value cache built for SQL. This package contains the code and the references required to use the Nancy caching bootstrapper.
@@ -25,10 +25,10 @@
     <iconUrl>http://pomma89.altervista.org/kvlite/logo-128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
-    <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
+    <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <dependency id="Nancy" version="1.4.3" />
-      <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
+      <dependency id="PommaLabs.KVLite.Core" version="6.0.6" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>

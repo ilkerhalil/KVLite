@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
+// Copyright (c) 2014-2017 Alessio Parma <alessio.parma@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -23,6 +23,7 @@
 
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace PommaLabs.KVLite.Core
@@ -32,6 +33,7 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     internal static class AntiTamper
     {
+        [MethodImpl(CacheConstants.MethodImplOptions)]
         public static void WriteAntiTamperHashCode(Stream s, DbCacheValue v)
         {
             var c = new IntegerToBytesConverter { Integer = v.GetHashCode() };

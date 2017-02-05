@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>6.0.5</version>
+    <version>6.0.6</version>
     <title>KVLite - SQL-based cache</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
@@ -15,7 +15,7 @@
       This package contains the dependencies needed by KVLite at runtime.
     </description>
     <releaseNotes>
-      * [UPD] Complete library rewrite.
+      Please visit project site to find updated release notes.
     </releaseNotes>
     <summary>
       KVLite is a partition-based key-value cache built for SQL. This package contains the dependencies needed by KVLite at runtime.
@@ -25,33 +25,31 @@
     <iconUrl>http://pomma89.altervista.org/kvlite/logo-128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
-    <copyright>Copyright (c) 2014-2016 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
+    <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <group targetFramework="net46">
-        <dependency id="CodeProject.ObjectPool" version="2.2.1" />
+        <dependency id="CodeProject.ObjectPool" version="2.2.2" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
-        <dependency id="Polly-Signed" version="4.3.0" />
-        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
-        <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
-        <dependency id="Thrower" version="4.0.5" />
+        <dependency id="Polly-Signed" version="5.0.5" />
+        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.9" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.0.6" />
+        <dependency id="Thrower" version="4.0.7" />
       </group>
       <group targetFramework="net45">
-        <dependency id="CodeProject.ObjectPool" version="2.2.1" />
+        <dependency id="CodeProject.ObjectPool" version="2.2.2" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
-        <dependency id="Polly-Signed" version="4.3.0" />
-        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
-        <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
-        <dependency id="Thrower" version="4.0.5" />
+        <dependency id="Polly-Signed" version="5.0.5" />
+        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.9" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.0.6" />
+        <dependency id="Thrower" version="4.0.7" />
       </group>
       <group targetFramework="net40">
-        <dependency id="CodeProject.ObjectPool" version="2.2.1" />
+        <dependency id="CodeProject.ObjectPool" version="2.2.2" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
-        <dependency id="Polly-Signed" version="4.3.0" />
-        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.8" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
-        <dependency id="Thrower" version="4.0.5" />
+        <dependency id="Polly.Net40Async-Signed" version="5.0.5" />
+        <dependency id="PommaLabs.CodeServices.Serialization.Json" version="6.0.9" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.0.6" />
+        <dependency id="Thrower" version="4.0.7" />
       </group>
     </dependencies>
     <references></references>

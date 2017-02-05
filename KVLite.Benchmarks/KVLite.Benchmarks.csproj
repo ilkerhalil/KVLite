@@ -41,19 +41,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BenchmarkDotNet, Version=0.10.1.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">
-      <HintPath>..\packages\BenchmarkDotNet.0.10.1\lib\net45\BenchmarkDotNet.dll</HintPath>
+      <HintPath>..\packages\BenchmarkDotNet.0.10.2\lib\net45\BenchmarkDotNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="BenchmarkDotNet.Core, Version=0.10.1.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">
-      <HintPath>..\packages\BenchmarkDotNet.Core.0.10.1\lib\net45\BenchmarkDotNet.Core.dll</HintPath>
+      <HintPath>..\packages\BenchmarkDotNet.Core.0.10.2\lib\net45\BenchmarkDotNet.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="BenchmarkDotNet.Toolchains.Roslyn, Version=0.10.1.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">
-      <HintPath>..\packages\BenchmarkDotNet.Toolchains.Roslyn.0.10.1\lib\net45\BenchmarkDotNet.Toolchains.Roslyn.dll</HintPath>
+      <HintPath>..\packages\BenchmarkDotNet.Toolchains.Roslyn.0.10.2\lib\net45\BenchmarkDotNet.Toolchains.Roslyn.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CodeProject.ObjectPool, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\CodeProject.ObjectPool.2.2.1\lib\net46\CodeProject.ObjectPool.dll</HintPath>
+      <HintPath>..\packages\CodeProject.ObjectPool.2.2.2\lib\net46\CodeProject.ObjectPool.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -92,7 +92,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="MsgPack, Version=0.8.0.0, Culture=neutral, PublicKeyToken=a2625990d5dc0167, processorArchitecture=MSIL">
-      <HintPath>..\packages\MsgPack.Cli.0.8.0\lib\net46\MsgPack.dll</HintPath>
+      <HintPath>..\packages\MsgPack.Cli.0.8.1\lib\net46\MsgPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
@@ -112,43 +112,43 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Caching, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\PommaLabs.CodeServices.Caching.6.0.8\lib\net46\PommaLabs.CodeServices.Caching.dll</HintPath>
+      <HintPath>..\packages\PommaLabs.CodeServices.Caching.6.0.9\lib\net46\PommaLabs.CodeServices.Caching.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Clock, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\PommaLabs.CodeServices.Clock.6.0.8\lib\net46\PommaLabs.CodeServices.Clock.dll</HintPath>
+      <HintPath>..\packages\PommaLabs.CodeServices.Clock.6.0.9\lib\net46\PommaLabs.CodeServices.Clock.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Common, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\PommaLabs.CodeServices.Common.6.0.8\lib\net46\PommaLabs.CodeServices.Common.dll</HintPath>
+      <HintPath>..\packages\PommaLabs.CodeServices.Common.6.0.9\lib\net46\PommaLabs.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Compression, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\PommaLabs.CodeServices.Compression.6.0.8\lib\net46\PommaLabs.CodeServices.Compression.dll</HintPath>
+      <HintPath>..\packages\PommaLabs.CodeServices.Compression.6.0.9\lib\net46\PommaLabs.CodeServices.Compression.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Compression.LZ4, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\PommaLabs.CodeServices.Compression.LZ4.6.0.8\lib\net46\PommaLabs.CodeServices.Compression.LZ4.dll</HintPath>
+      <HintPath>..\packages\PommaLabs.CodeServices.Compression.LZ4.6.0.9\lib\net46\PommaLabs.CodeServices.Compression.LZ4.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Compression.Snappy, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\PommaLabs.CodeServices.Compression.Snappy.6.0.8\lib\net46\PommaLabs.CodeServices.Compression.Snappy.dll</HintPath>
+      <HintPath>..\packages\PommaLabs.CodeServices.Compression.Snappy.6.0.9\lib\net46\PommaLabs.CodeServices.Compression.Snappy.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Serialization, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\PommaLabs.CodeServices.Serialization.6.0.8\lib\net46\PommaLabs.CodeServices.Serialization.dll</HintPath>
+      <HintPath>..\packages\PommaLabs.CodeServices.Serialization.6.0.9\lib\net46\PommaLabs.CodeServices.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Serialization.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\PommaLabs.CodeServices.Serialization.Json.6.0.8\lib\net46\PommaLabs.CodeServices.Serialization.Json.dll</HintPath>
+      <HintPath>..\packages\PommaLabs.CodeServices.Serialization.Json.6.0.9\lib\net46\PommaLabs.CodeServices.Serialization.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Serialization.MsgPack, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\PommaLabs.CodeServices.Serialization.MsgPack.6.0.8\lib\net46\PommaLabs.CodeServices.Serialization.MsgPack.dll</HintPath>
+      <HintPath>..\packages\PommaLabs.CodeServices.Serialization.MsgPack.6.0.9\lib\net46\PommaLabs.CodeServices.Serialization.MsgPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\Thrower.4.0.5\lib\net46\PommaLabs.Thrower.dll</HintPath>
+      <HintPath>..\packages\Thrower.4.0.7\lib\net46\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -157,7 +157,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.3.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Collections.NonGeneric, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -232,7 +232,7 @@
     </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="System.Reflection.Metadata, Version=1.4.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.Metadata.1.4.1\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <HintPath>..\packages\System.Reflection.Metadata.1.4.2\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Reflection.TypeExtensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -245,6 +245,15 @@
     </Reference>
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization.Formatters, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.Serialization.Formatters.4.3.0\lib\net46\System.Runtime.Serialization.Formatters.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Primitives, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.Serialization.Primitives.4.3.0\lib\net46\System.Runtime.Serialization.Primitives.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -294,7 +303,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Troschuetz.Random, Version=4.0.3.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\packages\Troschuetz.Random.4.1.2\lib\net46\Troschuetz.Random.dll</HintPath>
+      <HintPath>..\packages\Troschuetz.Random.4.1.3\lib\net46\Troschuetz.Random.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

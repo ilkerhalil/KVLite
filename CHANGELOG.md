@@ -1,5 +1,12 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.0.6 (2017-02-05) ###
+
+* [FIX] Fixed missing exception logging on failed retries.
+* [ADD] "Add*" methods are now properly async.
+* [UPD] Added optimizations for certain data types (strings and byte arrays).
+* [UPD] Updated many dependencies.
+
 ### v6.0.5 (2016-12-27) ###
 
 * [UPD] Complete library rewrite.

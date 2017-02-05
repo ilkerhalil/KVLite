@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2014-2016 Alessio Parma <alessio.parma@gmail.com>
+// Copyright (c) 2014-2017 Alessio Parma <alessio.parma@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -95,6 +95,12 @@ namespace PommaLabs.KVLite.Core
 
         #region Internal constants
 
+#if NET40
+        internal const System.Runtime.CompilerServices.MethodImplOptions MethodImplOptions = default(System.Runtime.CompilerServices.MethodImplOptions);
+#else
+        internal const System.Runtime.CompilerServices.MethodImplOptions MethodImplOptions = System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining;
+#endif
+
         /// <summary>
         ///   Used to validate SQL names.
         /// </summary>
@@ -106,6 +112,17 @@ namespace PommaLabs.KVLite.Core
         internal static RetryPolicy RetryPolicy { get; } = Policy
             .Handle<Exception>()
             .WaitAndRetry(3, i => TimeSpan.FromMilliseconds(10 * i * i));
+
+#if !NET40
+
+        /// <summary>
+        ///   Retry policy for DB cache operations.
+        /// </summary>
+        internal static RetryPolicy AsyncRetryPolicy { get; } = Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(3, i => TimeSpan.FromMilliseconds(10 * i * i));
+
+#endif
 
         #endregion Internal constants
     }
