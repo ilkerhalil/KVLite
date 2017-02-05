@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite.WebForms</id>
-    <version>6.0.5</version>
+    <version>6.0.6</version>
     <title>KVLite - WebForms caching components</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
@@ -27,8 +27,8 @@
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
-      <dependency id="PommaLabs.KVLite.Core" version="6.0.5" />
-      <dependency id="PommaLabs.KVLite.SQLite" version="6.0.5" />
+      <dependency id="PommaLabs.KVLite.Core" version="6.0.6" />
+      <dependency id="PommaLabs.KVLite.SQLite" version="6.0.6" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>
