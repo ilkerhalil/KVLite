@@ -39,10 +39,8 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using Troschuetz.Random;
 using System.Runtime.CompilerServices;
-using static Dapper.SqlMapper;
-using System.Text;
+using Troschuetz.Random;
 
 #if !NET40
 
@@ -58,7 +56,6 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
     /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
-    [Fody.ConfigureAwait(false)]
     public class DbCache<TSettings, TConnection> : AbstractCache<TSettings>
         where TSettings : DbCacheSettings<TSettings, TConnection>
         where TConnection : DbConnection
@@ -152,7 +149,7 @@ namespace PommaLabs.KVLite.Core
 
             try
             {
-                var result = await ClearAsyncInternal(null, cacheReadMode, cancellationToken);
+                var result = await ClearAsyncInternal(null, cacheReadMode, cancellationToken).ConfigureAwait(false);
 
                 // Postconditions - NOT VALID: Methods below return counters which are not related to
                 // the number of items the call above actually cleared.
@@ -445,9 +442,9 @@ namespace PommaLabs.KVLite.Core
             // Compute all parameters _before_ opening the connection.
             var cf = Settings.ConnectionFactory;
 
-            using (var db = await cf.OpenAsync(cancellationToken))
+            using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
             {
-                return (await db.QueryFirstOrDefaultAsync<long?>(cf.GetCacheSizeInBytesQuery)) ?? 0L;
+                return (await db.QueryFirstOrDefaultAsync<long?>(cf.GetCacheSizeInBytesQuery).ConfigureAwait(false)) ?? 0L;
             }
         }
 
@@ -519,20 +516,20 @@ namespace PommaLabs.KVLite.Core
 
             ThrowOnFailedRetries(await CacheConstants.AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
             {
-                using (var db = await cf.OpenAsync(cancellationToken))
+                using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
                 using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    await db.ExecuteAsync(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr);
+                    await db.ExecuteAsync(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr).ConfigureAwait(false);
                     tr.Commit();
                 }
-            }));
+            }).ConfigureAwait(false));
 
             if (RandomGenerator.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
                 // Run soft cleanup, so that cache is almost always clean. We do not call the
                 // internal version since we need the following method not to throw anything in case
                 // of error. A missed cleanup should not break the insertion.
-                await ClearAsync(CacheReadMode.ConsiderExpiryDate);
+                await ClearAsync(CacheReadMode.ConsiderExpiryDate).ConfigureAwait(false);
             }
         }
 
@@ -586,11 +583,11 @@ namespace PommaLabs.KVLite.Core
 
             return ThrowOnFailedRetries(await CacheConstants.AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
             {
-                using (var db = await cf.OpenAsync(cancellationToken))
+                using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    return await db.ExecuteAsync(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
+                    return await db.ExecuteAsync(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup).ConfigureAwait(false);
                 }
-            }));
+            }).ConfigureAwait(false));
         }
 
 #endif
@@ -641,10 +638,10 @@ namespace PommaLabs.KVLite.Core
                 UtcExpiry = Clock.UnixTime
             };
 
-            using (var db = await cf.OpenAsync(cancellationToken))
+            using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
             {
                 // Search for at least one valid item.
-                return (await db.QuerySingleAsync<long>(cf.ContainsCacheEntryQuery, dbCacheEntrySingle)) > 0L;
+                return (await db.QuerySingleAsync<long>(cf.ContainsCacheEntryQuery, dbCacheEntrySingle).ConfigureAwait(false)) > 0L;
             }
         }
 
@@ -695,9 +692,9 @@ namespace PommaLabs.KVLite.Core
                 UtcExpiry = Clock.UnixTime
             };
 
-            using (var db = await cf.OpenAsync(cancellationToken))
+            using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
             {
-                return await db.QuerySingleAsync<long>(cf.CountCacheEntriesQuery, dbCacheEntryGroup);
+                return await db.QuerySingleAsync<long>(cf.CountCacheEntriesQuery, dbCacheEntryGroup).ConfigureAwait(false);
             }
         }
 
@@ -1020,11 +1017,11 @@ namespace PommaLabs.KVLite.Core
 
             ThrowOnFailedRetries(await CacheConstants.AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
             {
-                using (var db = await cf.OpenAsync(cancellationToken))
+                using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
+                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle).ConfigureAwait(false);
                 }
-            }));
+            }).ConfigureAwait(false));
         }
 
 #endif
@@ -1135,7 +1132,7 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private IDynamicParameters PrepareCacheEntryForAdd<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
+        private SqlMapper.IDynamicParameters PrepareCacheEntryForAdd<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
             var cf = Settings.ConnectionFactory;
 

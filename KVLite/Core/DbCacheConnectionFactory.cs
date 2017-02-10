@@ -220,7 +220,7 @@ namespace PommaLabs.KVLite.Core
         {
             var connection = _dbProviderFactory.CreateConnection() as TConnection;
             connection.ConnectionString = ConnectionString;
-            await connection.OpenAsync(cancellationToken);
+            await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
             return connection;
         }
 

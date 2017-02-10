@@ -46,10 +46,6 @@
       <HintPath>..\..\packages\CodeProject.ObjectPool.2.2.2\lib\net46\CodeProject.ObjectPool.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ConfigureAwait, Version=1.0.0.0, Culture=neutral, PublicKeyToken=233850a516558a98, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ConfigureAwait.Fody.1.0.0\lib\portable-net45+wp8+win+wpa81\ConfigureAwait.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Dapper.StrongName, Version=1.50.2.0, Culture=neutral, PublicKeyToken=e3e8412083d25dd3, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Dapper.StrongName.1.50.2\lib\net451\Dapper.StrongName.dll</HintPath>
       <Private>True</Private>
@@ -219,18 +215,8 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="FodyWeavers.xml" />
-  </ItemGroup>
   <Import Project="..\..\KVLite\KVLite.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\packages\Fody.1.30.0-beta01\build\dotnet\Fody.targets" Condition="Exists('..\..\packages\Fody.1.30.0-beta01\build\dotnet\Fody.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Fody.1.30.0-beta01\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.1.30.0-beta01\build\dotnet\Fody.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
