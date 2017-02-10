@@ -1,0 +1,43 @@
+﻿{
+  "version": "6.0.0-*",
+
+  "buildOptions": {
+  },
+
+  "packOptions": {
+    "summary": "???"
+  },
+
+  "dependencies": {
+    "CodeProject.ObjectPool": "2.2.2",
+    "Dapper.StrongName": "1.50.2",
+    "Thrower": "4.0.7"
+  },
+
+  "frameworks": {
+    "netstandard1.3": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "NETStandard.Library": "1.6.1"
+      }
+    },
+    "net40": {
+      "dependencies": {
+        "Microsoft.Bcl": "1.1.10",
+        "Microsoft.Bcl.Async": "1.0.168",
+        "Microsoft.Bcl.Build": "1.0.21",
+        "Polly.Net40Async-Signed": "5.0.5"
+      }
+    },
+    "net45": {
+      "dependencies": {
+        "Polly": "5.0.5"
+      }
+    },
+    "net46": {
+      "dependencies": {
+        "Polly": "5.0.5"
+      }
+    }
+  }
+}
