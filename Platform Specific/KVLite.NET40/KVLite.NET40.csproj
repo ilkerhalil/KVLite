@@ -78,8 +78,8 @@
       <HintPath>..\..\packages\Nito.AsyncEx.4.0.1\lib\net40\Nito.AsyncEx.Enlightenment.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Polly.Net40Async, Version=5.0.5.0, Culture=neutral, PublicKeyToken=c8a3ffc3f8f825cc, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Polly.Net40Async-Signed.5.0.5\lib\net40\Polly.Net40Async.dll</HintPath>
+    <Reference Include="Polly.Net40Async, Version=5.0.6.0, Culture=neutral, PublicKeyToken=c8a3ffc3f8f825cc, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Polly.Net40Async-Signed.5.0.6\lib\net40\Polly.Net40Async.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.CodeServices.Caching, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">

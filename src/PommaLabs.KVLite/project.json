@@ -18,7 +18,8 @@
     "netstandard1.3": {
       "imports": "dnxcore50",
       "dependencies": {
-        "NETStandard.Library": "1.6.1"
+        "NETStandard.Library": "1.6.1",
+        "Polly-Signed": "5.0.6"
       }
     },
     "net40": {
@@ -26,17 +27,19 @@
         "Microsoft.Bcl": "1.1.10",
         "Microsoft.Bcl.Async": "1.0.168",
         "Microsoft.Bcl.Build": "1.0.21",
-        "Polly.Net40Async-Signed": "5.0.5"
+        "Polly.Net40Async-Signed": "5.0.6"
       }
     },
     "net45": {
       "dependencies": {
-        "Polly": "5.0.5"
+        "Polly-Signed": "5.0.6",
+        "Polly.Net40Async-Signed": "5.0.6"
       }
     },
     "net46": {
       "dependencies": {
-        "Polly": "5.0.5"
+        "Polly-Signed": "5.0.6",
+        "Polly.Net40Async-Signed": "5.0.6"
       }
     }
   }
