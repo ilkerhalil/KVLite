@@ -88,10 +88,6 @@
       <HintPath>..\..\packages\SharpSerializer.2.20\lib\net20\Polenter.SharpSerializer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PommaLabs.CodeServices.Caching, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PommaLabs.CodeServices.Caching.6.0.9\lib\net46\PommaLabs.CodeServices.Caching.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="PommaLabs.CodeServices.Clock, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
       <HintPath>..\..\packages\PommaLabs.CodeServices.Clock.6.0.9\lib\net46\PommaLabs.CodeServices.Clock.dll</HintPath>
       <Private>True</Private>

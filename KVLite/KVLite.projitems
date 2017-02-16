@@ -9,19 +9,37 @@
     <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AsyncCacheExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CacheExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CacheItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\AntiTamper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\BinarySerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CachePartitions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CacheReadMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DbCacheEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\IDbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\CacheConstants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages_KVL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\IClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Goodies\CachingEnumerable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IAsyncCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IAsyncCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ICache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ICacheItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ICacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IEssentialCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IEssentialCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpCacheSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)doxyfile.txt" />

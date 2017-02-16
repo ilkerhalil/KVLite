@@ -1,43 +1,22 @@
-﻿// File name: ErrorMessages.cs
+﻿// Copyright 2015-2025 Alessio Parma <alessio.parma@gmail.com>
 //
-// Author(s): Alessio Parma <alessio.parma@gmail.com>
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License. You may obtain a copy of the License at:
 //
-// The MIT License (MIT)
+// "http://www.apache.org/licenses/LICENSE-2.0"
 //
-// Copyright (c) 2014-2017 Alessio Parma <alessio.parma@gmail.com>
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-// associated documentation files (the "Software"), to deal in the Software without restriction,
-// including without limitation the rights to use, copy, modify, merge, publish, distribute,
-// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all copies or
-// substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
-// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// Unless required by applicable law or agreed to in writing, software distributed under the License
+// is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+// or implied. See the License for the specific language governing permissions and limitations under
+// the License.
 
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.CodeServices.Caching.Core
 {
     /// <summary>
     ///   Error messages used inside KVLite.
     /// </summary>
     public static class ErrorMessages
     {
-        /// <summary>
-        ///   An error message.
-        /// </summary>
-        public const string InternalErrorOnSerializationFormat = "Something wrong happened during serialization of given value '{0}'";
-
-        /// <summary>
-        ///   An error message.
-        /// </summary>
-        public const string InternalErrorOnDeserialization = "Something wrong happened during deserialization";
-
         /// <summary>
         ///   An error message.
         /// </summary>
@@ -96,7 +75,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible, and ensure that current serializer can serialize and deserialize given value.";
+        public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
 
         /// <summary>
         ///   An error message.
@@ -156,21 +135,11 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   An error message.
         /// </summary>
+        public const string CacheDoesNotAllowSlidingAndAbsolute = @"CodeServices caching interfaces do not allow setting a sliding item with absolute expiration";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
         public const string TooManyParentKeys = @"Too many parent keys have been specified for this item.";
-
-        /// <summary>
-        ///   An error message.
-        /// </summary>
-        public const string HashNotFound = "Hash not found inside cache value.";
-
-        /// <summary>
-        ///   An error message.
-        /// </summary>
-        public const string HashMismatch = "Hashes do not match! Expected {0}, found {1}.";
-
-        /// <summary>
-        ///   An error message.
-        /// </summary>
-        public const string InvalidDataType = "Value data type is not valid.";
     }
 }
