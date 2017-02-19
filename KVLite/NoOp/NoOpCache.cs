@@ -11,11 +11,11 @@
 // the License.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
+using PommaLabs.KVLite.Extensibility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,7 +37,7 @@ namespace PommaLabs.CodeServices.Caching.NoOp
         /// <param name="serializer">The serializer.</param>
         public NoOpCache(IClock clock = null, ISerializer serializer = null)
         {
-            _clock = clock ?? new SystemClock();
+            _clock = clock ?? SystemClock.Instance;
             _serializer = serializer ?? new JsonSerializer(new JsonSerializerSettings(), CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance);
         }
 

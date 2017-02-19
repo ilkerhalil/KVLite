@@ -23,9 +23,10 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Ninject.Modules;
-using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
+using PommaLabs.KVLite.Extensibility;
+using System.Data.Entity.Infrastructure.Interception;
 using Troschuetz.Random;
 using Troschuetz.Random.Generators;
 
@@ -43,7 +44,7 @@ namespace PommaLabs.KVLite.UnitTests
                 .InSingletonScope();
 
             Bind<IClock>()
-                .To<MockClock>()
+                .ToConstant(FakeClock.Instance)
                 .InSingletonScope();
 
             Bind<ICompressor>()
@@ -62,7 +63,7 @@ namespace PommaLabs.KVLite.UnitTests
                 .To<StandardGenerator>()
                 .InTransientScope();
 
-            System.Data.Entity.Infrastructure.Interception.DbInterception.Add(new DbCommandInterceptor());
+            DbInterception.Add(new DbCommandInterceptor());
         }
     }
 }

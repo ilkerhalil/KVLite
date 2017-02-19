@@ -66,10 +66,6 @@
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PommaLabs.CodeServices.Clock, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PommaLabs.CodeServices.Clock.6.0.9\lib\net46\PommaLabs.CodeServices.Clock.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="PommaLabs.CodeServices.Common, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
       <HintPath>..\..\packages\PommaLabs.CodeServices.Common.6.0.9\lib\net46\PommaLabs.CodeServices.Common.dll</HintPath>
       <Private>True</Private>

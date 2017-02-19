@@ -11,9 +11,9 @@
 // the License.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
+using PommaLabs.KVLite.Extensibility;
 using System;
 using System.Diagnostics.Contracts;
 using System.IO;

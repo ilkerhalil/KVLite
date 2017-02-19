@@ -23,13 +23,13 @@
 
 using CodeProject.ObjectPool.Specialized;
 using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Extensibility;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -83,7 +83,7 @@ namespace PommaLabs.KVLite.Memory
             Compressor = compressor ?? CacheConstants.DefaultCompressor;
             Serializer = serializer ?? CacheConstants.DefaultSerializer;
             MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
-            Clock = CacheConstants.DefaultClock;
+            Clock = SystemClock.Instance;
 
             InitSystemMemoryCache();
         }

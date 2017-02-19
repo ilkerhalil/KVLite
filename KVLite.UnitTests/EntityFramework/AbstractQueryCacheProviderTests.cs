@@ -66,7 +66,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
             // Add some standard items.
             using (var ctx = new TestDbContext(_dbConnection))
             {
-                Database.SetInitializer(new DropCreateDatabaseAlways<TestDbContext>());
+                System.Data.Entity.Database.SetInitializer(new DropCreateDatabaseAlways<TestDbContext>());
                 ctx.Database.Initialize(true);
 
                 ctx.TestEntities1.AddRange(new[]

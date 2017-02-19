@@ -24,7 +24,6 @@
 using Ninject;
 using NUnit.Framework;
 using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
 using PommaLabs.KVLite.Core;
@@ -1034,7 +1033,7 @@ namespace PommaLabs.KVLite.UnitTests
         public void GetMany_RightItems_AfterAddSliding_InvalidTime(int itemCount)
         {
             AddSliding(Cache, itemCount, TimeSpan.FromSeconds(1));
-            ((MockClock) Cache.Clock).AdvanceSeconds(2);
+            (Cache.Clock as FakeClock).Advance(TimeSpan.FromSeconds(2));
             var items = new HashSet<string>(Cache.GetItems<string>().Select(i => i.Value));
             for (var i = 0; i < itemCount; ++i)
             {
@@ -1133,7 +1132,7 @@ namespace PommaLabs.KVLite.UnitTests
             {
                 var item = Cache.GetItemFromDefaultPartition<string>(StringItems[i]).Value;
                 Assert.IsNotNull(item);
-                Assert.AreEqual(item.UtcExpiry.ToUnixTime(), (Cache.Clock.UtcNow + interval).ToUnixTime());
+                Assert.AreEqual(item.UtcExpiry, (Cache.Clock.UtcNow + interval));
             }
         }
 
@@ -1147,13 +1146,13 @@ namespace PommaLabs.KVLite.UnitTests
             {
                 Cache.AddSlidingToDefaultPartition(StringItems[i], StringItems[i], interval);
             }
-            ((MockClock) Cache.Clock).AdvanceMinutes(1);
+            (Cache.Clock as FakeClock).Advance(TimeSpan.FromMinutes(1));
             var items = Cache.GetItems<string>();
             for (var i = 0; i < itemCount; ++i)
             {
                 var item = items[i];
                 Assert.IsNotNull(item);
-                Assert.AreEqual(item.UtcExpiry.ToUnixTime(), (Cache.Clock.UtcNow + interval).ToUnixTime());
+                Assert.AreEqual(item.UtcExpiry, (Cache.Clock.UtcNow + interval));
             }
         }
 
@@ -1213,7 +1212,7 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(fixedValue - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
 
             // Advance the clock, in order to make items not valid.
-            ((MockClock) Cache.Clock).AdvanceMinutes(15);
+            (Cache.Clock as FakeClock).Advance(TimeSpan.FromMinutes(15));
 
             // Add a new item, and then trigger a soft cleanup.
             Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));
@@ -1246,7 +1245,7 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(fixedValue - 1, Cache.Count(CacheReadMode.IgnoreExpiryDate));
 
             // Advance the clock, in order to make items not valid.
-            ((MockClock) Cache.Clock).AdvanceMinutes(15);
+            (Cache.Clock as FakeClock).Advance(TimeSpan.FromMinutes(15));
 
             // Add a new item, and then trigger a soft cleanup.
             Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[0], Cache.Clock.UtcNow.AddMinutes(10));

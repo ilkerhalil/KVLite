@@ -1,4 +1,4 @@
-﻿// File name: IClock.cs
+﻿// File name: SystemClock.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -26,13 +26,18 @@ using System;
 namespace PommaLabs.KVLite.Extensibility
 {
     /// <summary>
-    ///   Extension point, allows customization of current date and time retrieval.
+    ///   Returns current date and time using default system clock.
     /// </summary>
-    public interface IClock
+    public sealed class SystemClock : IClock
     {
+        /// <summary>
+        ///   Thread safe singleton.
+        /// </summary>
+        public static SystemClock Instance { get; } = new SystemClock();
+
         /// <summary>
         ///   Current UTC date and time.
         /// </summary>
-        DateTime UtcNow { get; }
+        public DateTime UtcNow => DateTime.UtcNow;
     }
 }

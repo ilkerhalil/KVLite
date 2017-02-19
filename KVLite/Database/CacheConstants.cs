@@ -24,7 +24,6 @@
 using CodeProject.ObjectPool.Specialized;
 using Polly;
 using Polly.Retry;
-using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
@@ -51,11 +50,6 @@ namespace PommaLabs.KVLite.Core
         ///   Default memory stream pool.
         /// </summary>
         public static IMemoryStreamPool DefaultMemoryStreamPool { get; } = MemoryStreamPool.Instance;
-
-        /// <summary>
-        ///   Default clock.
-        /// </summary>
-        public static IClock DefaultClock { get; } = new SystemClock();
 
         /// <summary>
         ///   Default compressor.

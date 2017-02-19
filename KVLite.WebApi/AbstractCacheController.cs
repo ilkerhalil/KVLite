@@ -1,28 +1,27 @@
 ﻿// File name: AbstractCacheController.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2017 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
@@ -44,7 +43,9 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cache">The cache used by the Web API output cache.</param>
         protected AbstractCacheController(ICache cache)
         {
+            // Preconditions
             Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+
             Cache = cache;
         }
 
@@ -224,7 +225,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="fromCreation">Optional, the minimum creation date items should have.</param>
         /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
         /// <returns>The items extracted by the query.</returns>
-        static IEnumerable<ICacheItem<object>> QueryCacheItems(IEnumerable<ICacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
+        private static IEnumerable<ICacheItem<object>> QueryCacheItems(IEnumerable<ICacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
         {
             if (fromExpiry.HasValue)
             {
@@ -245,10 +246,10 @@ namespace PommaLabs.KVLite.WebApi
             return from i in items
                    where string.IsNullOrWhiteSpace(partitionLike) || i.Partition.Contains(partitionLike)
                    where string.IsNullOrWhiteSpace(keyLike) || i.Key.Contains(keyLike)
-                   where !fromExpiry.HasValue || i.UtcExpiry.ToUnixTime() >= fromExpiry.Value.ToUnixTime()
-                   where !toExpiry.HasValue || i.UtcExpiry.ToUnixTime() <= toExpiry.Value.ToUnixTime()
-                   where !fromCreation.HasValue || i.UtcCreation.ToUnixTime() >= fromCreation.Value.ToUnixTime()
-                   where !toCreation.HasValue || i.UtcCreation.ToUnixTime() <= toCreation.Value.ToUnixTime()
+                   where !fromExpiry.HasValue || i.UtcExpiry >= fromExpiry.Value
+                   where !toExpiry.HasValue || i.UtcExpiry <= toExpiry.Value
+                   where !fromCreation.HasValue || i.UtcCreation >= fromCreation.Value
+                   where !toCreation.HasValue || i.UtcCreation <= toCreation.Value
                    select i;
         }
     }

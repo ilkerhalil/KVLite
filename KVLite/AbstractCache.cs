@@ -12,12 +12,12 @@
 
 using CodeProject.ObjectPool.Specialized;
 using PommaLabs.CodeServices.Caching.Core;
-using PommaLabs.CodeServices.Clock;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
 using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
+using PommaLabs.KVLite.Extensibility;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;

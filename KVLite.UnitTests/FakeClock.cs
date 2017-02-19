@@ -1,4 +1,4 @@
-﻿// File name: IClock.cs
+﻿// File name: FakeClock.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,18 +21,35 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Extensibility;
 using System;
 
-namespace PommaLabs.KVLite.Extensibility
+namespace PommaLabs.KVLite.UnitTests
 {
-    /// <summary>
-    ///   Extension point, allows customization of current date and time retrieval.
-    /// </summary>
-    public interface IClock
+    internal sealed class FakeClock : IClock
     {
+        private DateTime _utcNow;
+
+        public FakeClock()
+        {
+            Reset();
+        }
+
         /// <summary>
-        ///   Current UTC date and time.
+        ///   Thread safe singleton.
         /// </summary>
-        DateTime UtcNow { get; }
+        public static FakeClock Instance { get; } = new FakeClock();
+
+        public DateTime UtcNow => _utcNow;
+
+        public void Advance(TimeSpan interval)
+        {
+            _utcNow = _utcNow.Add(interval);
+        }
+
+        public void Reset(DateTime? utcNow = null)
+        {
+            _utcNow = utcNow ?? DateTime.UtcNow;
+        }
     }
 }
