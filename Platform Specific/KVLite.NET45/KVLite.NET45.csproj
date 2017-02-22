@@ -70,10 +70,6 @@
       <HintPath>..\..\packages\PommaLabs.CodeServices.Common.6.0.9\lib\net45\PommaLabs.CodeServices.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PommaLabs.CodeServices.Compression, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PommaLabs.CodeServices.Compression.6.0.9\lib\net45\PommaLabs.CodeServices.Compression.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="PommaLabs.CodeServices.Serialization, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
       <HintPath>..\..\packages\PommaLabs.CodeServices.Serialization.6.0.9\lib\net45\PommaLabs.CodeServices.Serialization.dll</HintPath>
       <Private>True</Private>
