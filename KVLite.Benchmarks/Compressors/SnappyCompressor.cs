@@ -1,4 +1,4 @@
-﻿// File name: DeflateCompressor.cs
+﻿// File name: SnappyCompressor.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -22,44 +22,18 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.KVLite.Extensibility;
-using PommaLabs.Thrower;
+using Snappy;
 using System.IO;
 using System.IO.Compression;
 
 namespace PommaLabs.KVLite.Benchmarks.Compressors
 {
-    internal sealed class DeflateCompressor : ICompressor
+    internal sealed class SnappyCompressor : ICompressor
     {
-        /// <summary>
-        ///   The compression level.
-        /// </summary>
-        private readonly CompressionLevel _compressionLevel;
-
-        /// <summary>
-        ///   Builds a Deflate compressor using <see cref="CompressionLevel.Fastest"/> as the
-        ///   compression level.
-        /// </summary>
-        public DeflateCompressor()
-            : this(CompressionLevel.Fastest)
-        {
-        }
-
-        /// <summary>
-        ///   Builds a Deflate compressor using the specified level as the compression level.
-        /// </summary>
-        /// <param name="compressionLevel">The compression level.</param>
-        public DeflateCompressor(CompressionLevel compressionLevel)
-        {
-            // Preconditions
-            Raise.ArgumentException.IfIsNotValidEnum(compressionLevel, nameof(compressionLevel));
-
-            _compressionLevel = compressionLevel;
-        }
-
         /// <summary>
         ///   Thread safe singleton.
         /// </summary>
-        public static DeflateCompressor Instance { get; } = new DeflateCompressor();
+        public static SnappyCompressor Instance { get; } = new SnappyCompressor();
 
         /// <summary>
         ///   Creates a new compression stream.
@@ -68,7 +42,7 @@ namespace PommaLabs.KVLite.Benchmarks.Compressors
         /// <returns>A new compression stream.</returns>
 #pragma warning disable CC0022 // Should dispose object
 
-        public Stream CreateCompressionStream(Stream backingStream) => new DeflateStream(backingStream, _compressionLevel, true);
+        public Stream CreateCompressionStream(Stream backingStream) => new SnappyStream(backingStream, CompressionMode.Compress, true);
 
 #pragma warning restore CC0022 // Should dispose object
 
@@ -79,7 +53,7 @@ namespace PommaLabs.KVLite.Benchmarks.Compressors
         /// <returns>A new decompression stream.</returns>
 #pragma warning disable CC0022 // Should dispose object
 
-        public Stream CreateDecompressionStream(Stream backingStream) => new DeflateStream(backingStream, CompressionMode.Decompress, true);
+        public Stream CreateDecompressionStream(Stream backingStream) => new SnappyStream(backingStream, CompressionMode.Decompress, true);
 
 #pragma warning restore CC0022 // Should dispose object
     }

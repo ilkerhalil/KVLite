@@ -56,6 +56,10 @@
       <HintPath>..\packages\CodeProject.ObjectPool.2.2.2\lib\net46\CodeProject.ObjectPool.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Crc32C.NET, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Crc32C.NET.1.0.5.0\lib\net20\Crc32C.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -133,6 +137,10 @@
     </Reference>
     <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
       <HintPath>..\packages\Thrower.4.0.11\lib\net45\PommaLabs.Thrower.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Snappy.NET, Version=1.1.1.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Snappy.NET.1.1.1.8\lib\net45\Snappy.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -293,6 +301,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Comparison.cs" />
+    <Compile Include="Compressors\SnappyCompressor.cs" />
+    <Compile Include="Compressors\LZ4Compressor.cs" />
     <Compile Include="Compressors\DeflateCompressor.cs" />
     <Compile Include="Models\LogMessage.cs" />
     <Compile Include="Program.cs" />
