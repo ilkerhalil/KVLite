@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace PommaLabs.CodeServices.Caching.NoOp
+namespace PommaLabs.KVLite.NoOp
 {
     /// <summary>
     ///   A cache which does really nothing. It might be used for unit testing.

@@ -23,7 +23,7 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Ninject.Modules;
-using PommaLabs.CodeServices.Caching;
+using PommaLabs.KVLite;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.SQLite;

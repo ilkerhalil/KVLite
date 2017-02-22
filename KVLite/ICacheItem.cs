@@ -13,7 +13,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace PommaLabs.CodeServices.Caching
+namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   An item that is stored in the cache.

@@ -24,7 +24,7 @@
 using EntityFramework.Caching;
 using EntityFramework.Extensions;
 using NUnit.Framework;
-using PommaLabs.CodeServices.Caching;
+using PommaLabs.KVLite;
 using PommaLabs.KVLite.EntityFramework;
 using PommaLabs.KVLite.Memory;
 using System.ComponentModel.DataAnnotations;

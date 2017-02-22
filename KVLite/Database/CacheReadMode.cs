@@ -10,7 +10,7 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
-namespace PommaLabs.CodeServices.Caching
+namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   Determines whether expired items should be included in lists or in queries.

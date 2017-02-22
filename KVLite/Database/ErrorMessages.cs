@@ -10,7 +10,7 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
-namespace PommaLabs.CodeServices.Caching.Core
+namespace PommaLabs.KVLite.Core
 {
     /// <summary>
     ///   Error messages used inside KVLite.
@@ -141,5 +141,30 @@ namespace PommaLabs.CodeServices.Caching.Core
         ///   An error message.
         /// </summary>
         public const string TooManyParentKeys = @"Too many parent keys have been specified for this item.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string InternalErrorOnSerializationFormat = "Something wrong happened during serialization of given value '{0}'";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string InternalErrorOnDeserialization = "Something wrong happened during deserialization";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string HashNotFound = "Hash not found inside cache value.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string HashMismatch = "Hashes do not match! Expected {0}, found {1}.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string InvalidDataType = "Value data type is not valid.";
     }
 }

@@ -12,7 +12,7 @@
 
 using System.ComponentModel;
 
-namespace PommaLabs.CodeServices.Caching
+namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   Settings shared between <see cref="ICache"/> and <see cref="IAsyncCache"/>.

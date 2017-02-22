@@ -3,7 +3,7 @@ using Ninject;
 using Ninject.Web.Common.OwinHost;
 using Ninject.Web.WebApi.OwinHost;
 using Owin;
-using PommaLabs.CodeServices.Caching;
+using PommaLabs.KVLite;
 using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.KVLite.WebApi;
 using RestService.WebApi;

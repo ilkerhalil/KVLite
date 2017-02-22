@@ -1,4 +1,4 @@
-﻿using PommaLabs.CodeServices.Caching;
+﻿using PommaLabs.KVLite;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;

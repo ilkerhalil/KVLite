@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace PommaLabs.CodeServices.Caching
+namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   An item that is stored into the cache.

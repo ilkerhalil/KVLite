@@ -14,7 +14,7 @@ using PommaLabs.CodeServices.Common;
 using System;
 using System.Runtime.Serialization;
 
-namespace PommaLabs.CodeServices.Caching.NoOp
+namespace PommaLabs.KVLite.NoOp
 {
     /// <summary>
     ///   Settings used by <see cref="NoOpCache"/>.

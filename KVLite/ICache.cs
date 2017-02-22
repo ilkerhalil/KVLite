@@ -15,7 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
-namespace PommaLabs.CodeServices.Caching
+namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   A cache with specifically typed settings.

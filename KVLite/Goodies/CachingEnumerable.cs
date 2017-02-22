@@ -10,13 +10,13 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
-using PommaLabs.CodeServices.Caching.Core;
+using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace PommaLabs.CodeServices.Caching.Goodies
+namespace PommaLabs.KVLite.Goodies
 {
     /// <summary>
     ///   A caching enumerable which stores huge collections in timed cache pages.

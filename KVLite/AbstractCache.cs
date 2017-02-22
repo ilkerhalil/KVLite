@@ -11,7 +11,7 @@
 // the License.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.CodeServices.Caching.Core;
+using PommaLabs.KVLite.Core;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
@@ -26,7 +26,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PommaLabs.CodeServices.Caching
+namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   Abstract class which should make it easier to implement a new kind of cache.

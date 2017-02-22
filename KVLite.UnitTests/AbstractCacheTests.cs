@@ -23,7 +23,7 @@
 
 using Ninject;
 using NUnit.Framework;
-using PommaLabs.CodeServices.Caching;
+using PommaLabs.KVLite;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
 using PommaLabs.KVLite.Core;

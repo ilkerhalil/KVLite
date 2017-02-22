@@ -23,7 +23,7 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Dapper;
-using PommaLabs.CodeServices.Caching;
+using PommaLabs.KVLite;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.CodeServices.Common.Logging;
