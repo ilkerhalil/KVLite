@@ -11,7 +11,6 @@
 // the License.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Extensibility;
 using System;
@@ -46,7 +45,7 @@ namespace PommaLabs.CodeServices.Caching
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
+        ///   constructor. If not specified, it defaults to <see cref="GZipCompressor"/>.
         /// </remarks>
         [Pure]
         ICompressor Compressor { get; }

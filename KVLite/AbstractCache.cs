@@ -15,7 +15,6 @@ using PommaLabs.CodeServices.Caching.Core;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
-using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.Thrower;
@@ -55,7 +54,7 @@ namespace PommaLabs.CodeServices.Caching
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
+        ///   constructor. If not specified, it defaults to <see cref="GZipCompressor"/>.
         /// </remarks>
         public abstract ICompressor Compressor { get; }
 

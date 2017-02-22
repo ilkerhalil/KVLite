@@ -27,7 +27,6 @@ using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.CodeServices.Common.Logging;
-using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.Thrower;
 using System;
@@ -84,8 +83,8 @@ namespace PommaLabs.KVLite.Core
             Settings.ConnectionFactory = connectionFactory;
             Clock = clock ?? SystemClock.Instance;
             Serializer = serializer ?? CacheConstants.DefaultSerializer;
-            Compressor = compressor ?? CacheConstants.DefaultCompressor;
-            MemoryStreamPool = memoryStreamPool ?? CacheConstants.DefaultMemoryStreamPool;
+            Compressor = compressor ?? GZipCompressor.Instance;
+            MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
             RandomGenerator = randomGenerator ?? CacheConstants.CreateRandomGenerator();
         }
 
@@ -372,7 +371,7 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
+        ///   constructor. If not specified, it defaults to <see cref="GZipCompressor"/>.
         /// </remarks>
         public sealed override ICompressor Compressor { get; }
 

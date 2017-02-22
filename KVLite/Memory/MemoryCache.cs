@@ -26,7 +26,6 @@ using PommaLabs.CodeServices.Caching;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.CodeServices.Common.Logging;
-using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
@@ -80,7 +79,7 @@ namespace PommaLabs.KVLite.Memory
         public MemoryCache(MemoryCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
         {
             Settings = settings;
-            Compressor = compressor ?? CacheConstants.DefaultCompressor;
+            Compressor = compressor ?? GZipCompressor.Instance;
             Serializer = serializer ?? CacheConstants.DefaultSerializer;
             MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
             Clock = SystemClock.Instance;

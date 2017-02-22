@@ -24,7 +24,6 @@
 using CodeProject.ObjectPool.Specialized;
 using Ninject.Modules;
 using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.SQLite;
@@ -42,7 +41,7 @@ namespace RestService.WebApi
                 .InSingletonScope();
 
             Bind<ICompressor>()
-                .To<DeflateCompressor>()
+                .ToConstant(GZipCompressor.Instance)
                 .InSingletonScope();
 
             Bind<ICache>()

@@ -13,7 +13,6 @@
 using CodeProject.ObjectPool.Specialized;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
-using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Extensibility;
 using System;
@@ -62,9 +61,9 @@ namespace PommaLabs.CodeServices.Caching.NoOp
         /// <value>The compressor used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
+        ///   constructor. If not specified, it defaults to <see cref="GZipCompressor"/>.
         /// </remarks>
-        public override ICompressor Compressor { get; } = new NoOpCompressor(CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance);
+        public override ICompressor Compressor { get; } = GZipCompressor.Instance;
 
         /// <summary>
         ///   The maximum number of parent keys each item can have.

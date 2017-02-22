@@ -23,9 +23,10 @@
 
 using BenchmarkDotNet.Attributes;
 using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
+using PommaLabs.KVLite.Benchmarks.Compressors;
 using PommaLabs.KVLite.Benchmarks.Models;
+using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.MySql;
 using PommaLabs.KVLite.SQLite;

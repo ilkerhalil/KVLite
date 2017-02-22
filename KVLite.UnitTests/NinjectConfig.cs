@@ -23,7 +23,6 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Ninject.Modules;
-using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Extensibility;
 using System.Data.Entity.Infrastructure.Interception;
@@ -48,7 +47,7 @@ namespace PommaLabs.KVLite.UnitTests
                 .InSingletonScope();
 
             Bind<ICompressor>()
-                .To<DeflateCompressor>()
+                .ToConstant(GZipCompressor.Instance)
                 .InSingletonScope();
 
             Bind<ISerializer>()

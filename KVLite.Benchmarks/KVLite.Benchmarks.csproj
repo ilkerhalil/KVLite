@@ -293,6 +293,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Comparison.cs" />
+    <Compile Include="Compressors\DeflateCompressor.cs" />
     <Compile Include="Models\LogMessage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

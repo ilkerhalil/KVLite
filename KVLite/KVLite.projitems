@@ -28,7 +28,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Database\CacheConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\ErrorMessages_KVL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\UnixClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensibility\GZipCompressor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\IClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensibility\ICompressor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\SystemClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Goodies\CachingEnumerable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAsyncCache.cs" />

@@ -25,10 +25,8 @@ using CodeProject.ObjectPool.Specialized;
 using Polly;
 using Polly.Retry;
 using PommaLabs.CodeServices.Common.Portability;
-using PommaLabs.CodeServices.Compression;
 using PommaLabs.CodeServices.Serialization;
 using System;
-using System.IO.Compression;
 using System.Runtime.Serialization.Formatters;
 using System.Text.RegularExpressions;
 using Troschuetz.Random;
@@ -45,20 +43,6 @@ namespace PommaLabs.KVLite.Core
         ///   The prefix used by all partitions defined in this project.
         /// </summary>
         public static string PartitionPrefix { get; } = nameof(KVLite);
-
-        /// <summary>
-        ///   Default memory stream pool.
-        /// </summary>
-        public static IMemoryStreamPool DefaultMemoryStreamPool { get; } = MemoryStreamPool.Instance;
-
-        /// <summary>
-        ///   Default compressor.
-        /// </summary>
-#if NET40
-        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.Optimal, CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance);
-#else
-        public static ICompressor DefaultCompressor { get; } = new DeflateCompressor(CompressionLevel.Fastest, CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance);
-#endif
 
         /// <summary>
         ///   Default serializer.
