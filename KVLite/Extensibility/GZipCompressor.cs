@@ -29,11 +29,10 @@ namespace PommaLabs.KVLite.Extensibility
         private readonly CompressionLevel _compressionLevel;
 
         /// <summary>
-        ///   Builds a GZip compressor using <see cref="CompressionLevel.Fastest"/> as the
-        ///   compression level.
+        ///   Builds a GZip compressor using <see cref="DefaultCompressionLevel"/> as the compression level.
         /// </summary>
         public GZipCompressor()
-            : this(CompressionLevel.Fastest)
+            : this(DefaultCompressionLevel)
         {
         }
 
@@ -48,6 +47,13 @@ namespace PommaLabs.KVLite.Extensibility
 
             _compressionLevel = compressionLevel;
         }
+
+        /// <summary>
+        ///   The default compression level, used when none has been specified. It is equal to
+        ///   <see cref="CompressionLevel.Fastest"/>, since we do not want to spend a lot of time
+        ///   compressing and decompressing data.
+        /// </summary>
+        public static CompressionLevel DefaultCompressionLevel { get; } = CompressionLevel.Fastest;
 
 #else
 
