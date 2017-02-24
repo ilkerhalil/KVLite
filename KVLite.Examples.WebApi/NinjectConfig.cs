@@ -24,7 +24,6 @@
 using CodeProject.ObjectPool.Specialized;
 using Ninject.Modules;
 using PommaLabs.KVLite;
-using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.SQLite;
 using Troschuetz.Random;
@@ -49,11 +48,7 @@ namespace RestService.WebApi
                 .InSingletonScope();
 
             Bind<ISerializer>()
-                .To<JsonSerializer>()
-                .InSingletonScope();
-
-            Bind<JsonSerializerSettings>()
-                .ToConstant(new JsonSerializerSettings())
+                .ToConstant(JsonSerializer.Instance)
                 .InSingletonScope();
 
             Bind<IMemoryStreamPool>()

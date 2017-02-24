@@ -21,13 +21,9 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Specialized;
 using Polly;
 using Polly.Retry;
-using PommaLabs.CodeServices.Common.Portability;
-using PommaLabs.CodeServices.Serialization;
 using System;
-using System.Runtime.Serialization.Formatters;
 using System.Text.RegularExpressions;
 using Troschuetz.Random;
 using Troschuetz.Random.Generators;
@@ -43,28 +39,6 @@ namespace PommaLabs.KVLite.Core
         ///   The prefix used by all partitions defined in this project.
         /// </summary>
         public static string PartitionPrefix { get; } = nameof(KVLite);
-
-        /// <summary>
-        ///   Default serializer.
-        /// </summary>
-        /// <remarks>
-        ///   We apply many customizations to the JSON serializer, in order to achieve a small output size.
-        /// </remarks>
-        public static ISerializer DefaultSerializer { get; } = new JsonSerializer(new JsonSerializerSettings
-        {
-            ContractResolver = CodeServices.Serialization.Json.Resolvers.DefaultContractResolver.Instance,
-            DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-            DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.IgnoreAndPopulate,
-            Encoding = PortableEncoding.UTF8WithoutBOM,
-            FloatFormatHandling = Newtonsoft.Json.FloatFormatHandling.String,
-            Formatting = Newtonsoft.Json.Formatting.None,
-            MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,
-            NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-            PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None,
-            ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
-            TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All,
-            TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
-        }, MemoryStreamPool.Instance);
 
         /// <summary>
         ///   Creates a random number generator.

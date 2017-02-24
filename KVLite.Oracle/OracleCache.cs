@@ -24,7 +24,6 @@
 using CodeProject.ObjectPool.Specialized;
 using Dapper;
 using Oracle.ManagedDataAccess.Client;
-using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using System.Diagnostics.Contracts;

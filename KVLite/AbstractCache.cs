@@ -15,7 +15,6 @@ using PommaLabs.KVLite.Core;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
-using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.Thrower;
 using System;
@@ -614,7 +613,7 @@ namespace PommaLabs.KVLite
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
             Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -654,7 +653,7 @@ namespace PommaLabs.KVLite
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
             Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -694,7 +693,7 @@ namespace PommaLabs.KVLite
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
             Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -734,7 +733,7 @@ namespace PommaLabs.KVLite
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
             Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -1139,7 +1138,7 @@ namespace PommaLabs.KVLite
 
             // This line is reached when the cache does not contain the item or an error has occurred.
             var value = valueGetter.Invoke();
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
 
             try
             {
@@ -1212,7 +1211,7 @@ namespace PommaLabs.KVLite
 
             // This line is reached when the cache does not contain the item or an error has occurred.
             var value = valueGetter.Invoke();
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
 
             try
             {
@@ -1285,7 +1284,7 @@ namespace PommaLabs.KVLite
 
             // This line is reached when the cache does not contain the item or an error has occurred.
             var value = valueGetter.Invoke();
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
 
             try
             {
@@ -1358,7 +1357,7 @@ namespace PommaLabs.KVLite
 
             // This line is reached when the cache does not contain the item or an error has occurred.
             var value = valueGetter.Invoke();
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
 
             try
             {
@@ -1632,7 +1631,7 @@ namespace PommaLabs.KVLite
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
             Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -1677,7 +1676,7 @@ namespace PommaLabs.KVLite
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
             Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -1722,7 +1721,7 @@ namespace PommaLabs.KVLite
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
             Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -1767,7 +1766,7 @@ namespace PommaLabs.KVLite
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
             Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
             Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
 
@@ -2202,7 +2201,7 @@ namespace PommaLabs.KVLite
 
             // This line is reached when the cache does not contain the item or an error has occurred.
             var value = await valueGetter.Invoke().ConfigureAwait(false);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
 
             try
             {
@@ -2281,7 +2280,7 @@ namespace PommaLabs.KVLite
 
             // This line is reached when the cache does not contain the item or an error has occurred.
             var value = await valueGetter.Invoke().ConfigureAwait(false);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
 
             try
             {
@@ -2360,7 +2359,7 @@ namespace PommaLabs.KVLite
 
             // This line is reached when the cache does not contain the item or an error has occurred.
             var value = await valueGetter.Invoke().ConfigureAwait(false);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
 
             try
             {
@@ -2439,7 +2438,7 @@ namespace PommaLabs.KVLite
 
             // This line is reached when the cache does not contain the item or an error has occurred.
             var value = await valueGetter.Invoke().ConfigureAwait(false);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize(value.GetType()) && Serializer.CanDeserialize(value.GetType())), nameof(value), ErrorMessages.NotSerializableValue);
+            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
 
             try
             {

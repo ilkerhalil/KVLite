@@ -24,7 +24,6 @@
 using CodeProject.ObjectPool.Specialized;
 using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.CodeServices.Common.Portability;
-using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using System;

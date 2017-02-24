@@ -23,11 +23,9 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Dapper;
-using PommaLabs.KVLite;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.CodeServices.Common.Logging;
-using PommaLabs.CodeServices.Serialization;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
@@ -82,7 +80,7 @@ namespace PommaLabs.KVLite.Core
             Settings = settings;
             Settings.ConnectionFactory = connectionFactory;
             Clock = clock ?? SystemClock.Instance;
-            Serializer = serializer ?? CacheConstants.DefaultSerializer;
+            Serializer = serializer ?? JsonSerializer.Instance;
             Compressor = compressor ?? GZipCompressor.Instance;
             MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
             RandomGenerator = randomGenerator ?? CacheConstants.CreateRandomGenerator();

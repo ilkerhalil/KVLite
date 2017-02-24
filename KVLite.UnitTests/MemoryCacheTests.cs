@@ -1,30 +1,29 @@
 ﻿// File name: PersistentCacheTests.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2017 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.KVLite;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
-using PommaLabs.CodeServices.Serialization;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -37,22 +36,22 @@ using PommaLabs.KVLite.Memory;
 namespace PommaLabs.KVLite.UnitTests
 {
     [TestFixture]
-    sealed class MemoryCacheTests
+    internal sealed class MemoryCacheTests
     {
-        const int LargeItemCount = 1000;
-        const int MediumItemCount = 100;
-        const int SmallItemCount = 10;
+        private const int LargeItemCount = 1000;
+        private const int MediumItemCount = 100;
+        private const int SmallItemCount = 10;
 
-        const int MinItem = 10000;
+        private const int MinItem = 10000;
 
-        readonly List<string> StringItems = Enumerable
+        private readonly List<string> StringItems = Enumerable
             .Range(MinItem, LargeItemCount)
             .Select(x => x.ToString(CultureInfo.InvariantCulture))
             .ToList();
 
         #region Setup/Teardown
 
-        MemoryCache Cache;
+        private MemoryCache Cache;
 
         [SetUp]
         public void SetUp()
@@ -179,7 +178,7 @@ namespace PommaLabs.KVLite.UnitTests
         {
             Cache = new MemoryCache(new MemoryCacheSettings());
             Cache.Dispose();
-            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });        
+            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });
         }
 
         [Test]
@@ -202,7 +201,7 @@ namespace PommaLabs.KVLite.UnitTests
         {
             Cache = new MemoryCache(new MemoryCacheSettings { CacheName = "PINO" });
             Cache.Dispose();
-            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });         
+            Assert.Throws<ObjectDisposedException>(() => { Cache.Count(); });
         }
 
         #endregion SystemMemoryCache disposal
@@ -216,7 +215,7 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v = StringItems[2];
             Cache.AddStatic(p, k, v);
-            Assert.Throws<NotSupportedException>(() => { Cache.Peek<string>(p, k); });        
+            Assert.Throws<NotSupportedException>(() => { Cache.Peek<string>(p, k); });
         }
 
         [Test]
@@ -225,7 +224,7 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v = StringItems[2];
             Cache.AddStaticToDefaultPartition(k, v);
-            Assert.Throws<NotSupportedException>(() => { Cache.PeekIntoDefaultPartition<string>(k); });        
+            Assert.Throws<NotSupportedException>(() => { Cache.PeekIntoDefaultPartition<string>(k); });
         }
 
         [Test]
@@ -235,7 +234,7 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v = StringItems[2];
             Cache.AddStatic(p, k, v);
-            Assert.Throws<NotSupportedException>(() => { Cache.PeekItem<string>(p, k); });          
+            Assert.Throws<NotSupportedException>(() => { Cache.PeekItem<string>(p, k); });
         }
 
         [Test]
@@ -244,7 +243,7 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v = StringItems[2];
             Cache.AddStaticToDefaultPartition(k, v);
-            Assert.Throws<NotSupportedException>(() => { Cache.PeekItemIntoDefaultPartition<string>(k); });        
+            Assert.Throws<NotSupportedException>(() => { Cache.PeekItemIntoDefaultPartition<string>(k); });
         }
 
         [Test]
@@ -254,7 +253,7 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v = StringItems[2];
             Cache.AddStatic(p, k, v);
-            Assert.Throws<NotSupportedException>(() => { Cache.PeekItems<string>(); });      
+            Assert.Throws<NotSupportedException>(() => { Cache.PeekItems<string>(); });
         }
 
         [Test]
@@ -264,10 +263,10 @@ namespace PommaLabs.KVLite.UnitTests
             var k = StringItems[1];
             var v = StringItems[2];
             Cache.AddStatic(p, k, v);
-            Assert.Throws<NotSupportedException>(() => { Cache.PeekItems<string>(p); });          
+            Assert.Throws<NotSupportedException>(() => { Cache.PeekItems<string>(p); });
         }
 
-        #endregion
+        #endregion Peek - Not supported
 
         [Test]
         public void AddStatic_WithParentKey_RemoveParentAndChildrenShouldAlsoBeRemoved()

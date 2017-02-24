@@ -22,11 +22,9 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.KVLite;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.CodeServices.Common.Logging;
-using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using System;
@@ -80,7 +78,7 @@ namespace PommaLabs.KVLite.Memory
         {
             Settings = settings;
             Compressor = compressor ?? GZipCompressor.Instance;
-            Serializer = serializer ?? CacheConstants.DefaultSerializer;
+            Serializer = serializer ?? JsonSerializer.Instance;
             MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
             Clock = SystemClock.Instance;
 

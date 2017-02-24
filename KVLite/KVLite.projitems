@@ -30,6 +30,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\GZipCompressor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\IClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\ICompressor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensibility\ISerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensibility\JsonSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\SystemClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Goodies\CachingEnumerable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAsyncCache.cs" />

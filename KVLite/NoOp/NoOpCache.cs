@@ -13,7 +13,6 @@
 using CodeProject.ObjectPool.Specialized;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
-using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Extensibility;
 using System;
 using System.Collections.Generic;
@@ -26,20 +25,6 @@ namespace PommaLabs.KVLite.NoOp
     /// </summary>
     public sealed class NoOpCache : AbstractCache<NoOpCacheSettings>
     {
-        private readonly IClock _clock;
-        private readonly ISerializer _serializer;
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="NoOpCache"/> class with given settings.
-        /// </summary>
-        /// <param name="clock">The clock.</param>
-        /// <param name="serializer">The serializer.</param>
-        public NoOpCache(IClock clock = null, ISerializer serializer = null)
-        {
-            _clock = clock ?? SystemClock.Instance;
-            _serializer = serializer ?? new JsonSerializer(new JsonSerializerSettings(), CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance);
-        }
-
         /// <summary>
         ///   <c>true</c> if the Peek methods are implemented, <c>false</c> otherwise.
         /// </summary>
@@ -53,7 +38,7 @@ namespace PommaLabs.KVLite.NoOp
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
         /// </remarks>
-        public override IClock Clock => _clock;
+        public override IClock Clock { get; } = SystemClock.Instance;
 
         /// <summary>
         ///   Gets the compressor used by the cache.
@@ -90,7 +75,7 @@ namespace PommaLabs.KVLite.NoOp
         ///   (in most cases, simply use the <see cref="SerializableAttribute"/> and expose fields as
         ///   public properties).
         /// </remarks>
-        public override ISerializer Serializer => _serializer;
+        public override ISerializer Serializer { get; } = JsonSerializer.Instance;
 
         /// <summary>
         ///   The available settings for the cache.

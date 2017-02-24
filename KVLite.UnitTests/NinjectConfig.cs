@@ -23,7 +23,6 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Ninject.Modules;
-using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Extensibility;
 using System.Data.Entity.Infrastructure.Interception;
 using Troschuetz.Random;
@@ -51,11 +50,7 @@ namespace PommaLabs.KVLite.UnitTests
                 .InSingletonScope();
 
             Bind<ISerializer>()
-                .To<JsonSerializer>()
-                .InSingletonScope();
-
-            Bind<JsonSerializerSettings>()
-                .ToConstant(new JsonSerializerSettings())
+                .ToConstant(JsonSerializer.Instance)
                 .InSingletonScope();
 
             Bind<IGenerator>()

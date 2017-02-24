@@ -25,7 +25,6 @@ using BenchmarkDotNet.Running;
 using PommaLabs.KVLite;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
-using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.MySql;
 using PommaLabs.KVLite.Oracle;
