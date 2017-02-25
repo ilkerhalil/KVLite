@@ -45,9 +45,9 @@ namespace PommaLabs.KVLite.NoOp
         /// <value>The compressor used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="GZipCompressor"/>.
+        ///   constructor. If not specified, it defaults to <see cref="NoOpCompressor"/>.
         /// </remarks>
-        public override ICompressor Compressor { get; } = GZipCompressor.Instance;
+        public override ICompressor Compressor { get; } = NoOpCompressor.Instance;
 
         /// <summary>
         ///   The maximum number of parent keys each item can have.
