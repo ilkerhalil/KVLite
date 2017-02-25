@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.0.7 (2017-02-26) ###
+
+* [REM] Removed everything related to CodeServices.
+* [ADD] Imported everything required from CodeServices.
+
 ### v6.0.6 (2017-02-05) ###
 
 * [FIX] Fixed missing exception logging on failed retries.
