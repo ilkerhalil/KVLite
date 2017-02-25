@@ -24,6 +24,10 @@ namespace PommaLabs.KVLite
     {
         private readonly T _value;
 
+        /// <summary>
+        ///   Builds a cache result.
+        /// </summary>
+        /// <param name="value">Result value.</param>
         private CacheResult(T value)
         {
             HasValue = true;

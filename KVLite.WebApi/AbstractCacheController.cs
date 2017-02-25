@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Extensibility;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
@@ -225,29 +226,18 @@ namespace PommaLabs.KVLite.WebApi
         /// <returns>The items extracted by the query.</returns>
         private static IEnumerable<ICacheItem<object>> QueryCacheItems(IEnumerable<ICacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
         {
-            if (fromExpiry.HasValue)
-            {
-                fromExpiry = fromExpiry.Value.ToUniversalTime();
-            }
-            if (toExpiry.HasValue)
-            {
-                toExpiry = toExpiry.Value.ToUniversalTime();
-            }
-            if (fromCreation.HasValue)
-            {
-                fromCreation = fromCreation.Value.ToUniversalTime();
-            }
-            if (toCreation.HasValue)
-            {
-                toCreation = toCreation.Value.ToUniversalTime();
-            }
+            var fromExpiryUnix = fromExpiry.HasValue ? fromExpiry.Value.ToUniversalTime().ToUnixTime() : new long?();
+            var toExpiryUnix = toExpiry.HasValue ? toExpiry.Value.ToUniversalTime().ToUnixTime() : new long?();
+            var fromCreationUnix = fromCreation.HasValue ? fromCreation.Value.ToUniversalTime().ToUnixTime() : new long?();
+            var toCreationUnix = toCreation.HasValue ? toCreation.Value.ToUniversalTime().ToUnixTime() : new long?();
+
             return from i in items
                    where string.IsNullOrWhiteSpace(partitionLike) || i.Partition.Contains(partitionLike)
                    where string.IsNullOrWhiteSpace(keyLike) || i.Key.Contains(keyLike)
-                   where !fromExpiry.HasValue || i.UtcExpiry >= fromExpiry.Value
-                   where !toExpiry.HasValue || i.UtcExpiry <= toExpiry.Value
-                   where !fromCreation.HasValue || i.UtcCreation >= fromCreation.Value
-                   where !toCreation.HasValue || i.UtcCreation <= toCreation.Value
+                   where !fromExpiryUnix.HasValue || i.UtcExpiry.ToUnixTime() >= fromExpiryUnix.Value
+                   where !toExpiryUnix.HasValue || i.UtcExpiry.ToUnixTime() <= toExpiryUnix.Value
+                   where !fromCreationUnix.HasValue || i.UtcCreation.ToUnixTime() >= fromCreationUnix.Value
+                   where !toCreationUnix.HasValue || i.UtcCreation.ToUnixTime() <= toCreationUnix.Value
                    select i;
         }
     }

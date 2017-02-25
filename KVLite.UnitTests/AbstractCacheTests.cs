@@ -91,25 +91,26 @@ namespace PommaLabs.KVLite.UnitTests
 
         #endregion Constants
 
-        #region Option serialization
+        #region Tuple serialization
 
         [Test]
-        public void AddSliding_OptionType()
+        public void AddSliding_TupleType()
         {
             var p = StringItems[0];
             var k = StringItems[1];
             var v = StringItems[2];
             var i = TimeSpan.FromMinutes(10);
 
-            Cache.AddSliding(p, k, (CacheResult<string>) v, i);
-            var info = Cache.GetItem<CacheResult<string>>(p, k).Value;
+            Cache.AddSliding(p, k, Tuple.Create(p, k, v), i);
+            var info = Cache.GetItem<Tuple<string, string, string>>(p, k).Value;
 
-            Assert.IsNotNull(info);
-            Assert.That(info.Value.HasValue);
-            Assert.That(info.Value.Value, Is.EqualTo(v));
+            info.ShouldNotBeNull();
+            info.Value.Item1.ShouldBe(p);
+            info.Value.Item2.ShouldBe(k);
+            info.Value.Item3.ShouldBe(v);
         }
 
-        #endregion Option serialization
+        #endregion Tuple serialization
 
         #region Parent keys management
 
