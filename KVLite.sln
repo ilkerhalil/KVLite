@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CB218631-52E1-43BC-971F-94784A43B73E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-52E1-43BC-971F-94784A43B73E}"
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
@@ -17,16 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Benchmarks", "KVLite.Benchmarks\KVLite.Benchmarks.csproj", "{B082811A-E830-4CB0-8D7F-5FB31B001052}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Logo", "Project Logo", "{FDFAC957-0093-481B-82B5-465777E8160B}"
-	ProjectSection(SolutionItems) = preProject
-		Project Logo\logo-128.png = Project Logo\logo-128.png
-		Project Logo\logo-256.png = Project Logo\logo-256.png
-		Project Logo\logo-32.png = Project Logo\logo-32.png
-		Project Logo\logo-64.png = Project Logo\logo-64.png
-		Project Logo\logo-modified.png = Project Logo\logo-modified.png
-		Project Logo\logo-original.png = Project Logo\logo-original.png
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{EFEDDCD8-239A-4197-B666-9A0D3795F8BC}"
 	ProjectSection(SolutionItems) = preProject
@@ -218,6 +208,16 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "PommaLabs.KVLite.Memory", "src\PommaLabs.KVLite.Memory\PommaLabs.KVLite.Memory.xproj", "{C938C49E-DFEA-4F15-9819-B0A47BE95C8A}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "PommaLabs.KVLite.MySql", "src\PommaLabs.KVLite.MySql\PommaLabs.KVLite.MySql.xproj", "{E6620D62-4DAC-42DD-988A-FDAA9F2F8819}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logo", "logo", "{2FAF059E-AE80-4682-8F1F-E6965A1AD53A}"
+	ProjectSection(SolutionItems) = preProject
+		logo\logo-128.png = logo\logo-128.png
+		logo\logo-256.png = logo\logo-256.png
+		logo\logo-32.png = logo\logo-32.png
+		logo\logo-64.png = logo\logo-64.png
+		logo\logo-modified.png = logo\logo-modified.png
+		logo\logo-original.png = logo\logo-original.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
