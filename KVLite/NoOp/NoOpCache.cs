@@ -12,7 +12,6 @@
 
 using CodeProject.ObjectPool.Specialized;
 using PommaLabs.CodeServices.Common;
-using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.KVLite.Extensibility;
 using System;
 using System.Collections.Generic;
@@ -142,12 +141,12 @@ namespace PommaLabs.KVLite.NoOp
 
         /// <summary>
         ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="FormattableObject.ToString"/>.
+        ///   used to produce a meaningful <see cref="object.ToString"/>.
         /// </summary>
         /// <returns></returns>
         protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return KeyValuePair.Create(nameof(Settings.CacheUri), Settings.CacheUri);
+            yield return new KeyValuePair<string, string>(nameof(Settings.CacheUri), Settings.CacheUri);
         }
 
         /// <summary>

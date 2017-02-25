@@ -23,7 +23,6 @@
 
 using EntityFramework;
 using EntityFramework.Caching;
-using PommaLabs.KVLite;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;

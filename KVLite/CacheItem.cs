@@ -11,7 +11,6 @@
 // the License.
 
 using PommaLabs.CodeServices.Common;
-using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
@@ -145,17 +144,17 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
+        ///   used to produce a meaningful <see cref="object.ToString"/>.
         /// </summary>
         /// <returns>
         ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="M:PommaLabs.FormattableObject.ToString"/>.
+        ///   used to produce a meaningful <see cref="object.ToString"/>.
         /// </returns>
         protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return KeyValuePair.Create(nameof(Partition), Partition.SafeToString());
-            yield return KeyValuePair.Create(nameof(Key), Key.SafeToString());
-            yield return KeyValuePair.Create(nameof(UtcExpiry), UtcExpiry.SafeToString());
+            yield return new KeyValuePair<string, string>(nameof(Partition), Partition.SafeToString());
+            yield return new KeyValuePair<string, string>(nameof(Key), Key.SafeToString());
+            yield return new KeyValuePair<string, string>(nameof(UtcExpiry), UtcExpiry.SafeToString());
         }
 
         /// <summary>

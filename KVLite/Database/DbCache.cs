@@ -24,7 +24,6 @@
 using CodeProject.ObjectPool.Specialized;
 using Dapper;
 using PommaLabs.CodeServices.Common;
-using PommaLabs.CodeServices.Common.Collections.Generic;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Logging;
@@ -322,15 +321,15 @@ namespace PommaLabs.KVLite.Core
 
         /// <summary>
         ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="FormattableObject.ToString"/>.
+        ///   used to produce a meaningful <see cref="object.ToString"/>.
         /// </summary>
         /// <returns>
         ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="FormattableObject.ToString"/>.
+        ///   used to produce a meaningful <see cref="object.ToString"/>.
         /// </returns>
         protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return KeyValuePair.Create(nameof(Settings.CacheUri), Settings.CacheUri);
+            yield return new KeyValuePair<string, string>(nameof(Settings.CacheUri), Settings.CacheUri);
         }
 
         #endregion FormattableObject members
