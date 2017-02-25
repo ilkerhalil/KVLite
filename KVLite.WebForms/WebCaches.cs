@@ -24,7 +24,6 @@
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.SQLite;
 using PommaLabs.Thrower;
-using System.Runtime.Serialization.Formatters;
 
 namespace PommaLabs.KVLite.WebForms
 {
@@ -45,6 +44,7 @@ namespace PommaLabs.KVLite.WebForms
     /// </remarks>
     public static class WebCaches
     {
+        private static MemoryCache _memoryCache;
         private static PersistentCache _persistentCache;
         private static VolatileCache _volatileCache;
 
@@ -52,10 +52,20 @@ namespace PommaLabs.KVLite.WebForms
         ///   The default instance for <see cref="MemoryCache"/>.
         /// </summary>
         /// <remarks>
-        ///   Here we use the default instance <see cref="MemoryCache.DefaultInstance"/>, because
-        ///   memory cache does not serialize objects (the serializer is used only to produce unique keys).
+        ///   Here we use a mostly vanilla instance, where we customize only the serializer with a <see cref="BinarySerializer"/>.
         /// </remarks>
-        public static MemoryCache Memory { get; set; } = MemoryCache.DefaultInstance;
+        public static MemoryCache Memory
+        {
+            get
+            {
+                return _memoryCache ?? (_memoryCache = new MemoryCache(new MemoryCacheSettings(), serializer: BinarySerializer.Instance));
+            }
+            set
+            {
+                Raise.ArgumentNullException.IfIsNull(value, nameof(value));
+                _memoryCache = value;
+            }
+        }
 
         /// <summary>
         ///   The default instance for <see cref="PersistentCache"/>.
@@ -67,12 +77,7 @@ namespace PommaLabs.KVLite.WebForms
         {
             get
             {
-                return _persistentCache ?? (_persistentCache = new PersistentCache(new PersistentCacheSettings(), serializer: new BinarySerializer(new BinarySerializerSettings
-                {
-                    AssemblyFormat = FormatterAssemblyStyle.Simple,
-                    FilterLevel = TypeFilterLevel.Full,
-                    TypeFormat = FormatterTypeStyle.TypesWhenNeeded
-                })));
+                return _persistentCache ?? (_persistentCache = new PersistentCache(new PersistentCacheSettings(), serializer: BinarySerializer.Instance));
             }
             set
             {
@@ -91,12 +96,7 @@ namespace PommaLabs.KVLite.WebForms
         {
             get
             {
-                return _volatileCache ?? (_volatileCache = new VolatileCache(new VolatileCacheSettings(), serializer: new BinarySerializer(new BinarySerializerSettings
-                {
-                    AssemblyFormat = FormatterAssemblyStyle.Simple,
-                    FilterLevel = TypeFilterLevel.Full,
-                    TypeFormat = FormatterTypeStyle.TypesWhenNeeded
-                })));
+                return _volatileCache ?? (_volatileCache = new VolatileCache(new VolatileCacheSettings(), serializer: BinarySerializer.Instance));
             }
             set
             {

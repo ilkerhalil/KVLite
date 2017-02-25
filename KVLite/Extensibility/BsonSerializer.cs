@@ -1,4 +1,4 @@
-﻿// File name: JsonSerializer.cs
+﻿// File name: BsonSerializer.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -22,67 +22,46 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 using PommaLabs.Thrower;
 using System.IO;
-using System.Runtime.Serialization.Formatters;
 
 namespace PommaLabs.KVLite.Extensibility
 {
     /// <summary>
-    ///   JSON serializer based on the <see cref="Newtonsoft.Json.JsonSerializer"/> class.
+    ///   BSON serializer based on the <see cref="Newtonsoft.Json.JsonSerializer"/> class.
     /// </summary>
-    public sealed class JsonSerializer : ISerializer
+    public sealed class BsonSerializer : ISerializer
     {
         /// <summary>
         ///   Instance of JSON.NET serializer.
         /// </summary>
-        private readonly Newtonsoft.Json.JsonSerializer _jsonSerializer;
+        private readonly Newtonsoft.Json.JsonSerializer _bsonSerializer;
 
         /// <summary>
-        ///   Builds a JSON serializer using the default settings defined by <see cref="DefaultSerializerSettings"/>.
+        ///   Builds a BSON serializer using the default settings defined by <see cref="JsonSerializer.DefaultSerializerSettings"/>.
         /// </summary>
-        public JsonSerializer()
-            : this(DefaultSerializerSettings)
+        public BsonSerializer()
+            : this(JsonSerializer.DefaultSerializerSettings)
         {
         }
 
         /// <summary>
-        ///   Builds a JSON serializer using the specified settings.
+        ///   Builds a BSON serializer using the specified settings.
         /// </summary>
         /// <param name="serializerSettings">The serializer settings.</param>
-        public JsonSerializer(JsonSerializerSettings serializerSettings)
+        public BsonSerializer(JsonSerializerSettings serializerSettings)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(serializerSettings, nameof(serializerSettings));
 
-            _jsonSerializer = Newtonsoft.Json.JsonSerializer.Create(serializerSettings);
+            _bsonSerializer = Newtonsoft.Json.JsonSerializer.Create(serializerSettings);
         }
 
         /// <summary>
         ///   Thread safe singleton.
         /// </summary>
-        public static JsonSerializer Instance { get; } = new JsonSerializer();
-
-        /// <summary>
-        ///   Default JSON serializer settings, used when none has been specified.
-        /// </summary>
-        /// <remarks>
-        ///   We apply many customizations to the JSON serializer, in order to achieve a small output size.
-        /// </remarks>
-        public static JsonSerializerSettings DefaultSerializerSettings = new JsonSerializerSettings
-        {
-            DateFormatHandling = DateFormatHandling.IsoDateFormat,
-            DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
-            DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
-            FloatFormatHandling = FloatFormatHandling.String,
-            Formatting = Formatting.None,
-            MissingMemberHandling = MissingMemberHandling.Ignore,
-            NullValueHandling = NullValueHandling.Ignore,
-            PreserveReferencesHandling = PreserveReferencesHandling.None,
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            TypeNameHandling = TypeNameHandling.All,
-            TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
-        };
+        public static BsonSerializer Instance { get; } = new BsonSerializer();
 
         /// <summary>
         ///   Determines whether this instance can serialize the specified type.
@@ -100,11 +79,10 @@ namespace PommaLabs.KVLite.Extensibility
         public void SerializeToStream<TObj>(TObj obj, Stream outputStream)
         {
 #pragma warning disable CC0022 // Should dispose object
-            var streamWriter = new StreamWriter(outputStream);
-            var jsonWriter = new JsonTextWriter(streamWriter);
+            var bsonWriter = new BsonWriter(outputStream);
 #pragma warning restore CC0022 // Should dispose object
-            _jsonSerializer.Serialize(jsonWriter, obj);
-            jsonWriter.Flush();
+            _bsonSerializer.Serialize(bsonWriter, new Wrapper<TObj> { Value = obj });
+            bsonWriter.Flush();
         }
 
         /// <summary>
@@ -123,10 +101,21 @@ namespace PommaLabs.KVLite.Extensibility
         public TObj DeserializeFromStream<TObj>(Stream inputStream)
         {
 #pragma warning disable CC0022 // Should dispose object
-            var streamReader = new StreamReader(inputStream);
-            var jsonReader = new JsonTextReader(streamReader);
+            var bsonReader = new BsonReader(inputStream);
 #pragma warning restore CC0022 // Should dispose object
-            return _jsonSerializer.Deserialize<TObj>(jsonReader);
+            return _bsonSerializer.Deserialize<Wrapper<TObj>>(bsonReader).Value;
+        }
+
+        /// <summary>
+        ///   Used to safely wrap primitive types.
+        /// </summary>
+        /// <typeparam name="TObj">The type.</typeparam>
+        private struct Wrapper<TObj>
+        {
+            /// <summary>
+            ///   The value.
+            /// </summary>
+            public TObj Value { get; set; }
         }
     }
 }

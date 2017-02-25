@@ -21,18 +21,35 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Extensibility;
 using System;
 
-namespace PommaLabs.KVLite.UnitTests
+namespace PommaLabs.KVLite.Extensibility
 {
-    internal sealed class FakeClock : IClock
+    /// <summary>
+    ///   A fake clock which can be used for unit testing.
+    /// </summary>
+    public sealed class FakeClock : IClock
     {
+        /// <summary>
+        ///   Fixed UTC date and time.
+        /// </summary>
         private DateTime _utcNow;
 
+        /// <summary>
+        ///   Builds a fake clock and resets it to <see cref="DateTime.UtcNow"/>.
+        /// </summary>
         public FakeClock()
         {
             Reset();
+        }
+
+        /// <summary>
+        ///   Builds a fake clock and resets it to <paramref name="utcNow"/>.
+        /// </summary>
+        /// <param name="utcNow">UTC date and time.</param>
+        public FakeClock(DateTime utcNow)
+        {
+            Reset(utcNow);
         }
 
         /// <summary>
@@ -40,16 +57,27 @@ namespace PommaLabs.KVLite.UnitTests
         /// </summary>
         public static FakeClock Instance { get; } = new FakeClock();
 
+        /// <summary>
+        ///   Current UTC date and time.
+        /// </summary>
         public DateTime UtcNow => _utcNow;
 
+        /// <summary>
+        ///   Move time forward by given interval.
+        /// </summary>
+        /// <param name="interval">The interval.</param>
         public void Advance(TimeSpan interval)
         {
             _utcNow = _utcNow.Add(interval);
         }
 
+        /// <summary>
+        ///   Resets clock time using given UTC date and time.
+        /// </summary>
+        /// <param name="utcNow">UTC date and time.</param>
         public void Reset(DateTime? utcNow = null)
         {
-            _utcNow = utcNow ?? DateTime.UtcNow;
+            _utcNow = utcNow?.ToUniversalTime() ?? DateTime.UtcNow;
         }
     }
 }

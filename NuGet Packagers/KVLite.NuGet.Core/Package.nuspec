@@ -28,8 +28,6 @@
     <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <dependency id="PommaLabs.CodeServices.Common" version="6.0.9" />
-      <dependency id="PommaLabs.CodeServices.Compression" version="6.0.9" />
-      <dependency id="PommaLabs.CodeServices.Serialization" version="6.0.9" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>

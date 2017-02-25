@@ -11,6 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AbstractOutputCacheProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AbstractViewStatePersister.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BinarySerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BinarySerializerSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryOutputCacheProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MemoryViewStatePersister.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PersistentOutputCacheProvider.cs" />

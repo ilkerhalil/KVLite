@@ -334,6 +334,10 @@
       <Project>{04a30761-17ef-4cf6-b35c-20fb58c78a2e}</Project>
       <Name>KVLite.UnitTests.NET46</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Platform Specific\KVLite.WebForms.NET46\KVLite.WebForms.NET46.csproj">
+      <Project>{6DE6294A-CED3-4E53-85FB-60B9FEAD1FE7}</Project>
+      <Name>KVLite.WebForms.NET46</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />

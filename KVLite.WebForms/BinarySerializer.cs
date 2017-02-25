@@ -1,4 +1,4 @@
-﻿// File name: JsonSerializer.cs
+﻿// File name: BinarySerializer.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,27 +21,29 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Newtonsoft.Json;
+using PommaLabs.KVLite.Extensibility;
 using PommaLabs.Thrower;
+using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters;
+using System.Runtime.Serialization.Formatters.Binary;
 
-namespace PommaLabs.KVLite.Extensibility
+namespace PommaLabs.KVLite.WebForms
 {
     /// <summary>
-    ///   JSON serializer based on the <see cref="Newtonsoft.Json.JsonSerializer"/> class.
+    ///   A serializer based on the <see cref="BinaryFormatter"/> class.
     /// </summary>
-    public sealed class JsonSerializer : ISerializer
+    public sealed class BinarySerializer : ISerializer
     {
         /// <summary>
-        ///   Instance of JSON.NET serializer.
+        ///   Instance of .NET binary formatter.
         /// </summary>
-        private readonly Newtonsoft.Json.JsonSerializer _jsonSerializer;
+        private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
 
         /// <summary>
         ///   Builds a JSON serializer using the default settings defined by <see cref="DefaultSerializerSettings"/>.
         /// </summary>
-        public JsonSerializer()
+        public BinarySerializer()
             : this(DefaultSerializerSettings)
         {
         }
@@ -50,38 +52,31 @@ namespace PommaLabs.KVLite.Extensibility
         ///   Builds a JSON serializer using the specified settings.
         /// </summary>
         /// <param name="serializerSettings">The serializer settings.</param>
-        public JsonSerializer(JsonSerializerSettings serializerSettings)
+        public BinarySerializer(BinarySerializerSettings serializerSettings)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(serializerSettings, nameof(serializerSettings));
 
-            _jsonSerializer = Newtonsoft.Json.JsonSerializer.Create(serializerSettings);
+            _binaryFormatter.AssemblyFormat = serializerSettings.AssemblyFormat;
+            _binaryFormatter.Binder = serializerSettings.Binder ?? _binaryFormatter.Binder;
+            _binaryFormatter.FilterLevel = serializerSettings.FilterLevel;
+            _binaryFormatter.SurrogateSelector = serializerSettings.SurrogateSelector ?? _binaryFormatter.SurrogateSelector;
+            _binaryFormatter.TypeFormat = serializerSettings.TypeFormat;
         }
 
         /// <summary>
         ///   Thread safe singleton.
         /// </summary>
-        public static JsonSerializer Instance { get; } = new JsonSerializer();
+        public static BinarySerializer Instance { get; } = new BinarySerializer();
 
         /// <summary>
-        ///   Default JSON serializer settings, used when none has been specified.
+        ///   Default binary serializer settings, used when none has been specified.
         /// </summary>
-        /// <remarks>
-        ///   We apply many customizations to the JSON serializer, in order to achieve a small output size.
-        /// </remarks>
-        public static JsonSerializerSettings DefaultSerializerSettings = new JsonSerializerSettings
+        public static BinarySerializerSettings DefaultSerializerSettings = new BinarySerializerSettings
         {
-            DateFormatHandling = DateFormatHandling.IsoDateFormat,
-            DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
-            DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
-            FloatFormatHandling = FloatFormatHandling.String,
-            Formatting = Formatting.None,
-            MissingMemberHandling = MissingMemberHandling.Ignore,
-            NullValueHandling = NullValueHandling.Ignore,
-            PreserveReferencesHandling = PreserveReferencesHandling.None,
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            TypeNameHandling = TypeNameHandling.All,
-            TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+            AssemblyFormat = FormatterAssemblyStyle.Simple,
+            FilterLevel = TypeFilterLevel.Full,
+            TypeFormat = FormatterTypeStyle.TypesWhenNeeded
         };
 
         /// <summary>
@@ -89,7 +84,7 @@ namespace PommaLabs.KVLite.Extensibility
         /// </summary>
         /// <typeparam name="TObj">The type.</typeparam>
         /// <returns>True if given type is serializable, false otherwise.</returns>
-        bool ISerializer.CanSerialize<TObj>() => true; // JSON.NET is able to serialize everything ;-)
+        public bool CanSerialize<TObj>() => typeof(TObj).IsSerializable;
 
         /// <summary>
         ///   Serializes given object into specified stream.
@@ -99,12 +94,15 @@ namespace PommaLabs.KVLite.Extensibility
         /// <param name="outputStream">The output stream.</param>
         public void SerializeToStream<TObj>(TObj obj, Stream outputStream)
         {
-#pragma warning disable CC0022 // Should dispose object
-            var streamWriter = new StreamWriter(outputStream);
-            var jsonWriter = new JsonTextWriter(streamWriter);
-#pragma warning restore CC0022 // Should dispose object
-            _jsonSerializer.Serialize(jsonWriter, obj);
-            jsonWriter.Flush();
+            if (ReferenceEquals(obj, null))
+            {
+                // Workaround to make binary formatter handle null objects.
+                _binaryFormatter.Serialize(outputStream, new NullObject());
+            }
+            else
+            {
+                _binaryFormatter.Serialize(outputStream, obj);
+            }
         }
 
         /// <summary>
@@ -112,7 +110,7 @@ namespace PommaLabs.KVLite.Extensibility
         /// </summary>
         /// <typeparam name="TObj">The type.</typeparam>
         /// <returns>True if given type is deserializable, false otherwise.</returns>
-        bool ISerializer.CanDeserialize<TObj>() => true; // JSON.NET is able to deserialize everything ;-)
+        public bool CanDeserialize<TObj>() => typeof(TObj).IsSerializable;
 
         /// <summary>
         ///   Deserializes the object contained into specified stream.
@@ -122,11 +120,24 @@ namespace PommaLabs.KVLite.Extensibility
         /// <returns>The deserialized object.</returns>
         public TObj DeserializeFromStream<TObj>(Stream inputStream)
         {
-#pragma warning disable CC0022 // Should dispose object
-            var streamReader = new StreamReader(inputStream);
-            var jsonReader = new JsonTextReader(streamReader);
-#pragma warning restore CC0022 // Should dispose object
-            return _jsonSerializer.Deserialize<TObj>(jsonReader);
+            var obj = _binaryFormatter.Deserialize(inputStream);
+            if (obj is NullObject)
+            {
+                return default(TObj);
+            }
+            if (!typeof(TObj).IsInstanceOfType(obj))
+            {
+                throw new InvalidCastException();
+            }
+            return (TObj) obj;
+        }
+
+        /// <summary>
+        ///   Workaround to make binary formatter handle null objects.
+        /// </summary>
+        [Serializable]
+        private struct NullObject
+        {
         }
     }
 }

@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using BenchmarkDotNet.Running;
-using PommaLabs.KVLite;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
 using PommaLabs.KVLite.Memory;
@@ -31,6 +30,7 @@ using PommaLabs.KVLite.Oracle;
 using PommaLabs.KVLite.SQLite;
 using PommaLabs.KVLite.SqlServer;
 using PommaLabs.KVLite.UnitTests;
+using PommaLabs.KVLite.WebForms;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -701,9 +701,10 @@ namespace PommaLabs.KVLite.Benchmarks
 
         private static double GetObjectSizeInMB(object obj)
         {
-            using (var s = new BinarySerializer().SerializeToStream(obj))
+            using (var ms = CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance.GetObject().MemoryStream)
             {
-                return s.Length / (1024.0 * 1024.0);
+                new BinarySerializer().SerializeToStream(obj, ms);
+                return ms.Length / (1024.0 * 1024.0);
             }
         }
     }

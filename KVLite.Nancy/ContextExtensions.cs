@@ -21,11 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.IO;
+using CodeProject.ObjectPool.Specialized;
 using Nancy;
+using PommaLabs.KVLite.Extensibility;
+using System.IO;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace PommaLabs.KVLite.Nancy
 {
@@ -57,19 +57,28 @@ namespace PommaLabs.KVLite.Nancy
 
         #region Internal Methods
 
-        private static readonly JsonSerializer RequestSerializer = new JsonSerializer();
-
         internal static string GetRequestFingerprint(this NancyContext context)
         {
             var requestSummary = new { path = context.Request.Path, body = context.ReadAllBody() };
-            var requestJson = RequestSerializer.SerializeToBytes(requestSummary);
-            var requestHash = MD5.Create().ComputeHash(requestJson, 0, requestJson.Length);
-            var fingerprint = new StringBuilder();
-            foreach (var b in requestHash)
+
+            byte[] requestHash;
+            using (var ms = MemoryStreamPool.Instance.GetObject().MemoryStream)
             {
-                fingerprint.Append(b.ToString("X2"));
+                JsonSerializer.Instance.SerializeToStream(requestSummary, ms);
+
+                ms.Position = 0L;
+                requestHash = MD5.Create().ComputeHash(ms);
             }
-            return fingerprint.ToString();
+
+            using (var psb = StringBuilderPool.Instance.GetObject())
+            {
+                var fingerprint = psb.StringBuilder;
+                foreach (var b in requestHash)
+                {
+                    fingerprint.Append(b.ToString("X2"));
+                }
+                return fingerprint.ToString();
+            }
         }
 
         /// <summary>

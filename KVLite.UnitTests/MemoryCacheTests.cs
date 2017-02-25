@@ -32,6 +32,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using PommaLabs.KVLite.Memory;
+using PommaLabs.KVLite.WebForms;
+using PommaLabs.KVLite.Extensibility;
 
 namespace PommaLabs.KVLite.UnitTests
 {
@@ -116,34 +118,6 @@ namespace PommaLabs.KVLite.UnitTests
         public void PartitionKeySerialization_JsonSerializer()
         {
             Cache = new MemoryCache(new MemoryCacheSettings(), serializer: new JsonSerializer());
-
-            Cache.AddStatic(StringItems[0], StringItems[1], StringItems[2]);
-            var item = Cache.GetItem<string>(StringItems[0], StringItems[1]);
-
-            Assert.IsNotNull(item);
-            Assert.AreEqual(StringItems[0], item.Value.Partition);
-            Assert.AreEqual(StringItems[1], item.Value.Key);
-            Assert.AreEqual(StringItems[2], item.Value.Value);
-        }
-
-        [Test]
-        public void PartitionKeySerialization_XmlSerializer()
-        {
-            Cache = new MemoryCache(new MemoryCacheSettings(), serializer: new XmlSerializer());
-
-            Cache.AddStatic(StringItems[0], StringItems[1], StringItems[2]);
-            var item = Cache.GetItem<string>(StringItems[0], StringItems[1]);
-
-            Assert.IsNotNull(item);
-            Assert.AreEqual(StringItems[0], item.Value.Partition);
-            Assert.AreEqual(StringItems[1], item.Value.Key);
-            Assert.AreEqual(StringItems[2], item.Value.Value);
-        }
-
-        [Test]
-        public void PartitionKeySerialization_YamlSerializer()
-        {
-            Cache = new MemoryCache(new MemoryCacheSettings(), serializer: new YamlSerializer());
 
             Cache.AddStatic(StringItems[0], StringItems[1], StringItems[2]);
             var item = Cache.GetItem<string>(StringItems[0], StringItems[1]);
