@@ -38,6 +38,11 @@ namespace PommaLabs.KVLite.Database
     public abstract class DbCacheConnectionFactory<TConnection> : IDbCacheConnectionFactory<TConnection>
         where TConnection : DbConnection
     {
+        /// <summary>
+        ///   Used to validate SQL names.
+        /// </summary>
+        private static Regex IsValidSqlNameRegex { get; } = new Regex("[a-z0-9_]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         private readonly DbProviderFactory _dbProviderFactory;
         private string _cacheSchemaName;
         private string _cacheEntriesTableName;
@@ -52,8 +57,8 @@ namespace PommaLabs.KVLite.Database
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(dbProviderFactory, nameof(dbProviderFactory));
-            Raise.ArgumentException.If(cacheSchemaName != null && !CacheConstants.IsValidSqlNameRegex.IsMatch(cacheSchemaName));
-            Raise.ArgumentException.If(cacheEntriesTableName != null && !CacheConstants.IsValidSqlNameRegex.IsMatch(cacheEntriesTableName));
+            Raise.ArgumentException.If(cacheSchemaName != null && !IsValidSqlNameRegex.IsMatch(cacheSchemaName));
+            Raise.ArgumentException.If(cacheEntriesTableName != null && !IsValidSqlNameRegex.IsMatch(cacheEntriesTableName));
 
             _dbProviderFactory = dbProviderFactory;
 
@@ -87,13 +92,13 @@ namespace PommaLabs.KVLite.Database
                 var result = _cacheSchemaName;
 
                 // Postconditions
-                Debug.Assert(CacheConstants.IsValidSqlNameRegex.IsMatch(result));
+                Debug.Assert(IsValidSqlNameRegex.IsMatch(result));
                 return result;
             }
             set
             {
                 // Preconditions
-                Raise.ArgumentException.IfNot(CacheConstants.IsValidSqlNameRegex.IsMatch(value));
+                Raise.ArgumentException.IfNot(IsValidSqlNameRegex.IsMatch(value));
 
                 _cacheSchemaName = value;
                 UpdateCommandsAndQueries();
@@ -110,13 +115,13 @@ namespace PommaLabs.KVLite.Database
                 var result = _cacheEntriesTableName;
 
                 // Postconditions
-                Debug.Assert(CacheConstants.IsValidSqlNameRegex.IsMatch(result));
+                Debug.Assert(IsValidSqlNameRegex.IsMatch(result));
                 return result;
             }
             set
             {
                 // Preconditions
-                Raise.ArgumentException.IfNot(CacheConstants.IsValidSqlNameRegex.IsMatch(value));
+                Raise.ArgumentException.IfNot(IsValidSqlNameRegex.IsMatch(value));
 
                 _cacheEntriesTableName = value;
                 UpdateCommandsAndQueries();

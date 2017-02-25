@@ -38,6 +38,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Troschuetz.Random;
+using Polly.Retry;
+using Polly;
 
 #if !NET40
 
@@ -468,7 +470,7 @@ namespace PommaLabs.KVLite.Database
 
             var dynamicParameters = PrepareCacheEntryForAdd(partition, key, value, utcExpiry, interval, parentKeys);
 
-            ThrowOnFailedRetries(CacheConstants.RetryPolicy.ExecuteAndCapture(() =>
+            ThrowOnFailedRetries(RetryPolicy.ExecuteAndCapture(() =>
             {
                 using (var db = cf.Open())
                 using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
@@ -511,7 +513,7 @@ namespace PommaLabs.KVLite.Database
 
             var dynamicParameters = PrepareCacheEntryForAdd(partition, key, value, utcExpiry, interval, parentKeys);
 
-            ThrowOnFailedRetries(await CacheConstants.AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
+            ThrowOnFailedRetries(await AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
             {
                 using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
                 using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
@@ -549,7 +551,7 @@ namespace PommaLabs.KVLite.Database
                 UtcExpiry = Clock.ToUnixTime()
             };
 
-            return ThrowOnFailedRetries(CacheConstants.RetryPolicy.ExecuteAndCapture(() =>
+            return ThrowOnFailedRetries(RetryPolicy.ExecuteAndCapture(() =>
             {
                 using (var db = cf.Open())
                 {
@@ -578,7 +580,7 @@ namespace PommaLabs.KVLite.Database
                 UtcExpiry = Clock.ToUnixTime()
             };
 
-            return ThrowOnFailedRetries(await CacheConstants.AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
+            return ThrowOnFailedRetries(await AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
             {
                 using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
                 {
@@ -985,7 +987,7 @@ namespace PommaLabs.KVLite.Database
                 Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            ThrowOnFailedRetries(CacheConstants.RetryPolicy.ExecuteAndCapture(() =>
+            ThrowOnFailedRetries(RetryPolicy.ExecuteAndCapture(() =>
             {
                 using (var db = cf.Open())
                 {
@@ -1012,7 +1014,7 @@ namespace PommaLabs.KVLite.Database
                 Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            ThrowOnFailedRetries(await CacheConstants.AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
+            ThrowOnFailedRetries(await AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
             {
                 using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
                 {
@@ -1214,7 +1216,24 @@ namespace PommaLabs.KVLite.Database
 
         #region Retry policy management
 
-        [MethodImpl(CacheConstants.MethodImplOptions)]
+        /// <summary>
+        ///   Retry policy for DB cache operations.
+        /// </summary>
+        private static RetryPolicy RetryPolicy { get; } = Policy
+            .Handle<Exception>()
+            .WaitAndRetry(3, i => TimeSpan.FromMilliseconds(10 * i * i));
+
+#if !NET40
+
+        /// <summary>
+        ///   Retry policy for DB cache operations.
+        /// </summary>
+        private static RetryPolicy AsyncRetryPolicy { get; } = Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(3, i => TimeSpan.FromMilliseconds(10 * i * i));
+
+#endif
+
         private static void ThrowOnFailedRetries(Polly.PolicyResult policyResult)
         {
             if (policyResult.FinalException != null)
@@ -1223,7 +1242,6 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
-        [MethodImpl(CacheConstants.MethodImplOptions)]
         private static T ThrowOnFailedRetries<T>(Polly.PolicyResult<T> policyResult)
         {
             if (policyResult.FinalException != null)

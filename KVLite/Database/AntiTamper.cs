@@ -34,7 +34,6 @@ namespace PommaLabs.KVLite.Database
     /// </summary>
     internal static class AntiTamper
     {
-        [MethodImpl(CacheConstants.MethodImplOptions)]
         public static void WriteAntiTamperHashCode(Stream s, DbCacheValue v)
         {
             var c = new IntegerToBytesConverter { Integer = v.GetHashCode() };

@@ -21,10 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Polly;
-using Polly.Retry;
-using System;
-using System.Text.RegularExpressions;
 using Troschuetz.Random;
 using Troschuetz.Random.Generators;
 
@@ -39,38 +35,5 @@ namespace PommaLabs.KVLite.Core
         ///   Creates a random number generator.
         /// </summary>
         public static IGenerator CreateRandomGenerator() => new XorShift128Generator();
-
-        #region Internal constants
-
-#if NET40
-        internal const System.Runtime.CompilerServices.MethodImplOptions MethodImplOptions = default(System.Runtime.CompilerServices.MethodImplOptions);
-#else
-        internal const System.Runtime.CompilerServices.MethodImplOptions MethodImplOptions = System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining;
-#endif
-
-        /// <summary>
-        ///   Used to validate SQL names.
-        /// </summary>
-        internal static Regex IsValidSqlNameRegex { get; } = new Regex("[a-z0-9_]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        /// <summary>
-        ///   Retry policy for DB cache operations.
-        /// </summary>
-        internal static RetryPolicy RetryPolicy { get; } = Policy
-            .Handle<Exception>()
-            .WaitAndRetry(3, i => TimeSpan.FromMilliseconds(10 * i * i));
-
-#if !NET40
-
-        /// <summary>
-        ///   Retry policy for DB cache operations.
-        /// </summary>
-        internal static RetryPolicy AsyncRetryPolicy { get; } = Policy
-            .Handle<Exception>()
-            .WaitAndRetryAsync(3, i => TimeSpan.FromMilliseconds(10 * i * i));
-
-#endif
-
-        #endregion Internal constants
     }
 }
