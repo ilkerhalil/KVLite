@@ -24,9 +24,9 @@
 using CodeProject.ObjectPool.Specialized;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
-using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
+using PommaLabs.KVLite.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;

@@ -22,10 +22,10 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
+using PommaLabs.KVLite.Logging;
 using System;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;

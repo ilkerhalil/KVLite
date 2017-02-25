@@ -25,7 +25,9 @@ using CodeProject.ObjectPool.Specialized;
 using Dapper;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Collections.Generic;
-using PommaLabs.CodeServices.Common.Logging;
+using PommaLabs.KVLite.Database;
+using PommaLabs.KVLite.Extensibility;
+using PommaLabs.KVLite.Logging;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
@@ -37,8 +39,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Troschuetz.Random;
-using PommaLabs.KVLite.Extensibility;
-using PommaLabs.KVLite.Database;
 
 #if !NET40
 
