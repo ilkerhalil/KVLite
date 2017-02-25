@@ -23,6 +23,8 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Dapper;
+using Polly;
+using Polly.Retry;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Logging;
@@ -36,10 +38,6 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using Troschuetz.Random;
-using Polly.Retry;
-using Polly;
 
 #if !NET40
 
@@ -71,8 +69,8 @@ namespace PommaLabs.KVLite.Database
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        /// <param name="randomGenerator">The random number generator.</param>
-        public DbCache(TSettings settings, IDbCacheConnectionFactory<TConnection> connectionFactory, IClock clock, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool, IGenerator randomGenerator)
+        /// <param name="random">The random number generator.</param>
+        public DbCache(TSettings settings, IDbCacheConnectionFactory<TConnection> connectionFactory, IClock clock, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool, IRandom random)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -84,7 +82,7 @@ namespace PommaLabs.KVLite.Database
             Serializer = serializer ?? JsonSerializer.Instance;
             Compressor = compressor ?? GZipCompressor.Instance;
             MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
-            RandomGenerator = randomGenerator ?? CacheConstants.CreateRandomGenerator();
+            Random = random ?? new SystemRandom();
         }
 
         #endregion Construction
@@ -99,7 +97,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   Generates random numbers. Used to determine when to perform automatic soft cleanups.
         /// </summary>
-        public IGenerator RandomGenerator { get; }
+        public IRandom Random { get; }
 
         /// <summary>
         ///   Clears the cache using the specified cache read mode.
@@ -480,7 +478,7 @@ namespace PommaLabs.KVLite.Database
                 }
             }));
 
-            if (RandomGenerator.NextDouble() < Settings.ChancesOfAutoCleanup)
+            if (Random.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
                 // Run soft cleanup, so that cache is almost always clean. We do not call the
                 // internal version since we need the following method not to throw anything in case
@@ -523,7 +521,7 @@ namespace PommaLabs.KVLite.Database
                 }
             }).ConfigureAwait(false));
 
-            if (RandomGenerator.NextDouble() < Settings.ChancesOfAutoCleanup)
+            if (Random.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
                 // Run soft cleanup, so that cache is almost always clean. We do not call the
                 // internal version since we need the following method not to throw anything in case

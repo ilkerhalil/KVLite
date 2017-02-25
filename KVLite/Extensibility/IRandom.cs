@@ -1,4 +1,4 @@
-﻿// File name: LogMessage.cs
+﻿// File name: IRandom.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,40 +21,21 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NLipsum.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace PommaLabs.KVLite.Benchmarks.Models
+namespace PommaLabs.KVLite.Extensibility
 {
-    public sealed class LogMessage
+    /// <summary>
+    ///   Generates random numbers.
+    /// </summary>
+    public interface IRandom
     {
-        private static readonly Random Random = new Random();
-        private static readonly LogLevel[] LogLevels = { LogLevel.Debug, LogLevel.Error, LogLevel.Fatal, LogLevel.Info, LogLevel.Trace, LogLevel.Warn };
-        private static readonly LipsumGenerator LipsumGenerator = new LipsumGenerator();
-
-        public LogLevel Level { get; set; }
-
-        public string ShortMessage { get; set; }
-
-        public string LongMessage { get; set; }
-
-        public static IEnumerable<LogMessage> GenerateRandomLogMessages(int count) => Enumerable.Range(0, count).Select(_ => new LogMessage
-        {
-            Level = LogLevels[Random.Next(0, LogLevels.Length)],
-            ShortMessage = LipsumGenerator.GenerateSentences(1)[0],
-            LongMessage = LipsumGenerator.GenerateHtml(Random.Next(5, 10))
-        });
-    }
-
-    public enum LogLevel
-    {
-        Trace,
-        Debug,
-        Info,
-        Warn,
-        Error,
-        Fatal
+        /// <summary>
+        ///   Returns a random floating-point number that is greater than or equal to 0.0, and less
+        ///   than 1.0.
+        /// </summary>
+        /// <returns>
+        ///   A double-precision floating point number that is greater than or equal to 0.0, and less
+        ///   than 1.0.
+        /// </returns>
+        double NextDouble();
     }
 }

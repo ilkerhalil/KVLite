@@ -27,7 +27,6 @@ using Oracle.ManagedDataAccess.Client;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using System.Diagnostics.Contracts;
-using Troschuetz.Random;
 
 namespace PommaLabs.KVLite.Oracle
 {
@@ -59,9 +58,9 @@ namespace PommaLabs.KVLite.Oracle
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        /// <param name="randomGenerator">The random number generator.</param>
-        public OracleCache(OracleCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IGenerator randomGenerator = null)
-            : this(settings, new OracleCacheConnectionFactory(), clock, serializer, compressor, memoryStreamPool, randomGenerator)
+        /// <param name="random">The random number generator.</param>
+        public OracleCache(OracleCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
+            : this(settings, new OracleCacheConnectionFactory(), clock, serializer, compressor, memoryStreamPool, random)
         {
         }
 
@@ -75,9 +74,9 @@ namespace PommaLabs.KVLite.Oracle
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        /// <param name="randomGenerator">The random number generator.</param>
-        public OracleCache(OracleCacheSettings settings, OracleCacheConnectionFactory connectionFactory, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IGenerator randomGenerator = null)
-            : base(settings, connectionFactory, clock, serializer, compressor, memoryStreamPool, randomGenerator)
+        /// <param name="random">The random number generator.</param>
+        public OracleCache(OracleCacheSettings settings, OracleCacheConnectionFactory connectionFactory, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
+            : base(settings, connectionFactory, clock, serializer, compressor, memoryStreamPool, random)
         {
         }
 

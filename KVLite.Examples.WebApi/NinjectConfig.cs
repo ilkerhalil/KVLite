@@ -26,8 +26,6 @@ using Ninject.Modules;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.SQLite;
-using Troschuetz.Random;
-using Troschuetz.Random.Generators;
 
 namespace RestService.WebApi
 {
@@ -55,8 +53,8 @@ namespace RestService.WebApi
                 .ToConstant(MemoryStreamPool.Instance)
                 .InSingletonScope();
 
-            Bind<IGenerator>()
-                .To<StandardGenerator>()
+            Bind<IRandom>()
+                .To<SystemRandom>()
                 .InTransientScope();
         }
     }

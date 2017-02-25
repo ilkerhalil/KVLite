@@ -14,7 +14,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)CacheItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\AbstractCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\AbstractCacheSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\CacheConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\CachePartitions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\CacheReadMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
@@ -32,10 +31,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\GZipCompressor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\IClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\ICompressor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensibility\IRandom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\ISerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\JsonSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\NoOpCompressor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\SystemClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensibility\SystemRandom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\UnixClockExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Goodies\CachingEnumerable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAsyncCache.cs" />

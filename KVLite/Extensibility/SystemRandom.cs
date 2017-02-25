@@ -1,4 +1,4 @@
-﻿// File name: Constants.cs
+﻿// File name: SystemRandom.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,19 +21,25 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Troschuetz.Random;
-using Troschuetz.Random.Generators;
+using System;
 
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.KVLite.Extensibility
 {
     /// <summary>
-    ///   Shared constants.
+    ///   Random generator based on <see cref="Random"/> BCL class.
     /// </summary>
-    public static class CacheConstants
+    public sealed class SystemRandom : IRandom
     {
+        private readonly Random _random = new Random();
+
         /// <summary>
-        ///   Creates a random number generator.
+        ///   Returns a random floating-point number that is greater than or equal to 0.0, and less
+        ///   than 1.0.
         /// </summary>
-        public static IGenerator CreateRandomGenerator() => new XorShift128Generator();
+        /// <returns>
+        ///   A double-precision floating point number that is greater than or equal to 0.0, and less
+        ///   than 1.0.
+        /// </returns>
+        public double NextDouble() => _random.NextDouble();
     }
 }

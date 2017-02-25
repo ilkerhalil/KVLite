@@ -25,8 +25,6 @@ using CodeProject.ObjectPool.Specialized;
 using Ninject.Modules;
 using PommaLabs.KVLite.Extensibility;
 using System.Data.Entity.Infrastructure.Interception;
-using Troschuetz.Random;
-using Troschuetz.Random.Generators;
 
 namespace PommaLabs.KVLite.UnitTests
 {
@@ -53,8 +51,8 @@ namespace PommaLabs.KVLite.UnitTests
                 .ToConstant(JsonSerializer.Instance)
                 .InSingletonScope();
 
-            Bind<IGenerator>()
-                .To<StandardGenerator>()
+            Bind<IRandom>()
+                .To<SystemRandom>()
                 .InTransientScope();
 
             DbInterception.Add(new DbCommandInterceptor());
