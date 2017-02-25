@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AsyncCacheExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CacheExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CacheItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\TaskHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\AntiTamper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\BinarySerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\CachePartitions.cs" />

@@ -22,8 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NUnit.Framework;
-using PommaLabs.CodeServices.Common;
-using PommaLabs.CodeServices.Common.Threading.Tasks;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using System;
@@ -101,7 +99,7 @@ namespace PommaLabs.KVLite.UnitTests
             var v = StringItems[2];
             var i = TimeSpan.FromMinutes(10);
 
-            Cache.AddSliding(p, k, Option.Some(v), i);
+            Cache.AddSliding(p, k, (CacheResult<string>) v, i);
             var info = Cache.GetItem<CacheResult<string>>(p, k).Value;
 
             Assert.IsNotNull(info);

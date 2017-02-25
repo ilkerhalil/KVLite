@@ -135,7 +135,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string CacheDoesNotAllowSlidingAndAbsolute = @"CodeServices caching interfaces do not allow setting a sliding item with absolute expiration";
+        public const string CacheDoesNotAllowSlidingAndAbsolute = @"KVLite caching interfaces do not allow setting a sliding item with absolute expiration";
 
         /// <summary>
         ///   An error message.

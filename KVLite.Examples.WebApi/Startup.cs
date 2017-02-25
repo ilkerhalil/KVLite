@@ -4,8 +4,8 @@ using Ninject.Web.Common.OwinHost;
 using Ninject.Web.WebApi.OwinHost;
 using Owin;
 using PommaLabs.KVLite;
-using PommaLabs.CodeServices.Common.Portability;
 using PommaLabs.KVLite.WebApi;
+using PommaLabs.Thrower.Goodies;
 using RestService.WebApi;
 using Swashbuckle.Application;
 using System.Web.Http;
@@ -31,7 +31,9 @@ namespace RestService.WebApi
         }
 
 #pragma warning disable CC0022 // Should dispose object
+
         private static StandardKernel CreateKernel() => new StandardKernel(new NinjectConfig());
+
 #pragma warning restore CC0022 // Should dispose object
 
         private static void ConfigureWebApi(IAppBuilder app, HttpConfiguration config)
@@ -41,7 +43,7 @@ namespace RestService.WebApi
             config.EnableSwagger(c =>
             {
                 c.SingleApiVersion("v1", "KVLite.WebApiCaching");
-                c.IncludeXmlComments(PortableEnvironment.MapPath(@"~/App_Data/HelpPages/WebServiceHelp.xml"));
+                c.IncludeXmlComments(EnvironmentExtensions.MapPath(@"~/App_Data/HelpPages/WebServiceHelp.xml"));
             }).EnableSwaggerUi(c =>
             {
                 c.DocExpansion(DocExpansion.None);

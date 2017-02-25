@@ -10,7 +10,6 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
-using PommaLabs.CodeServices.Common;
 using System;
 using System.Runtime.Serialization;
 
@@ -27,6 +26,6 @@ namespace PommaLabs.KVLite.NoOp
         /// </summary>
         /// <value>The cache URI.</value>
         [DataMember]
-        public override string CacheUri { get; } = UniqueIdGenerator.NewBase32("-");
+        public override string CacheUri { get; } = Guid.NewGuid().ToString("D");
     }
 }

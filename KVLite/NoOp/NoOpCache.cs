@@ -11,7 +11,6 @@
 // the License.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.CodeServices.Common;
 using PommaLabs.KVLite.Extensibility;
 using System;
 using System.Collections.Generic;

@@ -10,8 +10,8 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
-using PommaLabs.CodeServices.Common;
 using PommaLabs.Thrower;
+using PommaLabs.Thrower.Goodies;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -152,9 +152,9 @@ namespace PommaLabs.KVLite
         /// </returns>
         protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return new KeyValuePair<string, string>(nameof(Partition), Partition.SafeToString());
-            yield return new KeyValuePair<string, string>(nameof(Key), Key.SafeToString());
-            yield return new KeyValuePair<string, string>(nameof(UtcExpiry), UtcExpiry.SafeToString());
+            yield return new KeyValuePair<string, string>(nameof(Partition), Partition?.ToString());
+            yield return new KeyValuePair<string, string>(nameof(Key), Key?.ToString());
+            yield return new KeyValuePair<string, string>(nameof(UtcExpiry), UtcExpiry.ToString());
         }
 
         /// <summary>

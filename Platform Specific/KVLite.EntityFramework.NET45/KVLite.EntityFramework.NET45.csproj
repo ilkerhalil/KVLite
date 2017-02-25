@@ -62,12 +62,8 @@
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PommaLabs.CodeServices.Common, Version=6.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PommaLabs.CodeServices.Common.6.0.9\lib\net45\PommaLabs.CodeServices.Common.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Thrower.4.0.11\lib\net45\PommaLabs.Thrower.dll</HintPath>
+      <HintPath>..\..\packages\Thrower.4.0.13\lib\net45\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

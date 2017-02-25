@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.CodeServices.Common;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Logging;
@@ -134,7 +133,7 @@ namespace PommaLabs.KVLite.Memory
         /// </summary>
         /// <remarks>
         ///   Since <see cref="SystemMemoryCache"/> does not allow clock customisation, then this
-        ///   property defaults to <see cref="T:PommaLabs.CodeServices.Clock.SystemClock"/>.
+        ///   property defaults to <see cref="SystemClock"/>.
         /// </remarks>
         public override IClock Clock { get; }
 
@@ -226,7 +225,7 @@ namespace PommaLabs.KVLite.Memory
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
+                Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value?.ToString());
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 

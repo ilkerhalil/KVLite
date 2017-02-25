@@ -11,12 +11,11 @@
 // the License.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.CodeServices.Common;
-using PommaLabs.CodeServices.Common.Threading.Tasks;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Logging;
 using PommaLabs.Thrower;
+using PommaLabs.Thrower.Goodies;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

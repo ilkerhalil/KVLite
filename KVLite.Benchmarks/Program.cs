@@ -22,8 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using BenchmarkDotNet.Running;
-using PommaLabs.CodeServices.Common;
-using PommaLabs.CodeServices.Common.Threading.Tasks;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.MySql;
 using PommaLabs.KVLite.Oracle;

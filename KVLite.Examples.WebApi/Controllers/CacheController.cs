@@ -1,5 +1,4 @@
 ﻿using PommaLabs.KVLite;
-using PommaLabs.CodeServices.Common;
 using PommaLabs.KVLite.WebApi;
 using System;
 using System.Collections.Generic;

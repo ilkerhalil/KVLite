@@ -122,6 +122,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Clears the default partition, that is, it removes all its items.
         /// </summary>
+        /// <param name="cache">The cache.</param>
         /// <returns>The number of items that have been removed.</returns>
         public static long ClearDefaultPartition(this ICache cache)
             => cache.Clear(cache.Settings.DefaultPartition);
@@ -133,6 +134,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The number of items stored in the default partition.
         /// </summary>
+        /// <param name="cache">The cache.</param>
         /// <returns>The number of items stored in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         [Pure]
@@ -142,6 +144,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   The number of items stored in the default partition.
         /// </summary>
+        /// <param name="cache">The cache.</param>
         /// <returns>The number of items stored in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         [Pure]

@@ -23,11 +23,11 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Dapper;
-using PommaLabs.CodeServices.Common;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Logging;
 using PommaLabs.Thrower;
+using PommaLabs.Thrower.Goodies;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -1180,7 +1180,7 @@ namespace PommaLabs.KVLite.Core
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
+                Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value?.ToString());
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
