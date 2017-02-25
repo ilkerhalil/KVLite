@@ -1,4 +1,4 @@
-﻿// File name: BinarySerializer.cs
+﻿// File name: UnixClockExtensions.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,15 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Extensibility;
 using System;
 
-namespace PommaLabs.KVLite.Database
+namespace PommaLabs.KVLite.Extensibility
 {
     /// <summary>
     ///   Converts standard date and time from and to UNIX time.
     /// </summary>
-    internal static class UnixClock
+    public static class UnixClockExtensions
     {
         /// <summary>
         ///   The UNIX epoch (https://en.wikipedia.org/wiki/Unix_time).
@@ -41,20 +40,20 @@ namespace PommaLabs.KVLite.Database
         /// </summary>
         /// <param name="dt">The date that should be converted.</param>
         /// <returns>Given <see cref="DateTime"/> converted into UNIX time.</returns>
-        public static long UnixTime(this DateTime dt) => (long) dt.Subtract(UnixEpoch).TotalSeconds;
+        public static long ToUnixTime(this DateTime dt) => (long) dt.Subtract(UnixEpoch).TotalSeconds;
 
         /// <summary>
         ///   Returns current UNIX time (seconds since UNIX epoch).
         /// </summary>
         /// <param name="clock">The clock used to retrieve current date and time.</param>
         /// <returns>Current UNIX time (seconds since UNIX epoch).</returns>
-        public static long UnixTime(this IClock clock) => (long) clock.UtcNow.Subtract(UnixEpoch).TotalSeconds;
+        public static long ToUnixTime(this IClock clock) => (long) clock.UtcNow.Subtract(UnixEpoch).TotalSeconds;
 
         /// <summary>
         ///   Converts given UNIX time into a valid UTC date and time.
         /// </summary>
         /// <param name="unixTime">UNIX time.</param>
         /// <returns>A valid UTC date and time corresponding to given UNIX time.</returns>
-        public static DateTime UtcDateTime(this long unixTime) => UnixEpoch.AddSeconds(unixTime);
+        public static DateTime ToUtcDateTime(this long unixTime) => UnixEpoch.AddSeconds(unixTime);
     }
 }

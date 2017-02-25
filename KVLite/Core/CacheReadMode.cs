@@ -13,13 +13,18 @@
 namespace PommaLabs.KVLite.Core
 {
     /// <summary>
-    ///   List of cache partitions used inside this library.
+    ///   Determines whether expired items should be included in lists or in queries.
     /// </summary>
-    internal static class CachePartitions
+    public enum CacheReadMode : byte
     {
         /// <summary>
-        ///   Partition reserved for <see cref="Goodies.CachingEnumerable{T}"/>.
+        ///   Considers expiry policy while retrieving items.
         /// </summary>
-        public const string CachingEnumerablePrefix = "pcs.caching_enumerable";
+        ConsiderExpiryDate = 0,
+
+        /// <summary>
+        ///   Ignores expiry policy while retrieving items.
+        /// </summary>
+        IgnoreExpiryDate = 1
     }
 }

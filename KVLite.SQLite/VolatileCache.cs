@@ -22,7 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using System;
 using System.Data;

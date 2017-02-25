@@ -10,21 +10,26 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
-namespace PommaLabs.KVLite
+namespace PommaLabs.KVLite.Core
 {
     /// <summary>
-    ///   Determines whether expired items should be included in lists or in queries.
+    ///   List of cache partitions used inside this library.
     /// </summary>
-    public enum CacheReadMode : byte
+    public static class CachePartitions
     {
         /// <summary>
-        ///   Considers expiry policy while retrieving items.
+        ///   The prefix used by all partitions defined in this project.
         /// </summary>
-        ConsiderExpiryDate = 0,
+        public static string Prefix { get; } = nameof(KVLite);
 
         /// <summary>
-        ///   Ignores expiry policy while retrieving items.
+        ///   Default partition, used when none has been specified.
         /// </summary>
-        IgnoreExpiryDate = 1
+        public static string Default { get; } = $"{Prefix}.Default";
+
+        /// <summary>
+        ///   Partition reserved for <see cref="Goodies.CachingEnumerable{T}"/>.
+        /// </summary>
+        public static string CachingEnumerablePrefix { get; } = $"{Prefix}.CachingEnumerables";
     }
 }

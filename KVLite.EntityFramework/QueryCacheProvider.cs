@@ -41,7 +41,7 @@ namespace PommaLabs.KVLite.EntityFramework
         /// <summary>
         ///   The partition used by EF cache provider items.
         /// </summary>
-        private static readonly string EfCachePartition = $"{CacheConstants.PartitionPrefix}.EFQueries";
+        private static readonly string EfCachePartition = $"{CachePartitions.Prefix}.EFQueries";
 
         #endregion Constants
 

@@ -22,10 +22,11 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using System.IO;
 
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.KVLite.Database
 {
     internal static class BinarySerializer
     {

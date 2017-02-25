@@ -23,7 +23,9 @@
 
 using NUnit.Framework;
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
+using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -1129,7 +1131,7 @@ namespace PommaLabs.KVLite.UnitTests
             {
                 var item = Cache.GetItemFromDefaultPartition<string>(StringItems[i]).Value;
                 Assert.IsNotNull(item);
-                Assert.AreEqual(item.UtcExpiry, (Cache.Clock.UtcNow + interval));
+                item.UtcExpiry.ToUnixTime().ShouldBe((Cache.Clock.UtcNow + interval).ToUnixTime());
             }
         }
 
@@ -1149,7 +1151,7 @@ namespace PommaLabs.KVLite.UnitTests
             {
                 var item = items[i];
                 Assert.IsNotNull(item);
-                Assert.AreEqual(item.UtcExpiry, (Cache.Clock.UtcNow + interval));
+                item.UtcExpiry.ToUnixTime().ShouldBe((Cache.Clock.UtcNow + interval).ToUnixTime());
             }
         }
 

@@ -65,11 +65,6 @@ namespace PommaLabs.KVLite.WebForms
         }
 
         /// <summary>
-        ///   Thread safe singleton.
-        /// </summary>
-        public static BinarySerializer Instance { get; } = new BinarySerializer();
-
-        /// <summary>
         ///   Default binary serializer settings, used when none has been specified.
         /// </summary>
         public static BinarySerializerSettings DefaultSerializerSettings = new BinarySerializerSettings
@@ -78,6 +73,11 @@ namespace PommaLabs.KVLite.WebForms
             FilterLevel = TypeFilterLevel.Full,
             TypeFormat = FormatterTypeStyle.TypesWhenNeeded
         };
+
+        /// <summary>
+        ///   Thread safe singleton.
+        /// </summary>
+        public static BinarySerializer Instance { get; } = new BinarySerializer();
 
         /// <summary>
         ///   Determines whether this instance can serialize the specified type.

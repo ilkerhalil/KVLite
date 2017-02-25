@@ -25,7 +25,7 @@ using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.KVLite.Database
 {
     /// <summary>
     ///   Creates new connections to a specified SQL provider.

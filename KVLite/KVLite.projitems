@@ -9,25 +9,24 @@
     <Import_RootNamespace>PommaLabs.KVLite</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)AbstractCache.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AbstractCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AsyncCacheExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CacheExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CacheItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\AbstractCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\AbstractCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CacheConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CachePartitions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CacheReadMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\TaskHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\AntiTamper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\BinarySerializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Database\CachePartitions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Database\CacheReadMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\DbCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\DbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\DbCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\DbCacheValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\DbCacheEntry.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Database\ErrorMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\IDbCacheConnectionFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Database\CacheConstants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Database\UnixClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\BsonSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\FakeClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\GZipCompressor.cs" />
@@ -37,6 +36,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\JsonSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\NoOpCompressor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\SystemClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensibility\UnixClockExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Goodies\CachingEnumerable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAsyncCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IAsyncCacheSettings.cs" />

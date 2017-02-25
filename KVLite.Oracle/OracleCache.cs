@@ -24,7 +24,7 @@
 using CodeProject.ObjectPool.Specialized;
 using Dapper;
 using Oracle.ManagedDataAccess.Client;
-using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using System.Diagnostics.Contracts;
 using Troschuetz.Random;

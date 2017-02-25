@@ -36,11 +36,6 @@ namespace PommaLabs.KVLite.Core
     public static class CacheConstants
     {
         /// <summary>
-        ///   The prefix used by all partitions defined in this project.
-        /// </summary>
-        public static string PartitionPrefix { get; } = nameof(KVLite);
-
-        /// <summary>
         ///   Creates a random number generator.
         /// </summary>
         public static IGenerator CreateRandomGenerator() => new XorShift128Generator();

@@ -36,7 +36,7 @@ namespace PommaLabs.KVLite.WebForms
         /// <summary>
         ///   The partition used by output cache provider items.
         /// </summary>
-        public static readonly string OutputCachePartition = $"{CacheConstants.PartitionPrefix}.WebFormsResponses";
+        public static readonly string OutputCachePartition = $"{CachePartitions.Prefix}.WebFormsResponses";
 
         /// <summary>
         ///   Initializes the provider using the specified cache.

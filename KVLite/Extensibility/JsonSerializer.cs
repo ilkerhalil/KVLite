@@ -59,11 +59,6 @@ namespace PommaLabs.KVLite.Extensibility
         }
 
         /// <summary>
-        ///   Thread safe singleton.
-        /// </summary>
-        public static JsonSerializer Instance { get; } = new JsonSerializer();
-
-        /// <summary>
         ///   Default JSON serializer settings, used when none has been specified.
         /// </summary>
         /// <remarks>
@@ -83,6 +78,11 @@ namespace PommaLabs.KVLite.Extensibility
             TypeNameHandling = TypeNameHandling.All,
             TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
         };
+
+        /// <summary>
+        ///   Thread safe singleton.
+        /// </summary>
+        public static JsonSerializer Instance { get; } = new JsonSerializer();
 
         /// <summary>
         ///   Determines whether this instance can serialize the specified type.

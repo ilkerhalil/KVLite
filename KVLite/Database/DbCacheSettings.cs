@@ -21,14 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite;
+using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.KVLite.Database
 {
     /// <summary>
     ///   Base class for cache settings. Contains settings shared among different caches.
@@ -55,7 +55,7 @@ namespace PommaLabs.KVLite.Core
         public DbCacheSettings()
         {
             // Default values.
-            DefaultPartition = $"{CacheConstants.PartitionPrefix}.Default";
+            DefaultPartition = CachePartitions.Default;
             StaticIntervalInDays = 30;
             ChancesOfAutoCleanup = 0.01;
             MinValueLengthForCompression = 4096;

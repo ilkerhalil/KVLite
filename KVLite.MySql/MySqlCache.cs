@@ -23,7 +23,7 @@
 
 using CodeProject.ObjectPool.Specialized;
 using MySql.Data.MySqlClient;
-using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using System.Diagnostics.Contracts;
 using Troschuetz.Random;

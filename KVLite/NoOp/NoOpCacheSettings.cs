@@ -10,6 +10,7 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
+using PommaLabs.KVLite.Core;
 using System;
 using System.Runtime.Serialization;
 

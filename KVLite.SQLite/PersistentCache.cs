@@ -23,6 +23,7 @@
 
 using CodeProject.ObjectPool.Specialized;
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Logging;
 using PommaLabs.Thrower.Goodies;
