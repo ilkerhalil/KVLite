@@ -157,7 +157,7 @@ namespace PommaLabs.KVLite.NoOp
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
-        protected override Option<TVal> GetInternal<TVal>(string partition, string key) => Option.None<TVal>();
+        protected override CacheResult<TVal> GetInternal<TVal>(string partition, string key) => default(CacheResult<TVal>);
 
         /// <summary>
         ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
@@ -167,7 +167,7 @@ namespace PommaLabs.KVLite.NoOp
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        protected override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key) => Option.None<ICacheItem<TVal>>();
+        protected override CacheResult<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key) => default(CacheResult<ICacheItem<TVal>>);
 
         /// <summary>
         ///   Gets all cache items or the ones in a partition, if specified. If an item is a
@@ -191,7 +191,7 @@ namespace PommaLabs.KVLite.NoOp
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        protected override Option<TVal> PeekInternal<TVal>(string partition, string key) => Option.None<TVal>();
+        protected override CacheResult<TVal> PeekInternal<TVal>(string partition, string key) => default(CacheResult<TVal>);
 
         /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
@@ -206,7 +206,7 @@ namespace PommaLabs.KVLite.NoOp
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        protected override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key) => Option.None<ICacheItem<TVal>>();
+        protected override CacheResult<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key) => default(CacheResult<ICacheItem<TVal>>);
 
         /// <summary>
         ///   Gets the all values in the cache or in the specified partition, without updating expiry dates.

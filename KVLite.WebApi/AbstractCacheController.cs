@@ -196,7 +196,7 @@ namespace PommaLabs.KVLite.WebApi
         [Route("items/{partition}/{key}")]
 #endif
 
-        public virtual Option<ICacheItem<object>> GetItem(string partition, string key) => Cache.GetItem<object>(partition, key);
+        public virtual ICacheItem<object> GetItem(string partition, string key) => Cache.GetItem<object>(partition, key).ValueOrDefault();
 
         /// <summary>
         ///   Deletes an item stored in the cache with given partition and key.

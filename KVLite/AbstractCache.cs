@@ -11,9 +11,9 @@
 // the License.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.KVLite.Core;
 using PommaLabs.CodeServices.Common;
 using PommaLabs.CodeServices.Common.Threading.Tasks;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Logging;
 using PommaLabs.Thrower;
@@ -242,7 +242,7 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
-        protected abstract Option<TVal> GetInternal<TVal>(string partition, string key);
+        protected abstract CacheResult<TVal> GetInternal<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
@@ -253,11 +253,11 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>The value with specified partition and key.</returns>
-        protected virtual Task<Option<TVal>> GetAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
+        protected virtual Task<CacheResult<TVal>> GetAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<Option<TVal>>(cancellationToken);
+                return TaskHelper.CanceledTask<CacheResult<TVal>>(cancellationToken);
             }
             var result = GetInternal<TVal>(partition, key);
             return TaskHelper.ResultTask(result);
@@ -271,7 +271,7 @@ namespace PommaLabs.KVLite
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        protected abstract Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key);
+        protected abstract CacheResult<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
@@ -282,11 +282,11 @@ namespace PommaLabs.KVLite
         /// <param name="key">The key.</param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        protected virtual Task<Option<ICacheItem<TVal>>> GetItemAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
+        protected virtual Task<CacheResult<ICacheItem<TVal>>> GetItemAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<Option<ICacheItem<TVal>>>(cancellationToken);
+                return TaskHelper.CanceledTask<CacheResult<ICacheItem<TVal>>>(cancellationToken);
             }
             var result = GetItemInternal<TVal>(partition, key);
             return TaskHelper.ResultTask(result);
@@ -331,7 +331,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected abstract Option<TVal> PeekInternal<TVal>(string partition, string key);
+        protected abstract CacheResult<TVal> PeekInternal<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
@@ -346,11 +346,11 @@ namespace PommaLabs.KVLite
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected virtual Task<Option<TVal>> PeekAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
+        protected virtual Task<CacheResult<TVal>> PeekAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<Option<TVal>>(cancellationToken);
+                return TaskHelper.CanceledTask<CacheResult<TVal>>(cancellationToken);
             }
             var result = PeekInternal<TVal>(partition, key);
             return TaskHelper.ResultTask(result);
@@ -368,7 +368,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected abstract Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key);
+        protected abstract CacheResult<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key);
 
         /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
@@ -383,11 +383,11 @@ namespace PommaLabs.KVLite
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected virtual Task<Option<ICacheItem<TVal>>> PeekItemAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
+        protected virtual Task<CacheResult<ICacheItem<TVal>>> PeekItemAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<Option<ICacheItem<TVal>>>(cancellationToken);
+                return TaskHelper.CanceledTask<CacheResult<ICacheItem<TVal>>>(cancellationToken);
             }
             var result = PeekItemInternal<TVal>(partition, key);
             return TaskHelper.ResultTask(result);
@@ -539,7 +539,7 @@ namespace PommaLabs.KVLite
         ///   does not have a typed return object, because indexers cannot be generic. Therefore, we
         ///   have to return a simple <see cref="object"/>.
         /// </remarks>
-        public Option<object> this[string partition, string key]
+        public CacheResult<object> this[string partition, string key]
         {
             get
             {
@@ -560,7 +560,7 @@ namespace PommaLabs.KVLite
                 {
                     LastError = ex;
                     Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
-                    return Option.None<object>();
+                    return default(CacheResult<object>);
                 }
             }
         }
@@ -954,7 +954,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public Option<TVal> Get<TVal>(string partition, string key)
+        public CacheResult<TVal> Get<TVal>(string partition, string key)
         {
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -973,7 +973,7 @@ namespace PommaLabs.KVLite
             {
                 LastError = ex;
                 Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
-                return Option.None<TVal>();
+                return default(CacheResult<TVal>);
             }
         }
 
@@ -990,7 +990,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="object"/> as type parameter; that will work whether the required value is a
         ///   class or not.
         /// </remarks>
-        public Option<ICacheItem<TVal>> GetItem<TVal>(string partition, string key)
+        public CacheResult<ICacheItem<TVal>> GetItem<TVal>(string partition, string key)
         {
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -1009,7 +1009,7 @@ namespace PommaLabs.KVLite
             {
                 LastError = ex;
                 Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
-                return Option.None<ICacheItem<TVal>>();
+                return default(CacheResult<ICacheItem<TVal>>);
             }
         }
 
@@ -1392,7 +1392,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        public Option<TVal> Peek<TVal>(string partition, string key)
+        public CacheResult<TVal> Peek<TVal>(string partition, string key)
         {
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -1412,7 +1412,7 @@ namespace PommaLabs.KVLite
             {
                 LastError = ex;
                 Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
-                return Option.None<TVal>();
+                return default(CacheResult<TVal>);
             }
         }
 
@@ -1433,7 +1433,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        public Option<ICacheItem<TVal>> PeekItem<TVal>(string partition, string key)
+        public CacheResult<ICacheItem<TVal>> PeekItem<TVal>(string partition, string key)
         {
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -1453,7 +1453,7 @@ namespace PommaLabs.KVLite
             {
                 LastError = ex;
                 Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
-                return Option.None<ICacheItem<TVal>>();
+                return default(CacheResult<ICacheItem<TVal>>);
             }
         }
 
@@ -1595,7 +1595,7 @@ namespace PommaLabs.KVLite
             }
         }
 
-        Task<Option<object>> IAsyncCache.this[string partition, string key]
+        Task<CacheResult<object>> IAsyncCache.this[string partition, string key]
         {
             get
             {
@@ -2004,7 +2004,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
-        public async Task<Option<TVal>> GetAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<CacheResult<TVal>> GetAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -2023,7 +2023,7 @@ namespace PommaLabs.KVLite
             {
                 LastError = ex;
                 Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
-                return Option.None<TVal>();
+                return default(CacheResult<TVal>);
             }
         }
 
@@ -2044,7 +2044,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
-        public async Task<Option<ICacheItem<TVal>>> GetItemAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<CacheResult<ICacheItem<TVal>>> GetItemAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -2063,7 +2063,7 @@ namespace PommaLabs.KVLite
             {
                 LastError = ex;
                 Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
-                return Option.None<ICacheItem<TVal>>();
+                return default(CacheResult<ICacheItem<TVal>>);
             }
         }
 
@@ -2478,7 +2478,7 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        public async Task<Option<TVal>> PeekAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<CacheResult<TVal>> PeekAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -2498,7 +2498,7 @@ namespace PommaLabs.KVLite
             {
                 LastError = ex;
                 Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
-                return Option.None<TVal>();
+                return default(CacheResult<TVal>);
             }
         }
 
@@ -2524,7 +2524,7 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        public async Task<Option<ICacheItem<TVal>>> PeekItemAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<CacheResult<ICacheItem<TVal>>> PeekItemAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
             Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
@@ -2544,7 +2544,7 @@ namespace PommaLabs.KVLite
             {
                 LastError = ex;
                 Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
-                return Option.None<ICacheItem<TVal>>();
+                return default(CacheResult<ICacheItem<TVal>>);
             }
         }
 

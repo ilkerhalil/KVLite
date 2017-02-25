@@ -606,7 +606,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var tasks = new List<Task<Option<DataTable>>>();
+            var tasks = new List<Task<CacheResult<DataTable>>>();
             foreach (var table in tables)
             {
                 var tmp = table; // Suggested by R#
@@ -639,7 +639,7 @@ namespace PommaLabs.KVLite.Benchmarks
             {
                 writeTasks.Add(TaskHelper.RunAsync(() => PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
             }
-            var readTasks = new List<Task<Option<DataTable>>>();
+            var readTasks = new List<Task<CacheResult<DataTable>>>();
             foreach (var table in tables)
             {
                 var localTable = table;
@@ -675,7 +675,7 @@ namespace PommaLabs.KVLite.Benchmarks
             {
                 writeTasks.Add(TaskHelper.RunAsync(() => VolatileCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
             }
-            var readTasks = new List<Task<Option<DataTable>>>();
+            var readTasks = new List<Task<CacheResult<DataTable>>>();
             foreach (var table in tables)
             {
                 var localTable = table;

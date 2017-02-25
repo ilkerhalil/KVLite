@@ -10,7 +10,6 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
-using PommaLabs.CodeServices.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -49,15 +48,16 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <exception cref="NotSupportedException">
         ///   Too many parent keys have been specified for this item. Please have a look at the
-        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
+        ///   keys each item may have.
         /// </exception>
         public static void AddSlidingToDefaultPartition<TVal>(this ICache cache, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null)
             => cache.AddSliding(cache.Settings.DefaultPartition, key, value, interval, parentKeys);
 
         /// <summary>
         ///   Adds a "static" value with given key and default partition. Value will last as much as
-        ///   specified in <see cref="IEssentialCacheSettings.StaticIntervalInDays"/> and, if accessed
-        ///   before expiry, its lifetime will be extended by that interval.
+        ///   specified in <see cref="IEssentialCacheSettings.StaticIntervalInDays"/> and, if
+        ///   accessed before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="cache">The cache.</param>
@@ -69,7 +69,8 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <exception cref="NotSupportedException">
         ///   Too many parent keys have been specified for this item. Please have a look at the
-        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
+        ///   keys each item may have.
         /// </exception>
         public static void AddStaticToDefaultPartition<TVal>(this ICache cache, string key, TVal value, IList<string> parentKeys = null)
             => cache.AddStatic(cache.Settings.DefaultPartition, key, value, parentKeys);
@@ -88,7 +89,8 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <exception cref="NotSupportedException">
         ///   Too many parent keys have been specified for this item. Please have a look at the
-        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
+        ///   keys each item may have.
         /// </exception>
         public static void AddTimedToDefaultPartition<TVal>(this ICache cache, string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null)
             => cache.AddTimed(cache.Settings.DefaultPartition, key, value, utcExpiry, parentKeys);
@@ -107,7 +109,8 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <exception cref="NotSupportedException">
         ///   Too many parent keys have been specified for this item. Please have a look at the
-        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
+        ///   keys each item may have.
         /// </exception>
         public static void AddTimedToDefaultPartition<TVal>(this ICache cache, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null)
             => cache.AddTimed(cache.Settings.DefaultPartition, key, value, lifetime, parentKeys);
@@ -179,7 +182,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        public static Option<TVal> GetFromDefaultPartition<TVal>(this ICache cache, string key) => cache.Get<TVal>(cache.Settings.DefaultPartition, key);
+        public static CacheResult<TVal> GetFromDefaultPartition<TVal>(this ICache cache, string key) => cache.Get<TVal>(cache.Settings.DefaultPartition, key);
 
         /// <summary>
         ///   Gets the cache item with default partition and specified key. If it is a "sliding" or
@@ -195,7 +198,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        public static Option<ICacheItem<TVal>> GetItemFromDefaultPartition<TVal>(this ICache cache, string key) => cache.GetItem<TVal>(cache.Settings.DefaultPartition, key);
+        public static CacheResult<ICacheItem<TVal>> GetItemFromDefaultPartition<TVal>(this ICache cache, string key) => cache.GetItem<TVal>(cache.Settings.DefaultPartition, key);
 
         #endregion Get & GetItem(s)
 
@@ -228,7 +231,8 @@ namespace PommaLabs.KVLite
         /// </exception>
         /// <exception cref="NotSupportedException">
         ///   Too many parent keys have been specified for this item. Please have a look at the
-        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
+        ///   keys each item may have.
         /// </exception>
         public static TVal GetOrAddSlidingToDefaultPartition<TVal>(this ICache cache, string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null)
             => cache.GetOrAddSliding(cache.Settings.DefaultPartition, key, valueGetter, interval, parentKeys);
@@ -260,7 +264,8 @@ namespace PommaLabs.KVLite
         /// </exception>
         /// <exception cref="NotSupportedException">
         ///   Too many parent keys have been specified for this item. Please have a look at the
-        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
+        ///   keys each item may have.
         /// </exception>
         public static TVal GetOrAddStaticToDefaultPartition<TVal>(this ICache cache, string key, Func<TVal> valueGetter, IList<string> parentKeys = null)
             => cache.GetOrAddStatic(cache.Settings.DefaultPartition, key, valueGetter, parentKeys);
@@ -291,7 +296,8 @@ namespace PommaLabs.KVLite
         /// </exception>
         /// <exception cref="NotSupportedException">
         ///   Too many parent keys have been specified for this item. Please have a look at the
-        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
+        ///   keys each item may have.
         /// </exception>
         public static TVal GetOrAddTimedToDefaultPartition<TVal>(this ICache cache, string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null)
             => cache.GetOrAddTimed(cache.Settings.DefaultPartition, key, valueGetter, utcExpiry, parentKeys);
@@ -322,7 +328,8 @@ namespace PommaLabs.KVLite
         /// </exception>
         /// <exception cref="NotSupportedException">
         ///   Too many parent keys have been specified for this item. Please have a look at the
-        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
+        ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
+        ///   keys each item may have.
         /// </exception>
         public static TVal GetOrAddTimedToDefaultPartition<TVal>(this ICache cache, string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null)
             => cache.GetOrAddTimed(cache.Settings.DefaultPartition, key, valueGetter, lifetime, parentKeys);
@@ -352,7 +359,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
         [Pure]
-        public static Option<TVal> PeekIntoDefaultPartition<TVal>(this ICache cache, string key)
+        public static CacheResult<TVal> PeekIntoDefaultPartition<TVal>(this ICache cache, string key)
             => cache.Peek<TVal>(cache.Settings.DefaultPartition, key);
 
         /// <summary>
@@ -375,7 +382,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
         [Pure]
-        public static Option<ICacheItem<TVal>> PeekItemIntoDefaultPartition<TVal>(this ICache cache, string key)
+        public static CacheResult<ICacheItem<TVal>> PeekItemIntoDefaultPartition<TVal>(this ICache cache, string key)
             => cache.PeekItem<TVal>(cache.Settings.DefaultPartition, key);
 
         #endregion Peek & PeekItem(s)

@@ -315,7 +315,7 @@ namespace PommaLabs.KVLite.Memory
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
-        protected override Option<TVal> GetInternal<TVal>(string partition, string key)
+        protected override CacheResult<TVal> GetInternal<TVal>(string partition, string key)
         {
             var maybeCacheKey = SerializeCacheKey(partition, key);
             var maybeCacheValue = _store.Get(maybeCacheKey) as CacheValue;
@@ -330,7 +330,7 @@ namespace PommaLabs.KVLite.Memory
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        protected override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
+        protected override CacheResult<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
             var maybeCacheKey = SerializeCacheKey(partition, key);
             var maybeCacheValue = _store.Get(maybeCacheKey) as CacheValue;
@@ -375,7 +375,7 @@ namespace PommaLabs.KVLite.Memory
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected override Option<TVal> PeekInternal<TVal>(string partition, string key)
+        protected override CacheResult<TVal> PeekInternal<TVal>(string partition, string key)
         {
             throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
         }
@@ -392,7 +392,7 @@ namespace PommaLabs.KVLite.Memory
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
+        protected override CacheResult<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
         }
@@ -539,49 +539,49 @@ namespace PommaLabs.KVLite.Memory
             }
         }
 
-        private Option<TVal> DeserializeCacheValue<TVal>(CacheValue cacheValue)
+        private CacheResult<TVal> DeserializeCacheValue<TVal>(CacheValue cacheValue)
         {
             if (cacheValue == null || cacheValue.Value == null)
             {
                 // Nothing to deserialize, return None.
-                return Option.None<TVal>();
+                return default(CacheResult<TVal>);
             }
             try
             {
-                return Option.Some(UnsafeDeserializeCacheValue<TVal>(cacheValue));
+                return UnsafeDeserializeCacheValue<TVal>(cacheValue);
             }
             catch (Exception ex)
             {
                 LastError = ex;
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
-                return Option.None<TVal>();
+                return default(CacheResult<TVal>);
             }
         }
 
-        private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(CacheValue cacheValue, string partition, string key)
+        private CacheResult<ICacheItem<TVal>> DeserializeCacheItem<TVal>(CacheValue cacheValue, string partition, string key)
         {
             if (cacheValue == null || cacheValue.Value == null)
             {
                 // Nothing to deserialize, return None.
-                return Option.None<ICacheItem<TVal>>();
+                return default(CacheResult<ICacheItem<TVal>>);
             }
             try
             {
                 // Generate the KVLite cache item and return it. Many properties available in the
                 // KVLite cache items cannot be filled due to missing information.
-                return Option.Some<ICacheItem<TVal>>(new CacheItem<TVal>
+                return new CacheItem<TVal>
                 {
                     Partition = partition,
                     Key = key,
                     Value = UnsafeDeserializeCacheValue<TVal>(cacheValue),
                     UtcCreation = cacheValue.UtcCreation
-                });
+                };
             }
             catch (Exception ex)
             {
                 LastError = ex;
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
-                return Option.None<ICacheItem<TVal>>();
+                return default(CacheResult<ICacheItem<TVal>>);
             }
         }
 

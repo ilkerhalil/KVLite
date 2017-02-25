@@ -166,5 +166,10 @@ namespace PommaLabs.KVLite.Core
         ///   An error message.
         /// </summary>
         public const string InvalidDataType = "Value data type is not valid.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string EmptyCacheResult = "Cache result has no value.";
     }
 }

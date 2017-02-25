@@ -10,7 +10,6 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
-using PommaLabs.CodeServices.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -190,7 +189,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        public static Task<Option<TVal>> GetFromDefaultPartitionAsync<TVal>(this IAsyncCache cache, string key, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<CacheResult<TVal>> GetFromDefaultPartitionAsync<TVal>(this IAsyncCache cache, string key, CancellationToken cancellationToken = default(CancellationToken))
             => cache.GetAsync<TVal>(cache.Settings.DefaultPartition, key, cancellationToken);
 
         /// <summary>
@@ -208,7 +207,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        public static Task<Option<ICacheItem<TVal>>> GetItemFromDefaultPartitionAsync<TVal>(this IAsyncCache cache, string key, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<CacheResult<ICacheItem<TVal>>> GetItemFromDefaultPartitionAsync<TVal>(this IAsyncCache cache, string key, CancellationToken cancellationToken = default(CancellationToken))
             => cache.GetItemAsync<TVal>(cache.Settings.DefaultPartition, key, cancellationToken);
 
         #endregion Get & GetItem(s)
@@ -377,7 +376,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
         [Pure]
-        public static Task<Option<TVal>> PeekIntoDefaultPartitionAsync<TVal>(this IAsyncCache cache, string key, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<CacheResult<TVal>> PeekIntoDefaultPartitionAsync<TVal>(this IAsyncCache cache, string key, CancellationToken cancellationToken = default(CancellationToken))
             => cache.PeekAsync<TVal>(cache.Settings.DefaultPartition, key, cancellationToken);
 
         /// <summary>
@@ -401,7 +400,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
         [Pure]
-        public static Task<Option<ICacheItem<TVal>>> PeekItemIntoDefaultPartitionAsync<TVal>(this IAsyncCache cache, string key, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<CacheResult<ICacheItem<TVal>>> PeekItemIntoDefaultPartitionAsync<TVal>(this IAsyncCache cache, string key, CancellationToken cancellationToken = default(CancellationToken))
             => cache.PeekItemAsync<TVal>(cache.Settings.DefaultPartition, key, cancellationToken);
 
         #endregion Peek & PeekItem(s)

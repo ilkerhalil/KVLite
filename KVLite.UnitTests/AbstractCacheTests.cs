@@ -102,7 +102,7 @@ namespace PommaLabs.KVLite.UnitTests
             var i = TimeSpan.FromMinutes(10);
 
             Cache.AddSliding(p, k, Option.Some(v), i);
-            var info = Cache.GetItem<Option<string>>(p, k).Value;
+            var info = Cache.GetItem<CacheResult<string>>(p, k).Value;
 
             Assert.IsNotNull(info);
             Assert.That(info.Value.HasValue);
@@ -965,7 +965,7 @@ namespace PommaLabs.KVLite.UnitTests
         [TestCase(LargeItemCount)]
         public void Get_EmptyCache_Concurrent(int itemCount)
         {
-            var tasks = new List<Task<Option<string>>>();
+            var tasks = new List<Task<CacheResult<string>>>();
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
@@ -1307,7 +1307,7 @@ namespace PommaLabs.KVLite.UnitTests
         [TestCase(LargeItemCount)]
         public void Peek_EmptyCache_Concurrent(int itemCount)
         {
-            var tasks = new List<Task<Option<string>>>();
+            var tasks = new List<Task<CacheResult<string>>>();
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;

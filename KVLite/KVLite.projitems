@@ -44,6 +44,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ICacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IEssentialCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IEssentialCacheSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CacheResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Memory\MemoryCacheSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NoOp\NoOpCache.cs" />

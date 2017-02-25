@@ -705,7 +705,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
-        protected sealed override Option<TVal> GetInternal<TVal>(string partition, string key)
+        protected sealed override CacheResult<TVal> GetInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
             var cf = Settings.ConnectionFactory;
@@ -725,7 +725,7 @@ namespace PommaLabs.KVLite.Core
                 if (dbCacheValue == null)
                 {
                     // Nothing to deserialize, return None.
-                    return Option.None<TVal>();
+                    return default(CacheResult<TVal>);
                 }
 
                 if (dbCacheValue.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
@@ -734,7 +734,7 @@ namespace PommaLabs.KVLite.Core
                     db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
 
                     // Nothing to deserialize, return None.
-                    return Option.None<TVal>();
+                    return default(CacheResult<TVal>);
                 }
 
                 if (dbCacheValue.Interval > 0L)
@@ -757,7 +757,7 @@ namespace PommaLabs.KVLite.Core
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        protected sealed override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
+        protected sealed override CacheResult<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
             var cf = Settings.ConnectionFactory;
@@ -777,7 +777,7 @@ namespace PommaLabs.KVLite.Core
                 if (dbCacheEntry == null)
                 {
                     // Nothing to deserialize, return None.
-                    return Option.None<ICacheItem<TVal>>();
+                    return default(CacheResult<ICacheItem<TVal>>);
                 }
 
                 if (dbCacheEntry.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
@@ -786,7 +786,7 @@ namespace PommaLabs.KVLite.Core
                     db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
 
                     // Nothing to deserialize, return None.
-                    return Option.None<ICacheItem<TVal>>();
+                    return default(CacheResult<ICacheItem<TVal>>);
                 }
 
                 if (dbCacheEntry.Interval > 0L)
@@ -869,7 +869,7 @@ namespace PommaLabs.KVLite.Core
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        protected sealed override Option<TVal> PeekInternal<TVal>(string partition, string key)
+        protected sealed override CacheResult<TVal> PeekInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
             var cf = Settings.ConnectionFactory;
@@ -890,7 +890,7 @@ namespace PommaLabs.KVLite.Core
             if (dbCacheValue == null)
             {
                 // Nothing to deserialize, return None.
-                return Option.None<TVal>();
+                return default(CacheResult<TVal>);
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -906,7 +906,7 @@ namespace PommaLabs.KVLite.Core
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
-        protected sealed override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
+        protected sealed override CacheResult<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
             var cf = Settings.ConnectionFactory;
@@ -927,7 +927,7 @@ namespace PommaLabs.KVLite.Core
             if (dbCacheEntry == null)
             {
                 // Nothing to deserialize, return None.
-                return Option.None<ICacheItem<TVal>>();
+                return default(CacheResult<ICacheItem<TVal>>);
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -1056,11 +1056,11 @@ namespace PommaLabs.KVLite.Core
             }
         }
 
-        private Option<TVal> DeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
+        private CacheResult<TVal> DeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
         {
             try
             {
-                return Option.Some(UnsafeDeserializeCacheValue<TVal>(dbCacheValue));
+                return UnsafeDeserializeCacheValue<TVal>(dbCacheValue);
             }
             catch (Exception ex)
             {
@@ -1072,11 +1072,11 @@ namespace PommaLabs.KVLite.Core
 
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
 
-                return Option.None<TVal>();
+                return default(CacheResult<TVal>);
             }
         }
 
-        private Option<ICacheItem<TVal>> DeserializeCacheEntry<TVal>(DbCacheEntry dbCacheEntry)
+        private CacheResult<ICacheItem<TVal>> DeserializeCacheEntry<TVal>(DbCacheEntry dbCacheEntry)
         {
             try
             {
@@ -1113,7 +1113,7 @@ namespace PommaLabs.KVLite.Core
                 }
                 else cacheItem.ParentKeys = CacheExtensions.NoParentKeys;
 
-                return Option.Some<ICacheItem<TVal>>(cacheItem);
+                return cacheItem;
             }
             catch (Exception ex)
             {
@@ -1125,7 +1125,7 @@ namespace PommaLabs.KVLite.Core
 
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
 
-                return Option.None<ICacheItem<TVal>>();
+                return default(CacheResult<ICacheItem<TVal>>);
             }
         }
 

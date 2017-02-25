@@ -10,7 +10,6 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
-using PommaLabs.CodeServices.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -78,7 +77,7 @@ namespace PommaLabs.KVLite
         ///   simple <see cref="object"/>.
         /// </remarks>
         [Pure]
-        Task<Option<object>> this[string partition, string key] { get; }
+        Task<CacheResult<object>> this[string partition, string key] { get; }
 
         /// <summary>
         ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
@@ -287,7 +286,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
-        Task<Option<TVal>> GetAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken));
+        Task<CacheResult<TVal>> GetAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
@@ -306,7 +305,7 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
-        Task<Option<ICacheItem<TVal>>> GetItemAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken));
+        Task<CacheResult<ICacheItem<TVal>>> GetItemAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///   Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will be
@@ -505,7 +504,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
         [Pure]
-        Task<Option<TVal>> PeekAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken));
+        Task<CacheResult<TVal>> PeekAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
@@ -530,7 +529,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
         [Pure]
-        Task<Option<ICacheItem<TVal>>> PeekItemAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken));
+        Task<CacheResult<ICacheItem<TVal>>> PeekItemAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///   Gets the all values, without updating expiry dates.

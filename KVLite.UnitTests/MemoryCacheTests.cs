@@ -520,7 +520,7 @@ namespace PommaLabs.KVLite.UnitTests
         [TestCase(LargeItemCount)]
         public void Get_EmptyCache_Concurrent(int itemCount)
         {
-            var tasks = new List<Task<Option<string>>>();
+            var tasks = new List<Task<CacheResult<string>>>();
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
