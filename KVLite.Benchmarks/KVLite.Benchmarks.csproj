@@ -119,10 +119,6 @@
       <HintPath>..\packages\Thrower.4.0.13\lib\net45\PommaLabs.Thrower.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Snappy.NET, Version=1.1.1.8, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Snappy.NET.1.1.1.8\lib\net45\Snappy.NET.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>
@@ -277,7 +273,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Comparison.cs" />
-    <Compile Include="Compressors\SnappyCompressor.cs" />
     <Compile Include="Compressors\LZ4Compressor.cs" />
     <Compile Include="Models\LogMessage.cs" />
     <Compile Include="Program.cs" />

@@ -65,12 +65,12 @@ namespace PommaLabs.KVLite.Database
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="connectionFactory">The DB connection factory.</param>
-        /// <param name="clock">The clock.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
-        public DbCache(TSettings settings, IDbCacheConnectionFactory<TConnection> connectionFactory, IClock clock, ISerializer serializer, ICompressor compressor, IMemoryStreamPool memoryStreamPool, IRandom random)
+        public DbCache(TSettings settings, IDbCacheConnectionFactory<TConnection> connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock, IMemoryStreamPool memoryStreamPool, IRandom random)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);

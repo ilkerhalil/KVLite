@@ -28,6 +28,7 @@ using System.Linq;
 
 namespace PommaLabs.KVLite.Benchmarks.Models
 {
+    [Serializable]
     public sealed class LogMessage
     {
         private static readonly Random Random = new Random();

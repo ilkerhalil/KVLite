@@ -61,13 +61,13 @@ namespace PommaLabs.KVLite.SQLite
         ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
-        /// <param name="clock">The clock.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
-        public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
-            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, SQLiteJournalModeEnum.Wal), clock, serializer, compressor, memoryStreamPool, random)
+        public PersistentCache(PersistentCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
+            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, SQLiteJournalModeEnum.Wal), serializer, compressor, clock, memoryStreamPool, random)
         {
             // Connection string must be customized by each cache.
             UpdateConnectionString();

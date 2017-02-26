@@ -68,13 +68,13 @@ namespace PommaLabs.KVLite.SQLite
         ///   Initializes a new instance of the <see cref="VolatileCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
-        /// <param name="clock">The clock.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
-        public VolatileCache(VolatileCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
-            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, SQLiteJournalModeEnum.Memory), clock, serializer, compressor, memoryStreamPool, random)
+        public VolatileCache(VolatileCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
+            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, SQLiteJournalModeEnum.Memory), serializer, compressor, clock, memoryStreamPool, random)
         {
             // Connection string must be customized by each cache.
             UpdateConnectionString();

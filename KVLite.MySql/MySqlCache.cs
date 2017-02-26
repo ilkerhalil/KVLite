@@ -53,13 +53,13 @@ namespace PommaLabs.KVLite.MySql
         ///   Initializes a new instance of the <see cref="MySqlCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
-        /// <param name="clock">The clock.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
-        public MySqlCache(MySqlCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
-            : this(settings, new MySqlCacheConnectionFactory(), clock, serializer, compressor, memoryStreamPool, random)
+        public MySqlCache(MySqlCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
+            : this(settings, new MySqlCacheConnectionFactory(), serializer, compressor, clock, memoryStreamPool, random)
         {
         }
 
@@ -69,13 +69,13 @@ namespace PommaLabs.KVLite.MySql
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="connectionFactory">Cache connection factory.</param>
-        /// <param name="clock">The clock.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
-        public MySqlCache(MySqlCacheSettings settings, MySqlCacheConnectionFactory connectionFactory, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
-            : base(settings, connectionFactory, clock, serializer, compressor, memoryStreamPool, random)
+        public MySqlCache(MySqlCacheSettings settings, MySqlCacheConnectionFactory connectionFactory, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
+            : base(settings, connectionFactory, serializer, compressor, clock, memoryStreamPool, random)
         {
         }
     }
