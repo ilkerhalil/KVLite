@@ -1,4 +1,4 @@
-﻿// File name: BinarySerializer.cs
+﻿// File name: BlobSerializer.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -28,7 +28,7 @@ using System.IO;
 
 namespace PommaLabs.KVLite.Database
 {
-    internal static class BinarySerializer
+    internal static class BlobSerializer
     {
         /// <summary>
         ///   Represents the object data type for cache entries.

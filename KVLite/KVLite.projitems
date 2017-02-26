@@ -19,7 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\ErrorMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\TaskHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\AntiTamper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Database\BinarySerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Database\BlobSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\DbCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\DbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\DbCacheSettings.cs" />

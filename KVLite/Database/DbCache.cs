@@ -1042,7 +1042,7 @@ namespace PommaLabs.KVLite.Database
                 {
                     // Handle uncompressed value.
                     AntiTamper.ReadAntiTamperHashCode(memoryStream, dbCacheValue);
-                    return BinarySerializer.Deserialize<TVal>(Serializer, MemoryStreamPool, memoryStream);
+                    return BlobSerializer.Deserialize<TVal>(Serializer, MemoryStreamPool, memoryStream);
                 }
                 else
                 {
@@ -1050,7 +1050,7 @@ namespace PommaLabs.KVLite.Database
                     using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
                     {
                         AntiTamper.ReadAntiTamperHashCode(decompressionStream, dbCacheValue);
-                        return BinarySerializer.Deserialize<TVal>(Serializer, MemoryStreamPool, decompressionStream);
+                        return BlobSerializer.Deserialize<TVal>(Serializer, MemoryStreamPool, decompressionStream);
                     }
                 }
             }
@@ -1153,7 +1153,7 @@ namespace PommaLabs.KVLite.Database
                     AntiTamper.WriteAntiTamperHashCode(serializedStream, dbCacheEntry);
 
                     // Then serialize the new value.
-                    BinarySerializer.Serialize(Serializer, serializedStream, value);
+                    BlobSerializer.Serialize(Serializer, serializedStream, value);
 
                     if (serializedStream.Length > Settings.MinValueLengthForCompression)
                     {
