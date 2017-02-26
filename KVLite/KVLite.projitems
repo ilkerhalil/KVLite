@@ -26,7 +26,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Database\DbCacheValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\DbCacheEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Database\IDbCacheConnectionFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensibility\BsonSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\FakeClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\GZipCompressor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\IClock.cs" />

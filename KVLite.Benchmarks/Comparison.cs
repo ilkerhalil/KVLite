@@ -28,6 +28,7 @@ using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.MySql;
 using PommaLabs.KVLite.SQLite;
+using PommaLabs.KVLite.UnitTests;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

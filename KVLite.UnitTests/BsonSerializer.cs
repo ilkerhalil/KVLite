@@ -23,10 +23,11 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
+using PommaLabs.KVLite.Extensibility;
 using PommaLabs.Thrower;
 using System.IO;
 
-namespace PommaLabs.KVLite.Extensibility
+namespace PommaLabs.KVLite.UnitTests
 {
     /// <summary>
     ///   BSON serializer based on the <see cref="Newtonsoft.Json.JsonSerializer"/> class.
@@ -39,10 +40,10 @@ namespace PommaLabs.KVLite.Extensibility
         private readonly Newtonsoft.Json.JsonSerializer _bsonSerializer;
 
         /// <summary>
-        ///   Builds a BSON serializer using the default settings defined by <see cref="JsonSerializer.DefaultSerializerSettings"/>.
+        ///   Builds a BSON serializer using the default settings defined by <see cref="Extensibility.JsonSerializer.DefaultSerializerSettings"/>.
         /// </summary>
         public BsonSerializer()
-            : this(JsonSerializer.DefaultSerializerSettings)
+            : this(Extensibility.JsonSerializer.DefaultSerializerSettings)
         {
         }
 
