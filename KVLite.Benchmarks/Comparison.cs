@@ -26,12 +26,10 @@ using PommaLabs.KVLite.Benchmarks.Compressors;
 using PommaLabs.KVLite.Benchmarks.Models;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
-using PommaLabs.KVLite.MySql;
 using PommaLabs.KVLite.SQLite;
 using PommaLabs.KVLite.UnitTests;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 
 namespace PommaLabs.KVLite.Benchmarks
@@ -52,34 +50,8 @@ namespace PommaLabs.KVLite.Benchmarks
             File.Copy(src86, dst86, true);
             File.Copy(src64, dst64, true);
 
-            MySqlCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString;
-
             _caches = new Dictionary<string, Dictionary<string, Dictionary<string, ICache>>>
             {
-                ["mysql"] = new Dictionary<string, Dictionary<string, ICache>>
-                {
-                    ["json"] = new Dictionary<string, ICache>
-                    {
-                        ["deflate"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "json+deflate" }, JsonSerializer.Instance, DeflateCompressor.Instance),
-                        ["gzip"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "json+gzip" }, JsonSerializer.Instance, GZipCompressor.Instance),
-                        ["lz4"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "json+lz4" }, JsonSerializer.Instance, LZ4Compressor.Instance),
-                        ["noop"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "json+noop" }, JsonSerializer.Instance, NoOpCompressor.Instance),
-                    },
-                    ["bson"] = new Dictionary<string, ICache>
-                    {
-                        ["deflate"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "bson+deflate" }, BsonSerializer.Instance, DeflateCompressor.Instance),
-                        ["gzip"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "bson+gzip" }, BsonSerializer.Instance, GZipCompressor.Instance),
-                        ["lz4"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "bson+lz4" }, BsonSerializer.Instance, LZ4Compressor.Instance),
-                        ["noop"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "bson+noop" }, BsonSerializer.Instance, NoOpCompressor.Instance),
-                    },
-                    ["binary"] = new Dictionary<string, ICache>
-                    {
-                        ["deflate"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "binary+deflate" }, BinarySerializer.Instance, DeflateCompressor.Instance),
-                        ["gzip"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "binary+gzip" }, BinarySerializer.Instance, GZipCompressor.Instance),
-                        ["lz4"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "binary+lz4" }, BinarySerializer.Instance, LZ4Compressor.Instance),
-                        ["noop"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "binary+noop" }, BinarySerializer.Instance, NoOpCompressor.Instance),
-                    }
-                },
                 ["volatile"] = new Dictionary<string, Dictionary<string, ICache>>
                 {
                     ["json"] = new Dictionary<string, ICache>
@@ -158,7 +130,7 @@ namespace PommaLabs.KVLite.Benchmarks
         [Params(1, 10, 100)]
         public int Count { get; set; }
 
-        [Params("mysql", "volatile", "memory", "persistent")]
+        [Params("volatile", "memory", "persistent")]
         public string Cache { get; set; }
 
         [Params("json", "bson", "binary")]
