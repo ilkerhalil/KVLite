@@ -21,14 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Extensibility;
 using PommaLabs.Thrower;
 using System;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace PommaLabs.KVLite.WebForms
+namespace PommaLabs.KVLite.Extensibility
 {
     /// <summary>
     ///   A serializer based on the <see cref="BinaryFormatter"/> class.
@@ -139,5 +139,50 @@ namespace PommaLabs.KVLite.WebForms
         private struct NullObject
         {
         }
+    }
+
+    /// <summary>
+    ///   Settings for <see cref="BinarySerializer"/>.
+    /// </summary>
+    public sealed class BinarySerializerSettings
+    {
+        /// <summary>
+        ///   Gets or sets the behavior of the deserializer with regards to finding and loading assemblies.
+        /// </summary>
+        /// <returns>
+        ///   One of the <see cref="FormatterAssemblyStyle"/> values that specifies the deserializer behavior.
+        /// </returns>
+        public FormatterAssemblyStyle AssemblyFormat { get; set; }
+
+        /// <summary>
+        ///   Gets or sets an object of type SerializationBinder that controls the binding of a
+        ///   serialized object to a type.
+        /// </summary>
+        /// <value>
+        ///   An object of type SerializationBinder that controls the binding of a serialized object
+        ///   to a type.
+        /// </value>
+        public SerializationBinder Binder { get; set; }
+
+        /// <summary>
+        ///   Gets or sets the TypeFilterLevel of automatic deserialization the BinaryFormatter performs.
+        /// </summary>
+        /// <value>The TypeFilterLevel of automatic deserialization the BinaryFormatter performs.</value>
+        public TypeFilterLevel FilterLevel { get; set; }
+
+        /// <summary>
+        ///   Gets or sets an ISurrogateSelector that controls type substitution during serialization
+        ///   and deserialization.
+        /// </summary>
+        /// <value>
+        ///   An ISurrogateSelector that controls type substitution during serialization and deserialization.
+        /// </value>
+        public ISurrogateSelector SurrogateSelector { get; set; }
+
+        /// <summary>
+        ///   Gets or sets the format in which type descriptions are laid out in the serialized stream.
+        /// </summary>
+        /// <value>The format in which type descriptions are laid out in the serialized stream.</value>
+        public FormatterTypeStyle TypeFormat { get; set; }
     }
 }

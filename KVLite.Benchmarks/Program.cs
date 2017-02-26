@@ -23,13 +23,13 @@
 
 using BenchmarkDotNet.Running;
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.MySql;
 using PommaLabs.KVLite.Oracle;
 using PommaLabs.KVLite.SQLite;
 using PommaLabs.KVLite.SqlServer;
 using PommaLabs.KVLite.UnitTests;
-using PommaLabs.KVLite.WebForms;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
