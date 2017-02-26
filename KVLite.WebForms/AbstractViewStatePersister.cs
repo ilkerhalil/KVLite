@@ -17,8 +17,6 @@
  *                                                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Common;
 using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
@@ -48,7 +46,7 @@ namespace PommaLabs.KVLite.WebForms
         /// <summary>
         ///   The cache interval is computed from the session timeout plus one minute.
         /// </summary>
-        static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(HttpContext.Current.Session.Timeout + 1);
+        private static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(HttpContext.Current.Session.Timeout + 1);
 
         #endregion Constants
 
@@ -137,7 +135,7 @@ namespace PommaLabs.KVLite.WebForms
             return ret;
         }
 
-        static string SanitizeInput(string input)
+        private static string SanitizeInput(string input)
         {
             if (string.IsNullOrEmpty(input))
             {
@@ -152,9 +150,9 @@ namespace PommaLabs.KVLite.WebForms
             return ret.ToString();
         }
 
-        object GetViewState(string guid) => Cache.Get<object>(ViewStatePartition, HiddenFieldName + guid).ValueOrDefault();
+        private object GetViewState(string guid) => Cache.Get<object>(ViewStatePartition, HiddenFieldName + guid).ValueOrDefault();
 
-        void SetViewState(string guid)
+        private void SetViewState(string guid)
         {
             object state = new Pair(ControlState, ViewState);
             Cache.AddSliding(ViewStatePartition, HiddenFieldName + guid, state, CacheInterval);

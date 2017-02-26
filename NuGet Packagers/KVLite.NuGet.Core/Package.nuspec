@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite.Core</id>
-    <version>6.0.6</version>
+    <version>6.0.7</version>
     <title>KVLite - Core library</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
@@ -26,13 +26,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
-    <dependencies>
-      <dependency id="PommaLabs.CodeServices.Caching" version="6.0.9" />
-      <dependency id="PommaLabs.CodeServices.Clock" version="6.0.9" />
-      <dependency id="PommaLabs.CodeServices.Common" version="6.0.9" />
-      <dependency id="PommaLabs.CodeServices.Compression" version="6.0.9" />
-      <dependency id="PommaLabs.CodeServices.Serialization" version="6.0.9" />
-    </dependencies>
+    <dependencies></dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>
     <tags>sqlite partition key value store concurrent persistent volatile memory timed sliding interface icache</tags>

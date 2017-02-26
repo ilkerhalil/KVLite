@@ -1,30 +1,28 @@
 ﻿// File name: AbstractCacheController.cs
-// 
+//
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2014-2017 Alessio Parma <alessio.parma@gmail.com>
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
 // including without limitation the rights to use, copy, modify, merge, publish, distribute,
 // sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
 // NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
 // NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Clock;
-using PommaLabs.CodeServices.Common;
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Extensibility;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
@@ -44,7 +42,9 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cache">The cache used by the Web API output cache.</param>
         protected AbstractCacheController(ICache cache)
         {
+            // Preconditions
             Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+
             Cache = cache;
         }
 
@@ -195,7 +195,7 @@ namespace PommaLabs.KVLite.WebApi
         [Route("items/{partition}/{key}")]
 #endif
 
-        public virtual Option<ICacheItem<object>> GetItem(string partition, string key) => Cache.GetItem<object>(partition, key);
+        public virtual ICacheItem<object> GetItem(string partition, string key) => Cache.GetItem<object>(partition, key).ValueOrDefault();
 
         /// <summary>
         ///   Deletes an item stored in the cache with given partition and key.
@@ -224,31 +224,20 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="fromCreation">Optional, the minimum creation date items should have.</param>
         /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
         /// <returns>The items extracted by the query.</returns>
-        static IEnumerable<ICacheItem<object>> QueryCacheItems(IEnumerable<ICacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
+        private static IEnumerable<ICacheItem<object>> QueryCacheItems(IEnumerable<ICacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
         {
-            if (fromExpiry.HasValue)
-            {
-                fromExpiry = fromExpiry.Value.ToUniversalTime();
-            }
-            if (toExpiry.HasValue)
-            {
-                toExpiry = toExpiry.Value.ToUniversalTime();
-            }
-            if (fromCreation.HasValue)
-            {
-                fromCreation = fromCreation.Value.ToUniversalTime();
-            }
-            if (toCreation.HasValue)
-            {
-                toCreation = toCreation.Value.ToUniversalTime();
-            }
+            var fromExpiryUnix = fromExpiry.HasValue ? fromExpiry.Value.ToUniversalTime().ToUnixTime() : new long?();
+            var toExpiryUnix = toExpiry.HasValue ? toExpiry.Value.ToUniversalTime().ToUnixTime() : new long?();
+            var fromCreationUnix = fromCreation.HasValue ? fromCreation.Value.ToUniversalTime().ToUnixTime() : new long?();
+            var toCreationUnix = toCreation.HasValue ? toCreation.Value.ToUniversalTime().ToUnixTime() : new long?();
+
             return from i in items
                    where string.IsNullOrWhiteSpace(partitionLike) || i.Partition.Contains(partitionLike)
                    where string.IsNullOrWhiteSpace(keyLike) || i.Key.Contains(keyLike)
-                   where !fromExpiry.HasValue || i.UtcExpiry.ToUnixTime() >= fromExpiry.Value.ToUnixTime()
-                   where !toExpiry.HasValue || i.UtcExpiry.ToUnixTime() <= toExpiry.Value.ToUnixTime()
-                   where !fromCreation.HasValue || i.UtcCreation.ToUnixTime() >= fromCreation.Value.ToUnixTime()
-                   where !toCreation.HasValue || i.UtcCreation.ToUnixTime() <= toCreation.Value.ToUnixTime()
+                   where !fromExpiryUnix.HasValue || i.UtcExpiry.ToUnixTime() >= fromExpiryUnix.Value
+                   where !toExpiryUnix.HasValue || i.UtcExpiry.ToUnixTime() <= toExpiryUnix.Value
+                   where !fromCreationUnix.HasValue || i.UtcCreation.ToUnixTime() >= fromCreationUnix.Value
+                   where !toCreationUnix.HasValue || i.UtcCreation.ToUnixTime() <= toCreationUnix.Value
                    select i;
         }
     }

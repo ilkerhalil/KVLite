@@ -22,17 +22,15 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.CodeServices.Clock;
-using PommaLabs.CodeServices.Common.Logging;
-using PommaLabs.CodeServices.Common.Portability;
-using PommaLabs.CodeServices.Compression;
-using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Database;
+using PommaLabs.KVLite.Extensibility;
+using PommaLabs.KVLite.Logging;
+using PommaLabs.Thrower.Goodies;
 using System;
 using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using System.IO;
-using Troschuetz.Random;
 
 namespace PommaLabs.KVLite.SQLite
 {
@@ -63,13 +61,13 @@ namespace PommaLabs.KVLite.SQLite
         ///   Initializes a new instance of the <see cref="PersistentCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
-        /// <param name="clock">The clock.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
+        /// <param name="clock">The clock.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
-        /// <param name="randomGenerator">The random number generator.</param>
-        public PersistentCache(PersistentCacheSettings settings, IClock clock = null, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null, IGenerator randomGenerator = null)
-            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, SQLiteJournalModeEnum.Wal), clock, serializer, compressor, memoryStreamPool, randomGenerator)
+        /// <param name="random">The random number generator.</param>
+        public PersistentCache(PersistentCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
+            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, SQLiteJournalModeEnum.Wal), serializer, compressor, clock, memoryStreamPool, random)
         {
             // Connection string must be customized by each cache.
             UpdateConnectionString();
@@ -132,7 +130,7 @@ namespace PommaLabs.KVLite.SQLite
         private static string GetDataSource(string cacheFile)
         {
             // Map cache path, since it may be an IIS relative path.
-            var mappedPath = PortableEnvironment.MapPath(cacheFile);
+            var mappedPath = EnvironmentExtensions.MapPath(cacheFile);
 
             // If the directory which should contain the cache does not exist, then we create it.
             // SQLite will take care of creating the DB itself.

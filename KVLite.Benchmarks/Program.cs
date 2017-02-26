@@ -22,10 +22,8 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using BenchmarkDotNet.Running;
-using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Common;
-using PommaLabs.CodeServices.Common.Threading.Tasks;
-using PommaLabs.CodeServices.Serialization;
+using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.MySql;
 using PommaLabs.KVLite.Oracle;
@@ -607,7 +605,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var tasks = new List<Task<Option<DataTable>>>();
+            var tasks = new List<Task<CacheResult<DataTable>>>();
             foreach (var table in tables)
             {
                 var tmp = table; // Suggested by R#
@@ -640,7 +638,7 @@ namespace PommaLabs.KVLite.Benchmarks
             {
                 writeTasks.Add(TaskHelper.RunAsync(() => PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
             }
-            var readTasks = new List<Task<Option<DataTable>>>();
+            var readTasks = new List<Task<CacheResult<DataTable>>>();
             foreach (var table in tables)
             {
                 var localTable = table;
@@ -676,7 +674,7 @@ namespace PommaLabs.KVLite.Benchmarks
             {
                 writeTasks.Add(TaskHelper.RunAsync(() => VolatileCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
             }
-            var readTasks = new List<Task<Option<DataTable>>>();
+            var readTasks = new List<Task<CacheResult<DataTable>>>();
             foreach (var table in tables)
             {
                 var localTable = table;
@@ -702,9 +700,10 @@ namespace PommaLabs.KVLite.Benchmarks
 
         private static double GetObjectSizeInMB(object obj)
         {
-            using (var s = new BinarySerializer().SerializeToStream(obj))
+            using (var ms = CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance.GetObject().MemoryStream)
             {
-                return s.Length / (1024.0 * 1024.0);
+                new BinarySerializer().SerializeToStream(obj, ms);
+                return ms.Length / (1024.0 * 1024.0);
             }
         }
     }

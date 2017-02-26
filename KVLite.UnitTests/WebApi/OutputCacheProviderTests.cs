@@ -22,7 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NUnit.Framework;
-using PommaLabs.CodeServices.Clock;
+using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.SQLite;
 using PommaLabs.KVLite.WebApi;
 
@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite.UnitTests.WebApi
         [SetUp]
         public void SetUp()
         {
-            _outputCache = new OutputCacheProvider(new PersistentCache(new PersistentCacheSettings(), clock: new MockClock()));
+            _outputCache = new OutputCacheProvider(new PersistentCache(new PersistentCacheSettings(), clock: FakeClock.Instance));
         }
 
         [TearDown]
@@ -47,7 +47,7 @@ namespace PommaLabs.KVLite.UnitTests.WebApi
         [Test]
         public void Add_One_Valid()
         {
-            _outputCache.Add("a", "b", _outputCache.Cache.Clock.Now.AddMinutes(10));
+            _outputCache.Add("a", "b", _outputCache.Cache.Clock.UtcNow.AddMinutes(10));
             Assert.AreEqual("b", _outputCache.Get("a"));
             Assert.AreEqual("b", _outputCache.Get<string>("a"));
         }

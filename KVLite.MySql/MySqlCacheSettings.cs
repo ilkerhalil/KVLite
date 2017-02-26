@@ -22,7 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using MySql.Data.MySqlClient;
-using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Database;
 using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;

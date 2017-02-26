@@ -1,0 +1,17 @@
+﻿{
+  "version": "6.0.7-*",
+
+  "dependencies": {
+    "MySql.Data": "6.9.9",
+    "NETStandard.Library": "1.6.1",
+    "PommaLabs.KVLite": "6.0.7-*",
+    "PommaLabs.KVLite.Database": "6.0.7-*"
+  },
+
+  "frameworks": {
+    "net40": {
+    },
+    "net45": {
+    }
+  }
+}

@@ -22,15 +22,15 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NLipsum.Core;
-using System.Collections.Generic;
+using System;
 using System.Linq;
-using Troschuetz.Random;
 
 namespace PommaLabs.KVLite.Benchmarks.Models
 {
+    [Serializable]
     public sealed class LogMessage
     {
-        private static readonly TRandom Random = new TRandom();
+        private static readonly Random Random = new Random();
         private static readonly LogLevel[] LogLevels = { LogLevel.Debug, LogLevel.Error, LogLevel.Fatal, LogLevel.Info, LogLevel.Trace, LogLevel.Warn };
         private static readonly LipsumGenerator LipsumGenerator = new LipsumGenerator();
 
@@ -40,14 +40,15 @@ namespace PommaLabs.KVLite.Benchmarks.Models
 
         public string LongMessage { get; set; }
 
-        public static IEnumerable<LogMessage> GenerateRandomLogMessages(int count) => Enumerable.Range(0, count).Select(_ => new LogMessage
+        public static LogMessage[] GenerateRandomLogMessages(int count) => Enumerable.Range(0, count).Select(_ => new LogMessage
         {
-            Level = Random.Choice(LogLevels),
+            Level = LogLevels[Random.Next(0, LogLevels.Length)],
             ShortMessage = LipsumGenerator.GenerateSentences(1)[0],
             LongMessage = LipsumGenerator.GenerateHtml(Random.Next(5, 10))
-        });
+        }).ToArray();
     }
 
+    [Serializable]
     public enum LogLevel
     {
         Trace,

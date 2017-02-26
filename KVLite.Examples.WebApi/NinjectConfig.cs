@@ -23,13 +23,9 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Ninject.Modules;
-using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Clock;
-using PommaLabs.CodeServices.Compression;
-using PommaLabs.CodeServices.Serialization;
+using PommaLabs.KVLite;
+using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.SQLite;
-using Troschuetz.Random;
-using Troschuetz.Random.Generators;
 
 namespace RestService.WebApi
 {
@@ -38,11 +34,11 @@ namespace RestService.WebApi
         public override void Load()
         {
             Bind<IClock>()
-                .To<SystemClock>()
+                .ToConstant(SystemClock.Instance)
                 .InSingletonScope();
 
             Bind<ICompressor>()
-                .To<DeflateCompressor>()
+                .ToConstant(DeflateCompressor.Instance)
                 .InSingletonScope();
 
             Bind<ICache>()
@@ -50,19 +46,15 @@ namespace RestService.WebApi
                 .InSingletonScope();
 
             Bind<ISerializer>()
-                .To<JsonSerializer>()
-                .InSingletonScope();
-
-            Bind<JsonSerializerSettings>()
-                .ToConstant(new JsonSerializerSettings())
+                .ToConstant(JsonSerializer.Instance)
                 .InSingletonScope();
 
             Bind<IMemoryStreamPool>()
                 .ToConstant(MemoryStreamPool.Instance)
                 .InSingletonScope();
 
-            Bind<IGenerator>()
-                .To<StandardGenerator>()
+            Bind<IRandom>()
+                .To<SystemRandom>()
                 .InTransientScope();
         }
     }

@@ -1,5 +1,4 @@
-﻿using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Common;
+﻿using PommaLabs.KVLite;
 using PommaLabs.KVLite.WebApi;
 using System;
 using System.Collections.Generic;
@@ -58,7 +57,7 @@ namespace RestService.WebApi.Controllers
         /// <param name="key">The key.</param>
         /// <returns>A _valid_ item stored in the cache for given partition and key.</returns>
         [Route("items/{partition}/{key}")]
-        public override Option<ICacheItem<object>> GetItem(string partition, string key)
+        public override ICacheItem<object> GetItem(string partition, string key)
         {
             return base.GetItem(partition, key);
         }

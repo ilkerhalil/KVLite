@@ -23,8 +23,6 @@
 
 using EntityFramework;
 using EntityFramework.Caching;
-using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Common;
 using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
@@ -43,7 +41,7 @@ namespace PommaLabs.KVLite.EntityFramework
         /// <summary>
         ///   The partition used by EF cache provider items.
         /// </summary>
-        private static readonly string EfCachePartition = $"{CacheConstants.PartitionPrefix}.EFQueries";
+        private static readonly string EfCachePartition = $"{CachePartitions.Prefix}.EFQueries";
 
         #endregion Constants
 

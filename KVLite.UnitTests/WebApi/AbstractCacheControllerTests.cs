@@ -22,9 +22,10 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NUnit.Framework;
-using PommaLabs.CodeServices.Caching;
+using PommaLabs.KVLite;
 using PommaLabs.KVLite.SQLite;
 using PommaLabs.KVLite.WebApi;
+using Shouldly;
 using System;
 using System.Linq;
 
@@ -77,7 +78,7 @@ namespace PommaLabs.KVLite.UnitTests.WebApi
             _controller.Cache.AddSliding("abc2", "def", 123, TimeSpan.FromMinutes(40));
             _controller.Cache.AddSliding("abc3", "def", 123, TimeSpan.FromMinutes(50));
             var items = _controller.GetItems(fromExpiry: _controller.Cache.Clock.UtcNow.AddMinutes(fromExpiry), toExpiry: _controller.Cache.Clock.UtcNow.AddMinutes(toExpiry)).ToList();
-            Assert.AreEqual(expectedCount, items.Count);
+            expectedCount.ShouldBe(items.Count);
         }
 
         [TestCase("key")]

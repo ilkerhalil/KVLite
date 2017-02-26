@@ -24,9 +24,8 @@
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
-using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Common.Logging;
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Logging;
 using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
@@ -45,7 +44,7 @@ namespace PommaLabs.KVLite.Nancy
         /// <summary>
         ///   The partition used by Nancy response cache items.
         /// </summary>
-        private static readonly string ResponseCachePartition = $"{CacheConstants.PartitionPrefix}.NancyResponses";
+        private static readonly string ResponseCachePartition = $"{CachePartitions.Prefix}.NancyResponses";
 
         private static readonly ILog Log = LogProvider.For<CachingBootstrapper>();
 

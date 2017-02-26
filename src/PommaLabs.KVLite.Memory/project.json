@@ -1,0 +1,18 @@
+﻿{
+  "version": "6.0.7-*",
+
+  "dependencies": {
+    "NETStandard.Library": "1.6.1",
+    "PommaLabs.KVLite": "6.0.7-*"
+  },
+
+  "frameworks": {
+    "netstandard1.3": {
+      "imports": "dnxcore50"
+    },
+    "net40": {
+    },
+    "net45": {
+    }
+  }
+}

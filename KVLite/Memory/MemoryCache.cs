@@ -22,14 +22,9 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
-using PommaLabs.CodeServices.Caching;
-using PommaLabs.CodeServices.Clock;
-using PommaLabs.CodeServices.Common;
-using PommaLabs.CodeServices.Common.Collections.Generic;
-using PommaLabs.CodeServices.Common.Logging;
-using PommaLabs.CodeServices.Compression;
-using PommaLabs.CodeServices.Serialization;
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Extensibility;
+using PommaLabs.KVLite.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -80,10 +75,10 @@ namespace PommaLabs.KVLite.Memory
         public MemoryCache(MemoryCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
         {
             Settings = settings;
-            Compressor = compressor ?? CacheConstants.DefaultCompressor;
-            Serializer = serializer ?? CacheConstants.DefaultSerializer;
+            Compressor = compressor ?? DeflateCompressor.Instance;
+            Serializer = serializer ?? JsonSerializer.Instance;
             MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
-            Clock = CacheConstants.DefaultClock;
+            Clock = SystemClock.Instance;
 
             InitSystemMemoryCache();
         }
@@ -94,11 +89,11 @@ namespace PommaLabs.KVLite.Memory
 
         /// <summary>
         ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="M:PommaLabs.CodeServices.Common.FormattableObject.ToString"/>.
+        ///   used to produce a meaningful <see cref="object.ToString"/>.
         /// </summary>
         protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
         {
-            yield return KeyValuePair.Create("SystemMemoryCacheName", _store.Name);
+            yield return new KeyValuePair<string, string>("SystemMemoryCacheName", _store.Name);
         }
 
         #endregion FormattableObject members
@@ -138,7 +133,7 @@ namespace PommaLabs.KVLite.Memory
         /// </summary>
         /// <remarks>
         ///   Since <see cref="SystemMemoryCache"/> does not allow clock customisation, then this
-        ///   property defaults to <see cref="T:PommaLabs.CodeServices.Clock.SystemClock"/>.
+        ///   property defaults to <see cref="SystemClock"/>.
         /// </remarks>
         public override IClock Clock { get; }
 
@@ -230,7 +225,7 @@ namespace PommaLabs.KVLite.Memory
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value.SafeToString());
+                Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value?.ToString());
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
@@ -319,7 +314,7 @@ namespace PommaLabs.KVLite.Memory
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The value with specified partition and key.</returns>
-        protected override Option<TVal> GetInternal<TVal>(string partition, string key)
+        protected override CacheResult<TVal> GetInternal<TVal>(string partition, string key)
         {
             var maybeCacheKey = SerializeCacheKey(partition, key);
             var maybeCacheValue = _store.Get(maybeCacheKey) as CacheValue;
@@ -334,7 +329,7 @@ namespace PommaLabs.KVLite.Memory
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>The cache item with specified partition and key.</returns>
-        protected override Option<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
+        protected override CacheResult<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
             var maybeCacheKey = SerializeCacheKey(partition, key);
             var maybeCacheValue = _store.Get(maybeCacheKey) as CacheValue;
@@ -379,7 +374,7 @@ namespace PommaLabs.KVLite.Memory
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected override Option<TVal> PeekInternal<TVal>(string partition, string key)
+        protected override CacheResult<TVal> PeekInternal<TVal>(string partition, string key)
         {
             throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
         }
@@ -396,7 +391,7 @@ namespace PommaLabs.KVLite.Memory
         /// <exception cref="NotSupportedException">
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
-        protected override Option<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
+        protected override CacheResult<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
         }
@@ -543,49 +538,49 @@ namespace PommaLabs.KVLite.Memory
             }
         }
 
-        private Option<TVal> DeserializeCacheValue<TVal>(CacheValue cacheValue)
+        private CacheResult<TVal> DeserializeCacheValue<TVal>(CacheValue cacheValue)
         {
             if (cacheValue == null || cacheValue.Value == null)
             {
                 // Nothing to deserialize, return None.
-                return Option.None<TVal>();
+                return default(CacheResult<TVal>);
             }
             try
             {
-                return Option.Some(UnsafeDeserializeCacheValue<TVal>(cacheValue));
+                return UnsafeDeserializeCacheValue<TVal>(cacheValue);
             }
             catch (Exception ex)
             {
                 LastError = ex;
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
-                return Option.None<TVal>();
+                return default(CacheResult<TVal>);
             }
         }
 
-        private Option<ICacheItem<TVal>> DeserializeCacheItem<TVal>(CacheValue cacheValue, string partition, string key)
+        private CacheResult<ICacheItem<TVal>> DeserializeCacheItem<TVal>(CacheValue cacheValue, string partition, string key)
         {
             if (cacheValue == null || cacheValue.Value == null)
             {
                 // Nothing to deserialize, return None.
-                return Option.None<ICacheItem<TVal>>();
+                return default(CacheResult<ICacheItem<TVal>>);
             }
             try
             {
                 // Generate the KVLite cache item and return it. Many properties available in the
                 // KVLite cache items cannot be filled due to missing information.
-                return Option.Some<ICacheItem<TVal>>(new CacheItem<TVal>
+                return new CacheItem<TVal>
                 {
                     Partition = partition,
                     Key = key,
                     Value = UnsafeDeserializeCacheValue<TVal>(cacheValue),
                     UtcCreation = cacheValue.UtcCreation
-                });
+                };
             }
             catch (Exception ex)
             {
                 LastError = ex;
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
-                return Option.None<ICacheItem<TVal>>();
+                return default(CacheResult<ICacheItem<TVal>>);
             }
         }
 

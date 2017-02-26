@@ -24,7 +24,7 @@
 using EntityFramework.Caching;
 using EntityFramework.Extensions;
 using NUnit.Framework;
-using PommaLabs.CodeServices.Caching;
+using PommaLabs.KVLite;
 using PommaLabs.KVLite.EntityFramework;
 using PommaLabs.KVLite.Memory;
 using System.ComponentModel.DataAnnotations;
@@ -66,7 +66,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
             // Add some standard items.
             using (var ctx = new TestDbContext(_dbConnection))
             {
-                Database.SetInitializer(new DropCreateDatabaseAlways<TestDbContext>());
+                System.Data.Entity.Database.SetInitializer(new DropCreateDatabaseAlways<TestDbContext>());
                 ctx.Database.Initialize(true);
 
                 ctx.TestEntities1.AddRange(new[]
