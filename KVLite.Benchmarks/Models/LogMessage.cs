@@ -23,7 +23,6 @@
 
 using NLipsum.Core;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace PommaLabs.KVLite.Benchmarks.Models
@@ -41,14 +40,15 @@ namespace PommaLabs.KVLite.Benchmarks.Models
 
         public string LongMessage { get; set; }
 
-        public static IEnumerable<LogMessage> GenerateRandomLogMessages(int count) => Enumerable.Range(0, count).Select(_ => new LogMessage
+        public static LogMessage[] GenerateRandomLogMessages(int count) => Enumerable.Range(0, count).Select(_ => new LogMessage
         {
             Level = LogLevels[Random.Next(0, LogLevels.Length)],
             ShortMessage = LipsumGenerator.GenerateSentences(1)[0],
             LongMessage = LipsumGenerator.GenerateHtml(Random.Next(5, 10))
-        });
+        }).ToArray();
     }
 
+    [Serializable]
     public enum LogLevel
     {
         Trace,
