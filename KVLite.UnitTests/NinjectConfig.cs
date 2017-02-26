@@ -44,7 +44,7 @@ namespace PommaLabs.KVLite.UnitTests
                 .InSingletonScope();
 
             Bind<ICompressor>()
-                .ToConstant(GZipCompressor.Instance)
+                .ToConstant(DeflateCompressor.Instance)
                 .InSingletonScope();
 
             Bind<ISerializer>()

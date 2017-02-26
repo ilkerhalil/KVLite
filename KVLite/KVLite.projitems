@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Database\IDbCacheConnectionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\BinarySerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\FakeClock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensibility\DeflateCompressor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\GZipCompressor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\IClock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensibility\ICompressor.cs" />

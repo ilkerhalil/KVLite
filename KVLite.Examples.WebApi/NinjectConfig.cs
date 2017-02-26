@@ -38,7 +38,7 @@ namespace RestService.WebApi
                 .InSingletonScope();
 
             Bind<ICompressor>()
-                .ToConstant(GZipCompressor.Instance)
+                .ToConstant(DeflateCompressor.Instance)
                 .InSingletonScope();
 
             Bind<ICache>()

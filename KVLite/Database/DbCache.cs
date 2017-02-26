@@ -80,7 +80,7 @@ namespace PommaLabs.KVLite.Database
             Settings.ConnectionFactory = connectionFactory;
             Clock = clock ?? SystemClock.Instance;
             Serializer = serializer ?? JsonSerializer.Instance;
-            Compressor = compressor ?? GZipCompressor.Instance;
+            Compressor = compressor ?? DeflateCompressor.Instance;
             MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
             Random = random ?? new SystemRandom();
         }
@@ -368,7 +368,7 @@ namespace PommaLabs.KVLite.Database
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="GZipCompressor"/>.
+        ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
         /// </remarks>
         public sealed override ICompressor Compressor { get; }
 
