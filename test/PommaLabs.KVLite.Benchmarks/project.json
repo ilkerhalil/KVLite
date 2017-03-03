@@ -7,9 +7,9 @@
 
   "dependencies": {
     "BenchmarkDotNet": "0.10.3",
-    "PommaLabs.KVLite": "6.0.7-*",
-    "PommaLabs.KVLite.Memory": "6.0.7-*",
-    "PommaLabs.KVLite.MySql": "6.0.7-*"
+    "PommaLabs.KVLite": "6.0.8-*",
+    "PommaLabs.KVLite.Memory": "6.0.8-*",
+    "PommaLabs.KVLite.MySql": "6.0.8-*"
   },
 
   "frameworks": {

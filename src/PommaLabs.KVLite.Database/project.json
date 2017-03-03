@@ -1,10 +1,10 @@
 ﻿{
-  "version": "6.0.7-*",
+  "version": "6.0.8-*",
 
   "dependencies": {
     "Dapper.StrongName": "1.50.2",
     "NETStandard.Library": "1.6.1",
-    "PommaLabs.KVLite": "6.0.7-*"
+    "PommaLabs.KVLite": "6.0.8-*"
   },
 
   "frameworks": {
