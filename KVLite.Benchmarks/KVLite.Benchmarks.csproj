@@ -40,16 +40,16 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BenchmarkDotNet, Version=0.10.1.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">
-      <HintPath>..\packages\BenchmarkDotNet.0.10.2\lib\net45\BenchmarkDotNet.dll</HintPath>
+    <Reference Include="BenchmarkDotNet, Version=0.10.3.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">
+      <HintPath>..\packages\BenchmarkDotNet.0.10.3\lib\net45\BenchmarkDotNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="BenchmarkDotNet.Core, Version=0.10.1.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">
-      <HintPath>..\packages\BenchmarkDotNet.Core.0.10.2\lib\net45\BenchmarkDotNet.Core.dll</HintPath>
+    <Reference Include="BenchmarkDotNet.Core, Version=0.10.3.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">
+      <HintPath>..\packages\BenchmarkDotNet.Core.0.10.3\lib\net45\BenchmarkDotNet.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="BenchmarkDotNet.Toolchains.Roslyn, Version=0.10.1.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">
-      <HintPath>..\packages\BenchmarkDotNet.Toolchains.Roslyn.0.10.2\lib\net45\BenchmarkDotNet.Toolchains.Roslyn.dll</HintPath>
+    <Reference Include="BenchmarkDotNet.Toolchains.Roslyn, Version=0.10.3.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">
+      <HintPath>..\packages\BenchmarkDotNet.Toolchains.Roslyn.0.10.3\lib\net45\BenchmarkDotNet.Toolchains.Roslyn.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CodeProject.ObjectPool, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
@@ -68,8 +68,8 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LZ4, Version=1.0.10.93, Culture=neutral, PublicKeyToken=62e1b5ec1eec9bdd, processorArchitecture=MSIL">
-      <HintPath>..\packages\lz4net.1.0.10.93\lib\net4-client\LZ4.dll</HintPath>
+    <Reference Include="LZ4, Version=1.0.11.93, Culture=neutral, PublicKeyToken=62e1b5ec1eec9bdd, processorArchitecture=MSIL">
+      <HintPath>..\packages\lz4net.1.0.11.93\lib\net4-client\LZ4.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Build" />
