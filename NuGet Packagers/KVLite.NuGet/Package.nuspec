@@ -32,21 +32,21 @@
         <dependency id="Dapper.StrongName" version="1.50.2" />
         <dependency id="Polly-Signed" version="5.0.6" />
         <dependency id="PommaLabs.KVLite.Core" version="6.0.7" />
-        <dependency id="Thrower" version="4.0.13" />
+        <dependency id="Thrower" version="4.0.14" />
       </group>
       <group targetFramework="net45">
         <dependency id="CodeProject.ObjectPool" version="2.2.2" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
         <dependency id="Polly-Signed" version="5.0.6" />
         <dependency id="PommaLabs.KVLite.Core" version="6.0.7" />
-        <dependency id="Thrower" version="4.0.13" />
+        <dependency id="Thrower" version="4.0.14" />
       </group>
       <group targetFramework="net40">
         <dependency id="CodeProject.ObjectPool" version="2.2.2" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
         <dependency id="Polly.Net40Async-Signed" version="5.0.6" />
         <dependency id="PommaLabs.KVLite.Core" version="6.0.7" />
-        <dependency id="Thrower" version="4.0.13" />
+        <dependency id="Thrower" version="4.0.14" />
       </group>
     </dependencies>
     <references></references>

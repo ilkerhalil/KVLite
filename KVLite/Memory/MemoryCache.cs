@@ -91,9 +91,9 @@ namespace PommaLabs.KVLite.Memory
         ///   Returns all property (or field) values, along with their names, so that they can be
         ///   used to produce a meaningful <see cref="object.ToString"/>.
         /// </summary>
-        protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
+        protected override IEnumerable<KeyValuePair<string, object>> GetFormattingMembers()
         {
-            yield return new KeyValuePair<string, string>("SystemMemoryCacheName", _store.Name);
+            yield return new KeyValuePair<string, object>("SystemMemoryCacheName", _store.Name);
         }
 
         #endregion FormattableObject members
