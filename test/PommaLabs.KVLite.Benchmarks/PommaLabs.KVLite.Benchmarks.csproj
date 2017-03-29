@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <AssemblyName>PommaLabs.KVLite.Benchmarks</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>PommaLabs.KVLite.Benchmarks</PackageId>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.3" />
+    <PackageReference Include="PommaLabs.KVLite" Version="6.0.8-*" />
+    <PackageReference Include="PommaLabs.KVLite.Memory" Version="6.0.8-*" />
+    <PackageReference Include="PommaLabs.KVLite.MySql" Version="6.0.8-*" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+</Project>
