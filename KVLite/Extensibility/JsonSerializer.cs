@@ -24,7 +24,6 @@
 using Newtonsoft.Json;
 using PommaLabs.Thrower;
 using System.IO;
-using System.Runtime.Serialization.Formatters;
 
 namespace PommaLabs.KVLite.Extensibility
 {
@@ -76,7 +75,7 @@ namespace PommaLabs.KVLite.Extensibility
             PreserveReferencesHandling = PreserveReferencesHandling.None,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             TypeNameHandling = TypeNameHandling.All,
-            TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
         };
 
         /// <summary>
