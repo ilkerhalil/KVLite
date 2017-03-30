@@ -24,7 +24,7 @@
 using CodeProject.ObjectPool.Specialized;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
-using PommaLabs.KVLite.Logging;
+using PommaLabs.Thrower.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
