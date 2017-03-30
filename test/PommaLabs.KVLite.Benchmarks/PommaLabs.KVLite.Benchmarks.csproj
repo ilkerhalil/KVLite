@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net46</TargetFramework>
     <AssemblyName>PommaLabs.KVLite.Benchmarks</AssemblyName>
@@ -11,15 +10,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.Memory\PommaLabs.KVLite.Memory.csproj" />
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.MySql\PommaLabs.KVLite.MySql.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.10.3" />
-    <PackageReference Include="PommaLabs.KVLite" Version="6.0.8-*" />
-    <PackageReference Include="PommaLabs.KVLite.Memory" Version="6.0.8-*" />
-    <PackageReference Include="PommaLabs.KVLite.MySql" Version="6.0.8-*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
-    <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
   </ItemGroup>
-
 </Project>
