@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite.SqlServer</id>
-    <version>6.0.7</version>
+    <version>6.0.9</version>
     <title>KVLite - SQL Server driver</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
@@ -27,7 +27,7 @@
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
-      <dependency id="PommaLabs.KVLite" version="6.0.7" />
+      <dependency id="PommaLabs.KVLite" version="6.0.9" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>

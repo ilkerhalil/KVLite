@@ -144,9 +144,9 @@ namespace PommaLabs.KVLite.NoOp
         ///   used to produce a meaningful <see cref="object.ToString"/>.
         /// </summary>
         /// <returns></returns>
-        protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
+        protected override IEnumerable<KeyValuePair<string, object>> GetFormattingMembers()
         {
-            yield return new KeyValuePair<string, string>(nameof(Settings.CacheUri), Settings.CacheUri);
+            yield return new KeyValuePair<string, object>(nameof(Settings.CacheUri), Settings.CacheUri);
         }
 
         /// <summary>

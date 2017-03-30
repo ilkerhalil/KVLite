@@ -27,9 +27,9 @@ using Polly;
 using Polly.Retry;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
-using PommaLabs.KVLite.Logging;
 using PommaLabs.Thrower;
 using PommaLabs.Thrower.Goodies;
+using PommaLabs.Thrower.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -327,9 +327,9 @@ namespace PommaLabs.KVLite.Database
         ///   Returns all property (or field) values, along with their names, so that they can be
         ///   used to produce a meaningful <see cref="object.ToString"/>.
         /// </returns>
-        protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
+        protected override IEnumerable<KeyValuePair<string, object>> GetFormattingMembers()
         {
-            yield return new KeyValuePair<string, string>(nameof(Settings.CacheUri), Settings.CacheUri);
+            yield return new KeyValuePair<string, object>(nameof(Settings.CacheUri), Settings.CacheUri);
         }
 
         #endregion FormattableObject members

@@ -150,11 +150,11 @@ namespace PommaLabs.KVLite
         ///   Returns all property (or field) values, along with their names, so that they can be
         ///   used to produce a meaningful <see cref="object.ToString"/>.
         /// </returns>
-        protected override IEnumerable<KeyValuePair<string, string>> GetFormattingMembers()
+        protected override IEnumerable<KeyValuePair<string, object>> GetFormattingMembers()
         {
-            yield return new KeyValuePair<string, string>(nameof(Partition), Partition?.ToString());
-            yield return new KeyValuePair<string, string>(nameof(Key), Key?.ToString());
-            yield return new KeyValuePair<string, string>(nameof(UtcExpiry), UtcExpiry.ToString());
+            yield return new KeyValuePair<string, object>(nameof(Partition), Partition?.ToString());
+            yield return new KeyValuePair<string, object>(nameof(Key), Key?.ToString());
+            yield return new KeyValuePair<string, object>(nameof(UtcExpiry), UtcExpiry.ToString());
         }
 
         /// <summary>

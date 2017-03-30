@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>6.0.7</version>
+    <version>6.0.9</version>
     <title>KVLite - SQL-based cache</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
@@ -28,25 +28,30 @@
     <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <group targetFramework="net46">
-        <dependency id="CodeProject.ObjectPool" version="2.2.2" />
+        <dependency id="CodeProject.ObjectPool" version="3.0.1" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
-        <dependency id="Polly-Signed" version="5.0.5" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.0.7" />
-        <dependency id="Thrower" version="4.0.13" />
+        <dependency id="Microsoft.Extensions.Caching.Abstractions" version="1.1.1" />
+        <dependency id="Newtonsoft.Json" version="10.0.1" />
+        <dependency id="Polly-Signed" version="5.0.6" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.0.9" />
+        <dependency id="Thrower" version="4.1.2" />
       </group>
       <group targetFramework="net45">
-        <dependency id="CodeProject.ObjectPool" version="2.2.2" />
+        <dependency id="CodeProject.ObjectPool" version="3.0.1" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
-        <dependency id="Polly-Signed" version="5.0.5" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.0.7" />
-        <dependency id="Thrower" version="4.0.13" />
+        <dependency id="Microsoft.Extensions.Caching.Abstractions" version="1.1.1" />
+        <dependency id="Newtonsoft.Json" version="10.0.1" />
+        <dependency id="Polly-Signed" version="5.0.6" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.0.9" />
+        <dependency id="Thrower" version="4.1.2" />
       </group>
       <group targetFramework="net40">
-        <dependency id="CodeProject.ObjectPool" version="2.2.2" />
+        <dependency id="CodeProject.ObjectPool" version="3.0.1" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
-        <dependency id="Polly.Net40Async-Signed" version="5.0.5" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.0.7" />
-        <dependency id="Thrower" version="4.0.13" />
+        <dependency id="Newtonsoft.Json" version="10.0.1" />
+        <dependency id="Polly.Net40Async-Signed" version="5.0.6" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.0.9" />
+        <dependency id="Thrower" version="4.1.2" />
       </group>
     </dependencies>
     <references></references>

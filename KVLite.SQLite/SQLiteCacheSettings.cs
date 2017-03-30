@@ -37,18 +37,15 @@ namespace PommaLabs.KVLite.SQLite
     public abstract class SQLiteCacheSettings<TSettings> : DbCacheSettings<TSettings, SQLiteConnection>
         where TSettings : SQLiteCacheSettings<TSettings>
     {
-        #region Fields
-
+        /// <summary>
+        ///   Backing field for <see cref="MaxCacheSizeInMB"/>.
+        /// </summary>
         private int _maxCacheSizeInMB;
-        private int _maxJournalSizeInMB;
-
-        #endregion Fields
-
-        #region Settings
 
         /// <summary>
         ///   Max size in megabytes for the cache.
         /// </summary>
+        [DataMember]
         public int MaxCacheSizeInMB
         {
             get
@@ -68,7 +65,5 @@ namespace PommaLabs.KVLite.SQLite
                 OnPropertyChanged();
             }
         }
-
-        #endregion Settings
     }
 }

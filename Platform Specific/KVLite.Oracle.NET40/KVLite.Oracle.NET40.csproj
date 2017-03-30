@@ -40,9 +40,8 @@
     <AssemblyOriginatorKeyFile>..\..\pomma89.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeProject.ObjectPool, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\CodeProject.ObjectPool.2.2.2\lib\net40\CodeProject.ObjectPool.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="CodeProject.ObjectPool, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\CodeProject.ObjectPool.3.0.1\lib\net40\CodeProject.ObjectPool.dll</HintPath>
     </Reference>
     <Reference Include="Dapper.StrongName, Version=1.50.2.0, Culture=neutral, PublicKeyToken=e3e8412083d25dd3, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Dapper.StrongName.1.50.2\lib\net40\Dapper.StrongName.dll</HintPath>
@@ -60,17 +59,15 @@
       <HintPath>..\..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.121.2.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Oracle.ManagedDataAccess.12.1.24160719\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Thrower.4.0.13\lib\net40\PommaLabs.Thrower.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Thrower.4.1.2\lib\net40\PommaLabs.Thrower.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
