@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.0.9 (2017-03-30) ###
+
+* [UPD] Updated packages.
+* [FIX] Added missing deps in NuGet packages.
+
 ### v6.0.7 (2017-02-26) ###
 
 * [REM] Removed everything related to CodeServices.
