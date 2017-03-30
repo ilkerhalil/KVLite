@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite.MySql</id>
-    <version>6.0.8</version>
+    <version>6.0.9</version>
     <title>KVLite - MySQL driver</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
@@ -28,7 +28,7 @@
     <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <dependency id="MySql.Data" version="6.9.9" />
-      <dependency id="PommaLabs.KVLite" version="6.0.8" />
+      <dependency id="PommaLabs.KVLite" version="6.0.9" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>
