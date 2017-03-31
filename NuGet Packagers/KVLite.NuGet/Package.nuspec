@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite</id>
-    <version>6.0.9</version>
+    <version>6.1.0</version>
     <title>KVLite - SQL-based cache</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
@@ -32,7 +32,7 @@
         <dependency id="Dapper.StrongName" version="1.50.2" />
         <dependency id="Newtonsoft.Json" version="10.0.1" />
         <dependency id="Polly-Signed" version="5.0.6" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.0.9" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.1.0" />
         <dependency id="System.IO.Compression" version="4.3.0" />
       </group>
       <group targetFramework="net45">
@@ -40,7 +40,7 @@
         <dependency id="Dapper.StrongName" version="1.50.2" />
         <dependency id="Newtonsoft.Json" version="10.0.1" />
         <dependency id="Polly-Signed" version="5.0.6" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.0.9" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.1.0" />
         <dependency id="System.IO.Compression" version="4.3.0" />
       </group>
       <group targetFramework="net40">
@@ -48,7 +48,7 @@
         <dependency id="Dapper.StrongName" version="1.50.2" />
         <dependency id="Newtonsoft.Json" version="10.0.1" />
         <dependency id="Polly.Net40Async-Signed" version="5.0.6" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.0.9" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.1.0" />
       </group>
     </dependencies>
     <references></references>
