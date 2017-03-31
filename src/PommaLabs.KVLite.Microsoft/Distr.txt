@@ -1,0 +1,63 @@
+﻿#if !NET40
+        , Microsoft.Extensions.Caching.Distributed.IDistributedCache
+#endif
+
+        #region IDistributedCache members
+
+#if !NET40
+
+        byte[] Microsoft.Extensions.Caching.Distributed.IDistributedCache.Get(string key) => Get<byte[]>(Settings.DefaultPartition, key).ValueOrDefault();
+
+        async Task<byte[]> Microsoft.Extensions.Caching.Distributed.IDistributedCache.GetAsync(string key) => (await GetAsync<byte[]>(Settings.DefaultPartition, key).ConfigureAwait(false)).ValueOrDefault();
+
+        void Microsoft.Extensions.Caching.Distributed.IDistributedCache.Set(string key, byte[] value, Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions options)
+        {
+            if (options.SlidingExpiration.HasValue && (options.AbsoluteExpiration.HasValue || options.AbsoluteExpirationRelativeToNow.HasValue))
+            {
+                throw new NotImplementedException(ErrorMessages.CacheDoesNotAllowSlidingAndAbsolute);
+            }
+            if (options.SlidingExpiration.HasValue)
+            {
+                AddSliding(Settings.DefaultPartition, key, value, options.SlidingExpiration.Value);
+            }
+            else if (options.AbsoluteExpiration.HasValue)
+            {
+                AddTimed(Settings.DefaultPartition, key, value, options.AbsoluteExpiration.Value.ToUniversalTime().DateTime);
+            }
+            else if (options.AbsoluteExpirationRelativeToNow.HasValue)
+            {
+                AddTimed(Settings.DefaultPartition, key, value, options.AbsoluteExpirationRelativeToNow.Value);
+            }
+        }
+
+        async Task Microsoft.Extensions.Caching.Distributed.IDistributedCache.SetAsync(string key, byte[] value, Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions options)
+        {
+            if (options.SlidingExpiration.HasValue && (options.AbsoluteExpiration.HasValue || options.AbsoluteExpirationRelativeToNow.HasValue))
+            {
+                throw new NotImplementedException(ErrorMessages.CacheDoesNotAllowSlidingAndAbsolute);
+            }
+            if (options.SlidingExpiration.HasValue)
+            {
+                await AddSlidingAsync(Settings.DefaultPartition, key, value, options.SlidingExpiration.Value).ConfigureAwait(false);
+            }
+            else if (options.AbsoluteExpiration.HasValue)
+            {
+                await AddTimedAsync(Settings.DefaultPartition, key, value, options.AbsoluteExpiration.Value.ToUniversalTime().DateTime).ConfigureAwait(false);
+            }
+            else if (options.AbsoluteExpirationRelativeToNow.HasValue)
+            {
+                await AddTimedAsync(Settings.DefaultPartition, key, value, options.AbsoluteExpirationRelativeToNow.Value).ConfigureAwait(false);
+            }
+        }
+
+        void Microsoft.Extensions.Caching.Distributed.IDistributedCache.Refresh(string key) => Get<byte[]>(Settings.DefaultPartition, key);
+
+        Task Microsoft.Extensions.Caching.Distributed.IDistributedCache.RefreshAsync(string key) => GetAsync<byte[]>(Settings.DefaultPartition, key);
+
+        void Microsoft.Extensions.Caching.Distributed.IDistributedCache.Remove(string key) => Remove(Settings.DefaultPartition, key);
+
+        Task Microsoft.Extensions.Caching.Distributed.IDistributedCache.RemoveAsync(string key) => RemoveAsync(Settings.DefaultPartition, key);
+
+#endif
+
+        #endregion IDistributedCache members
