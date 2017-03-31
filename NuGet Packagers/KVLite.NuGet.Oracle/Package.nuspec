@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite.Oracle</id>
-    <version>6.0.9</version>
+    <version>6.1.0</version>
     <title>KVLite - Oracle driver</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
@@ -28,7 +28,7 @@
     <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <dependency id="Oracle.ManagedDataAccess" version="12.1.24160719" />
-      <dependency id="PommaLabs.KVLite" version="6.0.9" />
+      <dependency id="PommaLabs.KVLite" version="6.1.0" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>

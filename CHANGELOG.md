@@ -1,5 +1,9 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.1.0 (2017-03-31) ###
+
+* [REM] Removed integration with Microsoft caching abstractions. It will be added again as a separate package. 
+
 ### v6.0.9 (2017-03-30) ###
 
 * [UPD] Updated packages.
