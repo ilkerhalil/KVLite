@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.1.1 (2017-04-??) ###
+
+* [UPD] Updated packages.
+* [UPD] Random cleanup task is now started on a dedicated thread. 
+
 ### v6.1.0 (2017-03-31) ###
 
 * [REM] Removed integration with Microsoft caching abstractions. It will be added again as a separate package. 

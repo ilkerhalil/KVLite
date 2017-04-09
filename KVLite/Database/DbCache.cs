@@ -483,7 +483,7 @@ namespace PommaLabs.KVLite.Database
                 // Run soft cleanup, so that cache is almost always clean. We do not call the
                 // internal version since we need the following method not to throw anything in case
                 // of error. A missed cleanup should not break the insertion.
-                Clear(CacheReadMode.ConsiderExpiryDate);
+                TaskHelper.TryFireAndForget(() => Clear(CacheReadMode.ConsiderExpiryDate));
             }
         }
 
@@ -526,7 +526,7 @@ namespace PommaLabs.KVLite.Database
                 // Run soft cleanup, so that cache is almost always clean. We do not call the
                 // internal version since we need the following method not to throw anything in case
                 // of error. A missed cleanup should not break the insertion.
-                await ClearAsync(CacheReadMode.ConsiderExpiryDate).ConfigureAwait(false);
+                await TaskHelper.TryFireAndForgetAsync(async () => await ClearAsync(CacheReadMode.ConsiderExpiryDate).ConfigureAwait(false));
             }
         }
 
@@ -1140,7 +1140,7 @@ namespace PommaLabs.KVLite.Database
                 Partition = partition,
                 Key = key,
                 UtcExpiry = utcExpiry.ToUnixTime(),
-                Interval = (long) interval.TotalSeconds,
+                Interval = (long)interval.TotalSeconds,
                 UtcCreation = Clock.ToUnixTime()
             };
 

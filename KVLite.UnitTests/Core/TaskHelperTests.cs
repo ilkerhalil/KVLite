@@ -23,6 +23,8 @@
 
 using NUnit.Framework;
 using PommaLabs.KVLite.Core;
+using Shouldly;
+using System.Collections.Concurrent;
 
 namespace PommaLabs.KVLite.UnitTests.Core
 {
@@ -48,6 +50,28 @@ namespace PommaLabs.KVLite.UnitTests.Core
             {
                 TaskHelper.RunSync(async () => await TaskHelper.DelayTask(10));
             }
+        }
+
+        [TestCase(1)]
+        [TestCase(10)]
+        [TestCase(100)]
+        public void AllFiredActionsShouldBeExecuted(int count)
+        {
+            var stack = new ConcurrentStack<int>();
+            for (var i = 0; i < count; ++i)
+            {
+                var localIndex = i;
+                TaskHelper.TryFireAndForget(() => stack.Push(localIndex));
+            }
+
+            var delay = 30 * count;
+#if (NET35 || NET40)
+            System.Threading.Thread.Sleep(delay);
+#else
+            System.Threading.Tasks.Task.Delay(delay).Wait();
+#endif
+
+            stack.Count.ShouldBe(count);
         }
     }
 }

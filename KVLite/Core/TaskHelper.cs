@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.Thrower;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,7 +58,7 @@ namespace PommaLabs.KVLite.Core
         public static Task<TResult> CanceledTask<TResult>(CancellationToken cancellationToken = default(CancellationToken))
         {
 #if (NET40 || NET45 || NETSTD11)
-            var tcs = new TaskCompletionSource<TResult>();
+            var tcs = new TaskCompletionSource<TResult>(cancellationToken);
             tcs.TrySetCanceled();
             return tcs.Task;
 #else
@@ -176,5 +177,162 @@ namespace PommaLabs.KVLite.Core
         }
 
         #endregion RunAsync
+
+        #region TryFireAndForget
+
+        /// <summary>
+        ///   The maximum number of concurrent fire and forget tasks. Default value is equal to <see cref="Environment.ProcessorCount"/>.
+        /// </summary>
+        public static int FireAndForgetLimit { get; set; } = Environment.ProcessorCount;
+
+        private const TaskContinuationOptions FireAndForgetFlags = TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted;
+
+        private static readonly Action<Task> DefaultErrorContination = t =>
+        {
+            try { t.Wait(); }
+            catch { }
+        };
+
+        private static int FireAndForgetCount;
+
+        /// <summary>
+        ///   Tries to fire given action on a dedicated task, but it ensures that the number of
+        ///   concurrent tasks is never greater than <see cref="FireAndForgetLimit"/>; if the number
+        ///   of concurrent tasks is already too high, then given action is executed synchronously.
+        ///
+        ///   Optional error handler is invoked when given action throws an exception; if no handler
+        ///   is specified, then the exception is swallowed.
+        /// </summary>
+        /// <param name="action">The action which might be fired and forgot.</param>
+        /// <param name="handler">The optional error handler.</param>
+        /// <returns>
+        ///   True if given action has actually been fired and forgot; otherwise, it returns false.
+        /// </returns>
+        public static bool TryFireAndForget(Action action, Action<Exception> handler = null)
+        {
+            Raise.ArgumentNullException.IfIsNull(action, nameof(action));
+
+            if (FireAndForgetCount >= FireAndForgetLimit)
+            {
+                // Run sync, cannot start a new task.
+                RunSync(action, handler);
+                return false;
+            }
+
+            if (Interlocked.Increment(ref FireAndForgetCount) > FireAndForgetLimit)
+            {
+                // Run sync, cannot start a new task.
+                RunSync(action, handler);
+                Interlocked.Decrement(ref FireAndForgetCount);
+                return false;
+            }
+
+            RunAsync(() =>
+            {
+                action?.Invoke();
+                Interlocked.Decrement(ref FireAndForgetCount);
+            }, handler);
+            return true;
+        }
+
+        /// <summary>
+        ///   Tries to fire given action on a dedicated task, but it ensures that the number of
+        ///   concurrent tasks is never greater than <see cref="FireAndForgetLimit"/>; if the number
+        ///   of concurrent tasks is already too high, then given action is executed synchronously.
+        ///
+        ///   Optional error handler is invoked when given action throws an exception; if no handler
+        ///   is specified, then the exception is swallowed.
+        /// </summary>
+        /// <param name="asyncAction">The action which might be fired and forgot.</param>
+        /// <param name="handler">The optional error handler.</param>
+        /// <returns>
+        ///   True if given action has actually been fired and forgot; otherwise, it returns false.
+        /// </returns>
+        public static async Task<bool> TryFireAndForgetAsync(Func<Task> asyncAction, Action<Exception> handler = null)
+        {
+            Raise.ArgumentNullException.IfIsNull(asyncAction, nameof(asyncAction));
+
+            if (FireAndForgetCount >= FireAndForgetLimit)
+            {
+                // Run sync, cannot start a new task.
+                await RunSync(asyncAction, handler);
+                return false;
+            }
+
+            if (Interlocked.Increment(ref FireAndForgetCount) > FireAndForgetLimit)
+            {
+                // Run sync, cannot start a new task.
+                await RunSync(asyncAction, handler);
+                Interlocked.Decrement(ref FireAndForgetCount);
+                return false;
+            }
+
+            RunAsync(() =>
+            {
+                asyncAction?.Invoke();
+                Interlocked.Decrement(ref FireAndForgetCount);
+            }, handler);
+            return true;
+        }
+
+        private static void RunAsync(Action action, Action<Exception> handler)
+        {
+#if !NET40
+            var task = Task.Run(action);
+#else
+            var task = Task.Factory.StartNew(action, System.Threading.CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+#endif
+            if (handler == null)
+            {
+                task.ContinueWith(DefaultErrorContination, FireAndForgetFlags);
+            }
+            else
+            {
+                task.ContinueWith(t => handler(t.Exception.GetBaseException()), FireAndForgetFlags);
+            }
+        }
+
+        private static void RunAsync(Func<Task> asyncAction, Action<Exception> handler)
+        {
+#if !NET40
+            var task = Task.Run(asyncAction);
+#else
+            var task = Task.Factory.StartNew(asyncAction, System.Threading.CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+#endif
+            if (handler == null)
+            {
+                task.ContinueWith(DefaultErrorContination, FireAndForgetFlags);
+            }
+            else
+            {
+                task.ContinueWith(t => handler(t.Exception.GetBaseException()), FireAndForgetFlags);
+            }
+        }
+
+        private static void RunSync(Action action, Action<Exception> handler)
+        {
+            try
+            {
+                action?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                handler?.Invoke(ex);
+            }
+        }
+
+        private static async Task RunSync(Func<Task> asyncAction, Action<Exception> handler)
+        {
+            try
+            {
+                await asyncAction?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                handler?.Invoke(ex);
+            }
+        }
+
+        #endregion TryFireAndForget
     }
 }

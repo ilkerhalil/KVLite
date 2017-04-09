@@ -117,7 +117,9 @@ namespace PommaLabs.KVLite.SQLite
                        {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)}
                  where {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheValue.Partition)}
                    and {DbCacheValue.KeyColumn} = {p}{nameof(DbCacheValue.Key)}
-                   and changes() = 0 -- Above INSERT has failed
+                   and changes() = 0; -- Above INSERT has failed
+
+                pragma optimize -- Improves overall DB performance
             ");
 
             #endregion Commands
