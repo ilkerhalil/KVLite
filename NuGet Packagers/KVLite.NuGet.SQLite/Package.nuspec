@@ -28,7 +28,7 @@
     <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <dependency id="PommaLabs.KVLite" version="6.1.0" />
-      <dependency id="System.Data.SQLite.Core" version="1.0.104.0" />
+      <dependency id="System.Data.SQLite.Core" version="1.0.105.0" />
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>
