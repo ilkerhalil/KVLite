@@ -41,14 +41,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CodeProject.ObjectPool, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\CodeProject.ObjectPool.3.0.1\lib\net45\CodeProject.ObjectPool.dll</HintPath>
+      <HintPath>..\..\packages\CodeProject.ObjectPool.3.0.3\lib\net45\CodeProject.ObjectPool.dll</HintPath>
     </Reference>
     <Reference Include="Dapper.StrongName, Version=1.50.2.0, Culture=neutral, PublicKeyToken=e3e8412083d25dd3, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Dapper.StrongName.1.50.2\lib\net45\Dapper.StrongName.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PommaLabs.Thrower, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Thrower.4.1.2\lib\net45\PommaLabs.Thrower.dll</HintPath>

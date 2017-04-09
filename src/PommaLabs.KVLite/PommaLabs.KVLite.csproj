@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeProject.ObjectPool" Version="3.0.1" />
+    <PackageReference Include="CodeProject.ObjectPool" Version="3.0.3" />
     <PackageReference Include="Thrower" Version="4.1.2" />
   </ItemGroup>
 

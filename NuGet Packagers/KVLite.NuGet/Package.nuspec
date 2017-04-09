@@ -28,25 +28,25 @@
     <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
     <dependencies>
       <group targetFramework="net46">
-        <dependency id="CodeProject.ObjectPool" version="3.0.1" />
+        <dependency id="CodeProject.ObjectPool" version="3.0.3" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
-        <dependency id="Newtonsoft.Json" version="10.0.1" />
+        <dependency id="Newtonsoft.Json" version="10.0.2" />
         <dependency id="Polly-Signed" version="5.0.6" />
         <dependency id="PommaLabs.KVLite.Core" version="6.1.0" />
         <dependency id="System.IO.Compression" version="4.3.0" />
       </group>
       <group targetFramework="net45">
-        <dependency id="CodeProject.ObjectPool" version="3.0.1" />
+        <dependency id="CodeProject.ObjectPool" version="3.0.3" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
-        <dependency id="Newtonsoft.Json" version="10.0.1" />
+        <dependency id="Newtonsoft.Json" version="10.0.2" />
         <dependency id="Polly-Signed" version="5.0.6" />
         <dependency id="PommaLabs.KVLite.Core" version="6.1.0" />
         <dependency id="System.IO.Compression" version="4.3.0" />
       </group>
       <group targetFramework="net40">
-        <dependency id="CodeProject.ObjectPool" version="3.0.1" />
+        <dependency id="CodeProject.ObjectPool" version="3.0.3" />
         <dependency id="Dapper.StrongName" version="1.50.2" />
-        <dependency id="Newtonsoft.Json" version="10.0.1" />
+        <dependency id="Newtonsoft.Json" version="10.0.2" />
         <dependency id="Polly.Net40Async-Signed" version="5.0.6" />
         <dependency id="PommaLabs.KVLite.Core" version="6.1.0" />
       </group>
