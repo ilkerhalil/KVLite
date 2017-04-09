@@ -12,7 +12,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -138,7 +137,6 @@ namespace PommaLabs.KVLite
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>The number of items stored in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        [Pure]
         public static Task<int> DefaultPartitionCountAsync(this IAsyncCache cache, CancellationToken cancellationToken = default(CancellationToken))
             => cache.CountAsync(cache.Settings.DefaultPartition, cancellationToken);
 
@@ -149,7 +147,6 @@ namespace PommaLabs.KVLite
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>The number of items stored in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        [Pure]
         public static Task<long> DefaultPartitionLongCountAsync(this IAsyncCache cache, CancellationToken cancellationToken = default(CancellationToken))
             => cache.LongCountAsync(cache.Settings.DefaultPartition, cancellationToken);
 
@@ -166,7 +163,6 @@ namespace PommaLabs.KVLite
         /// <returns>Whether this cache contains the specified key in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        [Pure]
         public static Task<bool> DefaultPartitionContainsAsync(this IAsyncCache cache, string key, CancellationToken cancellationToken = default(CancellationToken))
             => cache.ContainsAsync(cache.Settings.DefaultPartition, key, cancellationToken);
 
@@ -375,7 +371,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        [Pure]
         public static Task<CacheResult<TVal>> PeekIntoDefaultPartitionAsync<TVal>(this IAsyncCache cache, string key, CancellationToken cancellationToken = default(CancellationToken))
             => cache.PeekAsync<TVal>(cache.Settings.DefaultPartition, key, cancellationToken);
 
@@ -399,7 +394,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        [Pure]
         public static Task<CacheResult<ICacheItem<TVal>>> PeekItemIntoDefaultPartitionAsync<TVal>(this IAsyncCache cache, string key, CancellationToken cancellationToken = default(CancellationToken))
             => cache.PeekItemAsync<TVal>(cache.Settings.DefaultPartition, key, cancellationToken);
 

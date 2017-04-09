@@ -24,8 +24,6 @@
 using CodeProject.ObjectPool.Specialized;
 using PommaLabs.KVLite.Extensibility;
 using System;
-using System.Diagnostics.Contracts;
-using System.IO;
 
 namespace PommaLabs.KVLite
 {
@@ -37,7 +35,6 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Returns <c>true</c> if all "Peek" methods are implemented, <c>false</c> otherwise.
         /// </summary>
-        [Pure]
         bool CanPeek { get; }
 
         /// <summary>
@@ -47,7 +44,6 @@ namespace PommaLabs.KVLite
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
         /// </remarks>
-        [Pure]
         IClock Clock { get; }
 
         /// <summary>
@@ -57,14 +53,12 @@ namespace PommaLabs.KVLite
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
         /// </remarks>
-        [Pure]
         ICompressor Compressor { get; }
 
         /// <summary>
         ///   Whether this cache has been disposed or not. When a cache has been disposed, no more
         ///   operations are allowed on it.
         /// </summary>
-        [Pure]
         bool Disposed { get; }
 
         /// <summary>
@@ -78,23 +72,20 @@ namespace PommaLabs.KVLite
         ///   Every error is carefully registered using an internal logger, so no information is lost
         ///   when the cache swallows the exception.
         /// </summary>
-        [Pure]
         Exception LastError { get; }
 
         /// <summary>
         ///   The maximum number of parent keys each item can have.
         /// </summary>
-        [Pure]
         int MaxParentKeyCountPerItem { get; }
 
         /// <summary>
-        ///   The pool used to retrieve <see cref="MemoryStream"/> instances.
+        ///   The pool used to retrieve <see cref="System.IO.MemoryStream"/> instances.
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="MemoryStreamPool.Instance"/>.
         /// </remarks>
-        [Pure]
         IMemoryStreamPool MemoryStreamPool { get; }
 
         /// <summary>
@@ -104,7 +95,6 @@ namespace PommaLabs.KVLite
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>.
         /// </remarks>
-        [Pure]
         ISerializer Serializer { get; }
     }
 }

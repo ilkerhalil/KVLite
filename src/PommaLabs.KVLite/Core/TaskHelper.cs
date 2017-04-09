@@ -42,9 +42,9 @@ namespace PommaLabs.KVLite.Core
             {
 #if NET40
                 return TaskEx.FromResult(0);
-#elif (NET45 || NETSTD11)
+#elif NET45
                 return Task.FromResult(0);
-#elif NET46
+#else
                 return Task.CompletedTask;
 #endif
             }
@@ -57,7 +57,7 @@ namespace PommaLabs.KVLite.Core
         /// <returns>A task that has been canceled.</returns>
         public static Task<TResult> CanceledTask<TResult>(CancellationToken cancellationToken = default(CancellationToken))
         {
-#if (NET40 || NET45 || NETSTD11)
+#if (NET40 || NET45)
             var tcs = new TaskCompletionSource<TResult>(cancellationToken);
             tcs.TrySetCanceled();
             return tcs.Task;
@@ -73,11 +73,11 @@ namespace PommaLabs.KVLite.Core
         /// <returns>A task that has been canceled.</returns>
         public static Task<TResult> ExceptionTask<TResult>(Exception exception)
         {
-#if (NET40 || NET45 || NETSTD11)
+#if (NET40 || NET45)
             var tcs = new TaskCompletionSource<TResult>();
             tcs.TrySetException(exception);
             return tcs.Task;
-#elif NET46
+#else
             return Task.FromException<TResult>(exception);
 #endif
         }
@@ -91,7 +91,7 @@ namespace PommaLabs.KVLite.Core
         {
 #if NET40
             return TaskEx.FromResult(result);
-#elif (NET45 || NET46 || NETSTD11)
+#else
             return Task.FromResult(result);
 #endif
         }

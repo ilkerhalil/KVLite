@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Diagnostics.Contracts;
 using System.IO;
 
 namespace PommaLabs.KVLite.Extensibility
@@ -36,7 +35,6 @@ namespace PommaLabs.KVLite.Extensibility
         /// </summary>
         /// <typeparam name="TObj">The type.</typeparam>
         /// <returns>True if given type is serializable, false otherwise.</returns>
-        [Pure]
         bool CanSerialize<TObj>();
 
         /// <summary>
@@ -45,7 +43,6 @@ namespace PommaLabs.KVLite.Extensibility
         /// <typeparam name="TObj">The type of the object.</typeparam>
         /// <param name="obj">The object.</param>
         /// <param name="outputStream">The output stream.</param>
-        [Pure]
         void SerializeToStream<TObj>(TObj obj, Stream outputStream);
 
         /// <summary>
@@ -53,7 +50,6 @@ namespace PommaLabs.KVLite.Extensibility
         /// </summary>
         /// <typeparam name="TObj">The type.</typeparam>
         /// <returns>True if given type is deserializable, false otherwise.</returns>
-        [Pure]
         bool CanDeserialize<TObj>();
 
         /// <summary>
@@ -62,7 +58,6 @@ namespace PommaLabs.KVLite.Extensibility
         /// <typeparam name="TObj">The type of the object.</typeparam>
         /// <param name="inputStream">The input stream.</param>
         /// <returns>The deserialized object.</returns>
-        [Pure]
         TObj DeserializeFromStream<TObj>(Stream inputStream);
     }
 }

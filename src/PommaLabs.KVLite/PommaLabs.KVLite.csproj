@@ -1,17 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <VersionPrefix>6.0.8</VersionPrefix>
-    <TargetFrameworks>netstandard1.3;net40;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard1.3;net40;net45;net46</TargetFrameworks>
     <AssemblyName>PommaLabs.KVLite</AssemblyName>
     <PackageId>PommaLabs.KVLite</PackageId>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.3' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
+
   <ItemGroup>
-    <Content Include="doxyfile.txt" />
+    <Compile Remove="doc\**" />
+    <EmbeddedResource Remove="doc\**" />
+    <None Remove="doc\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,22 +23,50 @@
     <PackageReference Include="Thrower" Version="4.1.2" />
   </ItemGroup>
 
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+    <DefineConstants>$(DefineConstants);NETSTD13</DefineConstants>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+  </PropertyGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
     <PackageReference Include="Polly-Signed" Version="5.0.6" />
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
+  <Import Project="Microsoft.Bcl.Build.targets" Condition=" Exists('Microsoft.Bcl.Build.targets') AND '$(TargetFramework)' == 'net40' " />
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net40' ">
+    <DefineConstants>$(DefineConstants);NET40</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" Exists('Microsoft.Bcl.Build.targets') AND '$(TargetFramework)' == 'net40' ">
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="Microsoft.Bcl.Build" Version="1.0.21" />
     <PackageReference Include="Polly.Net40Async-Signed" Version="5.0.6" />
-    <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
   </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <PackageReference Include="Polly-Signed" Version="5.0.6" />
-    <Reference Include="System" />
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net46' ">
+    <DefineConstants>$(DefineConstants);NET46</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+    <PackageReference Include="Polly-Signed" Version="5.0.6" />
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
   </ItemGroup>
 </Project>

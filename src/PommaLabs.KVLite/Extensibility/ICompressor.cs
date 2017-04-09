@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
 using System.IO;
 
 namespace PommaLabs.KVLite.Extensibility
@@ -44,7 +43,6 @@ namespace PommaLabs.KVLite.Extensibility
         /// <exception cref="ArgumentException">
         ///   <paramref name="backingStream"/> cannot be written.
         /// </exception>
-        [Pure]
         Stream CreateCompressionStream(Stream backingStream);
 
         /// <summary>
@@ -58,7 +56,6 @@ namespace PommaLabs.KVLite.Extensibility
         /// <exception cref="ArgumentException">
         ///   <paramref name="backingStream"/> cannot be written.
         /// </exception>
-        [Pure]
         Stream CreateDecompressionStream(Stream backingStream);
     }
 }

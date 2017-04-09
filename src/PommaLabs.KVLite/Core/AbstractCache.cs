@@ -100,7 +100,7 @@ namespace PommaLabs.KVLite.Core
         /// <summary>
         ///   Gets the log used by the cache.
         /// </summary>
-        protected ILog Log { get; } = LogProvider.GetCurrentClassLogger();
+        protected ILog Log { get; } = LogProvider.GetLogger(typeof(AbstractCache<TSettings>));
 
         /// <summary>
         ///   Computes cache size in bytes. This value might be an estimate of real cache size and,

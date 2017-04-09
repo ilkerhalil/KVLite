@@ -12,7 +12,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 namespace PommaLabs.KVLite
 {
@@ -27,7 +26,6 @@ namespace PommaLabs.KVLite
         ///   The settings available for the cache.
         /// </summary>
         /// <value>The settings available for the cache.</value>
-        [Pure]
         new TSettings Settings { get; }
     }
 
@@ -54,7 +52,6 @@ namespace PommaLabs.KVLite
         ///   The settings available for the cache.
         /// </summary>
         /// <value>The settings available for the cache.</value>
-        [Pure]
         ICacheSettings Settings { get; }
 
         /// <summary>
@@ -73,7 +70,6 @@ namespace PommaLabs.KVLite
         ///   does not have a typed return object, because indexers cannot be generic. Therefore, we
         ///   have to return a simple <see cref="object"/>.
         /// </remarks>
-        [Pure]
         CacheResult<object> this[string partition, string key] { get; }
 
         /// <summary>
@@ -81,7 +77,6 @@ namespace PommaLabs.KVLite
         ///   therefore, it does not need to be extremely accurate.
         /// </summary>
         /// <returns>An estimate of cache size in bytes.</returns>
-        [Pure]
         long GetCacheSizeInBytes();
 
         #region Add
@@ -202,7 +197,6 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <returns>The number of items stored in the cache.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        [Pure]
         int Count();
 
         /// <summary>
@@ -212,7 +206,6 @@ namespace PommaLabs.KVLite
         /// <returns>The number of items stored in given partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
-        [Pure]
         int Count(string partition);
 
         /// <summary>
@@ -220,7 +213,6 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <returns>The number of items stored in the cache.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        [Pure]
         long LongCount();
 
         /// <summary>
@@ -230,7 +222,6 @@ namespace PommaLabs.KVLite
         /// <returns>The number of items stored in given partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
-        [Pure]
         long LongCount(string partition);
 
         #endregion Count
@@ -247,7 +238,6 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
-        [Pure]
         bool Contains(string partition, string key);
 
         #endregion Contains
@@ -479,7 +469,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        [Pure]
         CacheResult<TVal> Peek<TVal>(string partition, string key);
 
         /// <summary>
@@ -503,7 +492,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        [Pure]
         CacheResult<ICacheItem<TVal>> PeekItem<TVal>(string partition, string key);
 
         /// <summary>
@@ -520,7 +508,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        [Pure]
         IList<ICacheItem<TVal>> PeekItems<TVal>();
 
         /// <summary>
@@ -539,7 +526,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        [Pure]
         IList<ICacheItem<TVal>> PeekItems<TVal>(string partition);
 
         #endregion Peek & PeekItem(s)

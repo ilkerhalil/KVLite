@@ -12,7 +12,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +28,6 @@ namespace PommaLabs.KVLite
         ///   The settings available for the async cache.
         /// </summary>
         /// <value>The settings available for the async cache.</value>
-        [Pure]
         new TSettings Settings { get; }
     }
 
@@ -56,7 +54,6 @@ namespace PommaLabs.KVLite
         ///   The settings available for the async cache.
         /// </summary>
         /// <value>The settings available for the async cache.</value>
-        [Pure]
         IAsyncCacheSettings Settings { get; }
 
         /// <summary>
@@ -76,7 +73,6 @@ namespace PommaLabs.KVLite
         ///   return object, because indexers cannot be generic. Therefore, we have to return a
         ///   simple <see cref="object"/>.
         /// </remarks>
-        [Pure]
         Task<CacheResult<object>> this[string partition, string key] { get; }
 
         /// <summary>
@@ -85,7 +81,6 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>An estimate of cache size in bytes.</returns>
-        [Pure]
         Task<long> GetCacheSizeInBytesAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         #region Add
@@ -213,7 +208,6 @@ namespace PommaLabs.KVLite
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>The number of items stored in the cache.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        [Pure]
         Task<int> CountAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -224,7 +218,6 @@ namespace PommaLabs.KVLite
         /// <returns>The number of items stored in given partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
-        [Pure]
         Task<int> CountAsync(string partition, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -233,7 +226,6 @@ namespace PommaLabs.KVLite
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>The number of items stored in the cache.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        [Pure]
         Task<long> LongCountAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -244,7 +236,6 @@ namespace PommaLabs.KVLite
         /// <returns>The number of items stored in given partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="partition"/> is null.</exception>
-        [Pure]
         Task<long> LongCountAsync(string partition, CancellationToken cancellationToken = default(CancellationToken));
 
         #endregion Count
@@ -262,7 +253,6 @@ namespace PommaLabs.KVLite
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="partition"/> or <paramref name="key"/> are null.
         /// </exception>
-        [Pure]
         Task<bool> ContainsAsync(string partition, string key, CancellationToken cancellationToken = default(CancellationToken));
 
         #endregion Contains
@@ -503,7 +493,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        [Pure]
         Task<CacheResult<TVal>> PeekAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -528,7 +517,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        [Pure]
         Task<CacheResult<ICacheItem<TVal>>> PeekItemAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -546,7 +534,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        [Pure]
         Task<IList<ICacheItem<TVal>>> PeekItemsAsync<TVal>(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -566,7 +553,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        [Pure]
         Task<IList<ICacheItem<TVal>>> PeekItemsAsync<TVal>(string partition, CancellationToken cancellationToken = default(CancellationToken));
 
         #endregion Peek & PeekItem(s)

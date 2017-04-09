@@ -12,7 +12,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 namespace PommaLabs.KVLite
 {
@@ -137,7 +136,6 @@ namespace PommaLabs.KVLite
         /// <param name="cache">The cache.</param>
         /// <returns>The number of items stored in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        [Pure]
         public static int DefaultPartitionCount(this ICache cache)
             => cache.Count(cache.Settings.DefaultPartition);
 
@@ -147,7 +145,6 @@ namespace PommaLabs.KVLite
         /// <param name="cache">The cache.</param>
         /// <returns>The number of items stored in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        [Pure]
         public static long DefaultPartitionLongCount(this ICache cache)
             => cache.LongCount(cache.Settings.DefaultPartition);
 
@@ -163,7 +160,6 @@ namespace PommaLabs.KVLite
         /// <returns>Whether this cache contains the specified key in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        [Pure]
         public static bool DefaultPartitionContains(this ICache cache, string key)
             => cache.Contains(cache.Settings.DefaultPartition, key);
 
@@ -361,7 +357,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        [Pure]
         public static CacheResult<TVal> PeekIntoDefaultPartition<TVal>(this ICache cache, string key)
             => cache.Peek<TVal>(cache.Settings.DefaultPartition, key);
 
@@ -384,7 +379,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        [Pure]
         public static CacheResult<ICacheItem<TVal>> PeekItemIntoDefaultPartition<TVal>(this ICache cache, string key)
             => cache.PeekItem<TVal>(cache.Settings.DefaultPartition, key);
 
