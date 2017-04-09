@@ -2,8 +2,8 @@
   <PropertyGroup>
     <VersionPrefix>6.0.8</VersionPrefix>
     <TargetFrameworks>net40;net45</TargetFrameworks>
-    <AssemblyName>PommaLabs.KVLite.MySql</AssemblyName>
-    <PackageId>PommaLabs.KVLite.MySql</PackageId>
+    <AssemblyName>PommaLabs.KVLite.Redis</AssemblyName>
+    <PackageId>PommaLabs.KVLite.Redis</PackageId>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -12,11 +12,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
-    <ProjectReference Include="..\PommaLabs.KVLite.Database\PommaLabs.KVLite.Database.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="6.9.9" />
+    <PackageReference Include="StackExchange.Redis" Version="1.2.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">

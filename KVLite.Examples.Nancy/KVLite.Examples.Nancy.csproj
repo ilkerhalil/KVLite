@@ -110,20 +110,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Platform Specific\KVLite.Nancy.NET45\KVLite.Nancy.NET45.csproj">
-      <Project>{64145a81-f369-4863-b02b-d4c14adb883e}</Project>
-      <Name>KVLite.Nancy.NET45</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Platform Specific\KVLite.NET45\KVLite.NET45.csproj">
-      <Project>{e1fa772f-c6f4-4333-8bb6-8bf6f252cacb}</Project>
-      <Name>KVLite.NET45</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Platform Specific\KVLite.SQLite.NET45\KVLite.SQLite.NET45.csproj">
-      <Project>{a917ea7f-859c-431b-889e-a47e5eba4392}</Project>
-      <Name>KVLite.SQLite.NET45</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="App_Data\PersistentCache\" />
   </ItemGroup>
   <PropertyGroup>

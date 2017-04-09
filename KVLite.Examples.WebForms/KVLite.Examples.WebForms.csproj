@@ -122,16 +122,6 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Platform Specific\KVLite.NET40\KVLite.NET40.csproj">
-      <Project>{b81fca47-a533-4ffb-b202-f6e07668eb66}</Project>
-      <Name>KVLite.NET40</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Platform Specific\KVLite.WebForms.NET40\KVLite.WebForms.NET40.csproj">
-      <Project>{130b3de5-0e0f-440d-982e-cfc1fc4ac4fa}</Project>
-      <Name>KVLite.WebForms.NET40</Name>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
