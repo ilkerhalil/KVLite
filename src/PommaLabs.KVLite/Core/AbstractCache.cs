@@ -1569,6 +1569,8 @@ namespace PommaLabs.KVLite.Core
 
         #region IAsyncCache members
 
+#if !NET40
+
         /// <summary>
         ///   The settings available for the async cache.
         /// </summary>
@@ -2664,6 +2666,8 @@ namespace PommaLabs.KVLite.Core
                 Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnWrite, partition, key), ex);
             }
         }
+
+#endif
 
         #endregion IAsyncCache members
     }

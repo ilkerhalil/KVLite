@@ -21,7 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#if (NET40 || NET45)
+#if !NETSTD13
 
 using PommaLabs.Thrower;
 using System;
@@ -43,7 +43,7 @@ namespace PommaLabs.KVLite.Extensibility
         private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
 
         /// <summary>
-        ///   Builds a JSON serializer using the default settings defined by <see cref="DefaultSerializerSettings"/>.
+        ///   Builds a binary serializer using the default settings defined by <see cref="DefaultSerializerSettings"/>.
         /// </summary>
         public BinarySerializer()
             : this(DefaultSerializerSettings)
@@ -51,7 +51,7 @@ namespace PommaLabs.KVLite.Extensibility
         }
 
         /// <summary>
-        ///   Builds a JSON serializer using the specified settings.
+        ///   Builds a binary serializer using the specified settings.
         /// </summary>
         /// <param name="serializerSettings">The serializer settings.</param>
         public BinarySerializer(BinarySerializerSettings serializerSettings)
