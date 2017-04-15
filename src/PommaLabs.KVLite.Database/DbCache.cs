@@ -35,7 +35,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -195,7 +194,6 @@ namespace PommaLabs.KVLite.Database
         /// </summary>
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
-        [Pure]
         public int Count(CacheReadMode cacheReadMode)
         {
             // Preconditions
@@ -224,7 +222,6 @@ namespace PommaLabs.KVLite.Database
         /// <param name="partition">The partition.</param>
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
-        [Pure]
         public int Count(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
@@ -253,7 +250,6 @@ namespace PommaLabs.KVLite.Database
         /// </summary>
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
-        [Pure]
         public long LongCount(CacheReadMode cacheReadMode)
         {
             // Preconditions
@@ -282,7 +278,6 @@ namespace PommaLabs.KVLite.Database
         /// <param name="partition">The partition.</param>
         /// <param name="cacheReadMode">Whether invalid items should be included in the count.</param>
         /// <returns>The number of items in the cache.</returns>
-        [Pure]
         public long LongCount(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
