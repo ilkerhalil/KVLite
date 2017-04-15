@@ -26,16 +26,6 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
-    <dependencies>
-      <dependency id="Oracle.ManagedDataAccess" version="12.1.24160719" />
-      <dependency id="PommaLabs.KVLite" version="6.1.0" />
-    </dependencies>
-    <references></references>
-    <frameworkAssemblies></frameworkAssemblies>
     <tags>kvlite oracle managed data access driver</tags>
   </metadata>
-  <files>
-    <file src="lib\" target="lib" />
-    <file src="..\..\LICENSE.md" target="LICENSE.md" />
-  </files>
 </package>
