@@ -24,7 +24,6 @@
 using PommaLabs.KVLite.Database;
 using System;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
 namespace PommaLabs.KVLite.SqlServer
@@ -41,7 +40,6 @@ namespace PommaLabs.KVLite.SqlServer
         ///   Gets the default settings for <see cref="SqlServerCache"/>.
         /// </summary>
         /// <value>The default settings for <see cref="SqlServerCache"/>.</value>
-        [Pure]
         public static SqlServerCacheSettings Default { get; } = new SqlServerCacheSettings();
 
         #endregion Properties

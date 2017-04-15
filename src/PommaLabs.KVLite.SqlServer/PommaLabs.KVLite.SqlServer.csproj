@@ -1,11 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <VersionPrefix>6.2.1</VersionPrefix>
+    <TargetFrameworks>netstandard1.3;net45</TargetFrameworks>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
   </PropertyGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Scripts\kvl_cache_entries.sql" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="doc\**" />
+    <EmbeddedResource Remove="doc\**" />
+    <None Remove="doc\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PommaLabs.KVLite.Database\PommaLabs.KVLite.Database.csproj" />
+  </ItemGroup>
 </Project>

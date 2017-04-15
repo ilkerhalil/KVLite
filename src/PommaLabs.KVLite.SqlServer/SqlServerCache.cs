@@ -25,7 +25,6 @@ using CodeProject.ObjectPool.Specialized;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
 
 namespace PommaLabs.KVLite.SqlServer
 {
@@ -40,7 +39,6 @@ namespace PommaLabs.KVLite.SqlServer
         ///   Gets the default instance for this cache kind. Default instance is configured using
         ///   default cache settings.
         /// </summary>
-        [Pure]
 #pragma warning disable CC0022 // Should dispose object
 
         public static SqlServerCache DefaultInstance { get; } = new SqlServerCache(new SqlServerCacheSettings());
