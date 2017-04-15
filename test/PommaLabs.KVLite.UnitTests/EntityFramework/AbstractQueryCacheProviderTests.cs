@@ -274,8 +274,6 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
             Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.True);
         }
 
-#if !NET40
-
         [Test]
         public async System.Threading.Tasks.Task FromCache_ItemsAreAvaialable_Async()
         {
@@ -353,8 +351,6 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
             Assert.That(_dbContext.Configuration.ProxyCreationEnabled, Is.True);
             Assert.That(_dbContext.Configuration.LazyLoadingEnabled, Is.True);
         }
-
-#endif
 
         [Test]
         public void FromCacheFirstOrDefault_ItemIsNotAvailable()

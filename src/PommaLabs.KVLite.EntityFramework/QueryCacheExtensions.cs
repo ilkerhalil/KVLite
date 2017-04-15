@@ -195,8 +195,6 @@ namespace EntityFramework.Extensions
 
         #region KVLite async query cache extensions
 
-#if !NET40
-
         /// <summary>
         ///   Returns the result of the query; if possible from the cache, otherwise the query is
         ///   materialized and the result cached before being returned.
@@ -350,8 +348,6 @@ namespace EntityFramework.Extensions
             var cachePolicy = CachePolicy.WithSlidingExpiration(interval);
             return query.FromCacheFirstOrDefaultAsync(cachePolicy, tags);
         }
-
-#endif
 
         #endregion KVLite async query cache extensions
 

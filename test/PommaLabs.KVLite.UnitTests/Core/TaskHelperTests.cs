@@ -30,32 +30,10 @@ namespace PommaLabs.KVLite.UnitTests.Core
 {
     internal sealed class TaskHelperTests : AbstractTests
     {
-        [TestCase(100)]
-        [TestCase(1000)]
-        [TestCase(10000)]
-        public void RunSync_ManyTimes_QuickJob(int times)
-        {
-            for (var i = 0; i < times; ++i)
-            {
-                TaskHelper.RunSync(async () => await TaskHelper.CompletedTask);
-            }
-        }
-
         [TestCase(1)]
         [TestCase(10)]
         [TestCase(100)]
-        public void RunSync_FewTimes_SmallJob(int times)
-        {
-            for (var i = 0; i < times; ++i)
-            {
-                TaskHelper.RunSync(async () => await TaskHelper.DelayTask(10));
-            }
-        }
-
-        [TestCase(1)]
-        [TestCase(10)]
-        [TestCase(100)]
-        public void AllFiredActionsShouldBeExecuted(int count)
+        public async Task AllFiredActionsShouldBeExecuted(int count)
         {
             var stack = new ConcurrentStack<int>();
             for (var i = 0; i < count; ++i)
@@ -63,14 +41,7 @@ namespace PommaLabs.KVLite.UnitTests.Core
                 var localIndex = i;
                 TaskHelper.TryFireAndForget(() => stack.Push(localIndex));
             }
-
-            var delay = 30 * count;
-#if (NET35 || NET40)
-            System.Threading.Thread.Sleep(delay);
-#else
-            System.Threading.Tasks.Task.Delay(delay).Wait();
-#endif
-
+            await Task.Delay(30 * count);
             stack.Count.ShouldBe(count);
         }
     }

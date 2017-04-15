@@ -38,13 +38,8 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-
-#if !NET40
-
 using System.Threading;
 using System.Threading.Tasks;
-
-#endif
 
 namespace PommaLabs.KVLite.Database
 {
@@ -130,8 +125,6 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
-#if !NET40
-
         /// <summary>
         ///   Clears the cache using the specified cache read mode.
         /// </summary>
@@ -163,8 +156,6 @@ namespace PommaLabs.KVLite.Database
                 return 0L;
             }
         }
-
-#endif
 
         /// <summary>
         ///   Clears the specified partition using the specified cache read mode.
@@ -426,8 +417,6 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
-#if !NET40
-
         /// <summary>
         ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
         ///   therefore, it does not need to be extremely accurate.
@@ -444,8 +433,6 @@ namespace PommaLabs.KVLite.Database
                 return (await db.QueryFirstOrDefaultAsync<long?>(cf.GetCacheSizeInBytesQuery).ConfigureAwait(false)) ?? 0L;
             }
         }
-
-#endif
 
         /// <summary>
         ///   Adds given value with the specified expiry time and refresh internal.
@@ -486,8 +473,6 @@ namespace PommaLabs.KVLite.Database
                 TaskHelper.TryFireAndForget(() => Clear(CacheReadMode.ConsiderExpiryDate));
             }
         }
-
-#if !NET40
 
         /// <summary>
         ///   Adds given value with the specified expiry time and refresh internal.
@@ -530,8 +515,6 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
-#endif
-
         /// <summary>
         ///   Clears this instance or a partition, if specified.
         /// </summary>
@@ -557,8 +540,6 @@ namespace PommaLabs.KVLite.Database
                 }
             }));
         }
-
-#if !NET40
 
         /// <summary>
         ///   Clears this instance or a partition, if specified.
@@ -587,8 +568,6 @@ namespace PommaLabs.KVLite.Database
             }).ConfigureAwait(false));
         }
 
-#endif
-
         /// <summary>
         ///   Determines whether cache contains the specified partition and key.
         /// </summary>
@@ -613,8 +592,6 @@ namespace PommaLabs.KVLite.Database
                 return db.QuerySingle<long>(cf.ContainsCacheEntryQuery, dbCacheEntrySingle) > 0L;
             }
         }
-
-#if !NET40
 
         /// <summary>
         ///   Determines whether cache contains the specified partition and key.
@@ -642,8 +619,6 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
-#endif
-
         /// <summary>
         ///   The number of items in the cache or in a partition, if specified.
         /// </summary>
@@ -667,8 +642,6 @@ namespace PommaLabs.KVLite.Database
                 return db.QuerySingle<long>(cf.CountCacheEntriesQuery, dbCacheEntryGroup);
             }
         }
-
-#if !NET40
 
         /// <summary>
         ///   The number of items in the cache or in a partition, if specified.
@@ -694,8 +667,6 @@ namespace PommaLabs.KVLite.Database
                 return await db.QuerySingleAsync<long>(cf.CountCacheEntriesQuery, dbCacheEntryGroup).ConfigureAwait(false);
             }
         }
-
-#endif
 
         /// <summary>
         ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
@@ -994,8 +965,6 @@ namespace PommaLabs.KVLite.Database
             }));
         }
 
-#if !NET40
-
         /// <summary>
         ///   Removes the value with given partition and key.
         /// </summary>
@@ -1020,8 +989,6 @@ namespace PommaLabs.KVLite.Database
                 }
             }).ConfigureAwait(false));
         }
-
-#endif
 
         /// <summary>
         ///   Converts given cache entry into dynamic parameters.
@@ -1221,16 +1188,12 @@ namespace PommaLabs.KVLite.Database
             .Handle<Exception>()
             .WaitAndRetry(3, i => TimeSpan.FromMilliseconds(10 * i * i));
 
-#if !NET40
-
         /// <summary>
         ///   Retry policy for DB cache operations.
         /// </summary>
         private static RetryPolicy AsyncRetryPolicy { get; } = Policy
             .Handle<Exception>()
             .WaitAndRetryAsync(3, i => TimeSpan.FromMilliseconds(10 * i * i));
-
-#endif
 
         private static void ThrowOnFailedRetries(Polly.PolicyResult policyResult)
         {

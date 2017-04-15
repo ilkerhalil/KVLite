@@ -28,16 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using WebApi.OutputCache.Core.Cache;
-
-#if NET40
-
-using WebAPI.OutputCache;
-
-#else
-
 using WebApi.OutputCache.V2;
-
-#endif
 
 namespace PommaLabs.KVLite.WebApi
 {

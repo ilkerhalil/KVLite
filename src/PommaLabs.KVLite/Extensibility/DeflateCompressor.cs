@@ -21,8 +21,6 @@ namespace PommaLabs.KVLite.Extensibility
     /// </summary>
     public sealed class DeflateCompressor : ICompressor
     {
-#if !NET40
-
         /// <summary>
         ///   The compression level.
         /// </summary>
@@ -56,17 +54,6 @@ namespace PommaLabs.KVLite.Extensibility
         /// </summary>
         public static CompressionLevel DefaultCompressionLevel { get; } = CompressionLevel.Fastest;
 
-#else
-
-        /// <summary>
-        ///   Builds a Deflate compressor using an optimal compression level.
-        /// </summary>
-        public DeflateCompressor()
-        {
-        }
-
-#endif
-
         /// <summary>
         ///   Thread safe singleton.
         /// </summary>
@@ -77,28 +64,13 @@ namespace PommaLabs.KVLite.Extensibility
         /// </summary>
         /// <param name="backingStream">The backing stream.</param>
         /// <returns>A new compression stream.</returns>
-#pragma warning disable CC0022 // Should dispose object
-
-        public Stream CreateCompressionStream(Stream backingStream)
-        {
-#if !NET40
-            return new DeflateStream(backingStream, _compressionLevel, true);
-#else
-            return new DeflateStream(backingStream, CompressionMode.Compress, true);
-#endif
-        }
-
-#pragma warning restore CC0022 // Should dispose object
+        public Stream CreateCompressionStream(Stream backingStream) => new DeflateStream(backingStream, _compressionLevel, true);
 
         /// <summary>
         ///   Creates a new decompression stream.
         /// </summary>
         /// <param name="backingStream">The backing stream.</param>
         /// <returns>A new decompression stream.</returns>
-#pragma warning disable CC0022 // Should dispose object
-
         public Stream CreateDecompressionStream(Stream backingStream) => new DeflateStream(backingStream, CompressionMode.Decompress, true);
-
-#pragma warning restore CC0022 // Should dispose object
     }
 }

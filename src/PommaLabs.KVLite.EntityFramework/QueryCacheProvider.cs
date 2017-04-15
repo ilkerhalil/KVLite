@@ -207,11 +207,7 @@ namespace PommaLabs.KVLite.EntityFramework
         /// </returns>
         public Task<object> GetOrAddAsync(CacheKey cacheKey, Func<CacheKey, Task<object>> valueFactory, CachePolicy cachePolicy)
         {
-#if NET40
-            return TaskEx.FromResult(GetOrAdd(cacheKey, ck => valueFactory?.Invoke(ck).Result, cachePolicy));
-#else
             return Task.FromResult(GetOrAdd(cacheKey, ck => valueFactory?.Invoke(ck).Result, cachePolicy));
-#endif
         }
 
         /// <summary>

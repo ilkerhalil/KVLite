@@ -121,7 +121,7 @@ namespace PommaLabs.KVLite.Core
             {
                 return TaskHelper.CanceledTask<long>(cancellationToken);
             }
-            return TaskHelper.ResultTask(GetCacheSizeInBytesInternal());
+            return Task.FromResult(GetCacheSizeInBytesInternal());
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace PommaLabs.KVLite.Core
                 return TaskHelper.CanceledTask<object>(cancellationToken);
             }
             AddInternal(partition, key, value, utcExpiry, interval, parentKeys);
-            return TaskHelper.CompletedTask;
+            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace PommaLabs.KVLite.Core
                 return TaskHelper.CanceledTask<long>(cancellationToken);
             }
             var result = ClearInternal(partition, cacheReadMode);
-            return TaskHelper.ResultTask(result);
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace PommaLabs.KVLite.Core
                 return TaskHelper.CanceledTask<bool>(cancellationToken);
             }
             var result = ContainsInternal(partition, key);
-            return TaskHelper.ResultTask(result);
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace PommaLabs.KVLite.Core
                 return TaskHelper.CanceledTask<long>(cancellationToken);
             }
             var result = CountInternal(partition, cacheReadMode);
-            return TaskHelper.ResultTask(result);
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -266,7 +266,7 @@ namespace PommaLabs.KVLite.Core
                 return TaskHelper.CanceledTask<CacheResult<TVal>>(cancellationToken);
             }
             var result = GetInternal<TVal>(partition, key);
-            return TaskHelper.ResultTask(result);
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -295,7 +295,7 @@ namespace PommaLabs.KVLite.Core
                 return TaskHelper.CanceledTask<CacheResult<ICacheItem<TVal>>>(cancellationToken);
             }
             var result = GetItemInternal<TVal>(partition, key);
-            return TaskHelper.ResultTask(result);
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -322,7 +322,7 @@ namespace PommaLabs.KVLite.Core
                 return TaskHelper.CanceledTask<IList<ICacheItem<TVal>>>(cancellationToken);
             }
             var result = GetItemsInternal<TVal>(partition);
-            return TaskHelper.ResultTask(result);
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -359,7 +359,7 @@ namespace PommaLabs.KVLite.Core
                 return TaskHelper.CanceledTask<CacheResult<TVal>>(cancellationToken);
             }
             var result = PeekInternal<TVal>(partition, key);
-            return TaskHelper.ResultTask(result);
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -396,7 +396,7 @@ namespace PommaLabs.KVLite.Core
                 return TaskHelper.CanceledTask<CacheResult<ICacheItem<TVal>>>(cancellationToken);
             }
             var result = PeekItemInternal<TVal>(partition, key);
-            return TaskHelper.ResultTask(result);
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -437,7 +437,7 @@ namespace PommaLabs.KVLite.Core
                 return TaskHelper.CanceledTask<IList<ICacheItem<TVal>>>(cancellationToken);
             }
             var result = PeekItemsInternal<TVal>(partition);
-            return TaskHelper.ResultTask(result);
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -460,7 +460,7 @@ namespace PommaLabs.KVLite.Core
                 return TaskHelper.CanceledTask<object>(cancellationToken);
             }
             RemoveInternal(partition, key);
-            return TaskHelper.CompletedTask;
+            return Task.FromResult(0);
         }
 
         #endregion Abstract members
@@ -1569,8 +1569,6 @@ namespace PommaLabs.KVLite.Core
 
         #region IAsyncCache members
 
-#if !NET40
-
         /// <summary>
         ///   The settings available for the async cache.
         /// </summary>
@@ -2666,8 +2664,6 @@ namespace PommaLabs.KVLite.Core
                 Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnWrite, partition, key), ex);
             }
         }
-
-#endif
 
         #endregion IAsyncCache members
     }

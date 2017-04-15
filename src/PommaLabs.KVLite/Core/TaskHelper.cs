@@ -34,30 +34,13 @@ namespace PommaLabs.KVLite.Core
     public static class TaskHelper
     {
         /// <summary>
-        ///   Gets a task that has already completed successfully.
-        /// </summary>
-        public static Task CompletedTask
-        {
-            get
-            {
-#if NET40
-                return TaskEx.FromResult(0);
-#elif NET45
-                return Task.FromResult(0);
-#else
-                return Task.CompletedTask;
-#endif
-            }
-        }
-
-        /// <summary>
         ///   Gets a task that has been canceled.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token used to cancel the task.</param>
         /// <returns>A task that has been canceled.</returns>
         public static Task<TResult> CanceledTask<TResult>(CancellationToken cancellationToken = default(CancellationToken))
         {
-#if (NET40 || NET45)
+#if NET45
             var tcs = new TaskCompletionSource<TResult>(cancellationToken);
             tcs.TrySetCanceled();
             return tcs.Task;
@@ -73,7 +56,7 @@ namespace PommaLabs.KVLite.Core
         /// <returns>A task that has been canceled.</returns>
         public static Task<TResult> ExceptionTask<TResult>(Exception exception)
         {
-#if (NET40 || NET45)
+#if NET45
             var tcs = new TaskCompletionSource<TResult>();
             tcs.TrySetException(exception);
             return tcs.Task;
@@ -81,59 +64,6 @@ namespace PommaLabs.KVLite.Core
             return Task.FromException<TResult>(exception);
 #endif
         }
-
-        /// <summary>
-        ///   Gets a task that bears given result.
-        /// </summary>
-        /// <param name="result">The result.</param>
-        /// <returns>A task that bears given result.</returns>
-        public static Task<TResult> ResultTask<TResult>(TResult result)
-        {
-#if NET40
-            return TaskEx.FromResult(result);
-#else
-            return Task.FromResult(result);
-#endif
-        }
-
-        /// <summary>
-        ///   Creates a task that completes after a time delay.
-        /// </summary>
-        /// <param name="millisecondsDelay">
-        ///   The number of milliseconds to wait before completing the returned task, or -1 to wait indefinitely.
-        /// </param>
-        /// <returns>A task that represents the time delay.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///   The millisecondsDelay argument is less than -1.
-        /// </exception>
-        public static Task DelayTask(int millisecondsDelay)
-        {
-#if NET40
-            return TaskEx.Delay(millisecondsDelay);
-#else
-            return Task.Delay(millisecondsDelay);
-#endif
-        }
-
-        #region RunSync
-
-        private static readonly TaskFactory MyTaskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
-
-        /// <summary>
-        ///   Runs a task synchronously.
-        /// </summary>
-        /// <param name="task">The function returning the task.</param>
-        public static void RunSync(Func<Task> task) => MyTaskFactory.StartNew(task).Unwrap().GetAwaiter().GetResult();
-
-        /// <summary>
-        ///   Runs a task synchronously.
-        /// </summary>
-        /// <typeparam name="T">The type of the result.</typeparam>
-        /// <param name="task">The function returning the task.</param>
-        /// <returns>The result.</returns>
-        public static T RunSync<T>(Func<Task<T>> task) => MyTaskFactory.StartNew(task).Unwrap().GetAwaiter().GetResult();
-
-        #endregion RunSync
 
         #region RunAsync
 
@@ -149,11 +79,7 @@ namespace PommaLabs.KVLite.Core
             {
                 return CanceledTask<object>(cancellationToken);
             }
-#if NET40
-            return Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
-#else
             return Task.Run(action);
-#endif
         }
 
         /// <summary>
@@ -169,11 +95,7 @@ namespace PommaLabs.KVLite.Core
             {
                 return CanceledTask<TResult>(cancellationToken);
             }
-#if NET40
-            return Task.Factory.StartNew(func, CancellationToken.None, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
-#else
             return Task.Run(func);
-#endif
         }
 
         #endregion RunAsync
@@ -277,11 +199,8 @@ namespace PommaLabs.KVLite.Core
 
         private static void RunAsync(Action action, Action<Exception> handler)
         {
-#if !NET40
             var task = Task.Run(action);
-#else
-            var task = Task.Factory.StartNew(action, System.Threading.CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
-#endif
+
             if (handler == null)
             {
                 task.ContinueWith(DefaultErrorContination, FireAndForgetFlags);
@@ -294,11 +213,8 @@ namespace PommaLabs.KVLite.Core
 
         private static void RunAsync(Func<Task> asyncAction, Action<Exception> handler)
         {
-#if !NET40
             var task = Task.Run(asyncAction);
-#else
-            var task = Task.Factory.StartNew(asyncAction, System.Threading.CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
-#endif
+
             if (handler == null)
             {
                 task.ContinueWith(DefaultErrorContination, FireAndForgetFlags);

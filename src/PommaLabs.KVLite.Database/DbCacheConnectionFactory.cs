@@ -215,8 +215,6 @@ namespace PommaLabs.KVLite.Database
             return connection;
         }
 
-#if !NET40
-
         /// <summary>
         ///   Opens a new connection to the specified data provider.
         /// </summary>
@@ -229,20 +227,6 @@ namespace PommaLabs.KVLite.Database
             await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
             return connection;
         }
-
-#else
-
-        /// <summary>
-        ///   Opens a new connection to the specified data provider.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation instruction.</param>
-        /// <returns>An open connection.</returns>
-        public Task<TConnection> OpenAsync(CancellationToken cancellationToken)
-        {
-            return TaskEx.FromResult(Open());
-        }
-
-#endif
 
         #region Query optimization
 

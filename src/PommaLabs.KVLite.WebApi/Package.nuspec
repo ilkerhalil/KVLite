@@ -37,11 +37,6 @@
         <dependency id="PommaLabs.KVLite.Core" version="6.1.0" />
         <dependency id="Strathweb.CacheOutput.WebApi2" version="0.10.0" />
       </group>
-      <group targetFramework="net40">
-        <dependency id="Microsoft.AspNet.WebApi.Client" version="[4.0.30506.0, 5.0.0)" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.1.0" />
-        <dependency id="Strathweb.CacheOutput" version="0.5" />
-      </group>
     </dependencies>
     <references></references>
     <frameworkAssemblies></frameworkAssemblies>
