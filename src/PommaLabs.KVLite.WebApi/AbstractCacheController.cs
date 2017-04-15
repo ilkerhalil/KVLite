@@ -21,13 +21,9 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Core;
-using PommaLabs.KVLite.Extensibility;
-using PommaLabs.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Http;
 
 namespace PommaLabs.KVLite.WebApi
 {
@@ -70,11 +66,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
         /// <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
         /// <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
-#if !NET40
-
         [Route("items")]
-#endif
-
         public virtual IEnumerable<ICacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
             // Removes the value, as stated in the docs.
@@ -97,11 +89,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="fromCreation">Optional, the minimum creation date items should have.</param>
         /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
         /// <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
-#if !NET40
-
         [Route("items/withValues")]
-#endif
-
         public virtual IEnumerable<ICacheItem<object>> GetItemsWithValues(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
             return QueryCacheItems(Cache.GetItems<object>(), partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
@@ -110,11 +98,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <summary>
         ///   Deletes all items stored in the cache.
         /// </summary>
-#if !NET40
-
         [Route("items")]
-#endif
-
         public virtual void DeleteItems()
         {
             Cache.Clear();
@@ -136,11 +120,7 @@ namespace PommaLabs.KVLite.WebApi
         ///   All _valid_ items stored in the cache for given partition which follow given search criteria.
         /// </returns>
         /// <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
-#if !NET40
-
         [Route("items/{partition}")]
-#endif
-
         public virtual IEnumerable<ICacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
             // Removes the value, as stated in the docs.
@@ -163,11 +143,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <returns>
         ///   All _valid_ items stored in the cache for given partition which follow given search criteria.
         /// </returns>
-#if !NET40
-
         [Route("items/{partition}/withValues")]
-#endif
-
         public virtual IEnumerable<ICacheItem<object>> GetPartitionItemsWithValues(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
         {
             return QueryCacheItems(Cache.GetItems<object>(partition), partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
@@ -177,11 +153,7 @@ namespace PommaLabs.KVLite.WebApi
         ///   Deletes all items stored in the cache with given partition.
         /// </summary>
         /// <param name="partition">The partition.</param>
-#if !NET40
-
         [Route("items/{partition}")]
-#endif
-
         public virtual void DeletePartitionItems(string partition) => Cache.Clear(partition);
 
         /// <summary>
@@ -190,11 +162,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
         /// <returns>A _valid_ item stored in the cache for given partition and key.</returns>
-#if !NET40
-
         [Route("items/{partition}/{key}")]
-#endif
-
         public virtual ICacheItem<object> GetItem(string partition, string key) => Cache.GetItem<object>(partition, key).ValueOrDefault();
 
         /// <summary>
@@ -202,11 +170,7 @@ namespace PommaLabs.KVLite.WebApi
         /// </summary>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
-#if !NET40
-
         [Route("items/{partition}/{key}")]
-#endif
-
         public virtual void DeleteItem(string partition, string key) => Cache.Remove(partition, key);
 
         /// <summary>

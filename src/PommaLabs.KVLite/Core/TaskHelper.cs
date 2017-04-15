@@ -49,22 +49,6 @@ namespace PommaLabs.KVLite.Core
 #endif
         }
 
-        /// <summary>
-        ///   Gets a task that has been blocked by given exception.
-        /// </summary>
-        /// <param name="exception">The exception that blocked the task.</param>
-        /// <returns>A task that has been canceled.</returns>
-        public static Task<TResult> ExceptionTask<TResult>(Exception exception)
-        {
-#if NET45
-            var tcs = new TaskCompletionSource<TResult>();
-            tcs.TrySetException(exception);
-            return tcs.Task;
-#else
-            return Task.FromException<TResult>(exception);
-#endif
-        }
-
         #region RunAsync
 
         /// <summary>
