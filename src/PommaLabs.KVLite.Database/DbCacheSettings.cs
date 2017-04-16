@@ -1,4 +1,4 @@
-﻿// File name: AbstractSQLiteCacheSettings.cs
+﻿// File name: DbCacheSettings.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //

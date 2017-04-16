@@ -1,4 +1,4 @@
-﻿// File name: DbCacheEntry.cs
+﻿// File name: DbCacheValue.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //

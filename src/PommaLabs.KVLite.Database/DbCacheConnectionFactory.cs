@@ -206,7 +206,7 @@ namespace PommaLabs.KVLite.Database
         ///   Opens a new connection to the specified data provider.
         /// </summary>
         /// <returns>An open connection.</returns>
-        public TConnection Open()
+        public virtual TConnection Open()
         {
             var connection = _dbProviderFactory.CreateConnection() as TConnection;
             connection.ConnectionString = ConnectionString;
@@ -219,7 +219,7 @@ namespace PommaLabs.KVLite.Database
         /// </summary>
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns>An open connection.</returns>
-        public async Task<TConnection> OpenAsync(CancellationToken cancellationToken)
+        public virtual async Task<TConnection> OpenAsync(CancellationToken cancellationToken)
         {
             var connection = _dbProviderFactory.CreateConnection() as TConnection;
             connection.ConnectionString = ConnectionString;

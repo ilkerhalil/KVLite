@@ -27,6 +27,8 @@ using PommaLabs.KVLite.Database;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.SQLite
 {
@@ -164,6 +166,29 @@ namespace PommaLabs.KVLite.SQLite
         {
             get { return _connectionString; }
             set { throw new NotSupportedException(); }
+        }
+
+        /// <summary>
+        ///   Opens a new connection to the specified data provider.
+        /// </summary>
+        /// <returns>An open connection.</returns>
+        public override SqliteConnection Open()
+        {
+            var conn = base.Open();
+            conn.Execute("PRAGMA foreign_keys = ON;");
+            return conn;
+        }
+
+        /// <summary>
+        ///   Opens a new connection to the specified data provider.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation instruction.</param>
+        /// <returns>An open connection.</returns>
+        public override async Task<SqliteConnection> OpenAsync(CancellationToken cancellationToken)
+        {
+            var conn = await base.OpenAsync(cancellationToken);
+            await conn.ExecuteAsync("PRAGMA foreign_keys = ON;");
+            return conn;
         }
 
         #endregion IDbCacheConnectionFactory members
