@@ -40,49 +40,10 @@ namespace PommaLabs.KVLite.Core
         /// <returns>A task that has been canceled.</returns>
         public static Task<TResult> CanceledTask<TResult>(CancellationToken cancellationToken = default(CancellationToken))
         {
-#if NET45
             var tcs = new TaskCompletionSource<TResult>(cancellationToken);
             tcs.TrySetCanceled();
             return tcs.Task;
-#else
-            return Task.FromCanceled<TResult>(cancellationToken);
-#endif
         }
-
-        #region RunAsync
-
-        /// <summary>
-        ///   Runs an action asynchronously.
-        /// </summary>
-        /// <param name="action">The action which should be run asynchronously.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>The task.</returns>
-        public static Task RunAsync(Action action, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<object>(cancellationToken);
-            }
-            return Task.Run(action);
-        }
-
-        /// <summary>
-        ///   Runs a function asynchronously.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="func">The function which should be run asynchronously.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>The task yielding the result.</returns>
-        public static Task<TResult> RunAsync<TResult>(Func<TResult> func, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<TResult>(cancellationToken);
-            }
-            return Task.Run(func);
-        }
-
-        #endregion RunAsync
 
         #region TryFireAndForget
 
