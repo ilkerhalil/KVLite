@@ -37,32 +37,32 @@ Task("Build-Debug")
     Build("Debug");
 });
 
-Task("Test-Debug")
-    .IsDependentOn("Build-Debug")
-    .Does(() =>
-{
-    Test("Debug");
-});
-
 Task("Build-Release")
-    .IsDependentOn("Test-Debug")
+    .IsDependentOn("Build-Debug")
     .Does(() => 
 {
     Build("Release");
 });
 
-Task("Test-Release")
-    .IsDependentOn("Build-Release")
-    .Does(() =>
-{
-    Test("Release");
-});
-
 Task("Pack-Release")
-    .IsDependentOn("Test-Release")
+    .IsDependentOn("Build-Release")
     .Does(() => 
 {
     Pack("Release");
+});
+
+Task("Test-Debug")
+    .IsDependentOn("Pack-Release")
+    .Does(() =>
+{
+    Test("Debug");
+});
+
+Task("Test-Release")
+    .IsDependentOn("Test-Debug")
+    .Does(() =>
+{
+    Test("Release");
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ Task("Pack-Release")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Pack-Release");
+    .IsDependentOn("Test-Release");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
