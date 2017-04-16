@@ -23,9 +23,7 @@
 
 using Microsoft.Data.Sqlite;
 using PommaLabs.KVLite.Database;
-using PommaLabs.Thrower;
 using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
 
 namespace PommaLabs.KVLite.SQLite

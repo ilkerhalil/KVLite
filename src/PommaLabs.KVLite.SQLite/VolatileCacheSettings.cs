@@ -25,7 +25,6 @@ using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
@@ -49,7 +48,6 @@ namespace PommaLabs.KVLite.SQLite
         ///   Gets the default settings for <see cref="VolatileCache"/>.
         /// </summary>
         /// <value>The default settings for <see cref="VolatileCache"/>.</value>
-        [Pure]
         public static VolatileCacheSettings Default { get; } = new VolatileCacheSettings();
 
         #endregion Properties

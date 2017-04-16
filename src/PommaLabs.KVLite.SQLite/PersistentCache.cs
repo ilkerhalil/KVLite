@@ -29,7 +29,6 @@ using PommaLabs.KVLite.Extensibility;
 using PommaLabs.Thrower.Goodies;
 using PommaLabs.Thrower.Logging;
 using System;
-using System.Diagnostics.Contracts;
 using System.IO;
 
 namespace PommaLabs.KVLite.SQLite
@@ -46,7 +45,6 @@ namespace PommaLabs.KVLite.SQLite
         ///   Gets the default instance for this cache kind. Default instance is configured using
         ///   default cache settings.
         /// </summary>
-        [Pure]
 #pragma warning disable CC0022 // Should dispose object
 
         public static PersistentCache DefaultInstance { get; } = new PersistentCache(new PersistentCacheSettings());

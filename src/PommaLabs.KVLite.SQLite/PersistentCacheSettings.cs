@@ -25,7 +25,6 @@ using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
 namespace PommaLabs.KVLite.SQLite
@@ -48,7 +47,6 @@ namespace PommaLabs.KVLite.SQLite
         ///   Gets the default settings for <see cref="PersistentCache"/>.
         /// </summary>
         /// <value>The default settings for <see cref="PersistentCache"/>.</value>
-        [Pure]
         public static PersistentCacheSettings Default { get; } = new PersistentCacheSettings();
 
         #endregion Properties
