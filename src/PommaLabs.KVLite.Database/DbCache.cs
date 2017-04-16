@@ -453,10 +453,8 @@ namespace PommaLabs.KVLite.Database
             ThrowOnFailedRetries(RetryPolicy.ExecuteAndCapture(() =>
             {
                 using (var db = cf.Open())
-                using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    db.Execute(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr);
-                    tr.Commit();
+                    db.Execute(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters);
                 }
             }));
 
@@ -494,10 +492,8 @@ namespace PommaLabs.KVLite.Database
             ThrowOnFailedRetries(await AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
             {
                 using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
-                using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    await db.ExecuteAsync(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, tr).ConfigureAwait(false);
-                    tr.Commit();
+                    await db.ExecuteAsync(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters).ConfigureAwait(false);
                 }
             }).ConfigureAwait(false));
 
@@ -787,9 +783,8 @@ namespace PommaLabs.KVLite.Database
 
             DbCacheEntry[] dbCacheEntries;
             using (var db = cf.Open())
-            using (var tr = db.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                dbCacheEntries = db.Query<DbCacheEntry>(cf.PeekCacheEntriesQuery, dbCacheEntryGroup, tr, false).ToArray();
+                dbCacheEntries = db.Query<DbCacheEntry>(cf.PeekCacheEntriesQuery, dbCacheEntryGroup, buffered: false).ToArray();
 
                 foreach (var dbCacheEntry in dbCacheEntries)
                 {
@@ -800,7 +795,7 @@ namespace PommaLabs.KVLite.Database
                         {
                             Partition = dbCacheEntry.Partition,
                             Key = dbCacheEntry.Key
-                        }, tr);
+                        });
                     }
                     else if (dbCacheEntry.Interval > 0L)
                     {
@@ -810,11 +805,9 @@ namespace PommaLabs.KVLite.Database
                             Partition = dbCacheEntry.Partition,
                             Key = dbCacheEntry.Key,
                             UtcExpiry = dbCacheEntry.UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
-                        }, tr);
+                        });
                     }
                 }
-
-                tr.Commit();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -1102,7 +1095,7 @@ namespace PommaLabs.KVLite.Database
                 Partition = partition,
                 Key = key,
                 UtcExpiry = utcExpiry.ToUnixTime(),
-                Interval = (long)interval.TotalSeconds,
+                Interval = (long) interval.TotalSeconds,
                 UtcCreation = Clock.ToUnixTime()
             };
 
@@ -1190,7 +1183,7 @@ namespace PommaLabs.KVLite.Database
             .Handle<Exception>()
             .WaitAndRetryAsync(3, i => TimeSpan.FromMilliseconds(10 * i * i));
 
-        private static void ThrowOnFailedRetries(Polly.PolicyResult policyResult)
+        private static void ThrowOnFailedRetries(PolicyResult policyResult)
         {
             if (policyResult.FinalException != null)
             {
@@ -1198,7 +1191,7 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
-        private static T ThrowOnFailedRetries<T>(Polly.PolicyResult<T> policyResult)
+        private static T ThrowOnFailedRetries<T>(PolicyResult<T> policyResult)
         {
             if (policyResult.FinalException != null)
             {
