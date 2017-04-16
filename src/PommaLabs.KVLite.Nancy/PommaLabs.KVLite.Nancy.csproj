@@ -4,8 +4,9 @@
     <VersionPrefix>6.2.1</VersionPrefix>
     <TargetFrameworks>net45</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
+    <!-- We cannot sign this assembly, since Nancy is not signed -->
+    <!--<AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>-->
+    <!--<SignAssembly>true</SignAssembly>-->
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
   </PropertyGroup>
 
