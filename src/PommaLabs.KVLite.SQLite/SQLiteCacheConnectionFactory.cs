@@ -22,15 +22,15 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Dapper;
+using Microsoft.Data.Sqlite;
 using PommaLabs.KVLite.Database;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
 
 namespace PommaLabs.KVLite.SQLite
 {
-    internal sealed class SQLiteCacheConnectionFactory<TSettings> : DbCacheConnectionFactory<SQLiteConnection>
+    internal sealed class SQLiteCacheConnectionFactory<TSettings> : DbCacheConnectionFactory<SqliteConnection>
         where TSettings : SQLiteCacheSettings<TSettings>
     {
         #region Constants
@@ -45,7 +45,7 @@ namespace PommaLabs.KVLite.SQLite
         #endregion Constants
 
         private readonly TSettings _settings;
-        private readonly SQLiteJournalModeEnum _journalMode;
+        private readonly string _mode;
         private string _vacuumCommand;
         private string _createCacheSchemaCommand;
         private string _getCacheEntriesSchemaQuery;
@@ -55,11 +55,11 @@ namespace PommaLabs.KVLite.SQLite
         /// </summary>
         private string _connectionString;
 
-        public SQLiteCacheConnectionFactory(TSettings settings, SQLiteJournalModeEnum journalMode)
-            : base(SQLiteFactory.Instance, null, null)
+        public SQLiteCacheConnectionFactory(TSettings settings, string journalMode)
+            : base(SqliteFactory.Instance, string.Empty, null)
         {
             _settings = settings;
-            _journalMode = journalMode;
+            _mode = journalMode;
         }
 
         /// <summary>
@@ -71,6 +71,7 @@ namespace PommaLabs.KVLite.SQLite
             base.UpdateCommandsAndQueries();
 
             var p = ParameterPrefix;
+            var s = SqlSchemaWithDot;
 
             #region Commands
 
@@ -118,8 +119,6 @@ namespace PommaLabs.KVLite.SQLite
                  where {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheValue.Partition)}
                    and {DbCacheValue.KeyColumn} = {p}{nameof(DbCacheValue.Key)}
                    and changes() = 0; -- Above INSERT has failed
-
-                pragma optimize -- Improves overall DB performance
             ");
 
             #endregion Commands
@@ -131,8 +130,8 @@ namespace PommaLabs.KVLite.SQLite
             ");
 
             _createCacheSchemaCommand = MinifyQuery($@"
-                DROP TABLE IF EXISTS {CacheSchemaName}.{CacheEntriesTableName};
-                CREATE TABLE {CacheSchemaName}.{CacheEntriesTableName} (
+                DROP TABLE IF EXISTS {s}{CacheEntriesTableName};
+                CREATE TABLE {s}{CacheEntriesTableName} (
                     kvle_partition TEXT NOT NULL,
                     kvle_key TEXT NOT NULL,
                     kvle_expiry BIGINT NOT NULL,
@@ -146,22 +145,22 @@ namespace PommaLabs.KVLite.SQLite
                     kvle_parent_key3 TEXT,
                     kvle_parent_key4 TEXT,
                     CONSTRAINT pk_kvle PRIMARY KEY (kvle_partition, kvle_key),
-                    CONSTRAINT fk_kvle_parent0 FOREIGN KEY (kvle_partition, kvle_parent_key0) REFERENCES kvl_cache_entries (kvle_partition, kvle_key) ON DELETE CASCADE,
-                    CONSTRAINT fk_kvle_parent1 FOREIGN KEY (kvle_partition, kvle_parent_key1) REFERENCES kvl_cache_entries (kvle_partition, kvle_key) ON DELETE CASCADE,
-                    CONSTRAINT fk_kvle_parent2 FOREIGN KEY (kvle_partition, kvle_parent_key2) REFERENCES kvl_cache_entries (kvle_partition, kvle_key) ON DELETE CASCADE,
-                    CONSTRAINT fk_kvle_parent3 FOREIGN KEY (kvle_partition, kvle_parent_key3) REFERENCES kvl_cache_entries (kvle_partition, kvle_key) ON DELETE CASCADE,
-                    CONSTRAINT fk_kvle_parent4 FOREIGN KEY (kvle_partition, kvle_parent_key4) REFERENCES kvl_cache_entries (kvle_partition, kvle_key) ON DELETE CASCADE
+                    CONSTRAINT fk_kvle_parent0 FOREIGN KEY (kvle_partition, kvle_parent_key0) REFERENCES {s}{CacheEntriesTableName} (kvle_partition, kvle_key) ON DELETE CASCADE,
+                    CONSTRAINT fk_kvle_parent1 FOREIGN KEY (kvle_partition, kvle_parent_key1) REFERENCES {s}{CacheEntriesTableName} (kvle_partition, kvle_key) ON DELETE CASCADE,
+                    CONSTRAINT fk_kvle_parent2 FOREIGN KEY (kvle_partition, kvle_parent_key2) REFERENCES {s}{CacheEntriesTableName} (kvle_partition, kvle_key) ON DELETE CASCADE,
+                    CONSTRAINT fk_kvle_parent3 FOREIGN KEY (kvle_partition, kvle_parent_key3) REFERENCES {s}{CacheEntriesTableName} (kvle_partition, kvle_key) ON DELETE CASCADE,
+                    CONSTRAINT fk_kvle_parent4 FOREIGN KEY (kvle_partition, kvle_parent_key4) REFERENCES {s}{CacheEntriesTableName} (kvle_partition, kvle_key) ON DELETE CASCADE
                 );
-                CREATE INDEX ix_kvle_exp_part ON {CacheEntriesTableName} (kvle_expiry DESC, kvle_partition ASC);
-                CREATE INDEX ix_kvle_parent0 ON {CacheEntriesTableName} (kvle_partition, kvle_parent_key0);
-                CREATE INDEX ix_kvle_parent1 ON {CacheEntriesTableName} (kvle_partition, kvle_parent_key1);
-                CREATE INDEX ix_kvle_parent2 ON {CacheEntriesTableName} (kvle_partition, kvle_parent_key2);
-                CREATE INDEX ix_kvle_parent3 ON {CacheEntriesTableName} (kvle_partition, kvle_parent_key3);
-                CREATE INDEX ix_kvle_parent4 ON {CacheEntriesTableName} (kvle_partition, kvle_parent_key4);
+                CREATE INDEX ix_kvle_exp_part ON {s}{CacheEntriesTableName} (kvle_expiry DESC, kvle_partition ASC);
+                CREATE INDEX ix_kvle_parent0 ON {s}{CacheEntriesTableName} (kvle_partition, kvle_parent_key0);
+                CREATE INDEX ix_kvle_parent1 ON {s}{CacheEntriesTableName} (kvle_partition, kvle_parent_key1);
+                CREATE INDEX ix_kvle_parent2 ON {s}{CacheEntriesTableName} (kvle_partition, kvle_parent_key2);
+                CREATE INDEX ix_kvle_parent3 ON {s}{CacheEntriesTableName} (kvle_partition, kvle_parent_key3);
+                CREATE INDEX ix_kvle_parent4 ON {s}{CacheEntriesTableName} (kvle_partition, kvle_parent_key4);
             ");
 
             _getCacheEntriesSchemaQuery = MinifyQuery($@"
-                PRAGMA table_info({CacheEntriesTableName})
+                PRAGMA table_info({s}{CacheEntriesTableName})
             ");
 
             #endregion Specific queries and commands
@@ -194,7 +193,7 @@ namespace PommaLabs.KVLite.SQLite
 
         internal void InitConnectionString(string dataSource)
         {
-            _connectionString = $"baseschemaname=kvlite;fulluri=\"{dataSource}\";journal mode={_journalMode};failifmissing=False;legacy format=False;read only=False;synchronous=Off;version=3;datetimeformat=Ticks;datetimekind=Utc;default timeout=180;prepareretries=3;enlist=False;foreign keys=True;recursive triggers=True;max page count={_settings.MaxCacheSizeInMB * 1024 * 1024 / PageSizeInBytes};page size={PageSizeInBytes};cache size=-2000;pooling=True";
+            _connectionString = $"Data Source={dataSource};Mode={_mode};Cache=Shared";
         }
 
         internal void EnsureSchemaIsReady()

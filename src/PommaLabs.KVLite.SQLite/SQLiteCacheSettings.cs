@@ -21,10 +21,10 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Microsoft.Data.Sqlite;
 using PommaLabs.KVLite.Database;
 using PommaLabs.Thrower;
 using System;
-using System.Data.SQLite;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
@@ -34,7 +34,7 @@ namespace PommaLabs.KVLite.SQLite
     ///   Settings used by SQLite caches.
     /// </summary>
     [Serializable, DataContract]
-    public abstract class SQLiteCacheSettings<TSettings> : DbCacheSettings<TSettings, SQLiteConnection>
+    public abstract class SQLiteCacheSettings<TSettings> : DbCacheSettings<TSettings, SqliteConnection>
         where TSettings : SQLiteCacheSettings<TSettings>
     {
         /// <summary>

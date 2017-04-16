@@ -22,11 +22,11 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
+using Microsoft.Data.Sqlite;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using System;
 using System.Data;
-using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 
 namespace PommaLabs.KVLite.SQLite
@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite.SQLite
     ///   An SQLite-based in-memory cache.
     /// </summary>
     /// <remarks>SQLite-based caches do not allow more than ten parent keys per item.</remarks>
-    public sealed class VolatileCache : DbCache<VolatileCacheSettings, SQLiteConnection>
+    public sealed class VolatileCache : DbCache<VolatileCacheSettings, SqliteConnection>
     {
         #region Default Instance
 
@@ -74,7 +74,7 @@ namespace PommaLabs.KVLite.SQLite
         /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
         public VolatileCache(VolatileCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
-            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, SQLiteJournalModeEnum.Memory), serializer, compressor, clock, memoryStreamPool, random)
+            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, "Memory"), serializer, compressor, clock, memoryStreamPool, random)
         {
             // Connection string must be customized by each cache.
             UpdateConnectionString();
@@ -95,12 +95,12 @@ namespace PommaLabs.KVLite.SQLite
         private void UpdateConnectionString()
         {
             var sqliteConnFactory = (Settings.ConnectionFactory as SQLiteCacheConnectionFactory<VolatileCacheSettings>);
-            var dataSource = GetDataSource(Settings.CacheName);
-            sqliteConnFactory.InitConnectionString(dataSource);
-            sqliteConnFactory.EnsureSchemaIsReady();
+            sqliteConnFactory.InitConnectionString(Settings.CacheName);
 
             _keepAliveConnection?.Dispose();
             _keepAliveConnection = sqliteConnFactory.Open();
+
+            sqliteConnFactory.EnsureSchemaIsReady();
         }
 
         /// <summary>
@@ -109,14 +109,6 @@ namespace PommaLabs.KVLite.SQLite
         /// <param name="changedPropertyName">Name of the changed property.</param>
         /// <returns>Whether the changed property is the data source.</returns>
         private static bool DataSourceHasChanged(string changedPropertyName) => string.Equals(changedPropertyName, nameof(VolatileCacheSettings.CacheName), StringComparison.OrdinalIgnoreCase);
-
-        /// <summary>
-        ///   Gets the data source, that is, the location of the SQLite store (it might be a file
-        ///   path or a memory URI).
-        /// </summary>
-        /// <param name="cacheName">User specified cache name.</param>
-        /// <returns>The SQLite data source that will be used by the cache.</returns>
-        private static string GetDataSource(string cacheName) => string.Format("file:{0}?mode=memory&cache=shared", cacheName);
 
         #endregion Private members
     }

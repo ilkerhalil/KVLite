@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Core;
 using PommaLabs.Thrower;
 using System.Data.Common;
 using System.Diagnostics;
@@ -41,7 +40,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   Used to validate SQL names.
         /// </summary>
-        private static Regex IsValidSqlNameRegex { get; } = new Regex("[a-z0-9_]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static Regex IsValidSqlNameRegex { get; } = new Regex("[a-z0-9_]*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private readonly DbProviderFactory _dbProviderFactory;
         private string _cacheSchemaName;
@@ -251,6 +250,11 @@ namespace PommaLabs.KVLite.Database
         protected virtual string RightIdentifierEncloser { get; } = string.Empty;
 
         /// <summary>
+        ///   SQL schema including DOT character. If schema was empty, then this property will be empty.
+        /// </summary>
+        protected virtual string SqlSchemaWithDot => string.IsNullOrEmpty(CacheSchemaName) ? string.Empty : $"{CacheSchemaName}.";
+
+        /// <summary>
         ///   This method is called when either the cache schema name or the cache entries table name
         ///   have been changed by the user.
         /// </summary>
@@ -259,23 +263,24 @@ namespace PommaLabs.KVLite.Database
             var p = ParameterPrefix;
             var l = LeftIdentifierEncloser;
             var r = RightIdentifierEncloser;
+            var s = SqlSchemaWithDot;
 
             #region Commands
 
             DeleteCacheEntryCommand = MinifyQuery($@"
-                delete from {CacheSchemaName}.{CacheEntriesTableName}
+                delete from {s}{CacheEntriesTableName}
                  where {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Single.Partition)}
                    and {DbCacheValue.KeyColumn} = {p}{nameof(DbCacheEntry.Single.Key)}
             ");
 
             DeleteCacheEntriesCommand = MinifyQuery($@"
-                delete from {CacheSchemaName}.{CacheEntriesTableName}
+                delete from {s}{CacheEntriesTableName}
                  where ({p}{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Group.Partition)})
                    and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
             UpdateCacheEntryExpiryCommand = MinifyQuery($@"
-                update {CacheSchemaName}.{CacheEntriesTableName}
+                update {s}{CacheEntriesTableName}
                    set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheEntry.Single.UtcExpiry)}
                  where {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Single.Partition)}
                    and {DbCacheValue.KeyColumn} = {p}{nameof(DbCacheEntry.Single.Key)}

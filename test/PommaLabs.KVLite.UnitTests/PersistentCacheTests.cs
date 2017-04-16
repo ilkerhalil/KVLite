@@ -21,18 +21,17 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Microsoft.Data.Sqlite;
 using Ninject;
 using NUnit.Framework;
-using PommaLabs.KVLite;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.SQLite;
 using System;
-using System.Data.SQLite;
 
 namespace PommaLabs.KVLite.UnitTests
 {
-    internal sealed class PersistentCacheTests : AbstractCacheTests<PersistentCacheSettings, SQLiteConnection>
+    internal sealed class PersistentCacheTests : AbstractCacheTests<PersistentCacheSettings, SqliteConnection>
     {
         private const string BlankPath = "   ";
 

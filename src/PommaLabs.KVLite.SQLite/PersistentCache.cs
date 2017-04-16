@@ -22,13 +22,13 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
+using Microsoft.Data.Sqlite;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.Thrower.Goodies;
 using PommaLabs.Thrower.Logging;
 using System;
-using System.Data.SQLite;
 using System.Diagnostics.Contracts;
 using System.IO;
 
@@ -38,7 +38,7 @@ namespace PommaLabs.KVLite.SQLite
     ///   An SQLite-based persistent cache.
     /// </summary>
     /// <remarks>SQLite-based caches do not allow more than ten parent keys per item.</remarks>
-    public sealed class PersistentCache : DbCache<PersistentCacheSettings, SQLiteConnection>
+    public sealed class PersistentCache : DbCache<PersistentCacheSettings, SqliteConnection>
     {
         #region Default Instance
 
@@ -67,7 +67,7 @@ namespace PommaLabs.KVLite.SQLite
         /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
         public PersistentCache(PersistentCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
-            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, SQLiteJournalModeEnum.Wal), serializer, compressor, clock, memoryStreamPool, random)
+            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, "ReadWriteCreate"), serializer, compressor, clock, memoryStreamPool, random)
         {
             // Connection string must be customized by each cache.
             UpdateConnectionString();
@@ -140,7 +140,7 @@ namespace PommaLabs.KVLite.SQLite
                 Directory.CreateDirectory(cacheDir);
             }
 
-            return mappedPath;
+            return $"\"{mappedPath}\"";
         }
 
         #endregion Private members
