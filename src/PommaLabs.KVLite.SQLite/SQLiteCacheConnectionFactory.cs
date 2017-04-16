@@ -37,6 +37,7 @@ namespace PommaLabs.KVLite.SQLite
     {
         private readonly TSettings _settings;
         private readonly string _mode;
+        private readonly string _pragmas;
         private string _vacuumCommand;
         private string _createCacheSchemaCommand;
         private string _getCacheEntriesSchemaQuery;
@@ -46,11 +47,18 @@ namespace PommaLabs.KVLite.SQLite
         /// </summary>
         private string _connectionString;
 
-        public SQLiteCacheConnectionFactory(TSettings settings, string mode)
+        public SQLiteCacheConnectionFactory(TSettings settings, string mode, string journal)
             : base(SqliteFactory.Instance, string.Empty, null)
         {
             _settings = settings;
             _mode = mode;
+
+            // Used to configure each connection.
+            _pragmas = MinifyQuery($@"
+                PRAGMA foreign_keys = ON;
+                PRAGMA journal_mode = {journal};
+                PRAGMA synchronous = NORMAL;
+            ");
         }
 
         /// <summary>
@@ -175,7 +183,7 @@ namespace PommaLabs.KVLite.SQLite
         public override SqliteConnection Open()
         {
             var conn = base.Open();
-            conn.Execute("PRAGMA foreign_keys = ON;");
+            conn.Execute(_pragmas);
             return conn;
         }
 
@@ -187,7 +195,7 @@ namespace PommaLabs.KVLite.SQLite
         public override async Task<SqliteConnection> OpenAsync(CancellationToken cancellationToken)
         {
             var conn = await base.OpenAsync(cancellationToken);
-            await conn.ExecuteAsync("PRAGMA foreign_keys = ON;");
+            await conn.ExecuteAsync(_pragmas);
             return conn;
         }
 

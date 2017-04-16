@@ -65,7 +65,7 @@ namespace PommaLabs.KVLite.SQLite
         /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
         public PersistentCache(PersistentCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
-            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, "ReadWriteCreate"), serializer, compressor, clock, memoryStreamPool, random)
+            : base(settings, new SQLiteCacheConnectionFactory<PersistentCacheSettings>(settings, "ReadWriteCreate", "WAL"), serializer, compressor, clock, memoryStreamPool, random)
         {
             // Connection string must be customized by each cache.
             UpdateConnectionString();
