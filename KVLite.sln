@@ -37,9 +37,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logo", "logo", "{2FAF059E-A
 		logo\logo-original.png = logo\logo-original.png
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.Nancy", "KVLite.Examples.Nancy\KVLite.Examples.Nancy.csproj", "{ED638DD5-E755-4B7A-940D-5C94AB425686}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.Examples.Nancy", "KVLite.Examples.Nancy\PommaLabs.KVLite.Examples.Nancy.csproj", "{ED638DD5-E755-4B7A-940D-5C94AB425686}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.WebApi", "KVLite.Examples.WebApi\KVLite.Examples.WebApi.csproj", "{00CCC8C6-1415-4F6B-B830-1CBBB7F87CCF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.Examples.WebApi", "KVLite.Examples.WebApi\PommaLabs.KVLite.Examples.WebApi.csproj", "{00CCC8C6-1415-4F6B-B830-1CBBB7F87CCF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.Examples", "KVLite.Examples\PommaLabs.KVLite.Examples.csproj", "{B5A6DAE9-7620-47A8-8D00-4CEB00117717}"
 EndProject

@@ -24,7 +24,6 @@
 using Npgsql;
 using PommaLabs.KVLite.Database;
 using System;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
 namespace PommaLabs.KVLite.PostgreSql
@@ -41,7 +40,6 @@ namespace PommaLabs.KVLite.PostgreSql
         ///   Gets the default settings for <see cref="PostgreSqlCache"/>.
         /// </summary>
         /// <value>The default settings for <see cref="PostgreSqlCache"/>.</value>
-        [Pure]
         public static PostgreSqlCacheSettings Default { get; } = new PostgreSqlCacheSettings();
 
         #endregion Properties

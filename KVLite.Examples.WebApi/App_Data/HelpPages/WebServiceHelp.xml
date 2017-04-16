@@ -4,36 +4,36 @@
         <name>RestService.WebApi</name>
     </assembly>
     <members>
-        <member name="T:RestService.WebApi.Controllers.CacheController">
+        <member name="T:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController">
             <summary>
               Exposes the KVLite cache controller and allows further customizations.
             </summary>
         </member>
-        <member name="M:RestService.WebApi.Controllers.CacheController.#ctor(PommaLabs.KVLite.ICache)">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.#ctor(PommaLabs.KVLite.ICache)">
             <summary>
               Injects the <see cref="T:PommaLabs.KVLite.ICache"/> dependency into the base controller.
             </summary>
             <param name="cache">The cache.</param>
         </member>
-        <member name="M:RestService.WebApi.Controllers.CacheController.DeleteItem(System.String,System.String)">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.DeleteItem(System.String,System.String)">
             <summary>
               Deletes an item stored in the cache with given partition and key.
             </summary>
             <param name="partition">The partition.</param>
             <param name="key">The key.</param>
         </member>
-        <member name="M:RestService.WebApi.Controllers.CacheController.DeleteItems">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.DeleteItems">
             <summary>
               Deletes all items stored in the cache.
             </summary>
         </member>
-        <member name="M:RestService.WebApi.Controllers.CacheController.DeletePartitionItems(System.String)">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.DeletePartitionItems(System.String)">
             <summary>
               Deletes all items stored in the cache with given partition.
             </summary>
             <param name="partition">The partition.</param>
         </member>
-        <member name="M:RestService.WebApi.Controllers.CacheController.GetItem(System.String,System.String)">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetItem(System.String,System.String)">
             <summary>
               Returns a _valid_ item stored in the cache for given partition and key.
             </summary>
@@ -41,7 +41,7 @@
             <param name="key">The key.</param>
             <returns>A _valid_ item stored in the cache for given partition and key.</returns>
         </member>
-        <member name="M:RestService.WebApi.Controllers.CacheController.GetItems(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetItems(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
               Returns all _valid_ items stored in the cache which follow given search criteria.
               Values are omitted, in order to keep the response small.
@@ -59,7 +59,7 @@
             <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
             <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
         </member>
-        <member name="M:RestService.WebApi.Controllers.CacheController.GetItemsWithValues(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetItemsWithValues(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
               Returns all _valid_ items stored in the cache which follow given search criteria.
               Values are included in the response.
@@ -76,7 +76,7 @@
             <param name="toCreation">Optional, the maximum creation date items should have.</param>
             <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
         </member>
-        <member name="M:RestService.WebApi.Controllers.CacheController.GetPartitionItems(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetPartitionItems(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
               Returns all _valid_ items stored in the cache for given partition which follow given
               search criteria. Values are omitted, in order to keep the response small.
@@ -94,7 +94,7 @@
             </returns>
             <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
         </member>
-        <member name="M:RestService.WebApi.Controllers.CacheController.GetPartitionItemsWithValues(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetPartitionItemsWithValues(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
               Returns all _valid_ items stored in the cache for given partition which follow given
               search criteria. Values are included in the response.
@@ -111,35 +111,35 @@
               All _valid_ items stored in the cache for given partition which follow given search criteria.
             </returns>
         </member>
-        <member name="T:RestService.WebApi.Controllers.HelpController">
+        <member name="T:PommaLabs.KVLite.Examples.WebApi.Controllers.HelpController">
             <summary>
               The HELP controller.
             </summary>
             <remarks>Adjust routing prefix according to your own needs.</remarks>
         </member>
-        <member name="M:RestService.WebApi.Controllers.HelpController.Get">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.HelpController.Get">
             <summary>
               Redirects to Swagger help pages.
             </summary>
         </member>
-        <member name="M:RestService.WebApi.Controllers.HelpController.GetProcessWorkingSet64">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.HelpController.GetProcessWorkingSet64">
             <summary>
               Working set memory for current process.
             </summary>
             <returns>Working set memory for current process.</returns>
         </member>
-        <member name="M:RestService.WebApi.Controllers.HelpController.GetGcTotalMemory">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.HelpController.GetGcTotalMemory">
             <summary>
               Total memory used by GC.
             </summary>
             <returns>Total memory used by GC.</returns>
         </member>
-        <member name="T:RestService.WebApi.Startup">
+        <member name="T:PommaLabs.KVLite.Examples.WebApi.Startup">
             <summary>
               Configures the example service.
             </summary>
         </member>
-        <member name="M:RestService.WebApi.Startup.Configuration(Owin.IAppBuilder)">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Startup.Configuration(Owin.IAppBuilder)">
             <summary>
               Configures the example service.
             </summary>

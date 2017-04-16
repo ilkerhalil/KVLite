@@ -23,11 +23,10 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Ninject.Modules;
-using PommaLabs.KVLite;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.SQLite;
 
-namespace RestService.WebApi
+namespace PommaLabs.KVLite.Examples.WebApi
 {
     internal sealed class NinjectConfig : NinjectModule
     {
