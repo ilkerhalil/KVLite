@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <VersionPrefix>6.2.1</VersionPrefix>
-    <TargetFrameworks>net451</TargetFrameworks>
+    <TargetFrameworks>netstandard1.3;net451</TargetFrameworks>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
   </PropertyGroup>
 
@@ -17,6 +17,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SQLite" Version="1.1.0" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+    <DefineConstants>$(DefineConstants);NETSTD13</DefineConstants>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net451' ">
