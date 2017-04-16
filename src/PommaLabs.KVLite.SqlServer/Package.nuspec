@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite.SqlServer</id>
-    <version>6.1.0</version>
+    <version>6.2.1</version>
     <title>KVLite - SQL Server driver</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>

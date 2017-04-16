@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>PommaLabs.KVLite.WebApi</id>
-    <version>6.1.0</version>
+    <version>6.2.1</version>
     <title>KVLite - Web API output cache provider</title>
     <authors>Alessio Parma</authors>
     <owners>Alessio Parma</owners>
@@ -29,12 +29,12 @@
     <dependencies>
       <group targetFramework="net46">
         <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.1.0" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.2.1" />
         <dependency id="Strathweb.CacheOutput.WebApi2" version="0.10.0" />
       </group>
       <group targetFramework="net45">
         <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
-        <dependency id="PommaLabs.KVLite.Core" version="6.1.0" />
+        <dependency id="PommaLabs.KVLite.Core" version="6.2.1" />
         <dependency id="Strathweb.CacheOutput.WebApi2" version="0.10.0" />
       </group>
     </dependencies>

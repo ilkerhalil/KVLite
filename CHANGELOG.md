@@ -1,6 +1,6 @@
 # Changelog for PommaLabs.KVLite #
 
-### v6.1.1 (2017-04-??) ###
+### v6.2.1 (2017-04-??) ###
 
 * [UPD] Updated packages.
 * [UPD] Random cleanup task is now started on a dedicated thread. 
