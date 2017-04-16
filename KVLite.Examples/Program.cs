@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite;
 using PommaLabs.KVLite.SQLite;
 using System;
 using System.Collections.Generic;
@@ -95,7 +94,6 @@ namespace PommaLabs.KVLite.Examples
             {
                 CacheFile = "CustomCache.sqlite", // The SQLite DB used as the backend for the cache.
                 ChancesOfAutoCleanup = 10, // Number of inserts before a cache cleanup is issued.
-                MaxCacheSizeInMB = 64, // Max size in megabytes for the cache.
                 StaticIntervalInDays = 10 // How many days static values will last.
             };
 
