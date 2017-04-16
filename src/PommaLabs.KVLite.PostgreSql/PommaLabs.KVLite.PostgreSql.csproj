@@ -1,11 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyTitle>KVLite - PostgreSQL driver</AssemblyTitle>
     <VersionPrefix>6.2.1</VersionPrefix>
     <TargetFrameworks>netstandard1.3;net45</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>KVLite - PostgreSQL driver</Title>
+    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains default PostgreSQL driver.</Summary>
+    <Description>$(Summary)</Description>
+    <Authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</Authors>
+    <Copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</Copyright>
+    <PackageReleaseNotes>https://github.com/pomma89/KVLite/releases</PackageReleaseNotes>
+    <PackageIconUrl>http://pomma89.altervista.org/kvlite/logo-128.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/pomma89/KVLite</PackageProjectUrl>
+    <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;postgresql</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/pomma89/KVLite</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
