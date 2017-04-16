@@ -33,17 +33,6 @@ namespace PommaLabs.KVLite.SQLite
     internal sealed class SQLiteCacheConnectionFactory<TSettings> : DbCacheConnectionFactory<SqliteConnection>
         where TSettings : SQLiteCacheSettings<TSettings>
     {
-        #region Constants
-
-        /// <summary>
-        ///   The default SQLite page size in bytes. Do not change this value unless SQLite changes
-        ///   its defaults. WAL journal does limit the capability to change that value even when the
-        ///   DB is still empty.
-        /// </summary>
-        private const int PageSizeInBytes = 4096;
-
-        #endregion Constants
-
         private readonly TSettings _settings;
         private readonly string _mode;
         private string _vacuumCommand;
@@ -55,11 +44,11 @@ namespace PommaLabs.KVLite.SQLite
         /// </summary>
         private string _connectionString;
 
-        public SQLiteCacheConnectionFactory(TSettings settings, string journalMode)
+        public SQLiteCacheConnectionFactory(TSettings settings, string mode)
             : base(SqliteFactory.Instance, string.Empty, null)
         {
             _settings = settings;
-            _mode = journalMode;
+            _mode = mode;
         }
 
         /// <summary>
@@ -76,7 +65,7 @@ namespace PommaLabs.KVLite.SQLite
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
-                insert or ignore into {CacheEntriesTableName} (
+                insert or ignore into {s}{CacheEntriesTableName} (
                     {DbCacheValue.PartitionColumn},
                     {DbCacheValue.KeyColumn},
                     {DbCacheValue.UtcExpiryColumn},
@@ -105,7 +94,7 @@ namespace PommaLabs.KVLite.SQLite
                     {p}{nameof(DbCacheEntry.ParentKey4)}
                 );
 
-                update {CacheEntriesTableName}
+                update {s}{CacheEntriesTableName}
                    set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheValue.UtcExpiry)},
                        {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
                        {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},

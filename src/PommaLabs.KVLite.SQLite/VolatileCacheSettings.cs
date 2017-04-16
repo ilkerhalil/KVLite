@@ -43,18 +43,6 @@ namespace PommaLabs.KVLite.SQLite
 
         #endregion Fields
 
-        #region Construction
-
-        /// <summary>
-        ///   Sets default values for volatile cache settings.
-        /// </summary>
-        public VolatileCacheSettings()
-        {
-            MaxCacheSizeInMB = 256;
-        }
-
-        #endregion Construction
-
         #region Properties
 
         /// <summary>

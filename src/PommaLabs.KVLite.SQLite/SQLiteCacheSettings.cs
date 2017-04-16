@@ -37,33 +37,5 @@ namespace PommaLabs.KVLite.SQLite
     public abstract class SQLiteCacheSettings<TSettings> : DbCacheSettings<TSettings, SqliteConnection>
         where TSettings : SQLiteCacheSettings<TSettings>
     {
-        /// <summary>
-        ///   Backing field for <see cref="MaxCacheSizeInMB"/>.
-        /// </summary>
-        private int _maxCacheSizeInMB;
-
-        /// <summary>
-        ///   Max size in megabytes for the cache.
-        /// </summary>
-        [DataMember]
-        public int MaxCacheSizeInMB
-        {
-            get
-            {
-                var result = _maxCacheSizeInMB;
-
-                // Postconditions
-                Debug.Assert(result > 0);
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                Raise.ArgumentOutOfRangeException.If(value <= 0);
-
-                _maxCacheSizeInMB = value;
-                OnPropertyChanged();
-            }
-        }
     }
 }

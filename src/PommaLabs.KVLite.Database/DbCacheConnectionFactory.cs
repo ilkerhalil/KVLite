@@ -292,7 +292,7 @@ namespace PommaLabs.KVLite.Database
 
             ContainsCacheEntryQuery = MinifyQuery($@"
                 select count(*)
-                  from {CacheSchemaName}.{CacheEntriesTableName}
+                  from {s}{CacheEntriesTableName}
                  where {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Single.Partition)}
                    and {DbCacheValue.KeyColumn} = {p}{nameof(DbCacheEntry.Single.Key)}
                    and {DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}
@@ -300,7 +300,7 @@ namespace PommaLabs.KVLite.Database
 
             CountCacheEntriesQuery = MinifyQuery($@"
                 select count(*)
-                  from {CacheSchemaName}.{CacheEntriesTableName}
+                  from {s}{CacheEntriesTableName}
                  where ({p}{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Group.Partition)})
                    and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
@@ -318,7 +318,7 @@ namespace PommaLabs.KVLite.Database
                        x.{DbCacheEntry.ParentKey2Column}  {l}{nameof(DbCacheEntry.ParentKey2)}{r},
                        x.{DbCacheEntry.ParentKey3Column}  {l}{nameof(DbCacheEntry.ParentKey3)}{r},
                        x.{DbCacheEntry.ParentKey4Column}  {l}{nameof(DbCacheEntry.ParentKey4)}{r}
-                  from {CacheSchemaName}.{CacheEntriesTableName} x
+                  from {s}{CacheEntriesTableName} x
                  where ({p}{nameof(DbCacheEntry.Group.Partition)} is null or x.{DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Group.Partition)})
                    and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
@@ -336,7 +336,7 @@ namespace PommaLabs.KVLite.Database
                        x.{DbCacheEntry.ParentKey2Column}  {l}{nameof(DbCacheEntry.ParentKey2)}{r},
                        x.{DbCacheEntry.ParentKey3Column}  {l}{nameof(DbCacheEntry.ParentKey3)}{r},
                        x.{DbCacheEntry.ParentKey4Column}  {l}{nameof(DbCacheEntry.ParentKey4)}{r}
-                  from {CacheSchemaName}.{CacheEntriesTableName} x
+                  from {s}{CacheEntriesTableName} x
                  where {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Single.Partition)}
                    and {DbCacheValue.KeyColumn} = {p}{nameof(DbCacheEntry.Single.Key)}
                    and ({p}{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)})
@@ -350,7 +350,7 @@ namespace PommaLabs.KVLite.Database
                        x.{DbCacheValue.ValueColumn}       {l}{nameof(DbCacheValue.Value)}{r},
                        x.{DbCacheValue.CompressedColumn}  {l}{nameof(DbCacheValue.Compressed)}{r},
                        x.{DbCacheValue.UtcCreationColumn} {l}{nameof(DbCacheValue.UtcCreation)}{r}
-                  from {CacheSchemaName}.{CacheEntriesTableName} x
+                  from {s}{CacheEntriesTableName} x
                  where {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Single.Partition)}
                    and {DbCacheValue.KeyColumn} = {p}{nameof(DbCacheEntry.Single.Key)}
                    and ({p}{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)})
@@ -361,7 +361,7 @@ namespace PommaLabs.KVLite.Database
                      + sum({LengthSqlFunction}({DbCacheValue.KeyColumn}))
                      + sum({LengthSqlFunction}({DbCacheValue.ValueColumn}))
                      + count(*) * (3*8) -- Three fields of 8 bytes: expiry, interval, creation
-                  from {CacheSchemaName}.{CacheEntriesTableName}
+                  from {s}{CacheEntriesTableName}
             ");
 
             #endregion Queries

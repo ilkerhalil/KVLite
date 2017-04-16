@@ -42,18 +42,6 @@ namespace PommaLabs.KVLite.SQLite
 
         #endregion Fields
 
-        #region Construction
-
-        /// <summary>
-        ///   Sets default values for persistent cache settings.
-        /// </summary>
-        public PersistentCacheSettings()
-        {
-            MaxCacheSizeInMB = 1024;
-        }
-
-        #endregion Construction
-
         #region Properties
 
         /// <summary>
