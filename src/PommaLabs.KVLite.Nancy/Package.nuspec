@@ -26,16 +26,6 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
     <copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</copyright>
-    <dependencies>
-      <dependency id="Nancy" version="1.4.3" />
-      <dependency id="PommaLabs.KVLite.Core" version="6.1.0" />
-    </dependencies>
-    <references></references>
-    <frameworkAssemblies></frameworkAssemblies>
     <tags>kvlite nancy nancyfx response output cache caching bootstrapper</tags>
   </metadata>
-  <files>
-    <file src="lib\" target="lib" />
-    <file src="..\..\LICENSE.md" target="LICENSE.md" />
-  </files>
 </package>

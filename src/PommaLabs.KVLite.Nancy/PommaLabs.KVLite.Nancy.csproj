@@ -1,7 +1,30 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <VersionPrefix>6.2.1</VersionPrefix>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="doc\**" />
+    <EmbeddedResource Remove="doc\**" />
+    <None Remove="doc\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nancy" Version="1.4.3" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+  </ItemGroup>
 </Project>
