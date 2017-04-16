@@ -343,7 +343,7 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void AddStatic_NullValue()
         {
-            Cache.AddStaticToDefaultPartition(StringItems[0], (object) null);
+            Cache.AddStaticToDefaultPartition(StringItems[0], (object)null);
         }
 
         [Test]
@@ -690,7 +690,7 @@ namespace PommaLabs.KVLite.UnitTests
             var v2 = StringItems[3];
             var l = TimeSpan.FromMinutes(10);
 
-            var r = await Cache.GetOrAddTimedAsync(p, k, () => TaskHelper.ResultTask(Tuple.Create(v1, v2)), l);
+            var r = await Cache.GetOrAddTimedAsync(p, k, () => Task.FromResult(Tuple.Create(v1, v2)), l);
 
             var info = Cache.GetItem<Tuple<string, string>>(p, k).Value;
             Assert.IsNotNull(info);
@@ -970,7 +970,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
-                var task = TaskHelper.RunAsync(() => Cache.GetFromDefaultPartition<string>(StringItems[l]));
+                var task = Task.Run(() => Cache.GetFromDefaultPartition<string>(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i)
@@ -1312,7 +1312,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
-                var task = TaskHelper.RunAsync(() => Cache.PeekIntoDefaultPartition<string>(StringItems[l]));
+                var task = Task.Run(() => Cache.PeekIntoDefaultPartition<string>(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i)

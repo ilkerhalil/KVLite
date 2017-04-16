@@ -1,4 +1,4 @@
-﻿// File name: TaskHelperTests.cs
+﻿// File name: AssemblyInfo.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,29 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NUnit.Framework;
-using PommaLabs.KVLite.Core;
-using Shouldly;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
-namespace PommaLabs.KVLite.UnitTests.Core
-{
-    internal sealed class TaskHelperTests : AbstractTests
-    {
-        [TestCase(1)]
-        [TestCase(10)]
-        [TestCase(100)]
-        public async Task AllFiredActionsShouldBeExecuted(int count)
-        {
-            var stack = new ConcurrentStack<int>();
-            for (var i = 0; i < count; ++i)
-            {
-                var localIndex = i;
-                TaskHelper.TryFireAndForget(() => stack.Push(localIndex));
-            }
-            await Task.Delay(30 * count);
-            stack.Count.ShouldBe(count);
-        }
-    }
-}
+// Setting ComVisible to false makes the types in this assembly not visible to COM components. If you
+// need to access a type in this assembly from COM, set the ComVisible attribute to true on that type.
+[assembly: ComVisible(false)]

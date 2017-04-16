@@ -1,4 +1,4 @@
-﻿// File name: TaskHelperTests.cs
+﻿// File name: Program.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,29 +21,19 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NUnit.Framework;
-using PommaLabs.KVLite.Core;
-using Shouldly;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
+using NUnitLite;
 
-namespace PommaLabs.KVLite.UnitTests.Core
+namespace PommaLabs.KVLite.UnitTests
 {
-    internal sealed class TaskHelperTests : AbstractTests
+    internal static class Program
     {
-        [TestCase(1)]
-        [TestCase(10)]
-        [TestCase(100)]
-        public async Task AllFiredActionsShouldBeExecuted(int count)
+        public static int Main(string[] args)
         {
-            var stack = new ConcurrentStack<int>();
-            for (var i = 0; i < count; ++i)
-            {
-                var localIndex = i;
-                TaskHelper.TryFireAndForget(() => stack.Push(localIndex));
-            }
-            await Task.Delay(30 * count);
-            stack.Count.ShouldBe(count);
+#if NETSTD16
+            return new AutoRun(System.Reflection.Assembly.GetEntryAssembly()).Execute(args, new NUnit.Common.ColorConsoleWriter(), System.Console.In);
+#else
+            return new AutoRun().Execute(args);
+#endif
         }
     }
 }

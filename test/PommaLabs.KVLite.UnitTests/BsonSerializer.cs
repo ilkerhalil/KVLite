@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.Thrower;
@@ -40,10 +39,10 @@ namespace PommaLabs.KVLite.UnitTests
         private readonly Newtonsoft.Json.JsonSerializer _bsonSerializer;
 
         /// <summary>
-        ///   Builds a BSON serializer using the default settings defined by <see cref="Extensibility.JsonSerializer.DefaultSerializerSettings"/>.
+        ///   Builds a BSON serializer using the default settings defined by <see cref="JsonSerializer.DefaultSerializerSettings"/>.
         /// </summary>
         public BsonSerializer()
-            : this(Extensibility.JsonSerializer.DefaultSerializerSettings)
+            : this(JsonSerializer.DefaultSerializerSettings)
         {
         }
 
@@ -51,7 +50,7 @@ namespace PommaLabs.KVLite.UnitTests
         ///   Builds a BSON serializer using the specified settings.
         /// </summary>
         /// <param name="serializerSettings">The serializer settings.</param>
-        public BsonSerializer(JsonSerializerSettings serializerSettings)
+        public BsonSerializer(Newtonsoft.Json.JsonSerializerSettings serializerSettings)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(serializerSettings, nameof(serializerSettings));

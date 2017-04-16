@@ -522,7 +522,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
-                var task = TaskHelper.RunAsync(() => Cache.GetFromDefaultPartition<string>(StringItems[l]));
+                var task = Task.Run(() => Cache.GetFromDefaultPartition<string>(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i)
