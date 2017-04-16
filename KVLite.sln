@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.0
+VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-52E1-43BC-971F-94784A43B73E}"
 	ProjectSection(SolutionItems) = preProject
@@ -41,9 +41,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.Nancy", "KV
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.WebApi", "KVLite.Examples.WebApi\KVLite.Examples.WebApi.csproj", "{00CCC8C6-1415-4F6B-B830-1CBBB7F87CCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples", "KVLite.Examples\KVLite.Examples.csproj", "{B5A6DAE9-7620-47A8-8D00-4CEB00117717}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.Examples", "KVLite.Examples\PommaLabs.KVLite.Examples.csproj", "{B5A6DAE9-7620-47A8-8D00-4CEB00117717}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVLite.Examples.WebForms", "KVLite.Examples.WebForms\KVLite.Examples.WebForms.csproj", "{02AE0BEA-762D-4034-AB7C-F7A165E282F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.Examples.WebForms", "KVLite.Examples.WebForms\PommaLabs.KVLite.Examples.WebForms.csproj", "{02AE0BEA-762D-4034-AB7C-F7A165E282F7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite", "src\PommaLabs.KVLite\PommaLabs.KVLite.csproj", "{87427323-7ED7-4B50-9CCD-1ECB840A54DB}"
 EndProject
