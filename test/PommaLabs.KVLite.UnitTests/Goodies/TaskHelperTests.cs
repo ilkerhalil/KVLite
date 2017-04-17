@@ -22,12 +22,12 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NUnit.Framework;
-using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Goodies;
 using Shouldly;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
-namespace PommaLabs.KVLite.UnitTests.Core
+namespace PommaLabs.KVLite.UnitTests.Goodies
 {
     internal sealed class TaskHelperTests : AbstractTests
     {

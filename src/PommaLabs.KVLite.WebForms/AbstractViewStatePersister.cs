@@ -17,7 +17,7 @@
  *                                                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Resources;
 using PommaLabs.Thrower;
 using System;
 using System.Text;

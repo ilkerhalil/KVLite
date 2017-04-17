@@ -24,7 +24,7 @@
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.TinyIoc;
-using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Resources;
 using PommaLabs.Thrower;
 using PommaLabs.Thrower.Logging;
 using System;

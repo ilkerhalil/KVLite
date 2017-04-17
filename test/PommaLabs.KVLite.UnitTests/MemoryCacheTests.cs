@@ -22,10 +22,8 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NUnit.Framework;
-using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
-using PommaLabs.KVLite.WebForms;
 using System;
 using System.Collections.Generic;
 using System.Data;

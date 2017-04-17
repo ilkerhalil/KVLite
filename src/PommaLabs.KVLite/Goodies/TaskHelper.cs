@@ -26,25 +26,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.KVLite.Goodies
 {
     /// <summary>
     ///   Helpers for handling .NET tasks.
     /// </summary>
     public static class TaskHelper
     {
-        /// <summary>
-        ///   Gets a task that has been canceled.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token used to cancel the task.</param>
-        /// <returns>A task that has been canceled.</returns>
-        public static Task<TResult> CanceledTask<TResult>(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var tcs = new TaskCompletionSource<TResult>(cancellationToken);
-            tcs.TrySetCanceled();
-            return tcs.Task;
-        }
-
         #region TryFireAndForget
 
         /// <summary>

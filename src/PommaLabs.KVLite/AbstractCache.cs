@@ -23,6 +23,7 @@
 
 using CodeProject.ObjectPool.Specialized;
 using PommaLabs.KVLite.Extensibility;
+using PommaLabs.KVLite.Resources;
 using PommaLabs.Thrower;
 using PommaLabs.Thrower.Goodies;
 using PommaLabs.Thrower.Logging;
@@ -34,7 +35,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PommaLabs.KVLite.Core
+namespace PommaLabs.KVLite
 {
     /// <summary>
     ///   Abstract class which should make it easier to implement a new kind of cache.
@@ -119,7 +120,7 @@ namespace PommaLabs.KVLite.Core
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<long>(cancellationToken);
+                return CanceledTask<long>(cancellationToken);
             }
             return Task.FromResult(GetCacheSizeInBytesInternal());
         }
@@ -155,7 +156,7 @@ namespace PommaLabs.KVLite.Core
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<object>(cancellationToken);
+                return CanceledTask<object>(cancellationToken);
             }
             AddInternal(partition, key, value, utcExpiry, interval, parentKeys);
             return Task.FromResult(0);
@@ -180,7 +181,7 @@ namespace PommaLabs.KVLite.Core
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<long>(cancellationToken);
+                return CanceledTask<long>(cancellationToken);
             }
             var result = ClearInternal(partition, cacheReadMode);
             return Task.FromResult(result);
@@ -207,7 +208,7 @@ namespace PommaLabs.KVLite.Core
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<bool>(cancellationToken);
+                return CanceledTask<bool>(cancellationToken);
             }
             var result = ContainsInternal(partition, key);
             return Task.FromResult(result);
@@ -234,7 +235,7 @@ namespace PommaLabs.KVLite.Core
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<long>(cancellationToken);
+                return CanceledTask<long>(cancellationToken);
             }
             var result = CountInternal(partition, cacheReadMode);
             return Task.FromResult(result);
@@ -263,7 +264,7 @@ namespace PommaLabs.KVLite.Core
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<CacheResult<TVal>>(cancellationToken);
+                return CanceledTask<CacheResult<TVal>>(cancellationToken);
             }
             var result = GetInternal<TVal>(partition, key);
             return Task.FromResult(result);
@@ -292,7 +293,7 @@ namespace PommaLabs.KVLite.Core
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<CacheResult<ICacheItem<TVal>>>(cancellationToken);
+                return CanceledTask<CacheResult<ICacheItem<TVal>>>(cancellationToken);
             }
             var result = GetItemInternal<TVal>(partition, key);
             return Task.FromResult(result);
@@ -319,7 +320,7 @@ namespace PommaLabs.KVLite.Core
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<IList<ICacheItem<TVal>>>(cancellationToken);
+                return CanceledTask<IList<ICacheItem<TVal>>>(cancellationToken);
             }
             var result = GetItemsInternal<TVal>(partition);
             return Task.FromResult(result);
@@ -356,7 +357,7 @@ namespace PommaLabs.KVLite.Core
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<CacheResult<TVal>>(cancellationToken);
+                return CanceledTask<CacheResult<TVal>>(cancellationToken);
             }
             var result = PeekInternal<TVal>(partition, key);
             return Task.FromResult(result);
@@ -393,7 +394,7 @@ namespace PommaLabs.KVLite.Core
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<CacheResult<ICacheItem<TVal>>>(cancellationToken);
+                return CanceledTask<CacheResult<ICacheItem<TVal>>>(cancellationToken);
             }
             var result = PeekItemInternal<TVal>(partition, key);
             return Task.FromResult(result);
@@ -434,7 +435,7 @@ namespace PommaLabs.KVLite.Core
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<IList<ICacheItem<TVal>>>(cancellationToken);
+                return CanceledTask<IList<ICacheItem<TVal>>>(cancellationToken);
             }
             var result = PeekItemsInternal<TVal>(partition);
             return Task.FromResult(result);
@@ -457,7 +458,7 @@ namespace PommaLabs.KVLite.Core
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskHelper.CanceledTask<object>(cancellationToken);
+                return CanceledTask<object>(cancellationToken);
             }
             RemoveInternal(partition, key);
             return Task.FromResult(0);
@@ -2666,5 +2667,21 @@ namespace PommaLabs.KVLite.Core
         }
 
         #endregion IAsyncCache members
+
+        #region Helpers
+
+        /// <summary>
+        ///   Gets a task that has been canceled.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token used to cancel the task.</param>
+        /// <returns>A task that has been canceled.</returns>
+        private static Task<TResult> CanceledTask<TResult>(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var tcs = new TaskCompletionSource<TResult>(cancellationToken);
+            tcs.TrySetCanceled();
+            return tcs.Task;
+        }
+
+        #endregion Helpers
     }
 }

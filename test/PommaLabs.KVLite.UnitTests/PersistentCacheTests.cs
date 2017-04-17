@@ -24,8 +24,8 @@
 using Microsoft.Data.Sqlite;
 using Ninject;
 using NUnit.Framework;
-using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
+using PommaLabs.KVLite.Resources;
 using PommaLabs.KVLite.SQLite;
 using System;
 

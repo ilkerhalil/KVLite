@@ -23,9 +23,9 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Microsoft.Data.Sqlite;
-using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
+using PommaLabs.KVLite.Resources;
 using PommaLabs.Thrower.Goodies;
 using PommaLabs.Thrower.Logging;
 using System;
