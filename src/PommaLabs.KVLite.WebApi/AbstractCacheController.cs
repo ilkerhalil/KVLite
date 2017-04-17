@@ -21,7 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Extensibility;
+using NodaTime;
+using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
 using PommaLabs.Thrower;
 using System;
@@ -194,18 +195,18 @@ namespace PommaLabs.KVLite.WebApi
         /// <returns>The items extracted by the query.</returns>
         private static IEnumerable<ICacheItem<object>> QueryCacheItems(IEnumerable<ICacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
         {
-            var fromExpiryUnix = fromExpiry.HasValue ? fromExpiry.Value.ToUniversalTime().ToUnixTime() : new long?();
-            var toExpiryUnix = toExpiry.HasValue ? toExpiry.Value.ToUniversalTime().ToUnixTime() : new long?();
-            var fromCreationUnix = fromCreation.HasValue ? fromCreation.Value.ToUniversalTime().ToUnixTime() : new long?();
-            var toCreationUnix = toCreation.HasValue ? toCreation.Value.ToUniversalTime().ToUnixTime() : new long?();
+            var fromExpiryUnix = fromExpiry.HasValue ? fromExpiry.Value.ToInstant().ToUnixTimeSeconds() : new long?();
+            var toExpiryUnix = toExpiry.HasValue ? toExpiry.Value.ToInstant().ToUnixTimeSeconds() : new long?();
+            var fromCreationUnix = fromCreation.HasValue ? fromCreation.Value.ToInstant().ToUnixTimeSeconds() : new long?();
+            var toCreationUnix = toCreation.HasValue ? toCreation.Value.ToInstant().ToUnixTimeSeconds() : new long?();
 
             return from i in items
                    where string.IsNullOrWhiteSpace(partitionLike) || i.Partition.Contains(partitionLike)
                    where string.IsNullOrWhiteSpace(keyLike) || i.Key.Contains(keyLike)
-                   where !fromExpiryUnix.HasValue || i.UtcExpiry.ToUnixTime() >= fromExpiryUnix.Value
-                   where !toExpiryUnix.HasValue || i.UtcExpiry.ToUnixTime() <= toExpiryUnix.Value
-                   where !fromCreationUnix.HasValue || i.UtcCreation.ToUnixTime() >= fromCreationUnix.Value
-                   where !toCreationUnix.HasValue || i.UtcCreation.ToUnixTime() <= toCreationUnix.Value
+                   where !fromExpiryUnix.HasValue || i.UtcExpiry.ToUnixTimeSeconds() >= fromExpiryUnix.Value
+                   where !toExpiryUnix.HasValue || i.UtcExpiry.ToUnixTimeSeconds() <= toExpiryUnix.Value
+                   where !fromCreationUnix.HasValue || i.UtcCreation.ToUnixTimeSeconds() >= fromCreationUnix.Value
+                   where !toCreationUnix.HasValue || i.UtcCreation.ToUnixTimeSeconds() <= toCreationUnix.Value
                    select i;
         }
     }

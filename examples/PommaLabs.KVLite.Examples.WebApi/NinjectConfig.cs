@@ -23,6 +23,7 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Ninject.Modules;
+using NodaTime;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.SQLite;
 

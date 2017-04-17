@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using NodaTime;
 using NUnit.Framework;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.SQLite;
@@ -71,13 +72,13 @@ namespace PommaLabs.KVLite.UnitTests.WebApi
         [TestCase(30, 50, 6)]
         public void GetItems_LookupByExpiry(int fromExpiry, int toExpiry, int expectedCount)
         {
-            _controller.Cache.AddTimed("partition1", "key", 123, _controller.Cache.Clock.UtcNow.AddMinutes(30));
-            _controller.Cache.AddTimed("partition2", "key", 123, _controller.Cache.Clock.UtcNow.AddMinutes(40));
-            _controller.Cache.AddTimed("partition3", "key", 123, _controller.Cache.Clock.UtcNow.AddMinutes(50));
-            _controller.Cache.AddSliding("abc1", "def", 123, TimeSpan.FromMinutes(30));
-            _controller.Cache.AddSliding("abc2", "def", 123, TimeSpan.FromMinutes(40));
-            _controller.Cache.AddSliding("abc3", "def", 123, TimeSpan.FromMinutes(50));
-            var items = _controller.GetItems(fromExpiry: _controller.Cache.Clock.UtcNow.AddMinutes(fromExpiry), toExpiry: _controller.Cache.Clock.UtcNow.AddMinutes(toExpiry)).ToList();
+            _controller.Cache.AddTimed("partition1", "key", 123, _controller.Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(30));
+            _controller.Cache.AddTimed("partition2", "key", 123, _controller.Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(40));
+            _controller.Cache.AddTimed("partition3", "key", 123, _controller.Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(50));
+            _controller.Cache.AddSliding("abc1", "def", 123, Duration.FromMinutes(30));
+            _controller.Cache.AddSliding("abc2", "def", 123, Duration.FromMinutes(40));
+            _controller.Cache.AddSliding("abc3", "def", 123, Duration.FromMinutes(50));
+            var items = _controller.GetItems(fromExpiry: (_controller.Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(fromExpiry)).ToDateTimeUtc(), toExpiry: (_controller.Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(toExpiry)).ToDateTimeUtc()).ToList();
             expectedCount.ShouldBe(items.Count);
         }
 

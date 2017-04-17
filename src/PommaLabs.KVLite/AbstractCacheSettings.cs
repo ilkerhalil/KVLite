@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using NodaTime;
 using PommaLabs.Thrower;
 using System;
 using System.ComponentModel;
@@ -84,7 +85,7 @@ namespace PommaLabs.KVLite
                 Raise.ArgumentOutOfRangeException.If(value <= 0);
 
                 _staticIntervalInDays = value;
-                StaticInterval = TimeSpan.FromDays(value);
+                StaticInterval = Duration.FromDays(value);
                 OnPropertyChanged();
             }
         }
@@ -93,7 +94,7 @@ namespace PommaLabs.KVLite
         ///   How long static values will last. Computed from <see cref="StaticIntervalInDays"/>.
         /// </summary>
         [IgnoreDataMember]
-        public TimeSpan StaticInterval { get; private set; }
+        public Duration StaticInterval { get; private set; }
 
         #region Abstract Settings
 

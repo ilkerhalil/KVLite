@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using NodaTime;
 using System;
 using System.Collections.Generic;
 
@@ -113,7 +114,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null);
+        void AddSliding<TVal>(string partition, string key, TVal value, Duration interval, IList<string> parentKeys = null);
 
         /// <summary>
         ///   Adds a "static" value with given partition and key. Value will last as much as
@@ -157,7 +158,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        void AddTimed<TVal>(string partition, string key, TVal value, DateTime utcExpiry, IList<string> parentKeys = null);
+        void AddTimed<TVal>(string partition, string key, TVal value, Instant utcExpiry, IList<string> parentKeys = null);
 
         /// <summary>
         ///   Adds a "timed" value with given partition and key. Value will last for the specified
@@ -179,7 +180,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null);
+        void AddTimed<TVal>(string partition, string key, TVal value, Duration lifetime, IList<string> parentKeys = null);
 
         #endregion Add
 
@@ -354,7 +355,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null);
+        TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, Duration interval, IList<string> parentKeys = null);
 
         /// <summary>
         ///   At first, it tries to get the cache item with specified partition and key. If it is a
@@ -420,7 +421,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, DateTime utcExpiry, IList<string> parentKeys = null);
+        TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, Instant utcExpiry, IList<string> parentKeys = null);
 
         /// <summary>
         ///   At first, it tries to get the cache item with specified partition and key. If it is a
@@ -453,7 +454,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null);
+        TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, Duration lifetime, IList<string> parentKeys = null);
 
         #endregion GetOrAdd
 

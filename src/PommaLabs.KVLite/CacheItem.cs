@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using NodaTime;
 using PommaLabs.Thrower;
 using PommaLabs.Thrower.Goodies;
 using System;
@@ -84,7 +85,7 @@ namespace PommaLabs.KVLite
         /// <param name="utcExpiry">The UTC expiry time.</param>
         /// <param name="interval">The interval.</param>
         /// <param name="parentKeys">Parent keys, if any. Might be null.</param>
-        public CacheItem(string partition, string key, TVal value, DateTime utcCreation, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
+        public CacheItem(string partition, string key, TVal value, Instant utcCreation, Instant utcExpiry, Duration interval, IList<string> parentKeys)
         {
             Partition = partition;
             Key = key;
@@ -129,19 +130,19 @@ namespace PommaLabs.KVLite
         ///   When the cache item was created.
         /// </summary>
         [DataMember(Order = 3)]
-        public DateTime UtcCreation { get; set; }
+        public Instant UtcCreation { get; set; }
 
         /// <summary>
         ///   When the cache item will expire.
         /// </summary>
         [DataMember(Order = 4)]
-        public DateTime UtcExpiry { get; set; }
+        public Instant UtcExpiry { get; set; }
 
         /// <summary>
-        ///   The refresh interval, used if the item is sliding; if it is not, it equals to <see cref="TimeSpan.Zero"/>.
+        ///   The refresh interval, used if the item is sliding; if it is not, it equals to <see cref="Duration.Zero"/>.
         /// </summary>
         [DataMember(Order = 5)]
-        public TimeSpan Interval { get; set; }
+        public Duration Interval { get; set; }
 
         /// <summary>
         ///   The parent keys of this item. If not specified, the array will be empty, but not null.

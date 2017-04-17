@@ -23,6 +23,7 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Microsoft.Data.Sqlite;
+using NodaTime;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Resources;

@@ -23,6 +23,7 @@
 
 using EntityFramework;
 using EntityFramework.Caching;
+using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
 using PommaLabs.Thrower;
 using System;
@@ -167,12 +168,12 @@ namespace PommaLabs.KVLite.EntityFramework
                 case CacheExpirationMode.Absolute:
                     // The cache item will expire on the AbsoluteExpiration DateTime.
                     var utcExpiry = cachePolicy.AbsoluteExpiration.DateTime.ToUniversalTime();
-                    return Cache.GetOrAddTimed(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), utcExpiry, parentKeys);
+                    return Cache.GetOrAddTimed(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), utcExpiry.ToInstant(), parentKeys);
 
                 case CacheExpirationMode.Duration:
                     // The cache item will expire using the Duration property to calculate the
                     // absolute expiration from DateTimeOffset.Now.
-                    return Cache.GetOrAddTimed(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), cachePolicy.Duration, parentKeys);
+                    return Cache.GetOrAddTimed(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), cachePolicy.Duration.ToDuration(), parentKeys);
 
                 case CacheExpirationMode.None:
                     // The cache item will not expire.
@@ -180,7 +181,7 @@ namespace PommaLabs.KVLite.EntityFramework
 
                 case CacheExpirationMode.Sliding:
                     // The cache item will expire using the SlidingExpiration property as the sliding expiration.
-                    return Cache.GetOrAddSliding(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), cachePolicy.SlidingExpiration, parentKeys);
+                    return Cache.GetOrAddSliding(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), cachePolicy.SlidingExpiration.ToDuration(), parentKeys);
 
                 default:
                     // Should never execute line below...
@@ -243,13 +244,13 @@ namespace PommaLabs.KVLite.EntityFramework
                 case CacheExpirationMode.Absolute:
                     // The cache item will expire on the AbsoluteExpiration DateTime.
                     var utcExpiry = cachePolicy.AbsoluteExpiration.DateTime.ToUniversalTime();
-                    Cache.AddTimed(EfCachePartition, cacheKey.Key, value, utcExpiry, parentKeys);
+                    Cache.AddTimed(EfCachePartition, cacheKey.Key, value, utcExpiry.ToInstant(), parentKeys);
                     break;
 
                 case CacheExpirationMode.Duration:
                     // The cache item will expire using the Duration property to calculate the
                     // absolute expiration from DateTimeOffset.Now.
-                    Cache.AddTimed(EfCachePartition, cacheKey.Key, value, cachePolicy.Duration, parentKeys);
+                    Cache.AddTimed(EfCachePartition, cacheKey.Key, value, cachePolicy.Duration.ToDuration(), parentKeys);
                     break;
 
                 case CacheExpirationMode.None:
@@ -259,7 +260,7 @@ namespace PommaLabs.KVLite.EntityFramework
 
                 case CacheExpirationMode.Sliding:
                     // The cache item will expire using the SlidingExpiration property as the sliding expiration.
-                    Cache.AddSliding(EfCachePartition, cacheKey.Key, value, cachePolicy.SlidingExpiration, parentKeys);
+                    Cache.AddSliding(EfCachePartition, cacheKey.Key, value, cachePolicy.SlidingExpiration.ToDuration(), parentKeys);
                     break;
             }
 

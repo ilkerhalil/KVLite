@@ -23,6 +23,7 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Dapper;
+using NodaTime;
 using Polly;
 using Polly.Retry;
 using PommaLabs.KVLite.Extensibility;
@@ -441,7 +442,7 @@ namespace PommaLabs.KVLite.Database
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
-        protected sealed override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
+        protected sealed override void AddInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)
         {
             // Compute all parameters _before_ opening the connection.
             var cf = Settings.ConnectionFactory;
@@ -480,7 +481,7 @@ namespace PommaLabs.KVLite.Database
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
-        protected sealed override async Task AddAsyncInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys, CancellationToken cancellationToken)
+        protected sealed override async Task AddAsyncInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
             var cf = Settings.ConnectionFactory;
@@ -520,7 +521,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
-                UtcExpiry = Clock.ToUnixTime()
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             return ThrowOnFailedRetries(RetryPolicy.ExecuteAndCapture(() =>
@@ -547,7 +548,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
-                UtcExpiry = Clock.ToUnixTime()
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             return ThrowOnFailedRetries(await AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
@@ -574,7 +575,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
-                UtcExpiry = Clock.ToUnixTime()
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             using (var db = cf.Open())
@@ -600,7 +601,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
-                UtcExpiry = Clock.ToUnixTime()
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
@@ -625,7 +626,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
-                UtcExpiry = Clock.ToUnixTime()
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             using (var db = cf.Open())
@@ -650,7 +651,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
-                UtcExpiry = Clock.ToUnixTime()
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
@@ -676,7 +677,7 @@ namespace PommaLabs.KVLite.Database
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
                 IgnoreExpiryDate = DbCacheValue.True,
-                UtcExpiry = Clock.ToUnixTime()
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             DbCacheValue dbCacheValue;
@@ -728,7 +729,7 @@ namespace PommaLabs.KVLite.Database
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
                 IgnoreExpiryDate = DbCacheValue.True,
-                UtcExpiry = Clock.ToUnixTime()
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             DbCacheEntry dbCacheEntry;
@@ -778,7 +779,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
                 IgnoreExpiryDate = DbCacheValue.True,
-                UtcExpiry = Clock.ToUnixTime()
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             DbCacheEntry[] dbCacheEntries;
@@ -837,7 +838,7 @@ namespace PommaLabs.KVLite.Database
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.ToUnixTime()
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             DbCacheValue dbCacheValue;
@@ -874,7 +875,7 @@ namespace PommaLabs.KVLite.Database
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.ToUnixTime()
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             DbCacheEntry dbCacheEntry;
@@ -912,7 +913,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.ToUnixTime()
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             DbCacheEntry[] dbCacheEntries;
@@ -1040,9 +1041,9 @@ namespace PommaLabs.KVLite.Database
                     Partition = dbCacheEntry.Partition,
                     Key = dbCacheEntry.Key,
                     Value = UnsafeDeserializeCacheValue<TVal>(dbCacheEntry),
-                    UtcCreation = dbCacheEntry.UtcCreation.ToUtcDateTime(),
-                    UtcExpiry = dbCacheEntry.UtcExpiry.ToUtcDateTime(),
-                    Interval = TimeSpan.FromSeconds(dbCacheEntry.Interval)
+                    UtcCreation = Instant.FromUnixTimeSeconds(dbCacheEntry.UtcCreation),
+                    UtcExpiry = Instant.FromUnixTimeSeconds(dbCacheEntry.UtcExpiry),
+                    Interval = Duration.FromSeconds(dbCacheEntry.Interval)
                 };
 
                 // Quickly read the parent keys, if any.
@@ -1084,7 +1085,7 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
-        private SqlMapper.IDynamicParameters PrepareCacheEntryForAdd<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
+        private SqlMapper.IDynamicParameters PrepareCacheEntryForAdd<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)
         {
             var cf = Settings.ConnectionFactory;
 
@@ -1094,9 +1095,9 @@ namespace PommaLabs.KVLite.Database
             {
                 Partition = partition,
                 Key = key,
-                UtcExpiry = utcExpiry.ToUnixTime(),
+                UtcExpiry = utcExpiry.ToUnixTimeSeconds(),
                 Interval = (long) interval.TotalSeconds,
-                UtcCreation = Clock.ToUnixTime()
+                UtcCreation = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             // Serializing may be pretty expensive, therefore we keep it out of the connection.

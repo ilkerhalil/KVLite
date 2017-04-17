@@ -17,6 +17,7 @@
  *                                                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+using NodaTime;
 using PommaLabs.KVLite.Resources;
 using PommaLabs.Thrower;
 using System;
@@ -46,7 +47,7 @@ namespace PommaLabs.KVLite.WebForms
         /// <summary>
         ///   The cache interval is computed from the session timeout plus one minute.
         /// </summary>
-        private static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(HttpContext.Current.Session.Timeout + 1);
+        private static readonly Duration CacheInterval = Duration.FromMinutes(HttpContext.Current.Session.Timeout + 1);
 
         #endregion Constants
 

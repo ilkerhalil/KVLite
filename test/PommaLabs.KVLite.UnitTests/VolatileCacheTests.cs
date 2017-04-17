@@ -23,8 +23,8 @@
 
 using Microsoft.Data.Sqlite;
 using Ninject;
+using NodaTime;
 using NUnit.Framework;
-using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Resources;
 using PommaLabs.KVLite.SQLite;
 using System;
@@ -127,20 +127,20 @@ namespace PommaLabs.KVLite.UnitTests
         {
             foreach (var t in StringItems)
             {
-                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
             }
             Cache.Clear();
             Assert.AreEqual(0, Cache.Count());
             foreach (var t in StringItems)
             {
-                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
             }
             var volatileCache = (VolatileCache) Cache;
             volatileCache.Clear(CacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(0, Cache.Count());
             foreach (var t in StringItems)
             {
-                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
             }
             volatileCache.Clear(CacheReadMode.IgnoreExpiryDate);
             Assert.AreEqual(0, Cache.Count());
@@ -151,14 +151,14 @@ namespace PommaLabs.KVLite.UnitTests
         {
             foreach (var t in StringItems)
             {
-                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.AddMinutes(10));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
             }
             Cache.Clear();
             Assert.AreEqual(0, Cache.Count());
 
             foreach (var t in StringItems)
             {
-                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.UtcNow.AddMinutes(10));
+                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
             }
             var volatileCache = (VolatileCache) Cache;
             volatileCache.Clear(CacheReadMode.ConsiderExpiryDate);

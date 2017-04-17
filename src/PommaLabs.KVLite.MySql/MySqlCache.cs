@@ -23,6 +23,7 @@
 
 using CodeProject.ObjectPool.Specialized;
 using MySql.Data.MySqlClient;
+using NodaTime;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using System.Diagnostics.Contracts;

@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using NodaTime;
 using PommaLabs.KVLite.Resources;
 using PommaLabs.Thrower;
 using System;
@@ -124,14 +125,14 @@ namespace PommaLabs.KVLite.Goodies
                 if (pageIndex == pageSize)
                 {
                     pageIndex = 0;
-                    cache.AddTimed(cachePartition, ToCacheKey(pageNumber++), page, TimeSpan.FromDays(1));
+                    cache.AddTimed(cachePartition, ToCacheKey(pageNumber++), page, Duration.FromDays(1));
                 }
             }
 
             if (pageIndex != 0)
             {
                 Array.Resize(ref page, pageIndex);
-                cache.AddTimed(cachePartition, ToCacheKey(pageNumber++), page, TimeSpan.FromDays(1));
+                cache.AddTimed(cachePartition, ToCacheKey(pageNumber++), page, Duration.FromDays(1));
             }
 
             return new ImportResult

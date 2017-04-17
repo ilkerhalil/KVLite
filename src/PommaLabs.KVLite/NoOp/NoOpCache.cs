@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
+using NodaTime;
 using PommaLabs.KVLite.Extensibility;
 using System;
 using System.Collections.Generic;
@@ -109,7 +110,7 @@ namespace PommaLabs.KVLite.NoOp
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
-        protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
+        protected override void AddInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)
         {
             // Nothing to do.
         }

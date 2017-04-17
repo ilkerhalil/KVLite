@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using CodeProject.ObjectPool.Specialized;
+using NodaTime;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Resources;
 using PommaLabs.Thrower.Logging;
@@ -190,7 +191,7 @@ namespace PommaLabs.KVLite.Memory
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
-        protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTime utcExpiry, TimeSpan interval, IList<string> parentKeys)
+        protected override void AddInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)
         {
             byte[] serializedValue;
             bool compressed;
@@ -229,16 +230,16 @@ namespace PommaLabs.KVLite.Memory
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
-            var policy = (interval == TimeSpan.Zero)
-                ? new SystemCacheItemPolicy { AbsoluteExpiration = utcExpiry }
-                : new SystemCacheItemPolicy { SlidingExpiration = interval };
+            var policy = (interval == Duration.Zero)
+                ? new SystemCacheItemPolicy { AbsoluteExpiration = utcExpiry.ToDateTimeOffset() }
+                : new SystemCacheItemPolicy { SlidingExpiration = interval.ToTimeSpan() };
 
             if (parentKeys != null && parentKeys.Count > 0)
             {
                 policy.ChangeMonitors.Add(_store.CreateCacheEntryChangeMonitor(parentKeys.Select(pk => SerializeCacheKey(partition, pk))));
             }
 
-            var cacheValue = new CacheValue { Value = serializedValue, Compressed = compressed, UtcCreation = Clock.UtcNow };
+            var cacheValue = new CacheValue { Value = serializedValue, Compressed = compressed, UtcCreation = Clock.GetCurrentInstant() };
             _store.Set(SerializeCacheKey(partition, key), cacheValue, policy);
         }
 
@@ -500,7 +501,7 @@ namespace PommaLabs.KVLite.Memory
             public bool Compressed { get; set; }
 
             [DataMember(Name = "cr", Order = 2, EmitDefaultValue = false)]
-            public DateTime UtcCreation { get; set; }
+            public Instant UtcCreation { get; set; }
         }
 
         private static string SerializeCacheKey(string partition, string key)

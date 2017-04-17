@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using BenchmarkDotNet.Running;
+using NodaTime;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.MySql;
@@ -539,7 +540,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
             foreach (var table in tables)
             {
-                cache.AddTimedToDefaultPartition(table.TableName, table, DateTime.UtcNow.AddHours(1));
+                cache.AddTimedToDefaultPartition(table.TableName, table, cache.Clock.GetCurrentInstant() + Duration.FromHours(1));
             }
 
             var stopwatch = new Stopwatch();
@@ -570,7 +571,7 @@ namespace PommaLabs.KVLite.Benchmarks
             for (var i = 0; i < tables.Count; ++i)
             {
                 var table = tables[i];
-                tasks[i] = Task.Run(async () => await cache.AddTimedToDefaultPartitionAsync(table.TableName, table, DateTime.UtcNow.AddHours(1)));
+                tasks[i] = Task.Run(async () => await cache.AddTimedToDefaultPartitionAsync(table.TableName, table, cache.Clock.GetCurrentInstant() + Duration.FromHours(1)));
             }
             Task.WaitAll(tasks);
 

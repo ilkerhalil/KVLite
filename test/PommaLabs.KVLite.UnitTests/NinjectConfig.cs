@@ -23,6 +23,8 @@
 
 using CodeProject.ObjectPool.Specialized;
 using Ninject.Modules;
+using NodaTime;
+using NodaTime.Testing;
 using PommaLabs.KVLite.Extensibility;
 using System.Data.Entity.Infrastructure.Interception;
 
@@ -40,7 +42,7 @@ namespace PommaLabs.KVLite.UnitTests
                 .InSingletonScope();
 
             Bind<IClock>()
-                .ToConstant(FakeClock.Instance)
+                .ToConstant(new FakeClock(SystemClock.Instance.GetCurrentInstant()))
                 .InSingletonScope();
 
             Bind<ICompressor>()

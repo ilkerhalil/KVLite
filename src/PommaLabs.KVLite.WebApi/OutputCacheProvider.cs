@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
 using PommaLabs.Thrower;
 using System;
@@ -115,7 +116,7 @@ namespace PommaLabs.KVLite.WebApi
             {
                 parentKeys = new[] { dependsOnKey };
             }
-            Cache.AddTimed(ResponseCachePartition, key, o, expiration.UtcDateTime, parentKeys);
+            Cache.AddTimed(ResponseCachePartition, key, o, expiration.UtcDateTime.ToInstant(), parentKeys);
         }
 
 #pragma warning restore 1591
