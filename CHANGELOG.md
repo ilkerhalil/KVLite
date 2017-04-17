@@ -4,9 +4,10 @@
 
 * [UPD] Updated packages.
 * [UPD] Random cleanup task is now started on a dedicated thread. 
-* [REM] Removed support for .NET 4, since its async polyfill was causing issues with new project format.
-* [ADD] Added support for .NET Standard 1.x in all projects where it was feasible.
+* [REM] Removed support for .NET 4, since its async polyfill was causing issues with new project format (VS2017).
+* [ADD] Added support for .NET Standard 1.3 in all projects where it was feasible.
 * [UPD] Changed SQLite driver to Microsoft.Data.SQLite, in order to support .NET Standard 1.3.
+* [UPD] Using NodaTime clock and types instead of custom interfaces.
 
 ### v6.1.0 (2017-03-31) ###
 
