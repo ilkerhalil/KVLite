@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyTitle>KVLite - Oracle driver</AssemblyTitle>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet">
+    <Title>KVLite - Oracle driver</Title>
+    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains default Oracle driver.</Summary>
+    <Description>$(Summary)</Description>
+    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;oracle</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\kvl_cache_entries.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PommaLabs.KVLite.Database\PommaLabs.KVLite.Database.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.24160719" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+  </ItemGroup>
+</Project>

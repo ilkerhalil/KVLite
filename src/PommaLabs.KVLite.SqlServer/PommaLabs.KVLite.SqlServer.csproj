@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyTitle>KVLite - SQL Server driver</AssemblyTitle>
+    <TargetFrameworks>netstandard1.3;net45</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet">
+    <Title>KVLite - SQL Server driver</Title>
+    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains default SQL Server driver.</Summary>
+    <Description>$(Summary)</Description>
+    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;sqlserver</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\kvl_cache_entries.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PommaLabs.KVLite.Database\PommaLabs.KVLite.Database.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+    <DefineConstants>$(DefineConstants);NETSTD13</DefineConstants>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+  </ItemGroup>
+</Project>

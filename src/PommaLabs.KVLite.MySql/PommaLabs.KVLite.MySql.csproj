@@ -1,18 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <VersionPrefix>6.0.8</VersionPrefix>
-    <TargetFrameworks>net40;net45</TargetFrameworks>
-    <AssemblyName>PommaLabs.KVLite.MySql</AssemblyName>
-    <PackageId>PommaLabs.KVLite.MySql</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <AssemblyTitle>KVLite - MySQL driver</AssemblyTitle>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet">
+    <Title>KVLite - MySQL driver</Title>
+    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains default MySQL driver.</Summary>
+    <Description>$(Summary)</Description>
+    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;mysql</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
+    <EmbeddedResource Include="Scripts\kvl_cache_entries.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PommaLabs.KVLite.Database\PommaLabs.KVLite.Database.csproj" />
   </ItemGroup>
 
@@ -20,14 +26,12 @@
     <PackageReference Include="MySql.Data" Version="6.9.9" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
   </ItemGroup>
-
 </Project>

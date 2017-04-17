@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyTitle>KVLite - Nancy caching bootstrapper</AssemblyTitle>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- We cannot sign this assembly, since Nancy is not signed -->
+    <!--<AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>-->
+    <!--<SignAssembly>true</SignAssembly>-->
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet">
+    <Title>KVLite - Nancy caching bootstrapper</Title>
+    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains a Nancy caching bootstrapper.</Summary>
+    <Description>$(Summary)</Description>
+    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;nancy</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nancy" Version="1.4.3" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+  </ItemGroup>
+</Project>

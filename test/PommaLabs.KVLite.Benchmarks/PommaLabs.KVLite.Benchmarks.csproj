@@ -1,26 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net46</TargetFramework>
-    <AssemblyName>PommaLabs.KVLite.Benchmarks</AssemblyName>
     <OutputType>Exe</OutputType>
-    <PackageId>PommaLabs.KVLite.Benchmarks</PackageId>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.Core\PommaLabs.KVLite.Core.csproj" />
+    <ProjectReference Include="..\PommaLabs.KVLite.UnitTests\PommaLabs.KVLite.UnitTests.csproj" />
+    <!-- Drivers -->
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.Memory\PommaLabs.KVLite.Memory.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.MySql\PommaLabs.KVLite.MySql.csproj" />
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.Oracle\PommaLabs.KVLite.Oracle.csproj" />
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.SQLite\PommaLabs.KVLite.SQLite.csproj" />
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.SqlServer\PommaLabs.KVLite.SqlServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.10.3" />
+    <PackageReference Include="lz4net" Version="1.0.15.93" />
+    <PackageReference Include="NLipsum" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
   </ItemGroup>
 </Project>

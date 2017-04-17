@@ -1,5 +1,13 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.2.1 (2017-04-17) ###
+
+* [UPD] Updated packages.
+* [UPD] Random cleanup task is now started on a dedicated thread. 
+* [REM] Removed support for .NET 4, since its async polyfill was causing issues with new project format.
+* [ADD] Added support for .NET Standard 1.x in all projects where it was feasible.
+* [UPD] Changed SQLite driver to Microsoft.Data.SQLite, in order to support .NET Standard 1.3.
+
 ### v6.1.0 (2017-03-31) ###
 
 * [REM] Removed integration with Microsoft caching abstractions. It will be added again as a separate package. 
