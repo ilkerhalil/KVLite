@@ -1,35 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>KVLite - Nancy caching bootstrapper</AssemblyTitle>
-    <VersionPrefix>6.2.1</VersionPrefix>
     <TargetFrameworks>net45</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- We cannot sign this assembly, since Nancy is not signed -->
     <!--<AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>-->
     <!--<SignAssembly>true</SignAssembly>-->
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Label="NuGet">
     <Title>KVLite - Nancy caching bootstrapper</Title>
     <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains a Nancy caching bootstrapper.</Summary>
     <Description>$(Summary)</Description>
-    <Authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</Authors>
-    <Copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</Copyright>
-    <PackageReleaseNotes>https://github.com/pomma89/KVLite/releases</PackageReleaseNotes>
-    <PackageIconUrl>http://pomma89.altervista.org/kvlite/logo-128.png</PackageIconUrl>
-    <PackageProjectUrl>https://github.com/pomma89/KVLite</PackageProjectUrl>
-    <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
     <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;nancy</PackageTags>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/pomma89/KVLite</RepositoryUrl>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="doc\**" />
-    <EmbeddedResource Remove="doc\**" />
-    <None Remove="doc\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />

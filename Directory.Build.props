@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <VersionPrefix>6.2.1</VersionPrefix>
+    <AssemblyVersion>6.0.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet">
+    <Authors>Alessio Parma &lt;alessio.parma@gmail.com&gt;</Authors>
+    <Copyright>Copyright (c) 2014-2017 Alessio Parma &lt;alessio.parma@gmail.com&gt;</Copyright>
+    <PackageReleaseNotes>https://github.com/pomma89/KVLite/releases</PackageReleaseNotes>
+    <PackageIconUrl>http://pomma89.altervista.org/kvlite/logo-128.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/pomma89/KVLite</PackageProjectUrl>
+    <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/pomma89/KVLite</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="doc\**" />
+    <EmbeddedResource Remove="doc\**" />
+    <None Remove="doc\**" />
+  </ItemGroup>
+</Project>

@@ -21,13 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+using System.Security;
 
-// General Information about an assembly is controlled through the following set of attributes.
-// Change these attribute values to modify the information associated with an assembly.
-[assembly: AssemblyVersion("6.0.0")]
-
-// Setting ComVisible to false makes the types in this assembly not visible to COM components. If you
-// need to access a type in this assembly from COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
+// Allows an assembly to be called by partially trusted code. Without this declaration, only fully
+// trusted callers are able to use the assembly.
+[assembly: AllowPartiallyTrustedCallers]
