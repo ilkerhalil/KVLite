@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.Core\PommaLabs.KVLite.Core.csproj" />
     <!-- Drivers -->
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.Memory\PommaLabs.KVLite.Memory.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.SQLite\PommaLabs.KVLite.SQLite.csproj" />

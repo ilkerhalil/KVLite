@@ -57,14 +57,14 @@ namespace PommaLabs.KVLite.Nancy
 
         #region Internal Methods
 
-        internal static string GetRequestFingerprint(this NancyContext context)
+        internal static string GetRequestFingerprint(this NancyContext context, Extensibility.ISerializer serializer)
         {
             var requestSummary = new { path = context.Request.Path, body = context.ReadAllBody() };
 
             byte[] requestHash;
             using (var ms = MemoryStreamPool.Instance.GetObject().MemoryStream)
             {
-                JsonSerializer.Instance.SerializeToStream(requestSummary, ms);
+                serializer.SerializeToStream(requestSummary, ms);
 
                 ms.Position = 0L;
                 requestHash = MD5.Create().ComputeHash(ms);

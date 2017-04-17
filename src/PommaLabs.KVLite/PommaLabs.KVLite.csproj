@@ -9,15 +9,13 @@
 
   <PropertyGroup Label="NuGet">
     <Title>KVLite - SQL-based cache</Title>
-    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains core interfaces and implementations.</Summary>
+    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains core interfaces.</Summary>
     <Description>$(Summary)</Description>
     <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CodeProject.ObjectPool" Version="3.0.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
-    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
     <PackageReference Include="Thrower" Version="4.1.3" />
   </ItemGroup>
 
@@ -36,9 +34,5 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Core\" />
   </ItemGroup>
 </Project>

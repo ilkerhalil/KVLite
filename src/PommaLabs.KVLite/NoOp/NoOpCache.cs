@@ -77,11 +77,12 @@ namespace PommaLabs.KVLite.NoOp
         ///   Gets the serializer used by the cache.
         /// </summary>
         /// <value>The serializer used by the cache.</value>
+        /// ///
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>.
+        ///   constructor. If not specified, it defaults to <see cref="NoOpSerializer"/>.
         /// </remarks>
-        public override ISerializer Serializer { get; } = JsonSerializer.Instance;
+        public override ISerializer Serializer { get; } = NoOpSerializer.Instance;
 
         /// <summary>
         ///   The available settings for the cache.

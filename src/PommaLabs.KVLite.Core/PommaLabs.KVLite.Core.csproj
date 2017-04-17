@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyTitle>KVLite - Common SQL driver</AssemblyTitle>
+    <AssemblyTitle>KVLite - Core implementations</AssemblyTitle>
     <TargetFrameworks>netstandard1.3;net45</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
@@ -8,19 +8,19 @@
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet">
-    <Title>KVLite - Common SQL driver</Title>
-    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains SQL code shared by all drivers.</Summary>
+    <Title>KVLite - Core implementations</Title>
+    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains core implementations.</Summary>
     <Description>$(Summary)</Description>
-    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;sql</PackageTags>
+    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;core</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PommaLabs.KVLite.Core\PommaLabs.KVLite.Core.csproj" />
+    <ProjectReference Include="..\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper.StrongName" Version="1.50.2" />
-    <PackageReference Include="Polly-Signed" Version="5.0.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">

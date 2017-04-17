@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
+    <ProjectReference Include="..\PommaLabs.KVLite.Core\PommaLabs.KVLite.Core.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">

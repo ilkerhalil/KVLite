@@ -107,6 +107,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.Core\PommaLabs.KVLite.Core.csproj">
+      <Project>{f62a10bb-58e1-4514-9be0-5b28c2eacb34}</Project>
+      <Name>PommaLabs.KVLite.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.Database\PommaLabs.KVLite.Database.csproj">
       <Project>{a02320bc-46c7-45db-adb1-824cca07cb57}</Project>
       <Name>PommaLabs.KVLite.Database</Name>

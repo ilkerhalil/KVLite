@@ -51,7 +51,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="DeflateCompressor"/>.
+        ///   constructor. Its default value depends on current implementation.
         /// </remarks>
         ICompressor Compressor { get; }
 
@@ -93,7 +93,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="JsonSerializer"/>.
+        ///   constructor. Its default value depends on current implementation..
         /// </remarks>
         ISerializer Serializer { get; }
     }
