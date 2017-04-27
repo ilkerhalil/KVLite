@@ -24,8 +24,6 @@
 using CodeProject.ObjectPool.Specialized;
 using Dapper;
 using NodaTime;
-using Polly;
-using Polly.Retry;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Goodies;
 using PommaLabs.KVLite.Resources;
@@ -451,13 +449,13 @@ namespace PommaLabs.KVLite.Database
 
             var dynamicParameters = PrepareCacheEntryForAdd(partition, key, value, utcExpiry, interval, parentKeys);
 
-            ThrowOnFailedRetries(RetryPolicy.ExecuteAndCapture(() =>
+            RetryOnFail(() =>
             {
                 using (var db = cf.Open())
                 {
                     db.Execute(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters);
                 }
-            }));
+            });
 
             if (Random.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
@@ -490,13 +488,13 @@ namespace PommaLabs.KVLite.Database
 
             var dynamicParameters = PrepareCacheEntryForAdd(partition, key, value, utcExpiry, interval, parentKeys);
 
-            ThrowOnFailedRetries(await AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
+            await RetryOnFailAsync(async () =>
             {
                 using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
                 {
                     await db.ExecuteAsync(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters).ConfigureAwait(false);
                 }
-            }).ConfigureAwait(false));
+            }).ConfigureAwait(false);
 
             if (Random.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
@@ -524,13 +522,13 @@ namespace PommaLabs.KVLite.Database
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
-            return ThrowOnFailedRetries(RetryPolicy.ExecuteAndCapture(() =>
+            return RetryOnFail(() =>
             {
                 using (var db = cf.Open())
                 {
                     return db.Execute(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup);
                 }
-            }));
+            });
         }
 
         /// <summary>
@@ -551,13 +549,13 @@ namespace PommaLabs.KVLite.Database
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
-            return ThrowOnFailedRetries(await AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
+            return await RetryOnFailAsync(async () =>
             {
                 using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
                 {
                     return await db.ExecuteAsync(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup).ConfigureAwait(false);
                 }
-            }).ConfigureAwait(false));
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -945,13 +943,13 @@ namespace PommaLabs.KVLite.Database
                 Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            ThrowOnFailedRetries(RetryPolicy.ExecuteAndCapture(() =>
+            RetryOnFail(() =>
             {
                 using (var db = cf.Open())
                 {
                     db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
                 }
-            }));
+            });
         }
 
         /// <summary>
@@ -970,13 +968,13 @@ namespace PommaLabs.KVLite.Database
                 Key = key.Truncate(cf.MaxKeyNameLength)
             };
 
-            ThrowOnFailedRetries(await AsyncRetryPolicy.ExecuteAndCaptureAsync(async () =>
+            await RetryOnFailAsync(async () =>
             {
                 using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
                 {
                     await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle).ConfigureAwait(false);
                 }
-            }).ConfigureAwait(false));
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1171,34 +1169,74 @@ namespace PommaLabs.KVLite.Database
         #region Retry policy management
 
         /// <summary>
-        ///   Retry policy for DB cache operations.
+        ///   The maximum number of times an action is retried before giving up and throwing an exception.
         /// </summary>
-        private static RetryPolicy RetryPolicy { get; } = Policy
-            .Handle<Exception>()
-            .WaitAndRetry(3, i => TimeSpan.FromMilliseconds(10 * i * i));
+        private const int RetryLimit = 3;
 
-        /// <summary>
-        ///   Retry policy for DB cache operations.
-        /// </summary>
-        private static RetryPolicy AsyncRetryPolicy { get; } = Policy
-            .Handle<Exception>()
-            .WaitAndRetryAsync(3, i => TimeSpan.FromMilliseconds(10 * i * i));
+        private static TimeSpan RetryInterval(int iteration) => TimeSpan.FromMilliseconds(10 * iteration * iteration);
 
-        private static void ThrowOnFailedRetries(PolicyResult policyResult)
+        private static void RetryOnFail(Action retry)
         {
-            if (policyResult.FinalException != null)
+            for (var i = 1; i <= RetryLimit; ++i)
             {
-                throw policyResult.FinalException;
+                try
+                {
+                    retry();
+                    return;
+                }
+                catch (Exception) when (i < RetryLimit)
+                {
+                    Task.Delay(RetryInterval(i)).Wait();
+                }
             }
         }
 
-        private static T ThrowOnFailedRetries<T>(PolicyResult<T> policyResult)
+        private static async Task RetryOnFailAsync(Func<Task> retry)
         {
-            if (policyResult.FinalException != null)
+            for (var i = 1; i <= RetryLimit; ++i)
             {
-                throw policyResult.FinalException;
+                try
+                {
+                    await retry().ConfigureAwait(false);
+                    return;
+                }
+                catch (Exception) when (i < RetryLimit)
+                {
+                    await Task.Delay(RetryInterval(i)).ConfigureAwait(false);
+                }
             }
-            return policyResult.Result;
+        }
+
+        private static T RetryOnFail<T>(Func<T> retry)
+        {
+            for (var i = 1; i <= RetryLimit; ++i)
+            {
+                try
+                {
+                    return retry();
+                }
+                catch (Exception) when (i < RetryLimit)
+                {
+                    Task.Delay(RetryInterval(i)).Wait();
+                }
+            }
+            return default(T); // We will never get here.
+        }
+
+        private static async Task<T> RetryOnFailAsync<T>(Func<Task<T>> retry)
+        {
+            for (var i = 1; i <= RetryLimit; ++i)
+            {
+                try
+                {
+                    return await retry().ConfigureAwait(false);
+                }
+                catch (Exception) when (i < RetryLimit)
+                {
+                    await Task.Delay(RetryInterval(i)).ConfigureAwait(false);
+                }
+            }
+            return default(T); // We will never get here.
         }
 
         #endregion Retry policy management
