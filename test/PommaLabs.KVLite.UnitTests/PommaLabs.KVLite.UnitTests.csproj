@@ -12,7 +12,6 @@
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.SQLite\PommaLabs.KVLite.SQLite.csproj" />
     <!-- Adapters -->
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.EntityFramework\PommaLabs.KVLite.EntityFramework.csproj" />
-    <ProjectReference Include="..\..\src\PommaLabs.KVLite.Microsoft\PommaLabs.KVLite.Microsoft.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.WebApi\PommaLabs.KVLite.WebApi.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.WebForms\PommaLabs.KVLite.WebForms.csproj" />
   </ItemGroup>

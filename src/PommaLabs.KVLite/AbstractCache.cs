@@ -42,7 +42,7 @@ namespace PommaLabs.KVLite
     ///   Abstract class which should make it easier to implement a new kind of cache.
     /// </summary>
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
-    public abstract class AbstractCache<TSettings> : FormattableObject, ICache<TSettings>, IAsyncCache<TSettings>
+    public abstract partial class AbstractCache<TSettings> : FormattableObject, ICache<TSettings>, IAsyncCache<TSettings>
         where TSettings : AbstractCacheSettings<TSettings>
     {
         #region Abstract members
