@@ -1,4 +1,4 @@
-﻿// File name: TaskHelper.cs
+﻿// File name: FireAndForget.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -29,12 +29,10 @@ using System.Threading.Tasks;
 namespace PommaLabs.KVLite.Goodies
 {
     /// <summary>
-    ///   Helpers for handling .NET tasks.
+    ///   Helper for handling fire and forget tasks.
     /// </summary>
-    public static class TaskHelper
+    public static class FireAndForget
     {
-        #region TryFireAndForget
-
         /// <summary>
         ///   The maximum number of concurrent fire and forget tasks. Default value is equal to <see cref="Environment.ProcessorCount"/>.
         /// </summary>
@@ -63,26 +61,26 @@ namespace PommaLabs.KVLite.Goodies
         /// <returns>
         ///   True if given action has actually been fired and forgot; otherwise, it returns false.
         /// </returns>
-        public static bool TryFireAndForget(Action action, Action<Exception> handler = null)
+        public static bool Run(Action action, Action<Exception> handler = null)
         {
             Raise.ArgumentNullException.IfIsNull(action, nameof(action));
 
             if (FireAndForgetCount >= FireAndForgetLimit)
             {
                 // Run sync, cannot start a new task.
-                RunSync(action, handler);
+                RunSyncHelper(action, handler);
                 return false;
             }
 
             if (Interlocked.Increment(ref FireAndForgetCount) > FireAndForgetLimit)
             {
                 // Run sync, cannot start a new task.
-                RunSync(action, handler);
+                RunSyncHelper(action, handler);
                 Interlocked.Decrement(ref FireAndForgetCount);
                 return false;
             }
 
-            RunAsync(() =>
+            RunAsyncHelper(() =>
             {
                 action?.Invoke();
                 Interlocked.Decrement(ref FireAndForgetCount);
@@ -103,26 +101,26 @@ namespace PommaLabs.KVLite.Goodies
         /// <returns>
         ///   True if given action has actually been fired and forgot; otherwise, it returns false.
         /// </returns>
-        public static async Task<bool> TryFireAndForgetAsync(Func<Task> asyncAction, Action<Exception> handler = null)
+        public static async Task<bool> RunAsync(Func<Task> asyncAction, Action<Exception> handler = null)
         {
             Raise.ArgumentNullException.IfIsNull(asyncAction, nameof(asyncAction));
 
             if (FireAndForgetCount >= FireAndForgetLimit)
             {
                 // Run sync, cannot start a new task.
-                await RunSync(asyncAction, handler);
+                await RunSyncHelper(asyncAction, handler);
                 return false;
             }
 
             if (Interlocked.Increment(ref FireAndForgetCount) > FireAndForgetLimit)
             {
                 // Run sync, cannot start a new task.
-                await RunSync(asyncAction, handler);
+                await RunSyncHelper(asyncAction, handler);
                 Interlocked.Decrement(ref FireAndForgetCount);
                 return false;
             }
 
-            RunAsync(() =>
+            RunAsyncHelper(() =>
             {
                 asyncAction?.Invoke();
                 Interlocked.Decrement(ref FireAndForgetCount);
@@ -130,7 +128,7 @@ namespace PommaLabs.KVLite.Goodies
             return true;
         }
 
-        private static void RunAsync(Action action, Action<Exception> handler)
+        private static void RunAsyncHelper(Action action, Action<Exception> handler)
         {
             var task = Task.Run(action);
 
@@ -144,7 +142,7 @@ namespace PommaLabs.KVLite.Goodies
             }
         }
 
-        private static void RunAsync(Func<Task> asyncAction, Action<Exception> handler)
+        private static void RunAsyncHelper(Func<Task> asyncAction, Action<Exception> handler)
         {
             var task = Task.Run(asyncAction);
 
@@ -158,7 +156,7 @@ namespace PommaLabs.KVLite.Goodies
             }
         }
 
-        private static void RunSync(Action action, Action<Exception> handler)
+        private static void RunSyncHelper(Action action, Action<Exception> handler)
         {
             try
             {
@@ -170,7 +168,7 @@ namespace PommaLabs.KVLite.Goodies
             }
         }
 
-        private static async Task RunSync(Func<Task> asyncAction, Action<Exception> handler)
+        private static async Task RunSyncHelper(Func<Task> asyncAction, Action<Exception> handler)
         {
             try
             {
@@ -181,7 +179,5 @@ namespace PommaLabs.KVLite.Goodies
                 handler?.Invoke(ex);
             }
         }
-
-        #endregion TryFireAndForget
     }
 }
