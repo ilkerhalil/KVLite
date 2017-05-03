@@ -34,8 +34,7 @@ namespace PommaLabs.KVLite.Database
     ///   Base class for cache connection factories.
     /// </summary>
     /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
-    /// <typeparam name="TCommand">The type of the SQL command.</typeparam>
-    public abstract class DbCacheConnectionFactory<TConnection> : IDbCacheConnectionFactory<TConnection>
+    public abstract class DbCacheConnectionFactory<TConnection>
         where TConnection : DbConnection
     {
         /// <summary>
@@ -227,13 +226,6 @@ namespace PommaLabs.KVLite.Database
             await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
             return connection;
         }
-
-        /// <summary>
-        ///   Creates a new command for the specified data provider.
-        /// </summary>
-        /// <param name="connection">An open connection.</param>
-        /// <returns>A new SQL command.</returns>
-        public virtual DbCommand CreateCommand(TConnection connection) => connection.CreateCommand();
 
         #region Query optimization
 

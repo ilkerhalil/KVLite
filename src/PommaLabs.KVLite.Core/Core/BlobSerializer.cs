@@ -26,9 +26,12 @@ using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Resources;
 using System.IO;
 
-namespace PommaLabs.KVLite.Database
+namespace PommaLabs.KVLite.Core
 {
-    internal static class BlobSerializer
+    /// <summary>
+    ///   Implements serialization and deserialization functions tuned to produce and handle blobs.
+    /// </summary>
+    public static class BlobSerializer
     {
         /// <summary>
         ///   Represents the object data type for cache entries.
@@ -40,6 +43,13 @@ namespace PommaLabs.KVLite.Database
             String = 2
         }
 
+        /// <summary>
+        ///   Serializes the value into given stream.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="output">The output stream.</param>
+        /// <param name="value">The value.</param>
         public static void Serialize<T>(ISerializer serializer, Stream output, T value)
         {
             var maybeBytes = value as byte[];
@@ -68,6 +78,14 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
+        /// <summary>
+        ///   Deserializes the value from given stream.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="memoryStreamPool">The memory stream pool.</param>
+        /// <param name="input">The input stream.</param>
+        /// <returns>The deserialized value.</returns>
         public static T Deserialize<T>(ISerializer serializer, IMemoryStreamPool memoryStreamPool, Stream input)
         {
             var dataType = (DataTypes) input.ReadByte();

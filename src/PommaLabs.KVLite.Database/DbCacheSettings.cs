@@ -64,7 +64,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   The DB connection factory.
         /// </summary>
-        public IDbCacheConnectionFactory<TConnection> ConnectionFactory { get; internal set; }
+        public DbCacheConnectionFactory<TConnection> ConnectionFactory { get; internal set; }
 
         #endregion Construction
 

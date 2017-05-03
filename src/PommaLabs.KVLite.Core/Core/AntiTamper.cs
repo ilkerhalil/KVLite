@@ -26,14 +26,20 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace PommaLabs.KVLite.Database
+namespace PommaLabs.KVLite.Core
 {
     /// <summary>
     ///   Writes and validates anti-tamper hash codes.
     /// </summary>
-    internal static class AntiTamper
+    public static class AntiTamper
     {
-        public static void WriteAntiTamperHashCode(Stream s, DbCacheValue v)
+        /// <summary>
+        ///   Writes an anti-tamper hash code into given stream.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="s">The stream.</param>
+        /// <param name="v">The value.</param>
+        public static void WriteAntiTamperHashCode<T>(Stream s, T v)
         {
             var c = new IntegerToBytesConverter { Integer = v.GetHashCode() };
 
@@ -43,7 +49,13 @@ namespace PommaLabs.KVLite.Database
             s.WriteByte(c.Byte4);
         }
 
-        public static void ReadAntiTamperHashCode(Stream s, DbCacheValue v)
+        /// <summary>
+        ///   Reads and checks the anti-tamper hash code from given stream.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="s">The stream.</param>
+        /// <param name="v">The value.</param>
+        public static void ReadAntiTamperHashCode<T>(Stream s, T v)
         {
             IntegerToBytesConverter c;
             try

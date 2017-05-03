@@ -24,6 +24,7 @@
 using CodeProject.ObjectPool.Specialized;
 using Dapper;
 using NodaTime;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Goodies;
 using PommaLabs.KVLite.Resources;
@@ -63,7 +64,7 @@ namespace PommaLabs.KVLite.Database
         /// <param name="clock">The clock.</param>
         /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
-        public DbCache(TSettings settings, IDbCacheConnectionFactory<TConnection> connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock, IMemoryStreamPool memoryStreamPool, IRandom random)
+        public DbCache(TSettings settings, DbCacheConnectionFactory<TConnection> connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock, IMemoryStreamPool memoryStreamPool, IRandom random)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -85,7 +86,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   The connection factory used to retrieve connections to the cache data store.
         /// </summary>
-        public IDbCacheConnectionFactory<TConnection> ConnectionFactory => Settings.ConnectionFactory;
+        public DbCacheConnectionFactory<TConnection> ConnectionFactory => Settings.ConnectionFactory;
 
         /// <summary>
         ///   Generates random numbers. Used to determine when to perform automatic soft cleanups.
