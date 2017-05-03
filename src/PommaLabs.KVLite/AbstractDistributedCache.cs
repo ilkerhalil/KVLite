@@ -1,4 +1,4 @@
-﻿// File name: DistributedCache.cs
+﻿// File name: AbstractDistributedCache.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite
         ///   The partition used to store all keys received through the
         ///   <see cref="IDistributedCache"/> interface.
         /// </summary>
-        private const string DistributedCachePartition = nameof(IDistributedCache);
+        public const string DistributedCachePartition = nameof(IDistributedCache);
 
         byte[] IDistributedCache.Get(string key) => Get<byte[]>(DistributedCachePartition, key).ValueOrDefault();
 

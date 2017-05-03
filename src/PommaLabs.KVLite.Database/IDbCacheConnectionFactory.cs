@@ -28,9 +28,10 @@ using System.Threading.Tasks;
 namespace PommaLabs.KVLite.Database
 {
     /// <summary>
-    ///   Creates new connections to a specified SQL provider.
+    ///   Creates and handles connections to a specified SQL provider.
     /// </summary>
-    /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
+    /// <typeparam name="TConnection">The type of the SQL connection.</typeparam>
+    /// <typeparam name="TCommand">The type of the SQL command.</typeparam>
     public interface IDbCacheConnectionFactory<TConnection>
         where TConnection : DbConnection
     {
@@ -133,5 +134,12 @@ namespace PommaLabs.KVLite.Database
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns>An open connection.</returns>
         Task<TConnection> OpenAsync(CancellationToken cancellationToken);
+
+        /// <summary>
+        ///   Creates a new command for the specified data provider.
+        /// </summary>
+        /// <param name="connection">An open connection.</param>
+        /// <returns>A new SQL command.</returns>
+        DbCommand CreateCommand(TConnection connection);
     }
 }
