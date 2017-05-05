@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.2.2 (2017-05-05) ###
+
+* [REM] Removed dependency on Polly.
+* [ADD] Added support for Microsoft IDistributedCache interface.
+
 ### v6.2.1 (2017-04-17) ###
 
 * [UPD] Updated packages.
