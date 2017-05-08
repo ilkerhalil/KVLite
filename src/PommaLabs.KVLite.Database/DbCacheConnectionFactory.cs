@@ -285,8 +285,12 @@ namespace PommaLabs.KVLite.Database
                     or exists (select 1 from {s}{CacheEntriesTableName} y
                                 where ({p}{nameof(DbCacheEntry.Group.Partition)} is null or y.{DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Group.Partition)})
                                   and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
-                                  and y.{DbCacheValue.PartitionColumn} = {DbCacheValue.PartitionColumn}
-                                  and y.{DbCacheValue.KeyColumn} = {DbCacheEntry.ParentKey0Column})
+                                  and (y.{DbCacheValue.PartitionColumn} = {DbCacheValue.PartitionColumn})
+                                  and (y.{DbCacheValue.KeyColumn} = {DbCacheEntry.ParentKey0Column}
+                                    or y.{DbCacheValue.KeyColumn} = {DbCacheEntry.ParentKey1Column}
+                                    or y.{DbCacheValue.KeyColumn} = {DbCacheEntry.ParentKey2Column}
+                                    or y.{DbCacheValue.KeyColumn} = {DbCacheEntry.ParentKey3Column}
+                                    or y.{DbCacheValue.KeyColumn} = {DbCacheEntry.ParentKey4Column})
             ");
 
             UpdateCacheEntryExpiryCommand = MinifyQuery($@"
