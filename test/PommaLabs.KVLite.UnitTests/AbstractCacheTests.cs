@@ -348,7 +348,7 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
-        public void AddStatic_WithParentKey_RemoveParentAndChildrenShouldAlsoBeRemoved()
+        public void AddStatic_WithParentKey_RemoveParentAndChildShouldAlsoBeRemoved()
         {
             var p = StringItems[0];
             var k = StringItems[1];
@@ -369,7 +369,7 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
-        public void AddStatic_WithParentKey_RemoveParentAndChildrenShouldAlsoBeRemoved_Nested()
+        public void AddStatic_WithParentKey_RemoveParentAndChildrenShouldAlsoBeRemoved()
         {
             var p = StringItems[0];
             var k = StringItems[1];
@@ -381,8 +381,8 @@ namespace PommaLabs.KVLite.UnitTests
 
             Cache.AddStatic(p, t1, t1);
             Cache.AddStatic(p, t2, t2, new[] { t1 });
-            Cache.AddStatic(p, t3, t3, new[] { t2 });
-            Cache.AddStatic(p, k, Tuple.Create(v1, v2), new[] { t3 });
+            Cache.AddStatic(p, t3, t3, new[] { t1 });
+            Cache.AddStatic(p, k, Tuple.Create(v1, v2), new[] { t1 });
 
             Assert.That(Cache.Contains(p, t1));
             Assert.That(Cache.Contains(p, t2));

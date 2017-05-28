@@ -280,19 +280,13 @@ namespace PommaLabs.KVLite.Database
 
             DeleteCacheEntriesCommand = MinifyQuery($@"
                 delete from {s}{CacheEntriesTableName}
-                 where (({p}{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Group.Partition)})
-                    and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}))
-                    or exists (select x.{DbCacheValue.KeyColumn}
-                                 from (select y.{DbCacheValue.KeyColumn}
-                                         from {s}{CacheEntriesTableName} y
-                                        where ({p}{nameof(DbCacheEntry.Group.Partition)} is null or y.{DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Group.Partition)})
-                                          and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
-                                          and (y.{DbCacheValue.PartitionColumn} = {s}{CacheEntriesTableName}.{DbCacheValue.PartitionColumn})
-                                          and (y.{DbCacheValue.KeyColumn} = {s}{CacheEntriesTableName}.{DbCacheEntry.ParentKey0Column}
-                                            or y.{DbCacheValue.KeyColumn} = {s}{CacheEntriesTableName}.{DbCacheEntry.ParentKey1Column}
-                                            or y.{DbCacheValue.KeyColumn} = {s}{CacheEntriesTableName}.{DbCacheEntry.ParentKey2Column}
-                                            or y.{DbCacheValue.KeyColumn} = {s}{CacheEntriesTableName}.{DbCacheEntry.ParentKey3Column}
-                                            or y.{DbCacheValue.KeyColumn} = {s}{CacheEntriesTableName}.{DbCacheEntry.ParentKey4Column})) x)
+                 where ({p}{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Group.Partition)})
+                   and (({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
+                     or ({DbCacheEntry.ParentKey0Column} in (select x.{DbCacheValue.KeyColumn} from (select y.{DbCacheValue.KeyColumn} from {s}{CacheEntriesTableName} y where y.{DbCacheValue.PartitionColumn} = {s}{CacheEntriesTableName}.{DbCacheValue.PartitionColumn} and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)
+                      or {DbCacheEntry.ParentKey1Column} in (select x.{DbCacheValue.KeyColumn} from (select y.{DbCacheValue.KeyColumn} from {s}{CacheEntriesTableName} y where y.{DbCacheValue.PartitionColumn} = {s}{CacheEntriesTableName}.{DbCacheValue.PartitionColumn} and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)
+                      or {DbCacheEntry.ParentKey2Column} in (select x.{DbCacheValue.KeyColumn} from (select y.{DbCacheValue.KeyColumn} from {s}{CacheEntriesTableName} y where y.{DbCacheValue.PartitionColumn} = {s}{CacheEntriesTableName}.{DbCacheValue.PartitionColumn} and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)
+                      or {DbCacheEntry.ParentKey3Column} in (select x.{DbCacheValue.KeyColumn} from (select y.{DbCacheValue.KeyColumn} from {s}{CacheEntriesTableName} y where y.{DbCacheValue.PartitionColumn} = {s}{CacheEntriesTableName}.{DbCacheValue.PartitionColumn} and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)
+                      or {DbCacheEntry.ParentKey4Column} in (select x.{DbCacheValue.KeyColumn} from (select y.{DbCacheValue.KeyColumn} from {s}{CacheEntriesTableName} y where y.{DbCacheValue.PartitionColumn} = {s}{CacheEntriesTableName}.{DbCacheValue.PartitionColumn} and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)))
             ");
 
             UpdateCacheEntryExpiryCommand = MinifyQuery($@"
