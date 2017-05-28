@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.10.5" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.6" />
     <PackageReference Include="lz4net" Version="1.0.15.93" />
     <PackageReference Include="NLipsum" Version="1.1.0" />
   </ItemGroup>
