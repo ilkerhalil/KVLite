@@ -681,7 +681,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
-                IgnoreExpiryDate = DbCacheValue.True,
+                IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
@@ -718,6 +718,59 @@ namespace PommaLabs.KVLite.Database
         }
 
         /// <summary>
+        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by the corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>The value with specified partition and key.</returns>
+        protected sealed override async Task<CacheResult<TVal>> GetAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+            var dbCacheEntrySingle = new DbCacheEntry.Single
+            {
+                Partition = partition.Truncate(cf.MaxPartitionNameLength),
+                Key = key.Truncate(cf.MaxKeyNameLength),
+                IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+            };
+
+            DbCacheValue dbCacheValue;
+            using (var db = await cf.OpenAsync(cancellationToken))
+            {
+                dbCacheValue = await db.QuerySingleOrDefaultAsync<DbCacheValue>(cf.PeekCacheValueQuery, dbCacheEntrySingle);
+
+                if (dbCacheValue == null)
+                {
+                    // Nothing to deserialize, return None.
+                    return default(CacheResult<TVal>);
+                }
+
+                if (dbCacheValue.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
+                {
+                    // When an item expires, we should remove it from the cache.
+                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
+
+                    // Nothing to deserialize, return None.
+                    return default(CacheResult<TVal>);
+                }
+
+                if (dbCacheValue.Interval > 0L)
+                {
+                    // Since we are in a "get" operation, we should also update the expiry.
+                    dbCacheEntrySingle.UtcExpiry += dbCacheValue.Interval;
+                    await db.ExecuteAsync(cf.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
+                }
+            }
+
+            // Deserialize operation is expensive and it should be performed outside the connection.
+            return DeserializeCacheValue<TVal>(dbCacheValue);
+        }
+
+        /// <summary>
         ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
         ///   value, its lifetime will be increased by corresponding interval.
         /// </summary>
@@ -733,7 +786,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Partition = partition.Truncate(cf.MaxPartitionNameLength),
                 Key = key.Truncate(cf.MaxKeyNameLength),
-                IgnoreExpiryDate = DbCacheValue.True,
+                IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
@@ -770,6 +823,59 @@ namespace PommaLabs.KVLite.Database
         }
 
         /// <summary>
+        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>The cache item with specified partition and key.</returns>
+        protected sealed override async Task<CacheResult<ICacheItem<TVal>>> GetItemAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+            var dbCacheEntrySingle = new DbCacheEntry.Single
+            {
+                Partition = partition.Truncate(cf.MaxPartitionNameLength),
+                Key = key.Truncate(cf.MaxKeyNameLength),
+                IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+            };
+
+            DbCacheEntry dbCacheEntry;
+            using (var db = await cf.OpenAsync(cancellationToken))
+            {
+                dbCacheEntry = await db.QuerySingleOrDefaultAsync<DbCacheEntry>(cf.PeekCacheEntryQuery, dbCacheEntrySingle);
+
+                if (dbCacheEntry == null)
+                {
+                    // Nothing to deserialize, return None.
+                    return default(CacheResult<ICacheItem<TVal>>);
+                }
+
+                if (dbCacheEntry.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
+                {
+                    // When an item expires, we should remove it from the cache.
+                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
+
+                    // Nothing to deserialize, return None.
+                    return default(CacheResult<ICacheItem<TVal>>);
+                }
+
+                if (dbCacheEntry.Interval > 0L)
+                {
+                    // Since we are in a "get" operation, we should also update the expiry.
+                    dbCacheEntry.UtcExpiry = (dbCacheEntrySingle.UtcExpiry += dbCacheEntry.Interval);
+                    await db.ExecuteAsync(cf.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
+                }
+            }
+
+            // Deserialize operation is expensive and it should be performed outside the connection.
+            return DeserializeCacheEntry<TVal>(dbCacheEntry);
+        }
+
+        /// <summary>
         ///   Gets all cache items or the ones in a partition, if specified. If an item is a
         ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
         /// </summary>
@@ -783,7 +889,7 @@ namespace PommaLabs.KVLite.Database
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Partition = partition?.Truncate(cf.MaxPartitionNameLength),
-                IgnoreExpiryDate = DbCacheValue.True,
+                IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
@@ -807,6 +913,63 @@ namespace PommaLabs.KVLite.Database
                     {
                         // Since we are in a "get" operation, we should also update the expiry.
                         db.Execute(cf.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
+                        {
+                            Partition = dbCacheEntry.Partition,
+                            Key = dbCacheEntry.Key,
+                            UtcExpiry = dbCacheEntry.UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
+                        });
+                    }
+                }
+            }
+
+            // Deserialize operation is expensive and it should be performed outside the connection.
+            return dbCacheEntries
+                .Where(i => i.UtcExpiry >= dbCacheEntryGroup.UtcExpiry)
+                .Select(DeserializeCacheEntry<TVal>)
+                .Where(i => i.HasValue)
+                .Select(i => i.Value)
+                .ToArray();
+        }
+
+        /// <summary>
+        ///   Gets all cache items or the ones in a partition, if specified. If an item is a
+        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <returns>All cache items.</returns>
+        protected sealed override async Task<IList<ICacheItem<TVal>>> GetItemsAsyncInternal<TVal>(string partition, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+            var dbCacheEntryGroup = new DbCacheEntry.Group
+            {
+                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+            };
+
+            DbCacheEntry[] dbCacheEntries;
+            using (var db = await cf.OpenAsync(cancellationToken))
+            {
+                dbCacheEntries = (await db.QueryAsync<DbCacheEntry>(cf.PeekCacheEntriesQuery, dbCacheEntryGroup)).ToArray();
+
+                foreach (var dbCacheEntry in dbCacheEntries)
+                {
+                    if (dbCacheEntry.UtcExpiry < dbCacheEntryGroup.UtcExpiry)
+                    {
+                        // When an item expires, we should remove it from the cache.
+                        await db.ExecuteAsync(cf.DeleteCacheEntryCommand, new DbCacheEntry.Single
+                        {
+                            Partition = dbCacheEntry.Partition,
+                            Key = dbCacheEntry.Key
+                        });
+                    }
+                    else if (dbCacheEntry.Interval > 0L)
+                    {
+                        // Since we are in a "get" operation, we should also update the expiry.
+                        await db.ExecuteAsync(cf.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
                         {
                             Partition = dbCacheEntry.Partition,
                             Key = dbCacheEntry.Key,
@@ -868,6 +1031,44 @@ namespace PommaLabs.KVLite.Database
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>
+        ///   The item corresponding to given partition and key, without updating expiry date.
+        /// </returns>
+        protected sealed override async Task<CacheResult<TVal>> PeekAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+            var dbCacheEntrySingle = new DbCacheEntry.Single
+            {
+                Partition = partition.Truncate(cf.MaxPartitionNameLength),
+                Key = key.Truncate(cf.MaxKeyNameLength),
+                IgnoreExpiryDate = DbCacheValue.False,
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+            };
+
+            DbCacheValue dbCacheValue;
+            using (var db = await cf.OpenAsync(cancellationToken))
+            {
+                dbCacheValue = await db.QuerySingleOrDefaultAsync<DbCacheValue>(cf.PeekCacheValueQuery, dbCacheEntrySingle);
+            }
+
+            if (dbCacheValue == null)
+            {
+                // Nothing to deserialize, return None.
+                return default(CacheResult<TVal>);
+            }
+
+            // Deserialize operation is expensive and it should be performed outside the connection.
+            return DeserializeCacheValue<TVal>(dbCacheValue);
+        }
+
+        /// <summary>
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
@@ -887,6 +1088,44 @@ namespace PommaLabs.KVLite.Database
             using (var db = cf.Open())
             {
                 dbCacheEntry = db.QuerySingleOrDefault<DbCacheEntry>(cf.PeekCacheEntryQuery, dbCacheEntrySingle);
+            }
+
+            if (dbCacheEntry == null)
+            {
+                // Nothing to deserialize, return None.
+                return default(CacheResult<ICacheItem<TVal>>);
+            }
+
+            // Deserialize operation is expensive and it should be performed outside the connection.
+            return DeserializeCacheEntry<TVal>(dbCacheEntry);
+        }
+
+        /// <summary>
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>
+        ///   The item corresponding to given partition and key, without updating expiry date.
+        /// </returns>
+        protected sealed override async Task<CacheResult<ICacheItem<TVal>>> PeekItemAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+            var dbCacheEntrySingle = new DbCacheEntry.Single
+            {
+                Partition = partition.Truncate(cf.MaxPartitionNameLength),
+                Key = key.Truncate(cf.MaxKeyNameLength),
+                IgnoreExpiryDate = DbCacheValue.False,
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+            };
+
+            DbCacheEntry dbCacheEntry;
+            using (var db = await cf.OpenAsync(cancellationToken))
+            {
+                dbCacheEntry = await db.QuerySingleOrDefaultAsync<DbCacheEntry>(cf.PeekCacheEntryQuery, dbCacheEntrySingle);
             }
 
             if (dbCacheEntry == null)
@@ -925,6 +1164,43 @@ namespace PommaLabs.KVLite.Database
             using (var db = cf.Open())
             {
                 dbCacheEntries = db.Query<DbCacheEntry>(cf.PeekCacheEntriesQuery, dbCacheEntryGroup, buffered: false).ToArray();
+            }
+
+            // Deserialize operation is expensive and it should be performed outside the connection.
+            return dbCacheEntries
+                .Select(DeserializeCacheEntry<TVal>)
+                .Where(i => i.HasValue)
+                .Select(i => i.Value)
+                .ToArray();
+        }
+
+        /// <summary>
+        ///   Gets the all values in the cache or in the specified partition, without updating expiry dates.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <returns>All values, without updating expiry dates.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
+        ///   class or not.
+        /// </remarks>
+        protected sealed override async Task<IList<ICacheItem<TVal>>> PeekItemsAsyncInternal<TVal>(string partition, CancellationToken cancellationToken)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+            var dbCacheEntryGroup = new DbCacheEntry.Group
+            {
+                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                IgnoreExpiryDate = DbCacheValue.False,
+                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+            };
+
+            DbCacheEntry[] dbCacheEntries;
+            using (var db = await cf.OpenAsync(cancellationToken))
+            {
+                dbCacheEntries = (await db.QueryAsync<DbCacheEntry>(cf.PeekCacheEntriesQuery, dbCacheEntryGroup)).ToArray();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
