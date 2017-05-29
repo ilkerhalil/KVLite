@@ -55,9 +55,8 @@ namespace PommaLabs.KVLite.SQLite
 
             // Used to configure each connection.
             _pragmas = MinifyQuery($@"
-                PRAGMA foreign_keys = ON;
                 PRAGMA journal_mode = {journal};
-                PRAGMA synchronous = NORMAL;
+                PRAGMA synchronous = OFF;
             ");
         }
 
@@ -143,19 +142,9 @@ namespace PommaLabs.KVLite.SQLite
                     kvle_parent_key2 TEXT,
                     kvle_parent_key3 TEXT,
                     kvle_parent_key4 TEXT,
-                    CONSTRAINT pk_kvle PRIMARY KEY (kvle_partition, kvle_key),
-                    CONSTRAINT fk_kvle_parent0 FOREIGN KEY (kvle_partition, kvle_parent_key0) REFERENCES {s}{CacheEntriesTableName} (kvle_partition, kvle_key) ON DELETE CASCADE,
-                    CONSTRAINT fk_kvle_parent1 FOREIGN KEY (kvle_partition, kvle_parent_key1) REFERENCES {s}{CacheEntriesTableName} (kvle_partition, kvle_key) ON DELETE CASCADE,
-                    CONSTRAINT fk_kvle_parent2 FOREIGN KEY (kvle_partition, kvle_parent_key2) REFERENCES {s}{CacheEntriesTableName} (kvle_partition, kvle_key) ON DELETE CASCADE,
-                    CONSTRAINT fk_kvle_parent3 FOREIGN KEY (kvle_partition, kvle_parent_key3) REFERENCES {s}{CacheEntriesTableName} (kvle_partition, kvle_key) ON DELETE CASCADE,
-                    CONSTRAINT fk_kvle_parent4 FOREIGN KEY (kvle_partition, kvle_parent_key4) REFERENCES {s}{CacheEntriesTableName} (kvle_partition, kvle_key) ON DELETE CASCADE
+                    CONSTRAINT pk_kvle PRIMARY KEY (kvle_partition, kvle_key)
                 );
                 CREATE INDEX ix_kvle_exp_part ON {s}{CacheEntriesTableName} (kvle_expiry DESC, kvle_partition ASC);
-                CREATE INDEX ix_kvle_parent0 ON {s}{CacheEntriesTableName} (kvle_partition, kvle_parent_key0);
-                CREATE INDEX ix_kvle_parent1 ON {s}{CacheEntriesTableName} (kvle_partition, kvle_parent_key1);
-                CREATE INDEX ix_kvle_parent2 ON {s}{CacheEntriesTableName} (kvle_partition, kvle_parent_key2);
-                CREATE INDEX ix_kvle_parent3 ON {s}{CacheEntriesTableName} (kvle_partition, kvle_parent_key3);
-                CREATE INDEX ix_kvle_parent4 ON {s}{CacheEntriesTableName} (kvle_partition, kvle_parent_key4);
             ");
 
             _getCacheEntriesSchemaQuery = MinifyQuery($@"

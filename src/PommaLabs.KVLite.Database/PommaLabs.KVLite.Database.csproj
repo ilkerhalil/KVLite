@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper.StrongName" Version="1.50.2" />
-    <PackageReference Include="Polly-Signed" Version="5.0.6" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
@@ -36,7 +35,5 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System" />
   </ItemGroup>
 </Project>

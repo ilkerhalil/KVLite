@@ -40,7 +40,7 @@ namespace PommaLabs.KVLite.UnitTests.Goodies
             for (var i = 0; i < count; ++i)
             {
                 var localIndex = i;
-                TaskHelper.TryFireAndForget(() => stack.Push(localIndex));
+                FireAndForget.Run(() => stack.Push(localIndex));
             }
             await Task.Delay(30 * count);
             stack.Count.ShouldBe(count);

@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite
     ///   Base class for cache settings. Contains settings shared among different caches.
     /// </summary>
     [Serializable, DataContract]
-    public abstract class AbstractCacheSettings<TSettings> : ICacheSettings, IAsyncCacheSettings
+    public abstract partial class AbstractCacheSettings<TSettings> : ICacheSettings
         where TSettings : AbstractCacheSettings<TSettings>
     {
         private string _defaultPartition;

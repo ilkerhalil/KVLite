@@ -1,4 +1,4 @@
-﻿// File name: Bootstrapper.cs
+﻿// File name: AbstractAsyncCacheSettings.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,18 +21,9 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Nancy;
-using PommaLabs.KVLite.SQLite;
-
-namespace PommaLabs.KVLite.Examples.Nancy
+namespace PommaLabs.KVLite
 {
-    public class Bootstrapper : CachingBootstrapper
+    public abstract partial class AbstractCacheSettings<TSettings> : IAsyncCacheSettings
     {
-        // The bootstrapper enables you to reconfigure the composition of the framework, by
-        // overriding the various methods and properties. For more information, see: "https://github.com/NancyFx/Nancy/wiki/Bootstrapper".
-        public Bootstrapper() :
-            base(PersistentCache.DefaultInstance)
-        {
-        }
     }
 }
