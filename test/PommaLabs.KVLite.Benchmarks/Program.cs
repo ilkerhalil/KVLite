@@ -23,6 +23,8 @@
 
 using BenchmarkDotNet.Running;
 using NodaTime;
+using PommaLabs.KVLite.Benchmarks.Compression;
+using PommaLabs.KVLite.Benchmarks.Serialization;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.MySql;
@@ -52,9 +54,14 @@ namespace PommaLabs.KVLite.Benchmarks
 
         public static void Main(string[] args)
         {
-            if (args.Length == 1 && args[0].Equals(nameof(Comparison)))
+            if (args.Length >= 1)
             {
-                BenchmarkRunner.Run<Comparison>();
+                BenchmarkSwitcher.FromTypes(new[]
+                {
+                    typeof(Comparison),
+                    typeof(LogMessagesCompression),
+                    typeof(LogMessagesSerialization)
+                }).Run(args);
                 return;
             }
 

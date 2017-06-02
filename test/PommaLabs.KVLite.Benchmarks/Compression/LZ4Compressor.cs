@@ -26,7 +26,7 @@ using PommaLabs.KVLite.Extensibility;
 using System.IO;
 using System.IO.Compression;
 
-namespace PommaLabs.KVLite.Benchmarks.Compressors
+namespace PommaLabs.KVLite.Benchmarks.Compression
 {
     internal sealed class LZ4Compressor : ICompressor
     {

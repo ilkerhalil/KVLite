@@ -22,7 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using BenchmarkDotNet.Attributes;
-using PommaLabs.KVLite.Benchmarks.Compressors;
+using PommaLabs.KVLite.Benchmarks.Compression;
 using PommaLabs.KVLite.Benchmarks.Models;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
