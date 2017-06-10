@@ -57,9 +57,8 @@ namespace PommaLabs.KVLite.Oracle
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        /// <param name="random">The random number generator.</param>
-        public OracleCache(OracleCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
-            : this(settings, new OracleCacheConnectionFactory(), serializer, compressor, clock, random)
+        public OracleCache(OracleCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null)
+            : this(settings, new OracleCacheConnectionFactory(), serializer, compressor, clock)
         {
         }
 
@@ -72,9 +71,8 @@ namespace PommaLabs.KVLite.Oracle
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        /// <param name="random">The random number generator.</param>
-        public OracleCache(OracleCacheSettings settings, OracleCacheConnectionFactory connectionFactory, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
-            : base(settings, connectionFactory, serializer, compressor, clock, random)
+        public OracleCache(OracleCacheSettings settings, OracleCacheConnectionFactory connectionFactory, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null)
+            : base(settings, connectionFactory, serializer, compressor, clock)
         {
         }
 

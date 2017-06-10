@@ -56,9 +56,8 @@ namespace PommaLabs.KVLite.MySql
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        /// <param name="random">The random number generator.</param>
-        public MySqlCache(MySqlCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
-            : this(settings, new MySqlCacheConnectionFactory(), serializer, compressor, clock, random)
+        public MySqlCache(MySqlCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null)
+            : this(settings, new MySqlCacheConnectionFactory(), serializer, compressor, clock)
         {
         }
 
@@ -71,9 +70,8 @@ namespace PommaLabs.KVLite.MySql
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        /// <param name="random">The random number generator.</param>
-        public MySqlCache(MySqlCacheSettings settings, MySqlCacheConnectionFactory connectionFactory, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
-            : base(settings, connectionFactory, serializer, compressor, clock, random)
+        public MySqlCache(MySqlCacheSettings settings, MySqlCacheConnectionFactory connectionFactory, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null)
+            : base(settings, connectionFactory, serializer, compressor, clock)
         {
         }
     }

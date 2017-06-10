@@ -50,6 +50,15 @@ namespace PommaLabs.KVLite.Database
         where TSettings : DbCacheSettings<TSettings, TConnection>
         where TConnection : DbConnection
     {
+        #region Fields
+
+        /// <summary>
+        ///   Used for random auto cleanups.
+        /// </summary>
+        private readonly Random _random = new Random();
+
+        #endregion Fields
+
         #region Construction
 
         /// <summary>
@@ -61,8 +70,7 @@ namespace PommaLabs.KVLite.Database
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        /// <param name="random">The random number generator.</param>
-        public DbCache(TSettings settings, DbCacheConnectionFactory<TConnection> connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock, IRandom random)
+        public DbCache(TSettings settings, DbCacheConnectionFactory<TConnection> connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -73,7 +81,6 @@ namespace PommaLabs.KVLite.Database
             Clock = clock ?? SystemClock.Instance;
             Serializer = serializer ?? JsonSerializer.Instance;
             Compressor = compressor ?? DeflateCompressor.Instance;
-            Random = random ?? new SystemRandom();
         }
 
         #endregion Construction
@@ -84,11 +91,6 @@ namespace PommaLabs.KVLite.Database
         ///   The connection factory used to retrieve connections to the cache data store.
         /// </summary>
         public DbCacheConnectionFactory<TConnection> ConnectionFactory => Settings.ConnectionFactory;
-
-        /// <summary>
-        ///   Generates random numbers. Used to determine when to perform automatic soft cleanups.
-        /// </summary>
-        public IRandom Random { get; }
 
         /// <summary>
         ///   Clears the cache using the specified cache read mode.
@@ -452,7 +454,7 @@ namespace PommaLabs.KVLite.Database
                 }
             });
 
-            if (Random.NextDouble() < Settings.ChancesOfAutoCleanup)
+            if (_random.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
                 // Run soft cleanup, so that cache is almost always clean. We do not call the
                 // internal version since we need the following method not to throw anything in case
@@ -491,7 +493,7 @@ namespace PommaLabs.KVLite.Database
                 }
             }).ConfigureAwait(false);
 
-            if (Random.NextDouble() < Settings.ChancesOfAutoCleanup)
+            if (_random.NextDouble() < Settings.ChancesOfAutoCleanup)
             {
                 // Run soft cleanup, so that cache is almost always clean. We do not call the
                 // internal version since we need the following method not to throw anything in case

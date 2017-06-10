@@ -48,10 +48,6 @@ namespace PommaLabs.KVLite.UnitTests
                 .ToConstant(JsonSerializer.Instance)
                 .InSingletonScope();
 
-            Bind<IRandom>()
-                .To<SystemRandom>()
-                .InTransientScope();
-
             DbInterception.Add(new DbCommandInterceptor());
         }
     }

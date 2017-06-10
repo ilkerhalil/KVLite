@@ -47,10 +47,6 @@ namespace PommaLabs.KVLite.Examples.WebApi
             Bind<ISerializer>()
                 .ToConstant(JsonSerializer.Instance)
                 .InSingletonScope();
-
-            Bind<IRandom>()
-                .To<SystemRandom>()
-                .InTransientScope();
         }
     }
 }
