@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.2.4 (2017-06-10) ###
+
+* [REM] Removed dependency on CodeProject.ObjectPool, now using Microsoft.IO.RecyclableMemoryStream.
+* [REM] Removed IRandom interface.
+
 ### v6.2.3 (2017-05-29) ###
 
 * [UPD] SQL tables no longer need foreign keys to handle parent keys.
