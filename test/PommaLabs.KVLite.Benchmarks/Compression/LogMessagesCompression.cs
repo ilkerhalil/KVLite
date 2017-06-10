@@ -28,8 +28,8 @@ using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Exporters.Csv;
 using BenchmarkDotNet.Jobs;
-using CodeProject.ObjectPool.Specialized;
 using PommaLabs.KVLite.Benchmarks.Models;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 
 namespace PommaLabs.KVLite.Benchmarks.Compression
@@ -37,7 +37,6 @@ namespace PommaLabs.KVLite.Benchmarks.Compression
     [Config(typeof(Config))]
     public class LogMessagesCompression
     {
-        private readonly IMemoryStreamPool MemoryStreamPool = CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
         private readonly ISerializer JsonSerializer = new JsonSerializer();
         private readonly ICompressor LZ4Compressor_Default = new LZ4Compressor();
         private readonly ICompressor GZipCompressor_Default = new GZipCompressor();
@@ -62,10 +61,10 @@ namespace PommaLabs.KVLite.Benchmarks.Compression
         [Benchmark]
         public long LZ4_Default()
         {
-            using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
+            using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
             {
                 JsonSerializer.SerializeToStream(LogMessage.GenerateRandomLogMessages(Count), serializedStream);
-                using (var compressedStream = MemoryStreamPool.GetObject().MemoryStream)
+                using (var compressedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
                 using (var compressionStream = LZ4Compressor_Default.CreateCompressionStream(compressedStream))
                 {
                     serializedStream.Position = 0L;
@@ -78,10 +77,10 @@ namespace PommaLabs.KVLite.Benchmarks.Compression
         [Benchmark]
         public long GZip_Default()
         {
-            using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
+            using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
             {
                 JsonSerializer.SerializeToStream(LogMessage.GenerateRandomLogMessages(Count), serializedStream);
-                using (var compressedStream = MemoryStreamPool.GetObject().MemoryStream)
+                using (var compressedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
                 using (var compressionStream = GZipCompressor_Default.CreateCompressionStream(compressedStream))
                 {
                     serializedStream.Position = 0L;
@@ -94,10 +93,10 @@ namespace PommaLabs.KVLite.Benchmarks.Compression
         [Benchmark]
         public long GZip_BestSpeed()
         {
-            using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
+            using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
             {
                 JsonSerializer.SerializeToStream(LogMessage.GenerateRandomLogMessages(Count), serializedStream);
-                using (var compressedStream = MemoryStreamPool.GetObject().MemoryStream)
+                using (var compressedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
                 using (var compressionStream = GZipCompressor_BestSpeed.CreateCompressionStream(compressedStream))
                 {
                     serializedStream.Position = 0L;
@@ -110,10 +109,10 @@ namespace PommaLabs.KVLite.Benchmarks.Compression
         [Benchmark]
         public long Deflate_Default()
         {
-            using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
+            using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
             {
                 JsonSerializer.SerializeToStream(LogMessage.GenerateRandomLogMessages(Count), serializedStream);
-                using (var compressedStream = MemoryStreamPool.GetObject().MemoryStream)
+                using (var compressedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
                 using (var compressionStream = DeflateCompressor_Default.CreateCompressionStream(compressedStream))
                 {
                     serializedStream.Position = 0L;
@@ -126,10 +125,10 @@ namespace PommaLabs.KVLite.Benchmarks.Compression
         [Benchmark]
         public long Deflate_BestSpeed()
         {
-            using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
+            using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
             {
                 JsonSerializer.SerializeToStream(LogMessage.GenerateRandomLogMessages(Count), serializedStream);
-                using (var compressedStream = MemoryStreamPool.GetObject().MemoryStream)
+                using (var compressedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
                 using (var compressionStream = DeflateCompressor_BestSpeed.CreateCompressionStream(compressedStream))
                 {
                     serializedStream.Position = 0L;

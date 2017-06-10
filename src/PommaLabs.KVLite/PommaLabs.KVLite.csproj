@@ -15,7 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeProject.ObjectPool" Version="3.0.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="1.1.2" />
     <PackageReference Include="NodaTime" Version="2.0.2" />
     <PackageReference Include="Thrower" Version="4.1.3" />

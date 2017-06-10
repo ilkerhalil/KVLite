@@ -29,8 +29,8 @@ using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Exporters.Csv;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
-using CodeProject.ObjectPool.Specialized;
 using PommaLabs.KVLite.Benchmarks.Models;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.UnitTests;
 using System.IO;
@@ -51,7 +51,6 @@ namespace PommaLabs.KVLite.Benchmarks.Serialization
             }
         }
 
-        private readonly IMemoryStreamPool MemoryStreamPool = CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
         private readonly ISerializer JsonSerializer = new JsonSerializer(new Newtonsoft.Json.JsonSerializerSettings { Formatting = Newtonsoft.Json.Formatting.None });
         private readonly ISerializer BsonSerializer = new BsonSerializer(new Newtonsoft.Json.JsonSerializerSettings { Formatting = Newtonsoft.Json.Formatting.None });
         private readonly ISerializer BinarySerializer = new BinarySerializer();
@@ -64,7 +63,7 @@ namespace PommaLabs.KVLite.Benchmarks.Serialization
         [Benchmark]
         public string JsonSerializer_Default()
         {
-            using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
+            using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
             {
                 JsonSerializer.SerializeToStream(LogMessage.GenerateRandomLogMessages(Count), serializedStream);
                 serializedStream.Position = 0L;
@@ -78,7 +77,7 @@ namespace PommaLabs.KVLite.Benchmarks.Serialization
         [Benchmark]
         public string BsonSerializer_Default()
         {
-            using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
+            using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
             {
                 BsonSerializer.SerializeToStream(LogMessage.GenerateRandomLogMessages(Count), serializedStream);
                 serializedStream.Position = 0L;
@@ -92,7 +91,7 @@ namespace PommaLabs.KVLite.Benchmarks.Serialization
         [Benchmark]
         public string BinarySerializer_Default()
         {
-            using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
+            using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
             {
                 BinarySerializer.SerializeToStream(LogMessage.GenerateRandomLogMessages(Count), serializedStream);
                 serializedStream.Position = 0L;

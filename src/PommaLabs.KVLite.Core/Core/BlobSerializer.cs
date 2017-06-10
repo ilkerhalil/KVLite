@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Specialized;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Resources;
 using System.IO;
@@ -83,10 +82,9 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="serializer">The serializer.</param>
-        /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="input">The input stream.</param>
         /// <returns>The deserialized value.</returns>
-        public static T Deserialize<T>(ISerializer serializer, IMemoryStreamPool memoryStreamPool, Stream input)
+        public static T Deserialize<T>(ISerializer serializer, Stream input)
         {
             var dataType = (DataTypes) input.ReadByte();
             switch (dataType)
@@ -101,7 +99,7 @@ namespace PommaLabs.KVLite.Core
                     return (T) (object) sr.ReadToEnd();
 
                 case DataTypes.ByteArray:
-                    using (var ms = memoryStreamPool.GetObject().MemoryStream)
+                    using (var ms = MemoryStreamManager.Instance.GetStream(nameof(KVLite)))
                     {
                         input.CopyTo(ms);
                         return (T) (object) ms.ToArray();
