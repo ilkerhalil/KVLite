@@ -134,6 +134,11 @@
             </summary>
             <returns>Total memory used by GC.</returns>
         </member>
+        <member name="T:PommaLabs.KVLite.Examples.WebApi.Controllers.ValuesController">
+            <summary>
+              Example controller.
+            </summary>
+        </member>
         <member name="T:PommaLabs.KVLite.Examples.WebApi.Startup">
             <summary>
               Configures the example service.

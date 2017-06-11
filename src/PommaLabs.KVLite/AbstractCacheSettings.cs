@@ -22,7 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NodaTime;
-using PommaLabs.Thrower;
+using PommaLabs.KVLite.Thrower;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;

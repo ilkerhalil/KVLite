@@ -23,7 +23,7 @@
 
 #if !PORTABLE
 
-using PommaLabs.Thrower;
+using PommaLabs.KVLite.Thrower;
 using System;
 using System.Data;
 using System.Globalization;

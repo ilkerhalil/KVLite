@@ -22,8 +22,8 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NodaTime;
-using PommaLabs.Thrower;
-using PommaLabs.Thrower.Goodies;
+using PommaLabs.KVLite.Thrower;
+using PommaLabs.KVLite.Thrower.Goodies;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;

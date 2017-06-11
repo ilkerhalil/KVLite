@@ -24,8 +24,8 @@
 using NodaTime;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.Thrower;
-using PommaLabs.Thrower.Goodies;
+using PommaLabs.KVLite.Thrower;
+using PommaLabs.KVLite.Thrower.Goodies;
 using PommaLabs.KVLite.Logging;
 using System;
 using System.Collections.Generic;

@@ -24,7 +24,7 @@
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.SQLite;
-using PommaLabs.Thrower;
+using PommaLabs.KVLite.Thrower;
 
 namespace PommaLabs.KVLite.WebForms
 {

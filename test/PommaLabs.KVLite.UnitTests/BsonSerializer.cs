@@ -23,7 +23,7 @@
 
 using Newtonsoft.Json.Bson;
 using PommaLabs.KVLite.Extensibility;
-using PommaLabs.Thrower;
+using PommaLabs.KVLite.Thrower;
 using System.IO;
 
 namespace PommaLabs.KVLite.UnitTests

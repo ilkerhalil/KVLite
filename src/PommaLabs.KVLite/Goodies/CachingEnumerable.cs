@@ -23,7 +23,7 @@
 
 using NodaTime;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.Thrower;
+using PommaLabs.KVLite.Thrower;
 using System;
 using System.Collections;
 using System.Collections.Generic;

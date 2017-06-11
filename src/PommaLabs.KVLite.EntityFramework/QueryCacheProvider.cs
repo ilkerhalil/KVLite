@@ -25,7 +25,7 @@ using EntityFramework;
 using EntityFramework.Caching;
 using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.Thrower;
+using PommaLabs.KVLite.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
