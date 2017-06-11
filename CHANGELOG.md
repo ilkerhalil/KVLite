@@ -1,6 +1,6 @@
 # Changelog for PommaLabs.KVLite #
 
-### v6.2.4 (2017-06-10) ###
+### v6.2.5 (2017-06-11) ###
 
 * [REM] Removed dependency on CodeProject.ObjectPool, now using Microsoft.IO.RecyclableMemoryStream.
 * [ADD] Added FakeRandom class for unit tests.
