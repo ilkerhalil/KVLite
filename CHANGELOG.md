@@ -1,5 +1,12 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.2.5 (2017-06-11) ###
+
+* [REM] Removed dependency on CodeProject.ObjectPool, now using Microsoft.IO.RecyclableMemoryStream.
+* [ADD] Added FakeRandom class for unit tests.
+* [ADD] Embedded LibLog.
+* [ADD] Embedded Thrower.
+
 ### v6.2.3 (2017-05-29) ###
 
 * [UPD] SQL tables no longer need foreign keys to handle parent keys.

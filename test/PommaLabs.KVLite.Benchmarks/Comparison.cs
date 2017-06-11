@@ -22,7 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using BenchmarkDotNet.Attributes;
-using PommaLabs.KVLite.Benchmarks.Compressors;
+using PommaLabs.KVLite.Benchmarks.Compression;
 using PommaLabs.KVLite.Benchmarks.Models;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
@@ -139,7 +139,7 @@ namespace PommaLabs.KVLite.Benchmarks
         [Params("deflate", "gzip", "lz4", "noop")]
         public string Compressor { get; set; }
 
-        [Setup]
+        [GlobalSetup]
         public void ClearCache()
         {
             _cache = _caches[Cache][Serializer][Compressor];

@@ -21,16 +21,15 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Specialized;
 using Dapper;
 using NodaTime;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Goodies;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.Thrower;
-using PommaLabs.Thrower.Goodies;
-using PommaLabs.Thrower.Logging;
+using PommaLabs.KVLite.Thrower;
+using PommaLabs.KVLite.Thrower.Goodies;
+using PommaLabs.KVLite.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -62,9 +61,8 @@ namespace PommaLabs.KVLite.Database
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
-        public DbCache(TSettings settings, DbCacheConnectionFactory<TConnection> connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock, IMemoryStreamPool memoryStreamPool, IRandom random)
+        public DbCache(TSettings settings, DbCacheConnectionFactory<TConnection> connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock, IRandom random)
         {
             // Preconditions
             Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
@@ -75,7 +73,6 @@ namespace PommaLabs.KVLite.Database
             Clock = clock ?? SystemClock.Instance;
             Serializer = serializer ?? JsonSerializer.Instance;
             Compressor = compressor ?? DeflateCompressor.Instance;
-            MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
             Random = random ?? new SystemRandom();
         }
 
@@ -369,15 +366,6 @@ namespace PommaLabs.KVLite.Database
         ///   only one parent key nesting depth.
         /// </summary>
         public override int MaxParentKeyTreeDepth { get; } = int.MaxValue;
-
-        /// <summary>
-        ///   The pool used to retrieve <see cref="MemoryStream"/> instances.
-        /// </summary>
-        /// <remarks>
-        ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance"/>.
-        /// </remarks>
-        public sealed override IMemoryStreamPool MemoryStreamPool { get; }
 
         /// <summary>
         ///   Gets the serializer used by the cache.
@@ -1273,22 +1261,20 @@ namespace PommaLabs.KVLite.Database
 
         private TVal UnsafeDeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
         {
-            using (var memoryStream = new MemoryStream(dbCacheValue.Value))
+            var buffer = dbCacheValue.Value;
+            using (var memoryStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite), buffer, 0, buffer.Length))
             {
                 if (dbCacheValue.Compressed == DbCacheValue.False)
                 {
                     // Handle uncompressed value.
                     AntiTamper.ReadAntiTamperHashCode(memoryStream, dbCacheValue);
-                    return BlobSerializer.Deserialize<TVal>(Serializer, MemoryStreamPool, memoryStream);
+                    return BlobSerializer.Deserialize<TVal>(Serializer, memoryStream);
                 }
-                else
+                // Handle compressed value.
+                using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
                 {
-                    // Handle compressed value.
-                    using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
-                    {
-                        AntiTamper.ReadAntiTamperHashCode(decompressionStream, dbCacheValue);
-                        return BlobSerializer.Deserialize<TVal>(Serializer, MemoryStreamPool, decompressionStream);
-                    }
+                    AntiTamper.ReadAntiTamperHashCode(decompressionStream, dbCacheValue);
+                    return BlobSerializer.Deserialize<TVal>(Serializer, decompressionStream);
                 }
             }
         }
@@ -1384,7 +1370,7 @@ namespace PommaLabs.KVLite.Database
             // Serializing may be pretty expensive, therefore we keep it out of the connection.
             try
             {
-                using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
+                using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite)))
                 {
                     // First write the anti-tamper hash code...
                     AntiTamper.WriteAntiTamperHashCode(serializedStream, dbCacheEntry);
@@ -1395,7 +1381,7 @@ namespace PommaLabs.KVLite.Database
                     if (serializedStream.Length > Settings.MinValueLengthForCompression)
                     {
                         // Stream is too long, we should compress it.
-                        using (var compressedStream = MemoryStreamPool.GetObject().MemoryStream)
+                        using (var compressedStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite)))
                         {
                             using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
                             {

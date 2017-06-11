@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Specialized;
 using Microsoft.Data.Sqlite;
 using NodaTime;
 using PommaLabs.KVLite.Database;
@@ -70,10 +69,9 @@ namespace PommaLabs.KVLite.SQLite
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
-        public VolatileCache(VolatileCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
-            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, "Memory", "MEMORY"), serializer, compressor, clock, memoryStreamPool, random)
+        public VolatileCache(VolatileCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
+            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, "Memory", "MEMORY"), serializer, compressor, clock, random)
         {
             // Connection string must be customized by each cache.
             UpdateConnectionString();

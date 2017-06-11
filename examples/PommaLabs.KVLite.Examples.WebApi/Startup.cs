@@ -28,7 +28,7 @@ using Ninject.Web.WebApi.OwinHost;
 using Owin;
 using PommaLabs.KVLite.Examples.WebApi;
 using PommaLabs.KVLite.WebApi;
-using PommaLabs.Thrower.Goodies;
+using PommaLabs.KVLite.Thrower.Goodies;
 using Swashbuckle.Application;
 using System.Web.Http;
 

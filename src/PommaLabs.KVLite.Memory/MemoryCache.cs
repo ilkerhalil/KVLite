@@ -21,11 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Specialized;
 using NodaTime;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.Thrower.Logging;
+using PommaLabs.KVLite.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -72,13 +72,11 @@ namespace PommaLabs.KVLite.Memory
         /// <param name="settings">Cache settings.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
-        /// <param name="memoryStreamPool">The memory stream pool.</param>
-        public MemoryCache(MemoryCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IMemoryStreamPool memoryStreamPool = null)
+        public MemoryCache(MemoryCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null)
         {
             Settings = settings;
             Compressor = compressor ?? DeflateCompressor.Instance;
             Serializer = serializer ?? JsonSerializer.Instance;
-            MemoryStreamPool = memoryStreamPool ?? CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance;
             Clock = SystemClock.Instance;
 
             InitSystemMemoryCache();
@@ -157,15 +155,6 @@ namespace PommaLabs.KVLite.Memory
         public override int MaxParentKeyTreeDepth { get; } = int.MaxValue;
 
         /// <summary>
-        ///   The pool used to retrieve <see cref="MemoryStream"/> instances.
-        /// </summary>
-        /// <remarks>
-        ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance"/>.
-        /// </remarks>
-        public override IMemoryStreamPool MemoryStreamPool { get; }
-
-        /// <summary>
         ///   Gets the serializer used by the cache.
         /// </summary>
         /// <remarks>
@@ -203,14 +192,14 @@ namespace PommaLabs.KVLite.Memory
             bool compressed;
             try
             {
-                using (var serializedStream = MemoryStreamPool.GetObject().MemoryStream)
+                using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite)))
                 {
                     Serializer.SerializeToStream(value, serializedStream);
 
                     if (serializedStream.Length > Settings.MinValueLengthForCompression)
                     {
                         // Stream is too long, we should compress it.
-                        using (var compressedStream = MemoryStreamPool.GetObject().MemoryStream)
+                        using (var compressedStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite)))
                         {
                             using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
                             {
@@ -530,7 +519,8 @@ namespace PommaLabs.KVLite.Memory
 
         private TVal UnsafeDeserializeCacheValue<TVal>(CacheValue cacheValue)
         {
-            using (var memoryStream = new MemoryStream(cacheValue.Value))
+            var buffer = cacheValue.Value;
+            using (var memoryStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite), buffer, 0, buffer.Length))
             {
                 if (!cacheValue.Compressed)
                 {

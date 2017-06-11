@@ -23,7 +23,7 @@
 
 using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.Thrower;
+using PommaLabs.KVLite.Thrower;
 using System;
 using System.Web.Caching;
 

@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.3
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-52E1-43BC-971F-94784A43B73E}"
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		appveyor.yml = appveyor.yml
+		.travis.yml = .travis.yml
 		build.cake = build.cake
 		CHANGELOG.md = CHANGELOG.md
 		Directory.Build.props = Directory.Build.props
@@ -17,11 +17,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-5
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{EFEDDCD8-239A-4197-B666-9A0D3795F8BC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{EFEDDCD8-239A-4197-B666-9A0D3795F8BC}"
 	ProjectSection(SolutionItems) = preProject
-		doc\Including SQLite.Interop.dll into your C# project.pdf = doc\Including SQLite.Interop.dll into your C# project.pdf
-		doc\SQLite Performance Tuning.pdf = doc\SQLite Performance Tuning.pdf
-		doc\Universal System.Data.SQLite binary for .NET and Mono.pdf = doc\Universal System.Data.SQLite binary for .NET and Mono.pdf
+		docs\Including SQLite.Interop.dll into your C# project.pdf = docs\Including SQLite.Interop.dll into your C# project.pdf
+		docs\SQLite Performance Tuning.pdf = docs\SQLite Performance Tuning.pdf
+		docs\Universal System.Data.SQLite binary for .NET and Mono.pdf = docs\Universal System.Data.SQLite binary for .NET and Mono.pdf
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DA9B418B-185E-4B62-A6EE-DAFC4E5DAB51}"

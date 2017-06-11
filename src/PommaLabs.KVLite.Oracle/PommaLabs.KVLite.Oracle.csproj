@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.24160719" />
+    <PackageReference Include="Oracle.ManagedDataAccess" Version="12.2.1100" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">

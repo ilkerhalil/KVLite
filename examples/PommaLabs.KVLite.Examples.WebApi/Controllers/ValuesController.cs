@@ -21,7 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.Thrower;
+using PommaLabs.KVLite.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Web.Http;
@@ -29,6 +29,9 @@ using WebApi.OutputCache.V2;
 
 namespace PommaLabs.KVLite.Examples.WebApi.Controllers
 {
+    /// <summary>
+    ///   Example controller.
+    /// </summary>
     [RoutePrefix("values")]
     public class ValuesController : ApiController
     {

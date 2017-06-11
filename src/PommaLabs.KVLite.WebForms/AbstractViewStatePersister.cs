@@ -19,7 +19,7 @@
 
 using NodaTime;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.Thrower;
+using PommaLabs.KVLite.Thrower;
 using System;
 using System.Text;
 using System.Web;

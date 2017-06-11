@@ -23,7 +23,7 @@
 
 #if !NETSTD13
 
-using PommaLabs.Thrower;
+using PommaLabs.KVLite.Thrower;
 using System;
 using System.IO;
 using System.Runtime.Serialization;

@@ -23,6 +23,9 @@
 
 using BenchmarkDotNet.Running;
 using NodaTime;
+using PommaLabs.KVLite.Benchmarks.Compression;
+using PommaLabs.KVLite.Benchmarks.Serialization;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.MySql;
@@ -52,9 +55,14 @@ namespace PommaLabs.KVLite.Benchmarks
 
         public static void Main(string[] args)
         {
-            if (args.Length == 1 && args[0].Equals(nameof(Comparison)))
+            if (args.Length >= 1)
             {
-                BenchmarkRunner.Run<Comparison>();
+                BenchmarkSwitcher.FromTypes(new[]
+                {
+                    typeof(Comparison),
+                    typeof(LogMessagesCompression),
+                    typeof(LogMessagesSerialization)
+                }).Run(args);
                 return;
             }
 
@@ -700,7 +708,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
         private static double GetObjectSizeInMB(object obj)
         {
-            using (var ms = CodeProject.ObjectPool.Specialized.MemoryStreamPool.Instance.GetObject().MemoryStream)
+            using (var ms = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
             {
                 new BinarySerializer().SerializeToStream(obj, ms);
                 return ms.Length / (1024.0 * 1024.0);

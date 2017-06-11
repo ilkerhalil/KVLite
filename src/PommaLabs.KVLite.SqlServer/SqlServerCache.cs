@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using CodeProject.ObjectPool.Specialized;
 using NodaTime;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
@@ -55,10 +54,9 @@ namespace PommaLabs.KVLite.SqlServer
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
-        public SqlServerCache(SqlServerCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
-            : this(settings, new SqlServerCacheConnectionFactory(), serializer, compressor, clock, memoryStreamPool, random)
+        public SqlServerCache(SqlServerCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
+            : this(settings, new SqlServerCacheConnectionFactory(), serializer, compressor, clock, random)
         {
         }
 
@@ -71,10 +69,9 @@ namespace PommaLabs.KVLite.SqlServer
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        /// <param name="memoryStreamPool">The memory stream pool.</param>
         /// <param name="random">The random number generator.</param>
-        public SqlServerCache(SqlServerCacheSettings settings, SqlServerCacheConnectionFactory connectionFactory, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IMemoryStreamPool memoryStreamPool = null, IRandom random = null)
-            : base(settings, connectionFactory, serializer, compressor, clock, memoryStreamPool, random)
+        public SqlServerCache(SqlServerCacheSettings settings, SqlServerCacheConnectionFactory connectionFactory, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
+            : base(settings, connectionFactory, serializer, compressor, clock, random)
         {
         }
     }
