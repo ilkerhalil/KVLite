@@ -15,13 +15,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LibLog" Version="4.2.6" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="1.1.2" />
     <PackageReference Include="NodaTime" Version="2.0.2" />
     <PackageReference Include="Thrower" Version="4.1.3" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
-    <DefineConstants>$(DefineConstants);NETSTD13</DefineConstants>
+    <DefineConstants>$(DefineConstants);NETSTD13;LIBLOG_PUBLIC;LIBLOG_PORTABLE</DefineConstants>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
   </PropertyGroup>
 
@@ -29,7 +30,7 @@
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
+    <DefineConstants>$(DefineConstants);NET45;LIBLOG_PUBLIC</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">

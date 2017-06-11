@@ -26,7 +26,7 @@ using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Resources;
 using PommaLabs.Thrower;
 using PommaLabs.Thrower.Goodies;
-using PommaLabs.Thrower.Logging;
+using PommaLabs.KVLite.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
