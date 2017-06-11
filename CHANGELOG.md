@@ -5,6 +5,7 @@
 * [REM] Removed dependency on CodeProject.ObjectPool, now using Microsoft.IO.RecyclableMemoryStream.
 * [ADD] Added FakeRandom class for unit tests.
 * [ADD] Embedded LibLog.
+* [ADD] Embedded Thrower.
 
 ### v6.2.3 (2017-05-29) ###
 
