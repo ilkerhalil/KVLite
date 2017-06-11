@@ -54,8 +54,9 @@ namespace PommaLabs.KVLite.SqlServer
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        public SqlServerCache(SqlServerCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null)
-            : this(settings, new SqlServerCacheConnectionFactory(), serializer, compressor, clock)
+        /// <param name="random">The random number generator.</param>
+        public SqlServerCache(SqlServerCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
+            : this(settings, new SqlServerCacheConnectionFactory(), serializer, compressor, clock, random)
         {
         }
 
@@ -68,8 +69,9 @@ namespace PommaLabs.KVLite.SqlServer
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        public SqlServerCache(SqlServerCacheSettings settings, SqlServerCacheConnectionFactory connectionFactory, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null)
-            : base(settings, connectionFactory, serializer, compressor, clock)
+        /// <param name="random">The random number generator.</param>
+        public SqlServerCache(SqlServerCacheSettings settings, SqlServerCacheConnectionFactory connectionFactory, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
+            : base(settings, connectionFactory, serializer, compressor, clock, random)
         {
         }
     }

@@ -1,4 +1,4 @@
-﻿// File name: NinjectConfig.cs
+﻿// File name: SystemRandom.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,36 +21,25 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Ninject.Modules;
-using NodaTime;
-using PommaLabs.KVLite.Extensibility;
-using PommaLabs.KVLite.SQLite;
+using System;
 
-namespace PommaLabs.KVLite.Examples.WebApi
+namespace PommaLabs.KVLite.Extensibility
 {
-    internal sealed class NinjectConfig : NinjectModule
+    /// <summary>
+    ///   Random generator based on <see cref="Random"/> BCL class.
+    /// </summary>
+    public sealed class SystemRandom : IRandom
     {
-        public override void Load()
-        {
-            Bind<IClock>()
-                .ToConstant(SystemClock.Instance)
-                .InSingletonScope();
+        private readonly Random _random = new Random();
 
-            Bind<ICompressor>()
-                .ToConstant(DeflateCompressor.Instance)
-                .InSingletonScope();
-
-            Bind<ICache>()
-                .To<PersistentCache>()
-                .InSingletonScope();
-
-            Bind<ISerializer>()
-                .ToConstant(JsonSerializer.Instance)
-                .InSingletonScope();
-
-            Bind<IRandom>()
-                .To<SystemRandom>()
-                .InTransientScope();
-        }
+        /// <summary>
+        ///   Returns a random floating-point number that is greater than or equal to 0.0, and less
+        ///   than 1.0.
+        /// </summary>
+        /// <returns>
+        ///   A double-precision floating point number that is greater than or equal to 0.0, and less
+        ///   than 1.0.
+        /// </returns>
+        public double NextDouble() => _random.NextDouble();
     }
 }

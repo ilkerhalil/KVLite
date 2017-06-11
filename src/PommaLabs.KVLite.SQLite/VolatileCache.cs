@@ -69,8 +69,9 @@ namespace PommaLabs.KVLite.SQLite
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        public VolatileCache(VolatileCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null)
-            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, "Memory", "MEMORY"), serializer, compressor, clock)
+        /// <param name="random">The random number generator.</param>
+        public VolatileCache(VolatileCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
+            : base(settings, new SQLiteCacheConnectionFactory<VolatileCacheSettings>(settings, "Memory", "MEMORY"), serializer, compressor, clock, random)
         {
             // Connection string must be customized by each cache.
             UpdateConnectionString();
