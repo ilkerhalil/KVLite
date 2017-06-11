@@ -3,7 +3,7 @@
 ### v6.2.4 (2017-06-10) ###
 
 * [REM] Removed dependency on CodeProject.ObjectPool, now using Microsoft.IO.RecyclableMemoryStream.
-* [REM] Removed IRandom interface.
+* [ADD] Added FakeRandom class for unit tests.
 
 ### v6.2.3 (2017-05-29) ###
 

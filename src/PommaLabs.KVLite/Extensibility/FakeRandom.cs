@@ -1,4 +1,4 @@
-﻿// File name: SystemRandom.cs
+﻿// File name: FakeRandom.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,26 +21,62 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.Thrower;
 using System;
 
 namespace PommaLabs.KVLite.Extensibility
 {
     /// <summary>
-    ///   Random generator based on <see cref="Random"/> BCL class. An instance of this class is
-    ///   _not_ threadsafe, since the underlying random generator is not threadsafe.
+    ///   Builds a fake random which constantly returns specified <see cref="Value"/>.
     /// </summary>
-    public sealed class SystemRandom : IRandom
+    public sealed class FakeRandom : IRandom
     {
-        private readonly Random _random = new Random();
+        private double _value;
 
         /// <summary>
-        ///   Returns a random floating-point number that is greater than or equal to 0.0, and less
-        ///   than 1.0.
+        ///   Sets <see cref="Value"/> to 0.5.
+        /// </summary>
+        public FakeRandom()
+            : this(0.5)
+        {
+        }
+
+        /// <summary>
+        ///   Sets <see cref="Value"/> to <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The constant value.</param>
+        public FakeRandom(double value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        ///   The value which will be returned by <see cref="NextDouble"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   Specified value is less than 0.0 or it is greater than or equal to 1.0.
+        /// </exception>
+        public double Value
+        {
+            get { return _value; }
+            set
+            {
+                // Preconditions
+                Raise.ArgumentOutOfRangeException.IfIsLess(value, 0.0, nameof(value));
+                Raise.ArgumentOutOfRangeException.IfIsGreaterOrEqual(value, 1.0, nameof(value));
+
+                _value = value;
+            }
+        }
+
+        /// <summary>
+        ///   Returns a specified floating-point number that is greater than or equal to 0.0, and
+        ///   less than 1.0.
         /// </summary>
         /// <returns>
         ///   A double-precision floating point number that is greater than or equal to 0.0, and less
         ///   than 1.0.
         /// </returns>
-        public double NextDouble() => _random.NextDouble();
+        public double NextDouble() => _value;
     }
 }
