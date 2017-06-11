@@ -29,6 +29,9 @@ using WebApi.OutputCache.V2;
 
 namespace PommaLabs.KVLite.Examples.WebApi.Controllers
 {
+    /// <summary>
+    ///   Example controller.
+    /// </summary>
     [RoutePrefix("values")]
     public class ValuesController : ApiController
     {

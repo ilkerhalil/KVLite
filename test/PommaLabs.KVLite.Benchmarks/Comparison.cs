@@ -139,7 +139,7 @@ namespace PommaLabs.KVLite.Benchmarks
         [Params("deflate", "gzip", "lz4", "noop")]
         public string Compressor { get; set; }
 
-        [Setup]
+        [GlobalSetup]
         public void ClearCache()
         {
             _cache = _caches[Cache][Serializer][Compressor];
