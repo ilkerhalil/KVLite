@@ -62,7 +62,7 @@ namespace PommaLabs.KVLite.MySql
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
-                insert into {CacheSchemaName}.{CacheEntriesTableName} (
+                replace into {CacheSchemaName}.{CacheEntriesTableName} (
                     {DbCacheValue.PartitionColumn},
                     {DbCacheValue.KeyColumn},
                     {DbCacheValue.UtcExpiryColumn},
@@ -89,18 +89,7 @@ namespace PommaLabs.KVLite.MySql
                     {p}{nameof(DbCacheEntry.ParentKey2)},
                     {p}{nameof(DbCacheEntry.ParentKey3)},
                     {p}{nameof(DbCacheEntry.ParentKey4)}
-                )
-                on duplicate key update
-                    {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheValue.UtcExpiry)},
-                    {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
-                    {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},
-                    {DbCacheValue.CompressedColumn} = {p}{nameof(DbCacheValue.Compressed)},
-                    {DbCacheValue.UtcCreationColumn} = {p}{nameof(DbCacheValue.UtcCreation)},
-                    {DbCacheEntry.ParentKey0Column} = {p}{nameof(DbCacheEntry.ParentKey0)},
-                    {DbCacheEntry.ParentKey1Column} = {p}{nameof(DbCacheEntry.ParentKey1)},
-                    {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)},
-                    {DbCacheEntry.ParentKey3Column} = {p}{nameof(DbCacheEntry.ParentKey3)},
-                    {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)};
+                );
             ");
 
             #endregion Commands
