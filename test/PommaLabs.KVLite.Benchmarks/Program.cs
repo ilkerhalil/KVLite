@@ -368,7 +368,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var cacheName = typeof(TCache).Name;
 
             Console.WriteLine(); // Spacer
-            Console.WriteLine($"[{cacheName}] Storing each data log message asynchronously, iteration {iteration}...");
+            Console.WriteLine($"[{cacheName}] Storing each log message asynchronously, iteration {iteration}...");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
