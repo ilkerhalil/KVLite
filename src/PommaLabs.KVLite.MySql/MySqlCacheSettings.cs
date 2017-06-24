@@ -24,7 +24,6 @@
 using MySql.Data.MySqlClient;
 using PommaLabs.KVLite.Database;
 using System;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
 namespace PommaLabs.KVLite.MySql
@@ -41,7 +40,6 @@ namespace PommaLabs.KVLite.MySql
         ///   Gets the default settings for <see cref="MySqlCache"/>.
         /// </summary>
         /// <value>The default settings for <see cref="MySqlCache"/>.</value>
-        [Pure]
         public static MySqlCacheSettings Default { get; } = new MySqlCacheSettings();
 
         #endregion Properties

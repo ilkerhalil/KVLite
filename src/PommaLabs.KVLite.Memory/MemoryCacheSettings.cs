@@ -25,7 +25,6 @@ using PommaLabs.KVLite.Resources;
 using PommaLabs.KVLite.Thrower;
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
@@ -66,7 +65,6 @@ namespace PommaLabs.KVLite.Memory
         ///   Gets the default settings for <see cref="MemoryCache"/>.
         /// </summary>
         /// <value>The default settings for <see cref="MemoryCache"/>.</value>
-        [Pure]
         public static MemoryCacheSettings Default { get; } = new MemoryCacheSettings();
 
         #endregion Properties

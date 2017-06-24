@@ -30,8 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
-using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using SystemCacheItemPolicy = System.Runtime.Caching.CacheItemPolicy;
@@ -52,7 +50,6 @@ namespace PommaLabs.KVLite.Memory
         /// </summary>
 #pragma warning disable CC0022 // Should dispose object
 
-        [Pure]
         public static MemoryCache DefaultInstance { get; } = new MemoryCache(new MemoryCacheSettings());
 
 #pragma warning restore CC0022 // Should dispose object

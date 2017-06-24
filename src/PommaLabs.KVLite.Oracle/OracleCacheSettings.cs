@@ -24,7 +24,6 @@
 using Oracle.ManagedDataAccess.Client;
 using PommaLabs.KVLite.Database;
 using System;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
 namespace PommaLabs.KVLite.Oracle
@@ -41,7 +40,6 @@ namespace PommaLabs.KVLite.Oracle
         ///   Gets the default settings for <see cref="OracleCache"/>.
         /// </summary>
         /// <value>The default settings for <see cref="OracleCache"/>.</value>
-        [Pure]
         public static OracleCacheSettings Default { get; } = new OracleCacheSettings();
 
         #endregion Properties
