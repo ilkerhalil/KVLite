@@ -42,12 +42,12 @@ namespace PommaLabs.KVLite.PostgreSql
         /// <summary>
         ///   The symbol used to enclose an identifier (left side).
         /// </summary>
-        protected override string LeftIdentifierEncloser { get; } = "`";
+        protected override string LeftIdentifierEncloser { get; } = "\"";
 
         /// <summary>
         ///   The symbol used to enclose an identifier (right side).
         /// </summary>
-        protected override string RightIdentifierEncloser { get; } = "`";
+        protected override string RightIdentifierEncloser { get; } = "\"";
 
         /// <summary>
         ///   This method is called when either the cache schema name or the cache entries table name
@@ -58,11 +58,13 @@ namespace PommaLabs.KVLite.PostgreSql
             base.UpdateCommandsAndQueries();
 
             var p = ParameterPrefix;
+            var s = SqlSchemaWithDot;
 
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
-                insert into {CacheSchemaName}.{CacheEntriesTableName} (
+                insert into {s}{CacheEntriesTableName} (
+                    {DbCacheValue.HashColumn},
                     {DbCacheValue.PartitionColumn},
                     {DbCacheValue.KeyColumn},
                     {DbCacheValue.UtcExpiryColumn},
@@ -77,6 +79,7 @@ namespace PommaLabs.KVLite.PostgreSql
                     {DbCacheEntry.ParentKey4Column}
                 )
                 values (
+                    {p}{nameof(DbCacheValue.Hash)},
                     {p}{nameof(DbCacheValue.Partition)},
                     {p}{nameof(DbCacheValue.Key)},
                     {p}{nameof(DbCacheValue.UtcExpiry)},
@@ -90,7 +93,7 @@ namespace PommaLabs.KVLite.PostgreSql
                     {p}{nameof(DbCacheEntry.ParentKey3)},
                     {p}{nameof(DbCacheEntry.ParentKey4)}
                 )
-                on duplicate key update
+                on conflict ({DbCacheValue.HashColumn}) do update
                     {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheValue.UtcExpiry)},
                     {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
                     {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},
