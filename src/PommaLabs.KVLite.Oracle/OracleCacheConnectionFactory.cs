@@ -63,13 +63,14 @@ namespace PommaLabs.KVLite.Oracle
             base.UpdateCommandsAndQueries();
 
             var p = ParameterPrefix;
+            var s = SqlSchemaWithDot;
 
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
                 declare
                 begin
-                    insert into {CacheSchemaName}.{CacheEntriesTableName} (
+                    insert into {s}{CacheEntriesTableName} (
                         {DbCacheValue.PartitionColumn},
                         {DbCacheValue.KeyColumn},
                         {DbCacheValue.UtcExpiryColumn},
@@ -100,7 +101,7 @@ namespace PommaLabs.KVLite.Oracle
 
                     exception
                         when dup_val_on_index then -- Above INSERT has failed
-                        update {CacheSchemaName}.{CacheEntriesTableName}
+                        update {s}{CacheEntriesTableName}
                            set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheValue.UtcExpiry)},
                                {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
                                {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},

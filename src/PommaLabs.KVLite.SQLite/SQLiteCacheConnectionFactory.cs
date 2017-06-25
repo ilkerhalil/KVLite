@@ -48,7 +48,7 @@ namespace PommaLabs.KVLite.SQLite
         private string _connectionString;
 
         public SQLiteCacheConnectionFactory(TSettings settings, string mode, string journal)
-            : base(SqliteFactory.Instance, string.Empty, null)
+            : base(SqliteFactory.Instance, null, null)
         {
             _settings = settings;
             _mode = mode;
@@ -75,6 +75,7 @@ namespace PommaLabs.KVLite.SQLite
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
                 insert or ignore into {s}{CacheEntriesTableName} (
+                    {DbCacheValue.HashColumn},
                     {DbCacheValue.PartitionColumn},
                     {DbCacheValue.KeyColumn},
                     {DbCacheValue.UtcExpiryColumn},
@@ -89,6 +90,7 @@ namespace PommaLabs.KVLite.SQLite
                     {DbCacheEntry.ParentKey4Column}
                 )
                 values (
+                    {p}{nameof(DbCacheValue.Hash)},
                     {p}{nameof(DbCacheValue.Partition)},
                     {p}{nameof(DbCacheValue.Key)},
                     {p}{nameof(DbCacheValue.UtcExpiry)},
@@ -114,8 +116,7 @@ namespace PommaLabs.KVLite.SQLite
                        {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)},
                        {DbCacheEntry.ParentKey3Column} = {p}{nameof(DbCacheEntry.ParentKey3)},
                        {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)}
-                 where {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheValue.Partition)}
-                   and {DbCacheValue.KeyColumn} = {p}{nameof(DbCacheValue.Key)}
+                 where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheValue.Hash)}
                    and changes() = 0; -- Above INSERT has failed
             ");
 
@@ -130,6 +131,7 @@ namespace PommaLabs.KVLite.SQLite
             _createCacheSchemaCommand = MinifyQuery($@"
                 DROP TABLE IF EXISTS {s}{CacheEntriesTableName};
                 CREATE TABLE {s}{CacheEntriesTableName} (
+                    kvle_hash BIGINT NOT NULL,
                     kvle_partition TEXT NOT NULL,
                     kvle_key TEXT NOT NULL,
                     kvle_expiry BIGINT NOT NULL,
@@ -142,7 +144,7 @@ namespace PommaLabs.KVLite.SQLite
                     kvle_parent_key2 TEXT,
                     kvle_parent_key3 TEXT,
                     kvle_parent_key4 TEXT,
-                    CONSTRAINT pk_kvle PRIMARY KEY (kvle_partition, kvle_key)
+                    CONSTRAINT pk_kvle PRIMARY KEY (kvle_hash)
                 );
                 CREATE INDEX ix_kvle_exp_part ON {s}{CacheEntriesTableName} (kvle_expiry DESC, kvle_partition ASC);
             ");
@@ -238,7 +240,8 @@ namespace PommaLabs.KVLite.SQLite
                 columns.Add(dataReader.GetValue(dataReader.GetOrdinal("name")) as string);
             }
 
-            return columns.Count == 12
+            return columns.Count == 13
+                && columns.Contains(DbCacheValue.HashColumn)
                 && columns.Contains(DbCacheValue.PartitionColumn)
                 && columns.Contains(DbCacheValue.KeyColumn)
                 && columns.Contains(DbCacheValue.UtcExpiryColumn)

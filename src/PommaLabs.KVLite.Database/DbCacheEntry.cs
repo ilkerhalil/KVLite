@@ -105,6 +105,11 @@ namespace PommaLabs.KVLite.Database
         public sealed class Single
         {
             /// <summary>
+            ///   Hash of partition and key.
+            /// </summary>
+            public long Hash { get; set; }
+
+            /// <summary>
             ///   A partition holds a group of related keys.
             /// </summary>
             public string Partition { get; set; }

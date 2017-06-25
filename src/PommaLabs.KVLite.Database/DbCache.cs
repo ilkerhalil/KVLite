@@ -566,8 +566,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition.Truncate(cf.MaxPartitionNameLength),
-                Key = key.Truncate(cf.MaxKeyNameLength),
+                Hash = XXHash.HashPartitionAndKey(partition, key),
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
@@ -592,8 +591,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition.Truncate(cf.MaxPartitionNameLength),
-                Key = key.Truncate(cf.MaxKeyNameLength),
+                Hash = XXHash.HashPartitionAndKey(partition, key),
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
@@ -667,8 +665,9 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition.Truncate(cf.MaxPartitionNameLength),
-                Key = key.Truncate(cf.MaxKeyNameLength),
+                Hash = XXHash.HashPartitionAndKey(partition, key),
+                Partition = partition,
+                Key = key,
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -720,8 +719,9 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition.Truncate(cf.MaxPartitionNameLength),
-                Key = key.Truncate(cf.MaxKeyNameLength),
+                Hash = XXHash.HashPartitionAndKey(partition, key),
+                Partition = partition,
+                Key = key,
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -772,8 +772,9 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition.Truncate(cf.MaxPartitionNameLength),
-                Key = key.Truncate(cf.MaxKeyNameLength),
+                Hash = XXHash.HashPartitionAndKey(partition, key),
+                Partition = partition,
+                Key = key,
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -825,8 +826,9 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition.Truncate(cf.MaxPartitionNameLength),
-                Key = key.Truncate(cf.MaxKeyNameLength),
+                Hash = XXHash.HashPartitionAndKey(partition, key),
+                Partition = partition,
+                Key = key,
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -902,6 +904,7 @@ namespace PommaLabs.KVLite.Database
                         // Since we are in a "get" operation, we should also update the expiry.
                         db.Execute(cf.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
                         {
+                            Hash = XXHash.HashPartitionAndKey(dbCacheEntry.Partition, dbCacheEntry.Key),
                             Partition = dbCacheEntry.Partition,
                             Key = dbCacheEntry.Key,
                             UtcExpiry = dbCacheEntry.UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
@@ -959,6 +962,7 @@ namespace PommaLabs.KVLite.Database
                         // Since we are in a "get" operation, we should also update the expiry.
                         await db.ExecuteAsync(cf.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
                         {
+                            Hash = XXHash.HashPartitionAndKey(dbCacheEntry.Partition, dbCacheEntry.Key),
                             Partition = dbCacheEntry.Partition,
                             Key = dbCacheEntry.Key,
                             UtcExpiry = dbCacheEntry.UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
@@ -991,8 +995,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition.Truncate(cf.MaxPartitionNameLength),
-                Key = key.Truncate(cf.MaxKeyNameLength),
+                Hash = XXHash.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -1029,8 +1032,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition.Truncate(cf.MaxPartitionNameLength),
-                Key = key.Truncate(cf.MaxKeyNameLength),
+                Hash = XXHash.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -1066,8 +1068,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition.Truncate(cf.MaxPartitionNameLength),
-                Key = key.Truncate(cf.MaxKeyNameLength),
+                Hash = XXHash.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -1104,8 +1105,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition.Truncate(cf.MaxPartitionNameLength),
-                Key = key.Truncate(cf.MaxKeyNameLength),
+                Hash = XXHash.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -1360,6 +1360,7 @@ namespace PommaLabs.KVLite.Database
             // to perform some anti-tamper checks when the value will be read.
             var dbCacheEntry = new DbCacheEntry
             {
+                Hash = XXHash.HashPartitionAndKey(partition, key),
                 Partition = partition,
                 Key = key,
                 UtcExpiry = utcExpiry.ToUnixTimeSeconds(),

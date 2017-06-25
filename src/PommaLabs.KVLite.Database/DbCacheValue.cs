@@ -39,6 +39,16 @@ namespace PommaLabs.KVLite.Database
         public const byte False = 0;
 
         /// <summary>
+        ///   SQL column name of <see cref="Hash"/>.
+        /// </summary>
+        public const string HashColumn = "kvle_hash";
+
+        /// <summary>
+        ///   Hash of partition and key.
+        /// </summary>
+        public long Hash { get; set; }
+
+        /// <summary>
         ///   SQL column name of <see cref="Partition"/>.
         /// </summary>
         public const string PartitionColumn = "kvle_partition";

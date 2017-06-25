@@ -58,11 +58,13 @@ namespace PommaLabs.KVLite.MySql
             base.UpdateCommandsAndQueries();
 
             var p = ParameterPrefix;
+            var s = SqlSchemaWithDot;
 
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
-                replace into {CacheSchemaName}.{CacheEntriesTableName} (
+                replace into {s}{CacheEntriesTableName} (
+                    {DbCacheValue.HashColumn},
                     {DbCacheValue.PartitionColumn},
                     {DbCacheValue.KeyColumn},
                     {DbCacheValue.UtcExpiryColumn},
@@ -77,6 +79,7 @@ namespace PommaLabs.KVLite.MySql
                     {DbCacheEntry.ParentKey4Column}
                 )
                 values (
+                    {p}{nameof(DbCacheValue.Hash)},
                     {p}{nameof(DbCacheValue.Partition)},
                     {p}{nameof(DbCacheValue.Key)},
                     {p}{nameof(DbCacheValue.UtcExpiry)},

@@ -63,11 +63,12 @@ namespace PommaLabs.KVLite.SqlServer
             base.UpdateCommandsAndQueries();
 
             var p = ParameterPrefix;
+            var s = SqlSchemaWithDot;
 
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
-                update {CacheSchemaName}.{CacheEntriesTableName}
+                update {s}{CacheEntriesTableName}
                    set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheValue.UtcExpiry)},
                        {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
                        {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},
@@ -78,12 +79,12 @@ namespace PommaLabs.KVLite.SqlServer
                        {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)},
                        {DbCacheEntry.ParentKey3Column} = {p}{nameof(DbCacheEntry.ParentKey3)},
                        {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)}
-                 where {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheValue.Partition)}
-                   and {DbCacheValue.KeyColumn} = {p}{nameof(DbCacheValue.Key)}
+                 where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheValue.Hash)}
 
                 if @@rowcount = 0
                 begin
-                    insert into {CacheSchemaName}.{CacheEntriesTableName} (
+                    insert into {s}{CacheEntriesTableName} (
+                        {DbCacheValue.HashColumn},
                         {DbCacheValue.PartitionColumn},
                         {DbCacheValue.KeyColumn},
                         {DbCacheValue.UtcExpiryColumn},
@@ -98,6 +99,7 @@ namespace PommaLabs.KVLite.SqlServer
                         {DbCacheEntry.ParentKey4Column}
                     )
                     values (
+                        {p}{nameof(DbCacheValue.Hash)},
                         {p}{nameof(DbCacheValue.Partition)},
                         {p}{nameof(DbCacheValue.Key)},
                         {p}{nameof(DbCacheValue.UtcExpiry)},
