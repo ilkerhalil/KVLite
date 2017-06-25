@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_entries` (
     `kvle_parent_key4` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Optional parent entry, used to link entries in a hierarchical way.',
     PRIMARY KEY (`kvle_id`),
     UNIQUE `uk_kvle` (`kvle_hash`),
-    INDEX `ix_kvle_exp_part` (`kvle_expiry` DESC, `kvle_partition` ASC)
+    INDEX `ix_kvle_part_exp` (`kvle_partition` ASC, `kvle_expiry` DESC)
 )
 COLLATE='utf8_general_ci'
 ENGINE=MyISAM

@@ -282,7 +282,7 @@ namespace PommaLabs.KVLite.Database
 
             DeleteCacheEntriesCommand = MinifyQuery($@"
                 delete from {s}{CacheEntriesTableName}
-                 where ({p}{nameof(DbCacheEntry.Group.Hash)} is null or ({DbCacheValue.HashColumn} >= {p}{nameof(DbCacheEntry.Group.Hash)} + {b} and {DbCacheValue.HashColumn} <= {p}{nameof(DbCacheEntry.Group.Hash)} + {t}))
+                 where ({p}{nameof(DbCacheEntry.Group.Partition)} is null or {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheEntry.Group.Partition)})
                    and (({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
                      or ({DbCacheEntry.ParentKey0Column} in (select x.{DbCacheValue.KeyColumn} from (select y.{DbCacheValue.KeyColumn} from {s}{CacheEntriesTableName} y where y.{DbCacheValue.PartitionColumn} = {DbCacheValue.PartitionColumn} and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)
                       or {DbCacheEntry.ParentKey1Column} in (select x.{DbCacheValue.KeyColumn} from (select y.{DbCacheValue.KeyColumn} from {s}{CacheEntriesTableName} y where y.{DbCacheValue.PartitionColumn} = {DbCacheValue.PartitionColumn} and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)

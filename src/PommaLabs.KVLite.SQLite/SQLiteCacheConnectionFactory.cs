@@ -146,7 +146,7 @@ namespace PommaLabs.KVLite.SQLite
                     kvle_parent_key4 TEXT,
                     CONSTRAINT pk_kvle PRIMARY KEY (kvle_hash)
                 );
-                CREATE INDEX ix_kvle_exp_part ON {s}{CacheEntriesTableName} (kvle_expiry DESC, kvle_partition ASC);
+                CREATE INDEX ix_kvle_part_exp ON {s}{CacheEntriesTableName} (kvle_partition ASC, kvle_expiry DESC);
             ");
 
             _getCacheEntriesSchemaQuery = MinifyQuery($@"

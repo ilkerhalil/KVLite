@@ -512,7 +512,6 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Hash = partition == null ? new long?() : XXHash.HashPartition(partition),
                 Partition = partition,
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
@@ -540,7 +539,6 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Hash = partition == null ? new long?() : XXHash.HashPartition(partition),
                 Partition = partition,
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()

@@ -21,7 +21,7 @@ CREATE TABLE [kvl_cache_entries] (
 ) WITH (MEMORY_OPTIMIZED=ON, DURABILITY=SCHEMA_ONLY);
 
 
-CREATE INDEX [ix_kvle_exp_part] ON [kvl_cache_entries] ([kvle_expiry] DESC, [kvle_partition] ASC);
+CREATE INDEX [ix_kvle_part_exp] ON [kvl_cache_entries] ([kvle_partition] ASC, [kvle_expiry] DESC);
 
 
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = 'Automatically generated ID.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'kvl_cache_entries', @level2type = N'COLUMN', @level2name = N'kvle_id';
