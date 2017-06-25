@@ -108,14 +108,14 @@ namespace PommaLabs.KVLite.Goodies
             if (FireAndForgetCount >= FireAndForgetLimit)
             {
                 // Run sync, cannot start a new task.
-                await RunSyncHelper(asyncAction, handler);
+                await RunSyncHelper(asyncAction, handler).ConfigureAwait(false);
                 return false;
             }
 
             if (Interlocked.Increment(ref FireAndForgetCount) > FireAndForgetLimit)
             {
                 // Run sync, cannot start a new task.
-                await RunSyncHelper(asyncAction, handler);
+                await RunSyncHelper(asyncAction, handler).ConfigureAwait(false);
                 Interlocked.Decrement(ref FireAndForgetCount);
                 return false;
             }
@@ -172,7 +172,7 @@ namespace PommaLabs.KVLite.Goodies
         {
             try
             {
-                await asyncAction?.Invoke();
+                await asyncAction.Invoke().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

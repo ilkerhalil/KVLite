@@ -512,7 +512,8 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                Hash = XXHash.HashPartition(partition),
+                Partition = partition,
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -539,7 +540,8 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                Hash = XXHash.HashPartition(partition),
+                Partition = partition,
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -615,7 +617,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                Partition = partition,
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -640,7 +642,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                Partition = partition,
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -727,9 +729,9 @@ namespace PommaLabs.KVLite.Database
             };
 
             DbCacheValue dbCacheValue;
-            using (var db = await cf.OpenAsync(cancellationToken))
+            using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
             {
-                dbCacheValue = await db.QuerySingleOrDefaultAsync<DbCacheValue>(cf.PeekCacheValueQuery, dbCacheEntrySingle);
+                dbCacheValue = await db.QuerySingleOrDefaultAsync<DbCacheValue>(cf.PeekCacheValueQuery, dbCacheEntrySingle).ConfigureAwait(false);
 
                 if (dbCacheValue == null)
                 {
@@ -740,7 +742,7 @@ namespace PommaLabs.KVLite.Database
                 if (dbCacheValue.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
                 {
                     // When an item expires, we should remove it from the cache.
-                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
+                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle).ConfigureAwait(false);
 
                     // Nothing to deserialize, return None.
                     return default(CacheResult<TVal>);
@@ -750,7 +752,7 @@ namespace PommaLabs.KVLite.Database
                 {
                     // Since we are in a "get" operation, we should also update the expiry.
                     dbCacheEntrySingle.UtcExpiry += dbCacheValue.Interval;
-                    await db.ExecuteAsync(cf.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
+                    await db.ExecuteAsync(cf.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle).ConfigureAwait(false);
                 }
             }
 
@@ -834,9 +836,9 @@ namespace PommaLabs.KVLite.Database
             };
 
             DbCacheEntry dbCacheEntry;
-            using (var db = await cf.OpenAsync(cancellationToken))
+            using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
             {
-                dbCacheEntry = await db.QuerySingleOrDefaultAsync<DbCacheEntry>(cf.PeekCacheEntryQuery, dbCacheEntrySingle);
+                dbCacheEntry = await db.QuerySingleOrDefaultAsync<DbCacheEntry>(cf.PeekCacheEntryQuery, dbCacheEntrySingle).ConfigureAwait(false);
 
                 if (dbCacheEntry == null)
                 {
@@ -847,7 +849,7 @@ namespace PommaLabs.KVLite.Database
                 if (dbCacheEntry.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
                 {
                     // When an item expires, we should remove it from the cache.
-                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
+                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle).ConfigureAwait(false);
 
                     // Nothing to deserialize, return None.
                     return default(CacheResult<ICacheItem<TVal>>);
@@ -857,7 +859,7 @@ namespace PommaLabs.KVLite.Database
                 {
                     // Since we are in a "get" operation, we should also update the expiry.
                     dbCacheEntry.UtcExpiry = (dbCacheEntrySingle.UtcExpiry += dbCacheEntry.Interval);
-                    await db.ExecuteAsync(cf.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle);
+                    await db.ExecuteAsync(cf.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle).ConfigureAwait(false);
                 }
             }
 
@@ -878,7 +880,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                Partition = partition,
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -936,15 +938,15 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                Partition = partition,
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             DbCacheEntry[] dbCacheEntries;
-            using (var db = await cf.OpenAsync(cancellationToken))
+            using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
             {
-                dbCacheEntries = (await db.QueryAsync<DbCacheEntry>(cf.PeekCacheEntriesQuery, dbCacheEntryGroup)).ToArray();
+                dbCacheEntries = (await db.QueryAsync<DbCacheEntry>(cf.PeekCacheEntriesQuery, dbCacheEntryGroup).ConfigureAwait(false)).ToArray();
 
                 foreach (var dbCacheEntry in dbCacheEntries)
                 {
@@ -955,7 +957,7 @@ namespace PommaLabs.KVLite.Database
                         {
                             Partition = dbCacheEntry.Partition,
                             Key = dbCacheEntry.Key
-                        });
+                        }).ConfigureAwait(false);
                     }
                     else if (dbCacheEntry.Interval > 0L)
                     {
@@ -966,7 +968,7 @@ namespace PommaLabs.KVLite.Database
                             Partition = dbCacheEntry.Partition,
                             Key = dbCacheEntry.Key,
                             UtcExpiry = dbCacheEntry.UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
-                        });
+                        }).ConfigureAwait(false);
                     }
                 }
             }
@@ -1038,9 +1040,9 @@ namespace PommaLabs.KVLite.Database
             };
 
             DbCacheValue dbCacheValue;
-            using (var db = await cf.OpenAsync(cancellationToken))
+            using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
             {
-                dbCacheValue = await db.QuerySingleOrDefaultAsync<DbCacheValue>(cf.PeekCacheValueQuery, dbCacheEntrySingle);
+                dbCacheValue = await db.QuerySingleOrDefaultAsync<DbCacheValue>(cf.PeekCacheValueQuery, dbCacheEntrySingle).ConfigureAwait(false);
             }
 
             if (dbCacheValue == null)
@@ -1111,9 +1113,9 @@ namespace PommaLabs.KVLite.Database
             };
 
             DbCacheEntry dbCacheEntry;
-            using (var db = await cf.OpenAsync(cancellationToken))
+            using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
             {
-                dbCacheEntry = await db.QuerySingleOrDefaultAsync<DbCacheEntry>(cf.PeekCacheEntryQuery, dbCacheEntrySingle);
+                dbCacheEntry = await db.QuerySingleOrDefaultAsync<DbCacheEntry>(cf.PeekCacheEntryQuery, dbCacheEntrySingle).ConfigureAwait(false);
             }
 
             if (dbCacheEntry == null)
@@ -1143,7 +1145,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                Partition = partition,
                 IgnoreExpiryDate = DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -1180,15 +1182,15 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition?.Truncate(cf.MaxPartitionNameLength),
+                Partition = partition,
                 IgnoreExpiryDate = DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
 
             DbCacheEntry[] dbCacheEntries;
-            using (var db = await cf.OpenAsync(cancellationToken))
+            using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
             {
-                dbCacheEntries = (await db.QueryAsync<DbCacheEntry>(cf.PeekCacheEntriesQuery, dbCacheEntryGroup)).ToArray();
+                dbCacheEntries = (await db.QueryAsync<DbCacheEntry>(cf.PeekCacheEntriesQuery, dbCacheEntryGroup).ConfigureAwait(false)).ToArray();
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -1210,8 +1212,8 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition.Truncate(cf.MaxPartitionNameLength),
-                Key = key.Truncate(cf.MaxKeyNameLength)
+                Partition = partition,
+                Key = key
             };
 
             RetryOnFail(() =>
@@ -1235,8 +1237,8 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition.Truncate(cf.MaxPartitionNameLength),
-                Key = key.Truncate(cf.MaxKeyNameLength)
+                Partition = partition,
+                Key = key
             };
 
             await RetryOnFailAsync(async () =>

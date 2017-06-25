@@ -185,8 +185,8 @@ namespace PommaLabs.KVLite.SQLite
         /// <returns>An open connection.</returns>
         public override async Task<SqliteConnection> OpenAsync(CancellationToken cancellationToken)
         {
-            var conn = await base.OpenAsync(cancellationToken);
-            await conn.ExecuteAsync(_pragmas);
+            var conn = await base.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await conn.ExecuteAsync(_pragmas).ConfigureAwait(false);
             return conn;
         }
 

@@ -75,13 +75,19 @@ namespace PommaLabs.KVLite.Database
         *  Customizations
         ***************************************/
 
+        public static long HashPartition(string partition)
+        {
+            unchecked
+            {
+                return ((long) XXH32(Encoding.Unicode.GetBytes(partition))) << 32;
+            }
+        }
+
         public static long HashPartitionAndKey(string partition, string key)
         {
             unchecked
             {
-                var pHash = (long) XXH32(Encoding.Unicode.GetBytes(partition));
-                var kHash = (long) XXH32(Encoding.Unicode.GetBytes(key));
-                return (pHash << 32) + kHash;
+                return HashPartition(partition) + (long) XXH32(Encoding.Unicode.GetBytes(key));
             }
         }
 

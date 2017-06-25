@@ -43,11 +43,11 @@ namespace PommaLabs.KVLite
 
         void IDistributedCache.Refresh(string key) => Get<byte[]>(DistributedCachePartition, key);
 
-        async Task IDistributedCache.RefreshAsync(string key) => await GetAsync<byte[]>(DistributedCachePartition, key);
+        async Task IDistributedCache.RefreshAsync(string key) => await GetAsync<byte[]>(DistributedCachePartition, key).ConfigureAwait(false);
 
         void IDistributedCache.Remove(string key) => Remove(DistributedCachePartition, key);
 
-        async Task IDistributedCache.RemoveAsync(string key) => await RemoveAsync(DistributedCachePartition, key);
+        async Task IDistributedCache.RemoveAsync(string key) => await RemoveAsync(DistributedCachePartition, key).ConfigureAwait(false);
 
         void IDistributedCache.Set(string key, byte[] value, DistributedCacheEntryOptions options)
         {
