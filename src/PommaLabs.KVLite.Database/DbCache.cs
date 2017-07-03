@@ -808,7 +808,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheEntry<TVal>(dbCacheEntry);
+            return DeserializeCacheEntry<TVal>(dbCacheEntry, partition, key);
         }
 
         /// <summary>
@@ -862,7 +862,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheEntry<TVal>(dbCacheEntry);
+            return DeserializeCacheEntry<TVal>(dbCacheEntry, partition, key);
         }
 
         /// <summary>
@@ -915,10 +915,10 @@ namespace PommaLabs.KVLite.Database
 
             // Deserialize operation is expensive and it should be performed outside the connection.
             return dbCacheEntries
-                .Where(i => i.UtcExpiry >= dbCacheEntryGroup.UtcExpiry)
-                .Select(DeserializeCacheEntry<TVal>)
-                .Where(i => i.HasValue)
-                .Select(i => i.Value)
+                .Where(e => e.UtcExpiry >= dbCacheEntryGroup.UtcExpiry)
+                .Select(e => DeserializeCacheEntry<TVal>(e, null, null))
+                .Where(e => e.HasValue)
+                .Select(e => e.Value)
                 .ToArray();
         }
 
@@ -973,10 +973,10 @@ namespace PommaLabs.KVLite.Database
 
             // Deserialize operation is expensive and it should be performed outside the connection.
             return dbCacheEntries
-                .Where(i => i.UtcExpiry >= dbCacheEntryGroup.UtcExpiry)
-                .Select(DeserializeCacheEntry<TVal>)
-                .Where(i => i.HasValue)
-                .Select(i => i.Value)
+                .Where(e => e.UtcExpiry >= dbCacheEntryGroup.UtcExpiry)
+                .Select(e => DeserializeCacheEntry<TVal>(e, null, null))
+                .Where(e => e.HasValue)
+                .Select(e => e.Value)
                 .ToArray();
         }
 
@@ -1086,7 +1086,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheEntry<TVal>(dbCacheEntry);
+            return DeserializeCacheEntry<TVal>(dbCacheEntry, partition, key);
         }
 
         /// <summary>
@@ -1123,7 +1123,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheEntry<TVal>(dbCacheEntry);
+            return DeserializeCacheEntry<TVal>(dbCacheEntry, partition, key);
         }
 
         /// <summary>
@@ -1156,9 +1156,9 @@ namespace PommaLabs.KVLite.Database
 
             // Deserialize operation is expensive and it should be performed outside the connection.
             return dbCacheEntries
-                .Select(DeserializeCacheEntry<TVal>)
-                .Where(i => i.HasValue)
-                .Select(i => i.Value)
+                .Select(e => DeserializeCacheEntry<TVal>(e, null, null))
+                .Where(e => e.HasValue)
+                .Select(e => e.Value)
                 .ToArray();
         }
 
@@ -1193,9 +1193,9 @@ namespace PommaLabs.KVLite.Database
 
             // Deserialize operation is expensive and it should be performed outside the connection.
             return dbCacheEntries
-                .Select(DeserializeCacheEntry<TVal>)
-                .Where(i => i.HasValue)
-                .Select(i => i.Value)
+                .Select(e => DeserializeCacheEntry<TVal>(e, null, null))
+                .Where(e => e.HasValue)
+                .Select(e => e.Value)
                 .ToArray();
         }
 
@@ -1299,14 +1299,14 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
-        private CacheResult<ICacheItem<TVal>> DeserializeCacheEntry<TVal>(DbCacheEntry dbCacheEntry)
+        private CacheResult<ICacheItem<TVal>> DeserializeCacheEntry<TVal>(DbCacheEntry dbCacheEntry, string partition, string key)
         {
             try
             {
                 var cacheItem = new CacheItem<TVal>
                 {
-                    Partition = dbCacheEntry.Partition,
-                    Key = dbCacheEntry.Key,
+                    Partition = partition ?? dbCacheEntry.Partition,
+                    Key = key ?? dbCacheEntry.Key,
                     Value = UnsafeDeserializeCacheValue<TVal>(dbCacheEntry),
                     UtcCreation = Instant.FromUnixTimeSeconds(dbCacheEntry.UtcCreation),
                     UtcExpiry = Instant.FromUnixTimeSeconds(dbCacheEntry.UtcExpiry),

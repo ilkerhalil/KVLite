@@ -3,8 +3,8 @@
 CREATE TABLE IF NOT EXISTS `kvl_cache_entries` (
     `kvle_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Automatically generated ID.',
     `kvle_hash` BIGINT(20) NOT NULL COMMENT 'Hash of partition and key.',
-    `kvle_partition` VARCHAR(255) NOT NULL COMMENT 'A partition holds a group of related keys.',
-    `kvle_key` VARCHAR(255) NOT NULL COMMENT 'A key uniquely identifies an entry inside a partition.',
+    `kvle_partition` VARCHAR(2000) NOT NULL COMMENT 'A partition holds a group of related keys.',
+    `kvle_key` VARCHAR(2000) NOT NULL COMMENT 'A key uniquely identifies an entry inside a partition.',
     `kvle_expiry` BIGINT(20) UNSIGNED NOT NULL COMMENT 'When the entry will expire, expressed as seconds after UNIX epoch.',
     `kvle_interval` BIGINT(20) UNSIGNED NOT NULL COMMENT 'How many seconds should be used to extend expiry time when the entry is retrieved.',
     `kvle_value` MEDIUMBLOB NOT NULL COMMENT 'Serialized and optionally compressed content of this entry.',

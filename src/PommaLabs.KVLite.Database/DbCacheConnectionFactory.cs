@@ -334,9 +334,7 @@ namespace PommaLabs.KVLite.Database
             ");
 
             PeekCacheEntryQuery = MinifyQuery($@"
-                select x.{DbCacheValue.PartitionColumn}   {l}{nameof(DbCacheValue.Partition)}{r},
-                       x.{DbCacheValue.KeyColumn}         {l}{nameof(DbCacheValue.Key)}{r},
-                       x.{DbCacheValue.UtcExpiryColumn}   {l}{nameof(DbCacheValue.UtcExpiry)}{r},
+                select x.{DbCacheValue.UtcExpiryColumn}   {l}{nameof(DbCacheValue.UtcExpiry)}{r},
                        x.{DbCacheValue.IntervalColumn}    {l}{nameof(DbCacheValue.Interval)}{r},
                        x.{DbCacheValue.ValueColumn}       {l}{nameof(DbCacheValue.Value)}{r},
                        x.{DbCacheValue.CompressedColumn}  {l}{nameof(DbCacheValue.Compressed)}{r},
@@ -352,13 +350,10 @@ namespace PommaLabs.KVLite.Database
             ");
 
             PeekCacheValueQuery = MinifyQuery($@"
-                select x.{DbCacheValue.PartitionColumn}   {l}{nameof(DbCacheValue.Partition)}{r},
-                       x.{DbCacheValue.KeyColumn}         {l}{nameof(DbCacheValue.Key)}{r},
-                       x.{DbCacheValue.UtcExpiryColumn}   {l}{nameof(DbCacheValue.UtcExpiry)}{r},
+                select x.{DbCacheValue.UtcExpiryColumn}   {l}{nameof(DbCacheValue.UtcExpiry)}{r},
                        x.{DbCacheValue.IntervalColumn}    {l}{nameof(DbCacheValue.Interval)}{r},
                        x.{DbCacheValue.ValueColumn}       {l}{nameof(DbCacheValue.Value)}{r},
-                       x.{DbCacheValue.CompressedColumn}  {l}{nameof(DbCacheValue.Compressed)}{r},
-                       x.{DbCacheValue.UtcCreationColumn} {l}{nameof(DbCacheValue.UtcCreation)}{r}
+                       x.{DbCacheValue.CompressedColumn}  {l}{nameof(DbCacheValue.Compressed)}{r}
                   from {s}{CacheEntriesTableName} x
                  where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
                    and ({p}{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)})
