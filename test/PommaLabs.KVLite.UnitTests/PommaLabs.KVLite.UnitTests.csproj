@@ -22,7 +22,7 @@
     <PackageReference Include="Ninject" Version="3.2.2" />
     <PackageReference Include="NodaTime.Testing" Version="2.0.3" />
     <PackageReference Include="NUnit" Version="3.7.1" />
-    <PackageReference Include="NUnitLite" Version="3.7.1" />
+    <PackageReference Include="NUnitLite" Version="3.7.2" />
     <PackageReference Include="Shouldly" Version="2.8.3" />
   </ItemGroup>
 
