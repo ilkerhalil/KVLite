@@ -23,7 +23,6 @@
 
 using NodaTime;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -56,11 +55,10 @@ namespace PommaLabs.KVLite.Goodies
         public CachingEnumerable(ICache cache, IEnumerable<T> source, int pageSize = PrivateDefaultPageSize)
         {
             // Preconditions
-            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache));
-            Raise.ArgumentNullException.IfIsNull(source, nameof(source));
-            Raise.ArgumentOutOfRangeException.IfIsLessOrEqual(pageSize, 0, nameof(pageSize));
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (pageSize <= 0) throw new ArgumentOutOfRangeException(nameof(pageSize));
 
-            _cache = cache;
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache), ErrorMessages.NullCache);
             _pageSize = pageSize;
 
             // Fill cache starting from given enumerable.

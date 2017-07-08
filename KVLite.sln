@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.13
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-52E1-43BC-971F-94784A43B73E}"
 	ProjectSection(SolutionItems) = preProject
@@ -77,6 +77,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{09C060EE-A6D3-45ED-B82D-E81B59EABBCB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.Core", "src\PommaLabs.KVLite.Core\PommaLabs.KVLite.Core.csproj", "{F62A10BB-58E1-4514-9BE0-5B28C2EACB34}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{D45E8263-41D2-4BDC-B732-58B655E84AE9}"
+	ProjectSection(SolutionItems) = preProject
+		tools\packages.config = tools\packages.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -242,5 +247,6 @@ Global
 		{C5E21A7F-2C68-402F-A488-13BA125416A3} = {DA9B418B-185E-4B62-A6EE-DAFC4E5DAB51}
 		{7D431E4A-1227-4A63-A9F3-0AF60E697420} = {7BB9E3FA-1248-4572-A5AB-2BAB740AD373}
 		{F62A10BB-58E1-4514-9BE0-5B28C2EACB34} = {DA9B418B-185E-4B62-A6EE-DAFC4E5DAB51}
+		{D45E8263-41D2-4BDC-B732-58B655E84AE9} = {CB218631-52E1-43BC-971F-94784A43B73E}
 	EndGlobalSection
 EndGlobal

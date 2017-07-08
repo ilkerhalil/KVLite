@@ -24,6 +24,7 @@
 using BenchmarkDotNet.Running;
 using NodaTime;
 using PommaLabs.KVLite.Benchmarks.Compression;
+using PommaLabs.KVLite.Benchmarks.Models;
 using PommaLabs.KVLite.Benchmarks.Serialization;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
@@ -47,11 +48,14 @@ namespace PommaLabs.KVLite.Benchmarks
     {
         private const int RowCount = 100;
         private const int IterationCount = 5;
-        private const int RandomDataTablesCount = 1000;
+        private const int RandomItemCount = 1000;
 
         private static readonly string[] ColumnNames = { "A", "B", "C", "D", "E" };
 
         private static double _tableListSize;
+
+        private static LogMessage[] _logMessages;
+        private static double _logMessagesSize;
 
         public static void Main(string[] args)
         {
@@ -81,14 +85,33 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(@"Generating random data tables...");
             var tables = GenerateRandomDataTables();
             _tableListSize = GetObjectSizeInMB(tables);
+            _logMessages = LogMessage.GenerateRandomLogMessages(10000);
+            _logMessagesSize = GetObjectSizeInMB(_logMessages);
             GC.Collect();
             Console.WriteLine(@"Tables generated!");
-            Console.WriteLine(@"Table Count: {0}", RandomDataTablesCount);
-            Console.WriteLine(@"Row Count: {0}", RowCount);
-            Console.WriteLine(@"Total Size: {0:0.0} MB", _tableListSize);
+            Console.WriteLine($@"Table count: {RandomItemCount}");
+            Console.WriteLine($@"Row count: {RowCount}");
+            Console.WriteLine($@"Total table size: {_tableListSize:0.0} MB");
+            Console.WriteLine($@"Total log messages size: {_logMessagesSize:0.0} MB");
 
             for (var i = 0; i < IterationCount; ++i)
             {
+                /*** STORE EACH LOG MESSAGE ASYNC ***/
+
+                FullyCleanCaches();
+                //StoreEachDataTableAsync(OracleCache.DefaultInstance, tables, i);
+                StoreEachLogMessageAsync(MySqlCache.DefaultInstance, i);
+                StoreEachLogMessageAsync(SqlServerCache.DefaultInstance, i);
+
+                FullyCleanCaches();
+                StoreEachLogMessageAsync(PersistentCache.DefaultInstance, i);
+
+                FullyCleanCaches();
+                StoreEachLogMessageAsync(VolatileCache.DefaultInstance, i);
+
+                FullyCleanCaches();
+                StoreEachLogMessageAsync(MemoryCache.DefaultInstance, i);
+
                 /*** STORE EACH DATA TABLE ASYNC ***/
 
                 FullyCleanCaches();
@@ -249,7 +272,7 @@ namespace PommaLabs.KVLite.Benchmarks
         {
             var gen = new RandomDataTableGenerator(ColumnNames);
             var list = new List<DataTable>();
-            for (var i = 0; i < RandomDataTablesCount; ++i)
+            for (var i = 0; i < RandomItemCount; ++i)
             {
                 list.Add(gen.GenerateDataTable(RowCount));
             }
@@ -272,7 +295,7 @@ namespace PommaLabs.KVLite.Benchmarks
         private static void StoreDataTableList(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
-            Console.WriteLine(@"Storing data table list, iteration {0}...", iteration);
+            Console.WriteLine($@"Storing data table list, iteration {iteration}...");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -282,9 +305,9 @@ namespace PommaLabs.KVLite.Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.Count() == 1);
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == 1);
 
-            Console.WriteLine(@"Data table list stored in: {0}", stopwatch.Elapsed);
-            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L));
-            Console.WriteLine(@"Approximate speed (MB/sec): {0:0.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
+            Console.WriteLine($@"Data table list stored in: {stopwatch.Elapsed}");
+            Console.WriteLine($@"Current cache size: {PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
+            Console.WriteLine($@"Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
         private static void StoreEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
@@ -339,6 +362,34 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
+        private static void StoreEachLogMessageAsync<TCache>(TCache cache, int iteration)
+            where TCache : IAsyncCache
+        {
+            var cacheName = typeof(TCache).Name;
+
+            Console.WriteLine(); // Spacer
+            Console.WriteLine($"[{cacheName}] Storing each log message asynchronously, iteration {iteration}...");
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var tasks = new Task[_logMessages.Length];
+            for (var i = 0; i < _logMessages.Length; ++i)
+            {
+                var logMessage = _logMessages[i];
+                var logMessageKey = i.ToString();
+                tasks[i] = Task.Run(async () => await cache.AddStaticToDefaultPartitionAsync(logMessageKey, logMessage));
+            }
+            Task.WaitAll(tasks);
+            stopwatch.Stop();
+
+            Debug.Assert(cache.CountAsync().Result == _logMessages.Length);
+            Debug.Assert(cache.LongCountAsync().Result == _logMessages.LongLength);
+
+            Console.WriteLine($"[{cacheName}] Log messages stored in: {stopwatch.Elapsed}");
+            Console.WriteLine($"[{cacheName}] Current cache size: {cache.GetCacheSizeInBytesAsync().Result / (1024.0 * 1024.0):0.0} MB");
+            Console.WriteLine($"[{cacheName}] Approximate speed (MB/sec): {_logMessagesSize / stopwatch.Elapsed.TotalSeconds:0.0}");
+        }
+
         private static void StoreEachDataTableAsync<TCache>(TCache cache, IList<DataTable> tables, int iteration)
             where TCache : IAsyncCache
         {
@@ -369,7 +420,7 @@ namespace PommaLabs.KVLite.Benchmarks
         private static void StoreEachDataTableAsync_Volatile(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
-            Console.WriteLine(@"[Volatile] Storing each data table asynchronously, iteration {0}...", iteration);
+            Console.WriteLine($@"[Volatile] Storing each data table asynchronously, iteration {iteration}...");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -387,15 +438,15 @@ namespace PommaLabs.KVLite.Benchmarks
             Debug.Assert(VolatileCache.DefaultInstance.Count() == tables.Count);
             Debug.Assert(VolatileCache.DefaultInstance.LongCount() == tables.LongCount());
 
-            Console.WriteLine(@"[Volatile] Data tables stored in: {0}", stopwatch.Elapsed);
-            Console.WriteLine(@"[Volatile] Current cache size: {0} MB", VolatileCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L));
-            Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:0.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
+            Console.WriteLine($@"[Volatile] Data tables stored in: {stopwatch.Elapsed}");
+            Console.WriteLine($@"[Volatile] Current cache size: {VolatileCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
+            Console.WriteLine($@"[Volatile] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
         private static void StoreEachDataTableAsync_Memory(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
-            Console.WriteLine(@"[Memory] Storing each data table asynchronously, iteration {0}...", iteration);
+            Console.WriteLine($@"[Memory] Storing each data table asynchronously, iteration {iteration}...");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -413,15 +464,15 @@ namespace PommaLabs.KVLite.Benchmarks
             Debug.Assert(MemoryCache.DefaultInstance.Count() == tables.Count);
             Debug.Assert(MemoryCache.DefaultInstance.LongCount() == tables.LongCount());
 
-            Console.WriteLine(@"[Memory] Data tables stored in: {0}", stopwatch.Elapsed);
-            Console.WriteLine(@"[Memory] Current cache size: {0} MB", MemoryCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L));
-            Console.WriteLine(@"[Memory] Approximate speed (MB/sec): {0:0.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
+            Console.WriteLine($@"[Memory] Data tables stored in: {stopwatch.Elapsed}");
+            Console.WriteLine($@"[Memory] Current cache size: {MemoryCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
+            Console.WriteLine($@"[Memory] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
         private static void StoreEachDataTableTwoTimesAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
-            Console.WriteLine(@"Storing each data table (two times, asynchronously), iteration {0}...", iteration);
+            Console.WriteLine($@"Storing each data table (two times, asynchronously), iteration {iteration}...");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -443,9 +494,9 @@ namespace PommaLabs.KVLite.Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.Count() == tables.Count);
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
 
-            Console.WriteLine(@"Data tables stored in: {0}", stopwatch.Elapsed);
-            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L));
-            Console.WriteLine(@"Approximate speed (MB/sec): {0:0.0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
+            Console.WriteLine($@"Data tables stored in: {stopwatch.Elapsed}");
+            Console.WriteLine($@"Current cache size: {PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
+            Console.WriteLine($@"Approximate speed (MB/sec): {_tableListSize * 2 / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
         private static void RetrieveEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
@@ -604,7 +655,7 @@ namespace PommaLabs.KVLite.Benchmarks
         private static void RetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
-            Console.WriteLine(@"Retrieving each data table asynchronously, iteration {0}...", iteration);
+            Console.WriteLine($@"Retrieving each data table asynchronously, iteration {iteration}...");
 
             foreach (var table in tables)
             {
@@ -629,15 +680,15 @@ namespace PommaLabs.KVLite.Benchmarks
             }
             stopwatch.Stop();
 
-            Console.WriteLine(@"Data tables retrieved in: {0}", stopwatch.Elapsed);
-            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L));
-            Console.WriteLine(@"Approximate speed (MB/sec): {0:0.0}", _tableListSize / stopwatch.Elapsed.TotalSeconds);
+            Console.WriteLine($@"Data tables retrieved in: {stopwatch.Elapsed}");
+            Console.WriteLine($@"Current cache size: {PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
+            Console.WriteLine($@"Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
         private static void StoreAndRetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
-            Console.WriteLine(@"Storing and retrieving each data table asynchronously, iteration {0}...", iteration);
+            Console.WriteLine($@"Storing and retrieving each data table asynchronously, iteration {iteration}...");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -665,15 +716,15 @@ namespace PommaLabs.KVLite.Benchmarks
             Debug.Assert(PersistentCache.DefaultInstance.Count() == tables.Count);
             Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
 
-            Console.WriteLine(@"Data tables stored and retrieved in: {0}", stopwatch.Elapsed);
-            Console.WriteLine(@"Current cache size: {0} MB", PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L));
-            Console.WriteLine(@"Approximate speed (MB/sec): {0:0.0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
+            Console.WriteLine($@"Data tables stored and retrieved in: {stopwatch.Elapsed}");
+            Console.WriteLine($@"Current cache size: {PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
+            Console.WriteLine($@"Approximate speed (MB/sec): {_tableListSize * 2 / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
         private static void StoreAndRetrieveEachDataTableAsync_Volatile(ICollection<DataTable> tables, int iteration)
         {
             Console.WriteLine(); // Spacer
-            Console.WriteLine(@"[Volatile] Storing and retrieving each data table asynchronously, iteration {0}...", iteration);
+            Console.WriteLine($@"[Volatile] Storing and retrieving each data table asynchronously, iteration {iteration}...");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -701,9 +752,9 @@ namespace PommaLabs.KVLite.Benchmarks
             Debug.Assert(VolatileCache.DefaultInstance.Count() == tables.Count);
             Debug.Assert(VolatileCache.DefaultInstance.LongCount() == tables.LongCount());
 
-            Console.WriteLine(@"[Volatile] Data tables stored and retrieved in: {0}", stopwatch.Elapsed);
-            Console.WriteLine(@"[Volatile] Current cache size: {0} MB", VolatileCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L));
-            Console.WriteLine(@"[Volatile] Approximate speed (MB/sec): {0:0.0}", _tableListSize * 2 / stopwatch.Elapsed.TotalSeconds);
+            Console.WriteLine($@"[Volatile] Data tables stored and retrieved in: {stopwatch.Elapsed}");
+            Console.WriteLine($@"[Volatile] Current cache size: {VolatileCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
+            Console.WriteLine($@"[Volatile] Approximate speed (MB/sec): {_tableListSize * 2 / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
         private static double GetObjectSizeInMB(object obj)

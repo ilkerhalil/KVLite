@@ -21,10 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
 using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,10 +41,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cache">The cache used by the Web API output cache.</param>
         protected AbstractCacheController(ICache cache)
         {
-            // Preconditions
-            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
-
-            Cache = cache;
+            Cache = cache ?? throw new ArgumentNullException(nameof(cache), ErrorMessages.NullCache);
         }
 
         /// <summary>

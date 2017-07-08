@@ -101,6 +101,11 @@ namespace PommaLabs.KVLite.Resources
         /// <summary>
         ///   An error message.
         /// </summary>
+        public const string NullOrEmptyDefaultPartition = @"Default partition cannot be null or empty.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
         public const string NullCache = @"Cache cannot be null, please specify one valid cache or use either PersistentCache or VolatileCache default instances.";
 
         /// <summary>
@@ -182,5 +187,20 @@ namespace PommaLabs.KVLite.Resources
         ///   An error message.
         /// </summary>
         public const string EmptyCacheResult = "Cache result has no value.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string InvalidCompressionLevel = "Specified compression level is not valid.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string InvalidCacheSchemaName = "Specified SQL schema name is not valid.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string InvalidCacheEntriesTableName = "Specified name for SQL entries table is not valid.";
     }
 }

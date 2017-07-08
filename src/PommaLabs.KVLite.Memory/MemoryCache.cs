@@ -30,8 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
-using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using SystemCacheItemPolicy = System.Runtime.Caching.CacheItemPolicy;
@@ -52,7 +50,6 @@ namespace PommaLabs.KVLite.Memory
         /// </summary>
 #pragma warning disable CC0022 // Should dispose object
 
-        [Pure]
         public static MemoryCache DefaultInstance { get; } = new MemoryCache(new MemoryCacheSettings());
 
 #pragma warning restore CC0022 // Should dispose object
@@ -87,13 +84,10 @@ namespace PommaLabs.KVLite.Memory
         #region FormattableObject members
 
         /// <summary>
-        ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="object.ToString"/>.
+        ///   Returns a string that represents the current object.
         /// </summary>
-        protected override IEnumerable<KeyValuePair<string, object>> GetFormattingMembers()
-        {
-            yield return new KeyValuePair<string, object>("SystemMemoryCacheName", _store.Name);
-        }
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString() => $"SystemMemoryCacheName: {_store.Name}";
 
         #endregion FormattableObject members
 

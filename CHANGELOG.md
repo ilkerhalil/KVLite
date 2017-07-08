@@ -1,5 +1,11 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.3.0 (2017-07-09) ###
+
+* [UPD] Changed SQL table structure, now using hashs for faster lookups.
+* [REM] Removed embedded Thrower and a few unneeded dependencies.
+* [UPD] Reduced the number of allowed parent keys from 5 to 3.
+
 ### v6.2.5 (2017-06-11) ###
 
 * [REM] Removed dependency on CodeProject.ObjectPool, now using Microsoft.IO.RecyclableMemoryStream.

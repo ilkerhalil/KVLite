@@ -29,14 +29,64 @@ namespace PommaLabs.KVLite.Database
     public sealed class DbCacheEntry : DbCacheValue
     {
         /// <summary>
+        ///   SQL column name of <see cref="Partition"/>.
+        /// </summary>
+        public const string PartitionColumn = "kvle_partition";
+
+        /// <summary>
+        ///   A partition holds a group of related keys.
+        /// </summary>
+        public string Partition { get; set; }
+
+        /// <summary>
+        ///   SQL column name of <see cref="Key"/>.
+        /// </summary>
+        public const string KeyColumn = "kvle_key";
+
+        /// <summary>
+        ///   A key uniquely identifies an entry inside a partition.
+        /// </summary>
+        public string Key { get; set; }
+
+        /// <summary>
+        ///   SQL column name of <see cref="UtcCreation"/>.
+        /// </summary>
+        public const string UtcCreationColumn = "kvle_creation";
+
+        /// <summary>
+        ///   When the entry was created, expressed as seconds after UNIX epoch.
+        /// </summary>
+        public long UtcCreation { get; set; }
+
+        /// <summary>
+        ///   SQL column name of <see cref="ParentHash0"/>.
+        /// </summary>
+        public const string ParentHash0Column = "kvle_parent_hash0";
+
+        /// <summary>
+        ///   Optional parent entry hash, used to link entries in a hierarchical way.
+        /// </summary>
+        public long ParentHash0 { get; set; }
+
+        /// <summary>
         ///   SQL column name of <see cref="ParentKey0"/>.
         /// </summary>
         public const string ParentKey0Column = "kvle_parent_key0";
 
         /// <summary>
-        ///   Optional parent entry, used to link entries in a hierarchical way.
+        ///   Optional parent entry key, used to link entries in a hierarchical way.
         /// </summary>
         public string ParentKey0 { get; set; }
+
+        /// <summary>
+        ///   SQL column name of <see cref="ParentHash1"/>.
+        /// </summary>
+        public const string ParentHash1Column = "kvle_parent_hash1";
+
+        /// <summary>
+        ///   Optional parent entry hash, used to link entries in a hierarchical way.
+        /// </summary>
+        public long ParentHash1 { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="ParentKey1"/>.
@@ -44,9 +94,19 @@ namespace PommaLabs.KVLite.Database
         public const string ParentKey1Column = "kvle_parent_key1";
 
         /// <summary>
-        ///   Optional parent entry, used to link entries in a hierarchical way.
+        ///   Optional parent entry key, used to link entries in a hierarchical way.
         /// </summary>
         public string ParentKey1 { get; set; }
+
+        /// <summary>
+        ///   SQL column name of <see cref="ParentHash2"/>.
+        /// </summary>
+        public const string ParentHash2Column = "kvle_parent_hash2";
+
+        /// <summary>
+        ///   Optional parent entry hash, used to link entries in a hierarchical way.
+        /// </summary>
+        public long ParentHash2 { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="ParentKey2"/>.
@@ -54,29 +114,9 @@ namespace PommaLabs.KVLite.Database
         public const string ParentKey2Column = "kvle_parent_key2";
 
         /// <summary>
-        ///   Optional parent entry, used to link entries in a hierarchical way.
+        ///   Optional parent entry key, used to link entries in a hierarchical way.
         /// </summary>
         public string ParentKey2 { get; set; }
-
-        /// <summary>
-        ///   SQL column name of <see cref="ParentKey3"/>.
-        /// </summary>
-        public const string ParentKey3Column = "kvle_parent_key3";
-
-        /// <summary>
-        ///   Optional parent entry, used to link entries in a hierarchical way.
-        /// </summary>
-        public string ParentKey3 { get; set; }
-
-        /// <summary>
-        ///   SQL column name of <see cref="ParentKey4"/>.
-        /// </summary>
-        public const string ParentKey4Column = "kvle_parent_key4";
-
-        /// <summary>
-        ///   Optional parent entry, used to link entries in a hierarchical way.
-        /// </summary>
-        public string ParentKey4 { get; set; }
 
         /// <summary>
         ///   Used to query a group of entries.
@@ -84,9 +124,9 @@ namespace PommaLabs.KVLite.Database
         public sealed class Group
         {
             /// <summary>
-            ///   A partition holds a group of related keys.
+            ///   Hash of partition (key is not taken into account for groups).
             /// </summary>
-            public string Partition { get; set; }
+            public long? Hash { get; set; }
 
             /// <summary>
             ///   Retrieve an entry even if it has expired.
@@ -105,14 +145,9 @@ namespace PommaLabs.KVLite.Database
         public sealed class Single
         {
             /// <summary>
-            ///   A partition holds a group of related keys.
+            ///   Hash of partition and key.
             /// </summary>
-            public string Partition { get; set; }
-
-            /// <summary>
-            ///   A key uniquely identifies an entry inside a partition.
-            /// </summary>
-            public string Key { get; set; }
+            public long Hash { get; set; }
 
             /// <summary>
             ///   Retrieve an entry even if it has expired.

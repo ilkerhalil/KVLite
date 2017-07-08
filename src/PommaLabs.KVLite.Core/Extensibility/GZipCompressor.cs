@@ -21,7 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Thrower;
+using PommaLabs.KVLite.Resources;
+using System;
 using System.IO;
 using System.IO.Compression;
 
@@ -52,7 +53,7 @@ namespace PommaLabs.KVLite.Extensibility
         public GZipCompressor(CompressionLevel compressionLevel)
         {
             // Preconditions
-            Raise.ArgumentException.IfIsNotValidEnum(compressionLevel, nameof(compressionLevel));
+            if (!Enum.IsDefined(typeof(CompressionLevel), compressionLevel)) throw new ArgumentException(ErrorMessages.InvalidCompressionLevel, nameof(compressionLevel));
 
             _compressionLevel = compressionLevel;
         }

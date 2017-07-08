@@ -23,7 +23,6 @@
 
 using NodaTime;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
 using PommaLabs.KVLite.Logging;
 using System;
 using System.Collections.Generic;
@@ -52,7 +51,7 @@ namespace PommaLabs.KVLite
         /// <returns>An estimate of cache size in bytes.</returns>
         public async Task<long> GetCacheSizeInBytesAsync(CancellationToken cancellationToken)
         {
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
 
             try
             {
@@ -103,12 +102,12 @@ namespace PommaLabs.KVLite
         public async Task AddSlidingAsync<TVal>(string partition, string key, TVal value, Duration interval, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
-            Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
-            Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
+            if (!ReferenceEquals(value, null) && !(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>())) throw new ArgumentException(ErrorMessages.NotSerializableValue, nameof(value));
+            if (parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem) throw new NotSupportedException(ErrorMessages.TooManyParentKeys);
+            if (parentKeys != null && parentKeys.Any(pk => pk == null)) throw new ArgumentException(ErrorMessages.NullKey, nameof(parentKeys));
 
             try
             {
@@ -148,12 +147,12 @@ namespace PommaLabs.KVLite
         public async Task AddStaticAsync<TVal>(string partition, string key, TVal value, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
-            Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
-            Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
+            if (!ReferenceEquals(value, null) && !(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>())) throw new ArgumentException(ErrorMessages.NotSerializableValue, nameof(value));
+            if (parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem) throw new NotSupportedException(ErrorMessages.TooManyParentKeys);
+            if (parentKeys != null && parentKeys.Any(pk => pk == null)) throw new ArgumentException(ErrorMessages.NullKey, nameof(parentKeys));
 
             try
             {
@@ -193,12 +192,12 @@ namespace PommaLabs.KVLite
         public async Task AddTimedAsync<TVal>(string partition, string key, TVal value, Instant utcExpiry, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
-            Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
-            Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
+            if (!ReferenceEquals(value, null) && !(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>())) throw new ArgumentException(ErrorMessages.NotSerializableValue, nameof(value));
+            if (parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem) throw new NotSupportedException(ErrorMessages.TooManyParentKeys);
+            if (parentKeys != null && parentKeys.Any(pk => pk == null)) throw new ArgumentException(ErrorMessages.NullKey, nameof(parentKeys));
 
             try
             {
@@ -238,12 +237,12 @@ namespace PommaLabs.KVLite
         public async Task AddTimedAsync<TVal>(string partition, string key, TVal value, Duration lifetime, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
-            Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
-            Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
+            if (!ReferenceEquals(value, null) && !(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>())) throw new ArgumentException(ErrorMessages.NotSerializableValue, nameof(value));
+            if (parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem) throw new NotSupportedException(ErrorMessages.TooManyParentKeys);
+            if (parentKeys != null && parentKeys.Any(pk => pk == null)) throw new ArgumentException(ErrorMessages.NullKey, nameof(parentKeys));
 
             try
             {
@@ -267,7 +266,7 @@ namespace PommaLabs.KVLite
         public async Task<long> ClearAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
 
             try
             {
@@ -297,8 +296,8 @@ namespace PommaLabs.KVLite
         public async Task<long> ClearAsync(string partition, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
 
             try
             {
@@ -327,7 +326,7 @@ namespace PommaLabs.KVLite
         public async Task<int> CountAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
 
             try
             {
@@ -356,8 +355,8 @@ namespace PommaLabs.KVLite
         public async Task<int> CountAsync(string partition, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
 
             try
             {
@@ -384,7 +383,7 @@ namespace PommaLabs.KVLite
         public async Task<long> LongCountAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
 
             try
             {
@@ -413,8 +412,8 @@ namespace PommaLabs.KVLite
         public async Task<long> LongCountAsync(string partition, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
 
             try
             {
@@ -446,9 +445,9 @@ namespace PommaLabs.KVLite
         public async Task<bool> ContainsAsync(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
 
             try
             {
@@ -482,9 +481,9 @@ namespace PommaLabs.KVLite
         public async Task<CacheResult<TVal>> GetAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
 
             try
             {
@@ -522,9 +521,9 @@ namespace PommaLabs.KVLite
         public async Task<CacheResult<ICacheItem<TVal>>> GetItemAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
 
             try
             {
@@ -557,7 +556,7 @@ namespace PommaLabs.KVLite
         public async Task<IList<ICacheItem<TVal>>> GetItemsAsync<TVal>(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
 
             try
             {
@@ -594,8 +593,8 @@ namespace PommaLabs.KVLite
         public async Task<IList<ICacheItem<TVal>>> GetItemsAsync<TVal>(string partition, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
 
             try
             {
@@ -650,12 +649,12 @@ namespace PommaLabs.KVLite
         public async Task<TVal> GetOrAddSlidingAsync<TVal>(string partition, string key, Func<Task<TVal>> valueGetter, Duration interval, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
-            Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
-            Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
+            if (valueGetter == null) throw new ArgumentNullException(nameof(valueGetter), ErrorMessages.NullValueGetter);
+            if (parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem) throw new NotSupportedException(ErrorMessages.TooManyParentKeys);
+            if (parentKeys != null && parentKeys.Any(pk => pk == null)) throw new ArgumentException(ErrorMessages.NullKey, nameof(parentKeys));
 
             try
             {
@@ -676,7 +675,7 @@ namespace PommaLabs.KVLite
 
             // This line is reached when the cache does not contain the item or an error has occurred.
             var value = await valueGetter.Invoke().ConfigureAwait(false);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
+            if (!ReferenceEquals(value, null) && !(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>())) throw new ArgumentException(ErrorMessages.NotSerializableValue, nameof(value));
 
             try
             {
@@ -729,12 +728,12 @@ namespace PommaLabs.KVLite
         public async Task<TVal> GetOrAddStaticAsync<TVal>(string partition, string key, Func<Task<TVal>> valueGetter, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
-            Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
-            Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
+            if (valueGetter == null) throw new ArgumentNullException(nameof(valueGetter), ErrorMessages.NullValueGetter);
+            if (parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem) throw new NotSupportedException(ErrorMessages.TooManyParentKeys);
+            if (parentKeys != null && parentKeys.Any(pk => pk == null)) throw new ArgumentException(ErrorMessages.NullKey, nameof(parentKeys));
 
             try
             {
@@ -755,7 +754,7 @@ namespace PommaLabs.KVLite
 
             // This line is reached when the cache does not contain the item or an error has occurred.
             var value = await valueGetter.Invoke().ConfigureAwait(false);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
+            if (!ReferenceEquals(value, null) && !(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>())) throw new ArgumentException(ErrorMessages.NotSerializableValue, nameof(value));
 
             try
             {
@@ -808,12 +807,12 @@ namespace PommaLabs.KVLite
         public async Task<TVal> GetOrAddTimedAsync<TVal>(string partition, string key, Func<Task<TVal>> valueGetter, Instant utcExpiry, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
-            Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
-            Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
+            if (valueGetter == null) throw new ArgumentNullException(nameof(valueGetter), ErrorMessages.NullValueGetter);
+            if (parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem) throw new NotSupportedException(ErrorMessages.TooManyParentKeys);
+            if (parentKeys != null && parentKeys.Any(pk => pk == null)) throw new ArgumentException(ErrorMessages.NullKey, nameof(parentKeys));
 
             try
             {
@@ -834,7 +833,7 @@ namespace PommaLabs.KVLite
 
             // This line is reached when the cache does not contain the item or an error has occurred.
             var value = await valueGetter.Invoke().ConfigureAwait(false);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
+            if (!ReferenceEquals(value, null) && !(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>())) throw new ArgumentException(ErrorMessages.NotSerializableValue, nameof(value));
 
             try
             {
@@ -887,12 +886,12 @@ namespace PommaLabs.KVLite
         public async Task<TVal> GetOrAddTimedAsync<TVal>(string partition, string key, Func<Task<TVal>> valueGetter, Duration lifetime, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
-            Raise.NotSupportedException.If(parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem, ErrorMessages.TooManyParentKeys);
-            Raise.ArgumentException.If(parentKeys != null && parentKeys.Any(pk => pk == null), nameof(parentKeys), ErrorMessages.NullKey);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
+            if (valueGetter == null) throw new ArgumentNullException(nameof(valueGetter), ErrorMessages.NullValueGetter);
+            if (parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem) throw new NotSupportedException(ErrorMessages.TooManyParentKeys);
+            if (parentKeys != null && parentKeys.Any(pk => pk == null)) throw new ArgumentException(ErrorMessages.NullKey, nameof(parentKeys));
 
             try
             {
@@ -913,7 +912,7 @@ namespace PommaLabs.KVLite
 
             // This line is reached when the cache does not contain the item or an error has occurred.
             var value = await valueGetter.Invoke().ConfigureAwait(false);
-            Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
+            if (!ReferenceEquals(value, null) && !(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>())) throw new ArgumentException(ErrorMessages.NotSerializableValue, nameof(value));
 
             try
             {
@@ -956,10 +955,10 @@ namespace PommaLabs.KVLite
         public async Task<CacheResult<TVal>> PeekAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.NotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
+            if (!CanPeek) throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
             {
@@ -1002,10 +1001,10 @@ namespace PommaLabs.KVLite
         public async Task<CacheResult<ICacheItem<TVal>>> PeekItemAsync<TVal>(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
-            Raise.NotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
+            if (!CanPeek) throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
             {
@@ -1041,8 +1040,8 @@ namespace PommaLabs.KVLite
         public async Task<IList<ICacheItem<TVal>>> PeekItemsAsync<TVal>(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.NotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (!CanPeek) throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
             {
@@ -1082,9 +1081,9 @@ namespace PommaLabs.KVLite
         public async Task<IList<ICacheItem<TVal>>> PeekItemsAsync<TVal>(string partition, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.NotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (!CanPeek) throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
             {
@@ -1116,9 +1115,9 @@ namespace PommaLabs.KVLite
         public async Task RemoveAsync(string partition, string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
 
             try
             {

@@ -58,49 +58,43 @@ namespace PommaLabs.KVLite.MySql
             base.UpdateCommandsAndQueries();
 
             var p = ParameterPrefix;
+            var s = SqlSchemaWithDot;
 
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
-                insert into {CacheSchemaName}.{CacheEntriesTableName} (
-                    {DbCacheValue.PartitionColumn},
-                    {DbCacheValue.KeyColumn},
+                replace into {s}{CacheEntriesTableName} (
+                    {DbCacheValue.HashColumn},
                     {DbCacheValue.UtcExpiryColumn},
                     {DbCacheValue.IntervalColumn},
                     {DbCacheValue.ValueColumn},
                     {DbCacheValue.CompressedColumn},
-                    {DbCacheValue.UtcCreationColumn},
+                    {DbCacheEntry.PartitionColumn},
+                    {DbCacheEntry.KeyColumn},
+                    {DbCacheEntry.UtcCreationColumn},
+                    {DbCacheEntry.ParentHash0Column},
                     {DbCacheEntry.ParentKey0Column},
+                    {DbCacheEntry.ParentHash1Column},
                     {DbCacheEntry.ParentKey1Column},
-                    {DbCacheEntry.ParentKey2Column},
-                    {DbCacheEntry.ParentKey3Column},
-                    {DbCacheEntry.ParentKey4Column}
+                    {DbCacheEntry.ParentHash2Column},
+                    {DbCacheEntry.ParentKey2Column}
                 )
                 values (
-                    {p}{nameof(DbCacheValue.Partition)},
-                    {p}{nameof(DbCacheValue.Key)},
+                    {p}{nameof(DbCacheValue.Hash)},
                     {p}{nameof(DbCacheValue.UtcExpiry)},
                     {p}{nameof(DbCacheValue.Interval)},
                     {p}{nameof(DbCacheValue.Value)},
                     {p}{nameof(DbCacheValue.Compressed)},
-                    {p}{nameof(DbCacheValue.UtcCreation)},
+                    {p}{nameof(DbCacheEntry.Partition)},
+                    {p}{nameof(DbCacheEntry.Key)},
+                    {p}{nameof(DbCacheEntry.UtcCreation)},
+                    {p}{nameof(DbCacheEntry.ParentHash0)},
                     {p}{nameof(DbCacheEntry.ParentKey0)},
+                    {p}{nameof(DbCacheEntry.ParentHash1)},
                     {p}{nameof(DbCacheEntry.ParentKey1)},
-                    {p}{nameof(DbCacheEntry.ParentKey2)},
-                    {p}{nameof(DbCacheEntry.ParentKey3)},
-                    {p}{nameof(DbCacheEntry.ParentKey4)}
-                )
-                on duplicate key update
-                    {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheValue.UtcExpiry)},
-                    {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
-                    {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},
-                    {DbCacheValue.CompressedColumn} = {p}{nameof(DbCacheValue.Compressed)},
-                    {DbCacheValue.UtcCreationColumn} = {p}{nameof(DbCacheValue.UtcCreation)},
-                    {DbCacheEntry.ParentKey0Column} = {p}{nameof(DbCacheEntry.ParentKey0)},
-                    {DbCacheEntry.ParentKey1Column} = {p}{nameof(DbCacheEntry.ParentKey1)},
-                    {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)},
-                    {DbCacheEntry.ParentKey3Column} = {p}{nameof(DbCacheEntry.ParentKey3)},
-                    {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)};
+                    {p}{nameof(DbCacheEntry.ParentHash2)},
+                    {p}{nameof(DbCacheEntry.ParentKey2)}
+                );
             ");
 
             #endregion Commands

@@ -28,8 +28,8 @@ using Ninject.Web.WebApi.OwinHost;
 using Owin;
 using PommaLabs.KVLite.Examples.WebApi;
 using PommaLabs.KVLite.WebApi;
-using PommaLabs.KVLite.Thrower.Goodies;
 using Swashbuckle.Application;
+using System.Web.Hosting;
 using System.Web.Http;
 
 [assembly: OwinStartup(typeof(Startup))]
@@ -65,7 +65,7 @@ namespace PommaLabs.KVLite.Examples.WebApi
             config.EnableSwagger(c =>
             {
                 c.SingleApiVersion("v1", "KVLite.WebApiCaching");
-                c.IncludeXmlComments(EnvironmentExtensions.MapPath(@"~/App_Data/HelpPages/WebServiceHelp.xml"));
+                c.IncludeXmlComments(HostingEnvironment.MapPath(@"~/App_Data/HelpPages/WebServiceHelp.xml"));
             }).EnableSwaggerUi(c =>
             {
                 c.DocExpansion(DocExpansion.None);

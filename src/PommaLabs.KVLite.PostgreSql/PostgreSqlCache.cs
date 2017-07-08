@@ -1,4 +1,4 @@
-﻿// File name: MySqlCache.cs
+﻿// File name: PostgreSqlCache.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,17 +21,17 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using MySql.Data.MySqlClient;
 using NodaTime;
+using Npgsql;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 
-namespace PommaLabs.KVLite.MySql
+namespace PommaLabs.KVLite.PostgreSql
 {
     /// <summary>
-    ///   Cache backed by MySQL.
+    ///   Cache backed by PostgreSQL.
     /// </summary>
-    public class MySqlCache : DbCache<MySqlCacheSettings, MySqlConnection>
+    public class PostgreSqlCache : DbCache<PostgreSqlCacheSettings, NpgsqlConnection>
     {
         #region Default Instance
 
@@ -41,28 +41,28 @@ namespace PommaLabs.KVLite.MySql
         /// </summary>
 #pragma warning disable CC0022 // Should dispose object
 
-        public static MySqlCache DefaultInstance { get; } = new MySqlCache(new MySqlCacheSettings());
+        public static PostgreSqlCache DefaultInstance { get; } = new PostgreSqlCache(new PostgreSqlCacheSettings());
 
 #pragma warning restore CC0022 // Should dispose object
 
         #endregion Default Instance
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="MySqlCache"/> class with given settings.
+        ///   Initializes a new instance of the <see cref="PostgreSqlCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="random">The random number generator.</param>
-        public MySqlCache(MySqlCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
-            : this(settings, new MySqlCacheConnectionFactory(), serializer, compressor, clock, random)
+        public PostgreSqlCache(PostgreSqlCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
+            : this(settings, new PostgreSqlCacheConnectionFactory(), serializer, compressor, clock, random)
         {
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="MySqlCache"/> class with given settings
-        ///   and specified connection factory.
+        ///   Initializes a new instance of the <see cref="PostgreSqlCache"/> class with given
+        ///   settings and specified connection factory.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="connectionFactory">Cache connection factory.</param>
@@ -70,7 +70,7 @@ namespace PommaLabs.KVLite.MySql
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="random">The random number generator.</param>
-        public MySqlCache(MySqlCacheSettings settings, MySqlCacheConnectionFactory connectionFactory, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
+        public PostgreSqlCache(PostgreSqlCacheSettings settings, PostgreSqlCacheConnectionFactory connectionFactory, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
             : base(settings, connectionFactory, serializer, compressor, clock, random)
         {
         }

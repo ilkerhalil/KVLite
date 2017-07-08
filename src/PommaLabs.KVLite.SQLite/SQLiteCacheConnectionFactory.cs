@@ -48,7 +48,7 @@ namespace PommaLabs.KVLite.SQLite
         private string _connectionString;
 
         public SQLiteCacheConnectionFactory(TSettings settings, string mode, string journal)
-            : base(SqliteFactory.Instance, string.Empty, null)
+            : base(SqliteFactory.Instance, null, null)
         {
             _settings = settings;
             _mode = mode;
@@ -75,32 +75,36 @@ namespace PommaLabs.KVLite.SQLite
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
                 insert or ignore into {s}{CacheEntriesTableName} (
-                    {DbCacheValue.PartitionColumn},
-                    {DbCacheValue.KeyColumn},
+                    {DbCacheValue.HashColumn},
                     {DbCacheValue.UtcExpiryColumn},
                     {DbCacheValue.IntervalColumn},
                     {DbCacheValue.ValueColumn},
                     {DbCacheValue.CompressedColumn},
-                    {DbCacheValue.UtcCreationColumn},
+                    {DbCacheEntry.PartitionColumn},
+                    {DbCacheEntry.KeyColumn},
+                    {DbCacheEntry.UtcCreationColumn},
+                    {DbCacheEntry.ParentHash0Column},
                     {DbCacheEntry.ParentKey0Column},
+                    {DbCacheEntry.ParentHash1Column},
                     {DbCacheEntry.ParentKey1Column},
-                    {DbCacheEntry.ParentKey2Column},
-                    {DbCacheEntry.ParentKey3Column},
-                    {DbCacheEntry.ParentKey4Column}
+                    {DbCacheEntry.ParentHash2Column},
+                    {DbCacheEntry.ParentKey2Column}
                 )
                 values (
-                    {p}{nameof(DbCacheValue.Partition)},
-                    {p}{nameof(DbCacheValue.Key)},
+                    {p}{nameof(DbCacheValue.Hash)},
                     {p}{nameof(DbCacheValue.UtcExpiry)},
                     {p}{nameof(DbCacheValue.Interval)},
                     {p}{nameof(DbCacheValue.Value)},
                     {p}{nameof(DbCacheValue.Compressed)},
-                    {p}{nameof(DbCacheValue.UtcCreation)},
+                    {p}{nameof(DbCacheEntry.Partition)},
+                    {p}{nameof(DbCacheEntry.Key)},
+                    {p}{nameof(DbCacheEntry.UtcCreation)},
+                    {p}{nameof(DbCacheEntry.ParentHash0)},
                     {p}{nameof(DbCacheEntry.ParentKey0)},
+                    {p}{nameof(DbCacheEntry.ParentHash1)},
                     {p}{nameof(DbCacheEntry.ParentKey1)},
-                    {p}{nameof(DbCacheEntry.ParentKey2)},
-                    {p}{nameof(DbCacheEntry.ParentKey3)},
-                    {p}{nameof(DbCacheEntry.ParentKey4)}
+                    {p}{nameof(DbCacheEntry.ParentHash2)},
+                    {p}{nameof(DbCacheEntry.ParentKey2)}
                 );
 
                 update {s}{CacheEntriesTableName}
@@ -108,14 +112,14 @@ namespace PommaLabs.KVLite.SQLite
                        {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
                        {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},
                        {DbCacheValue.CompressedColumn} = {p}{nameof(DbCacheValue.Compressed)},
-                       {DbCacheValue.UtcCreationColumn} = {p}{nameof(DbCacheValue.UtcCreation)},
+                       {DbCacheEntry.UtcCreationColumn} = {p}{nameof(DbCacheEntry.UtcCreation)},
+                       {DbCacheEntry.ParentHash0Column} = {p}{nameof(DbCacheEntry.ParentHash0)},
                        {DbCacheEntry.ParentKey0Column} = {p}{nameof(DbCacheEntry.ParentKey0)},
+                       {DbCacheEntry.ParentHash1Column} = {p}{nameof(DbCacheEntry.ParentHash1)},
                        {DbCacheEntry.ParentKey1Column} = {p}{nameof(DbCacheEntry.ParentKey1)},
-                       {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)},
-                       {DbCacheEntry.ParentKey3Column} = {p}{nameof(DbCacheEntry.ParentKey3)},
-                       {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)}
-                 where {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheValue.Partition)}
-                   and {DbCacheValue.KeyColumn} = {p}{nameof(DbCacheValue.Key)}
+                       {DbCacheEntry.ParentHash2Column} = {p}{nameof(DbCacheEntry.ParentHash2)},
+                       {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)}
+                 where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheValue.Hash)}
                    and changes() = 0; -- Above INSERT has failed
             ");
 
@@ -130,21 +134,26 @@ namespace PommaLabs.KVLite.SQLite
             _createCacheSchemaCommand = MinifyQuery($@"
                 DROP TABLE IF EXISTS {s}{CacheEntriesTableName};
                 CREATE TABLE {s}{CacheEntriesTableName} (
-                    kvle_partition TEXT NOT NULL,
-                    kvle_key TEXT NOT NULL,
+                    kvle_id INTEGER PRIMARY KEY,
+                    kvle_hash BIGINT NOT NULL,
                     kvle_expiry BIGINT NOT NULL,
                     kvle_interval BIGINT NOT NULL,
                     kvle_value BLOB NOT NULL,
                     kvle_compressed BOOLEAN NOT NULL,
+                    kvle_partition TEXT NOT NULL,
+                    kvle_key TEXT NOT NULL,
                     kvle_creation BIGINT NOT NULL,
+                    kvle_parent_hash0 BIGINT,
                     kvle_parent_key0 TEXT,
+                    kvle_parent_hash1 BIGINT,
                     kvle_parent_key1 TEXT,
+                    kvle_parent_hash2 BIGINT,
                     kvle_parent_key2 TEXT,
-                    kvle_parent_key3 TEXT,
-                    kvle_parent_key4 TEXT,
-                    CONSTRAINT pk_kvle PRIMARY KEY (kvle_partition, kvle_key)
+                    CONSTRAINT uk_kvle UNIQUE (kvle_hash)
                 );
-                CREATE INDEX ix_kvle_exp_part ON {s}{CacheEntriesTableName} (kvle_expiry DESC, kvle_partition ASC);
+                CREATE INDEX ix_kvle_parent0 ON {s}{CacheEntriesTableName} (kvle_parent_hash0);
+                CREATE INDEX ix_kvle_parent1 ON {s}{CacheEntriesTableName} (kvle_parent_hash1);
+                CREATE INDEX ix_kvle_parent2 ON {s}{CacheEntriesTableName} (kvle_parent_hash2);
             ");
 
             _getCacheEntriesSchemaQuery = MinifyQuery($@"
@@ -183,8 +192,8 @@ namespace PommaLabs.KVLite.SQLite
         /// <returns>An open connection.</returns>
         public override async Task<SqliteConnection> OpenAsync(CancellationToken cancellationToken)
         {
-            var conn = await base.OpenAsync(cancellationToken);
-            await conn.ExecuteAsync(_pragmas);
+            var conn = await base.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await conn.ExecuteAsync(_pragmas).ConfigureAwait(false);
             return conn;
         }
 
@@ -238,19 +247,22 @@ namespace PommaLabs.KVLite.SQLite
                 columns.Add(dataReader.GetValue(dataReader.GetOrdinal("name")) as string);
             }
 
-            return columns.Count == 12
-                && columns.Contains(DbCacheValue.PartitionColumn)
-                && columns.Contains(DbCacheValue.KeyColumn)
+            return columns.Count == 15
+                && columns.Contains("kvle_id") // Automatically generated ID.
+                && columns.Contains(DbCacheValue.HashColumn)
                 && columns.Contains(DbCacheValue.UtcExpiryColumn)
                 && columns.Contains(DbCacheValue.IntervalColumn)
                 && columns.Contains(DbCacheValue.ValueColumn)
                 && columns.Contains(DbCacheValue.CompressedColumn)
-                && columns.Contains(DbCacheValue.UtcCreationColumn)
+                && columns.Contains(DbCacheEntry.PartitionColumn)
+                && columns.Contains(DbCacheEntry.KeyColumn)
+                && columns.Contains(DbCacheEntry.UtcCreationColumn)
+                && columns.Contains(DbCacheEntry.ParentHash0Column)
                 && columns.Contains(DbCacheEntry.ParentKey0Column)
+                && columns.Contains(DbCacheEntry.ParentHash1Column)
                 && columns.Contains(DbCacheEntry.ParentKey1Column)
-                && columns.Contains(DbCacheEntry.ParentKey2Column)
-                && columns.Contains(DbCacheEntry.ParentKey3Column)
-                && columns.Contains(DbCacheEntry.ParentKey4Column);
+                && columns.Contains(DbCacheEntry.ParentHash2Column)
+                && columns.Contains(DbCacheEntry.ParentKey2Column);
         }
     }
 }

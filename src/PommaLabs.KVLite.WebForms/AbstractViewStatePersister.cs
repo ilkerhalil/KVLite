@@ -19,7 +19,6 @@
 
 using NodaTime;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
 using System;
 using System.Text;
 using System.Web;
@@ -62,8 +61,7 @@ namespace PommaLabs.KVLite.WebForms
         protected AbstractViewStatePersister(Page page, ICache cache)
             : base(page)
         {
-            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
-            Cache = cache;
+            Cache = cache ?? throw new ArgumentNullException(nameof(cache), ErrorMessages.NullCache);
         }
 
         #region Properties

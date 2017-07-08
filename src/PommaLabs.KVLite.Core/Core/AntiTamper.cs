@@ -40,13 +40,18 @@ namespace PommaLabs.KVLite.Core
         /// <param name="s">The stream.</param>
         /// <param name="v">The value.</param>
         public static void WriteAntiTamperHashCode<T>(Stream s, T v)
+            where T : class, IObjectWithHashCode64
         {
-            var c = new IntegerToBytesConverter { Integer = v.GetHashCode() };
+            var c = new LongToBytesConverter { Long = v.GetHashCode64() };
 
             s.WriteByte(c.Byte1);
             s.WriteByte(c.Byte2);
             s.WriteByte(c.Byte3);
             s.WriteByte(c.Byte4);
+            s.WriteByte(c.Byte5);
+            s.WriteByte(c.Byte6);
+            s.WriteByte(c.Byte7);
+            s.WriteByte(c.Byte8);
         }
 
         /// <summary>
@@ -56,16 +61,21 @@ namespace PommaLabs.KVLite.Core
         /// <param name="s">The stream.</param>
         /// <param name="v">The value.</param>
         public static void ReadAntiTamperHashCode<T>(Stream s, T v)
+            where T : class, IObjectWithHashCode64
         {
-            IntegerToBytesConverter c;
+            LongToBytesConverter c;
             try
             {
-                c = new IntegerToBytesConverter
+                c = new LongToBytesConverter
                 {
                     Byte1 = (byte) s.ReadByte(),
                     Byte2 = (byte) s.ReadByte(),
                     Byte3 = (byte) s.ReadByte(),
-                    Byte4 = (byte) s.ReadByte()
+                    Byte4 = (byte) s.ReadByte(),
+                    Byte5 = (byte) s.ReadByte(),
+                    Byte6 = (byte) s.ReadByte(),
+                    Byte7 = (byte) s.ReadByte(),
+                    Byte8 = (byte) s.ReadByte()
                 };
             }
             catch (Exception ex)
@@ -75,17 +85,17 @@ namespace PommaLabs.KVLite.Core
             }
 
             // Value is valid if hashes match.
-            if (c.Integer != v.GetHashCode())
+            if (c.Long != v.GetHashCode64())
             {
-                throw new InvalidDataException(string.Format(ErrorMessages.HashMismatch, v.GetHashCode(), c.Integer));
+                throw new InvalidDataException(string.Format(ErrorMessages.HashMismatch, v.GetHashCode64(), c.Long));
             }
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        private struct IntegerToBytesConverter
+        private struct LongToBytesConverter
         {
             [FieldOffset(0)]
-            public int Integer;
+            public long Long;
 
             [FieldOffset(0)]
             public byte Byte1;
@@ -98,6 +108,30 @@ namespace PommaLabs.KVLite.Core
 
             [FieldOffset(3)]
             public byte Byte4;
+
+            [FieldOffset(4)]
+            public byte Byte5;
+
+            [FieldOffset(5)]
+            public byte Byte6;
+
+            [FieldOffset(6)]
+            public byte Byte7;
+
+            [FieldOffset(7)]
+            public byte Byte8;
+        }
+
+        /// <summary>
+        ///   Represents an object with a 64 bit long hash.
+        /// </summary>
+        public interface IObjectWithHashCode64
+        {
+            /// <summary>
+            ///   Returns a 64 bit long hash.
+            /// </summary>
+            /// <returns>A 64 bit long hash.</returns>
+            long GetHashCode64();
         }
     }
 }

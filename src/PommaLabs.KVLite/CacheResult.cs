@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
 using System;
 
 namespace PommaLabs.KVLite
@@ -54,7 +53,7 @@ namespace PommaLabs.KVLite
             get
             {
                 // Preconditions
-                Raise.InvalidOperationException.If(HasNoValue, ErrorMessages.EmptyCacheResult);
+                if (!HasValue) throw new InvalidOperationException(ErrorMessages.EmptyCacheResult);
 
                 return _value;
             }
@@ -64,11 +63,6 @@ namespace PommaLabs.KVLite
         ///   True if result has a value, false otherwise.
         /// </summary>
         public bool HasValue { get; }
-
-        /// <summary>
-        ///   True if result has no value, false otherwise.
-        /// </summary>
-        public bool HasNoValue => !HasValue;
 
         /// <summary>
         ///   Result value if it exists, otherwise it returns default value for given type.

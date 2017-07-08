@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Thrower;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,7 +62,8 @@ namespace PommaLabs.KVLite.Goodies
         /// </returns>
         public static bool Run(Action action, Action<Exception> handler = null)
         {
-            Raise.ArgumentNullException.IfIsNull(action, nameof(action));
+            // Preconditions
+            if (action == null) throw new ArgumentNullException(nameof(action));
 
             if (FireAndForgetCount >= FireAndForgetLimit)
             {
@@ -82,7 +82,7 @@ namespace PommaLabs.KVLite.Goodies
 
             RunAsyncHelper(() =>
             {
-                action?.Invoke();
+                action();
                 Interlocked.Decrement(ref FireAndForgetCount);
             }, handler);
             return true;
@@ -103,26 +103,27 @@ namespace PommaLabs.KVLite.Goodies
         /// </returns>
         public static async Task<bool> RunAsync(Func<Task> asyncAction, Action<Exception> handler = null)
         {
-            Raise.ArgumentNullException.IfIsNull(asyncAction, nameof(asyncAction));
+            // Preconditions
+            if (asyncAction == null) throw new ArgumentNullException(nameof(asyncAction));
 
             if (FireAndForgetCount >= FireAndForgetLimit)
             {
                 // Run sync, cannot start a new task.
-                await RunSyncHelper(asyncAction, handler);
+                await RunSyncHelper(asyncAction, handler).ConfigureAwait(false);
                 return false;
             }
 
             if (Interlocked.Increment(ref FireAndForgetCount) > FireAndForgetLimit)
             {
                 // Run sync, cannot start a new task.
-                await RunSyncHelper(asyncAction, handler);
+                await RunSyncHelper(asyncAction, handler).ConfigureAwait(false);
                 Interlocked.Decrement(ref FireAndForgetCount);
                 return false;
             }
 
             RunAsyncHelper(() =>
             {
-                asyncAction?.Invoke();
+                asyncAction();
                 Interlocked.Decrement(ref FireAndForgetCount);
             }, handler);
             return true;
@@ -160,7 +161,7 @@ namespace PommaLabs.KVLite.Goodies
         {
             try
             {
-                action?.Invoke();
+                action();
             }
             catch (Exception ex)
             {
@@ -172,7 +173,7 @@ namespace PommaLabs.KVLite.Goodies
         {
             try
             {
-                await asyncAction?.Invoke();
+                await asyncAction().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

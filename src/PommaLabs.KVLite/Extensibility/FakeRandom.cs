@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Thrower;
 using System;
 
 namespace PommaLabs.KVLite.Extensibility
@@ -62,8 +61,7 @@ namespace PommaLabs.KVLite.Extensibility
             set
             {
                 // Preconditions
-                Raise.ArgumentOutOfRangeException.IfIsLess(value, 0.0, nameof(value));
-                Raise.ArgumentOutOfRangeException.IfIsGreaterOrEqual(value, 1.0, nameof(value));
+                if (value < 0.0 || value >= 1.0) throw new ArgumentOutOfRangeException(nameof(Value));
 
                 _value = value;
             }

@@ -23,7 +23,6 @@
 
 using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
 using System;
 using System.Web.Caching;
 
@@ -45,8 +44,7 @@ namespace PommaLabs.KVLite.WebForms
         /// <param name="cache">The cache that will be used by the provider.</param>
         protected AbstractOutputCacheProvider(ICache cache)
         {
-            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
-            Cache = cache;
+            Cache = cache ?? throw new ArgumentNullException(nameof(cache), ErrorMessages.NullCache);
         }
 
         /// <summary>

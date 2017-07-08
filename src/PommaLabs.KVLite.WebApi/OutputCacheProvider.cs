@@ -23,7 +23,6 @@
 
 using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,8 +54,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cache">The cache that will be used as entry container.</param>
         public OutputCacheProvider(ICache cache)
         {
-            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
-            Cache = cache;
+            Cache = cache ?? throw new ArgumentNullException(nameof(cache), ErrorMessages.NullCache);
         }
 
         #endregion Construction
@@ -76,8 +74,12 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cache">The underlying cache.</param>
         public static void Register(HttpConfiguration configuration, ICache cache)
         {
-            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
-            configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new OutputCacheProvider(cache));
+            // Preconditions
+            if (cache == null) throw new ArgumentNullException(nameof(cache), ErrorMessages.NullCache);
+
+            configuration
+                .CacheOutputConfiguration()
+                .RegisterCacheOutputProvider(() => new OutputCacheProvider(cache));
         }
 
         /// <summary>
@@ -87,8 +89,12 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cacheResolver">The resolver used to get the underlying cache.</param>
         public static void Register(HttpConfiguration configuration, Func<ICache> cacheResolver)
         {
-            Raise.ArgumentNullException.IfIsNull(cacheResolver, nameof(cacheResolver), ErrorMessages.NullCacheResolver);
-            configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new OutputCacheProvider(cacheResolver?.Invoke()));
+            // Preconditions
+            if (cacheResolver == null) throw new ArgumentNullException(nameof(cacheResolver), ErrorMessages.NullCacheResolver);
+
+            configuration
+                .CacheOutputConfiguration()
+                .RegisterCacheOutputProvider(() => new OutputCacheProvider(cacheResolver()));
         }
 
         #endregion Public members
@@ -109,14 +115,10 @@ namespace PommaLabs.KVLite.WebApi
 
         public bool Contains(string key) => Cache.Contains(ResponseCachePartition, key);
 
-        public void Add(string key, object o, DateTimeOffset expiration, string dependsOnKey = null)
+        public void Add(string key, object o, DateTimeOffset expiration, string dependsOnKey)
         {
-            string[] parentKeys = null;
-            if (dependsOnKey != null)
-            {
-                parentKeys = new[] { dependsOnKey };
-            }
-            Cache.AddTimed(ResponseCachePartition, key, o, expiration.UtcDateTime.ToInstant(), parentKeys);
+            var parentKeys = (dependsOnKey != null) ? new[] { dependsOnKey } : CacheExtensions.NoParentKeys;
+            Cache.AddTimed(ResponseCachePartition, key, o, expiration.ToInstant(), parentKeys);
         }
 
 #pragma warning restore 1591

@@ -146,14 +146,10 @@ namespace PommaLabs.KVLite.NoOp
         }
 
         /// <summary>
-        ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="object.ToString"/>.
+        ///   Returns a string that represents the current object.
         /// </summary>
-        /// <returns></returns>
-        protected override IEnumerable<KeyValuePair<string, object>> GetFormattingMembers()
-        {
-            yield return new KeyValuePair<string, object>(nameof(Settings.CacheUri), Settings.CacheUri);
-        }
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString() => $"{nameof(Settings.CacheUri)}: {Settings.CacheUri}";
 
         /// <summary>
         ///   Gets the value with specified partition and key. If it is a "sliding" or "static"

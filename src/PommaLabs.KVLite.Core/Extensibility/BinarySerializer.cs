@@ -23,7 +23,6 @@
 
 #if !NETSTD13
 
-using PommaLabs.KVLite.Thrower;
 using System;
 using System.IO;
 using System.Runtime.Serialization;
@@ -57,7 +56,7 @@ namespace PommaLabs.KVLite.Extensibility
         public BinarySerializer(BinarySerializerSettings serializerSettings)
         {
             // Preconditions
-            Raise.ArgumentNullException.IfIsNull(serializerSettings, nameof(serializerSettings));
+            if (serializerSettings == null) throw new ArgumentNullException(nameof(serializerSettings));
 
             _binaryFormatter.AssemblyFormat = serializerSettings.AssemblyFormat;
             _binaryFormatter.Binder = serializerSettings.Binder ?? _binaryFormatter.Binder;

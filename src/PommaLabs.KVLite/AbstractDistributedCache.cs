@@ -24,7 +24,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
+using System;
 using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
@@ -43,15 +43,16 @@ namespace PommaLabs.KVLite
 
         void IDistributedCache.Refresh(string key) => Get<byte[]>(DistributedCachePartition, key);
 
-        async Task IDistributedCache.RefreshAsync(string key) => await GetAsync<byte[]>(DistributedCachePartition, key);
+        async Task IDistributedCache.RefreshAsync(string key) => await GetAsync<byte[]>(DistributedCachePartition, key).ConfigureAwait(false);
 
         void IDistributedCache.Remove(string key) => Remove(DistributedCachePartition, key);
 
-        async Task IDistributedCache.RemoveAsync(string key) => await RemoveAsync(DistributedCachePartition, key);
+        async Task IDistributedCache.RemoveAsync(string key) => await RemoveAsync(DistributedCachePartition, key).ConfigureAwait(false);
 
         void IDistributedCache.Set(string key, byte[] value, DistributedCacheEntryOptions options)
         {
-            Raise.InvalidOperationException.If(options.SlidingExpiration.HasValue && (options.AbsoluteExpiration.HasValue || options.AbsoluteExpirationRelativeToNow.HasValue), ErrorMessages.CacheDoesNotAllowSlidingAndAbsolute);
+            // Preconditions
+            if (options.SlidingExpiration.HasValue && (options.AbsoluteExpiration.HasValue || options.AbsoluteExpirationRelativeToNow.HasValue)) throw new InvalidOperationException(ErrorMessages.CacheDoesNotAllowSlidingAndAbsolute);
 
             if (options.SlidingExpiration.HasValue)
             {
@@ -69,7 +70,8 @@ namespace PommaLabs.KVLite
 
         async Task IDistributedCache.SetAsync(string key, byte[] value, DistributedCacheEntryOptions options)
         {
-            Raise.InvalidOperationException.If(options.SlidingExpiration.HasValue && (options.AbsoluteExpiration.HasValue || options.AbsoluteExpirationRelativeToNow.HasValue), ErrorMessages.CacheDoesNotAllowSlidingAndAbsolute);
+            // Preconditions
+            if (options.SlidingExpiration.HasValue && (options.AbsoluteExpiration.HasValue || options.AbsoluteExpirationRelativeToNow.HasValue)) throw new InvalidOperationException(ErrorMessages.CacheDoesNotAllowSlidingAndAbsolute);
 
             if (options.SlidingExpiration.HasValue)
             {

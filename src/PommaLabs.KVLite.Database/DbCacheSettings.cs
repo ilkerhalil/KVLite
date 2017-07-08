@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
 using System;
 using System.Data.Common;
 using System.Diagnostics;
@@ -101,8 +100,7 @@ namespace PommaLabs.KVLite.Database
             set
             {
                 // Preconditions
-                Raise.ArgumentOutOfRangeException.IfIsLess(value, 0.0, nameof(value));
-                Raise.ArgumentOutOfRangeException.IfIsGreater(value, 1.0, nameof(value));
+                if (value < 0.0 || value > 1.0) throw new ArgumentOutOfRangeException(nameof(ChancesOfAutoCleanup));
 
                 _chancesOfAutoCleanup = value;
                 OnPropertyChanged();
@@ -130,7 +128,7 @@ namespace PommaLabs.KVLite.Database
             set
             {
                 // Preconditions
-                Raise.ArgumentOutOfRangeException.IfIsLess(value, 0L, nameof(value));
+                if (value < 0L) throw new ArgumentOutOfRangeException(nameof(MinValueLengthForCompression));
 
                 _minValueLengthForCompression = value;
                 OnPropertyChanged();
