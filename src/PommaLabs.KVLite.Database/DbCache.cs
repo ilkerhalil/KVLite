@@ -668,8 +668,6 @@ namespace PommaLabs.KVLite.Database
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
-                Partition = partition,
-                Key = key,
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -722,8 +720,6 @@ namespace PommaLabs.KVLite.Database
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
-                Partition = partition,
-                Key = key,
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -775,8 +771,6 @@ namespace PommaLabs.KVLite.Database
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
-                Partition = partition,
-                Key = key,
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -829,8 +823,6 @@ namespace PommaLabs.KVLite.Database
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
-                Partition = partition,
-                Key = key,
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -897,8 +889,7 @@ namespace PommaLabs.KVLite.Database
                         // When an item expires, we should remove it from the cache.
                         db.Execute(cf.DeleteCacheEntryCommand, new DbCacheEntry.Single
                         {
-                            Partition = dbCacheEntry.Partition,
-                            Key = dbCacheEntry.Key
+                            Hash = Hashing.HashPartitionAndKey(dbCacheEntry.Partition, dbCacheEntry.Key)
                         });
                     }
                     else if (dbCacheEntry.Interval > 0L)
@@ -907,8 +898,6 @@ namespace PommaLabs.KVLite.Database
                         db.Execute(cf.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
                         {
                             Hash = Hashing.HashPartitionAndKey(dbCacheEntry.Partition, dbCacheEntry.Key),
-                            Partition = dbCacheEntry.Partition,
-                            Key = dbCacheEntry.Key,
                             UtcExpiry = dbCacheEntry.UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
                         });
                     }
@@ -955,8 +944,7 @@ namespace PommaLabs.KVLite.Database
                         // When an item expires, we should remove it from the cache.
                         await db.ExecuteAsync(cf.DeleteCacheEntryCommand, new DbCacheEntry.Single
                         {
-                            Partition = dbCacheEntry.Partition,
-                            Key = dbCacheEntry.Key
+                            Hash = Hashing.HashPartitionAndKey(dbCacheEntry.Partition, dbCacheEntry.Key)
                         }).ConfigureAwait(false);
                     }
                     else if (dbCacheEntry.Interval > 0L)
@@ -965,8 +953,6 @@ namespace PommaLabs.KVLite.Database
                         await db.ExecuteAsync(cf.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
                         {
                             Hash = Hashing.HashPartitionAndKey(dbCacheEntry.Partition, dbCacheEntry.Key),
-                            Partition = dbCacheEntry.Partition,
-                            Key = dbCacheEntry.Key,
                             UtcExpiry = dbCacheEntry.UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
                         }).ConfigureAwait(false);
                     }
@@ -1212,8 +1198,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition,
-                Key = key
+                Hash = Hashing.HashPartitionAndKey(partition, key)
             };
 
             RetryOnFail(() =>
@@ -1237,8 +1222,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
-                Partition = partition,
-                Key = key
+                Hash = Hashing.HashPartitionAndKey(partition, key)
             };
 
             await RetryOnFailAsync(async () =>

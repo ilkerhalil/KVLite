@@ -125,16 +125,6 @@ namespace PommaLabs.KVLite.Database
             public ulong Hash { get; set; }
 
             /// <summary>
-            ///   A partition holds a group of related keys.
-            /// </summary>
-            public string Partition { get; set; }
-
-            /// <summary>
-            ///   A key uniquely identifies an entry inside a partition.
-            /// </summary>
-            public string Key { get; set; }
-
-            /// <summary>
             ///   Retrieve an entry even if it has expired.
             /// </summary>
             public byte IgnoreExpiryDate { get; set; }
