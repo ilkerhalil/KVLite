@@ -701,7 +701,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheValue<TVal>(dbCacheValue, partition, key);
+            return DeserializeCacheValue<TVal>(dbCacheValue);
         }
 
         /// <summary>
@@ -753,7 +753,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheValue<TVal>(dbCacheValue, partition, key);
+            return DeserializeCacheValue<TVal>(dbCacheValue);
         }
 
         /// <summary>
@@ -1001,7 +1001,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheValue<TVal>(dbCacheValue, partition, key);
+            return DeserializeCacheValue<TVal>(dbCacheValue);
         }
 
         /// <summary>
@@ -1038,7 +1038,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheValue<TVal>(dbCacheValue, partition, key);
+            return DeserializeCacheValue<TVal>(dbCacheValue);
         }
 
         /// <summary>
@@ -1194,20 +1194,7 @@ namespace PommaLabs.KVLite.Database
         /// <param name="key">The key.</param>
         protected sealed override void RemoveInternal(string partition, string key)
         {
-            // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
-            var dbCacheEntrySingle = new DbCacheEntry.Single
-            {
-                Hash = Hashing.HashPartitionAndKey(partition, key)
-            };
-
-            RetryOnFail(() =>
-            {
-                using (var db = cf.Open())
-                {
-                    db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
-                }
-            });
+            RemoveByHash(Hashing.HashPartitionAndKey(partition, key));
         }
 
         /// <summary>
@@ -1265,7 +1252,7 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
-        private CacheResult<TVal> DeserializeCacheValue<TVal>(DbCacheValue dbCacheValue, string partition, string key)
+        private CacheResult<TVal> DeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
         {
             try
             {
@@ -1277,7 +1264,7 @@ namespace PommaLabs.KVLite.Database
 
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
-                RemoveInternal(partition, key);
+                RemoveByHash(dbCacheValue.Hash);
 
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
 
@@ -1322,12 +1309,30 @@ namespace PommaLabs.KVLite.Database
 
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
-                RemoveInternal(dbCacheEntry.Partition, dbCacheEntry.Key);
+                RemoveByHash(dbCacheEntry.Hash);
 
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
 
                 return default(CacheResult<ICacheItem<TVal>>);
             }
+        }
+
+        private void RemoveByHash(ulong hash)
+        {
+            // Compute all parameters _before_ opening the connection.
+            var cf = Settings.ConnectionFactory;
+            var dbCacheEntrySingle = new DbCacheEntry.Single
+            {
+                Hash = hash
+            };
+
+            RetryOnFail(() =>
+            {
+                using (var db = cf.Open())
+                {
+                    db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
+                }
+            });
         }
 
         private SqlMapper.IDynamicParameters PrepareCacheEntryForAdd<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)

@@ -321,7 +321,8 @@ namespace PommaLabs.KVLite.Database
             ");
 
             PeekCacheEntriesQuery = MinifyQuery($@"
-                select x.{DbCacheValue.UtcExpiryColumn}   {l}{nameof(DbCacheValue.UtcExpiry)}{r},
+                select x.{DbCacheValue.HashColumn}        {l}{nameof(DbCacheValue.Hash)}{r},
+                       x.{DbCacheValue.UtcExpiryColumn}   {l}{nameof(DbCacheValue.UtcExpiry)}{r},
                        x.{DbCacheValue.IntervalColumn}    {l}{nameof(DbCacheValue.Interval)}{r},
                        x.{DbCacheValue.ValueColumn}       {l}{nameof(DbCacheValue.Value)}{r},
                        x.{DbCacheValue.CompressedColumn}  {l}{nameof(DbCacheValue.Compressed)}{r},
@@ -338,7 +339,8 @@ namespace PommaLabs.KVLite.Database
 
             // Partition and key are not "select-ed" because the caller already knows them.
             PeekCacheEntryQuery = MinifyQuery($@"
-                select x.{DbCacheValue.UtcExpiryColumn}   {l}{nameof(DbCacheValue.UtcExpiry)}{r},
+                select x.{DbCacheValue.HashColumn}        {l}{nameof(DbCacheValue.Hash)}{r},
+                       x.{DbCacheValue.UtcExpiryColumn}   {l}{nameof(DbCacheValue.UtcExpiry)}{r},
                        x.{DbCacheValue.IntervalColumn}    {l}{nameof(DbCacheValue.Interval)}{r},
                        x.{DbCacheValue.ValueColumn}       {l}{nameof(DbCacheValue.Value)}{r},
                        x.{DbCacheValue.CompressedColumn}  {l}{nameof(DbCacheValue.Compressed)}{r},
@@ -352,7 +354,8 @@ namespace PommaLabs.KVLite.Database
             ");
 
             PeekCacheValueQuery = MinifyQuery($@"
-                select x.{DbCacheValue.UtcExpiryColumn}   {l}{nameof(DbCacheValue.UtcExpiry)}{r},
+                select x.{DbCacheValue.HashColumn}        {l}{nameof(DbCacheValue.Hash)}{r},
+                       x.{DbCacheValue.UtcExpiryColumn}   {l}{nameof(DbCacheValue.UtcExpiry)}{r},
                        x.{DbCacheValue.IntervalColumn}    {l}{nameof(DbCacheValue.Interval)}{r},
                        x.{DbCacheValue.ValueColumn}       {l}{nameof(DbCacheValue.Value)}{r},
                        x.{DbCacheValue.CompressedColumn}  {l}{nameof(DbCacheValue.Compressed)}{r}
