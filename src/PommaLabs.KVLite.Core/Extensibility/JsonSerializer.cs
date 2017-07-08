@@ -22,7 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Newtonsoft.Json;
-using PommaLabs.KVLite.Thrower;
+using System;
 using System.IO;
 
 namespace PommaLabs.KVLite.Extensibility
@@ -52,7 +52,7 @@ namespace PommaLabs.KVLite.Extensibility
         public JsonSerializer(JsonSerializerSettings serializerSettings)
         {
             // Preconditions
-            Raise.ArgumentNullException.IfIsNull(serializerSettings, nameof(serializerSettings));
+            if (serializerSettings == null) throw new ArgumentNullException(nameof(serializerSettings));
 
             _jsonSerializer = Newtonsoft.Json.JsonSerializer.Create(serializerSettings);
         }

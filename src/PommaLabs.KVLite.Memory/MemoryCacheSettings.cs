@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
 using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
@@ -88,7 +87,7 @@ namespace PommaLabs.KVLite.Memory
             set
             {
                 // Preconditions
-                Raise.ArgumentOutOfRangeException.If(value <= 0);
+                if (value <= 0) throw new ArgumentOutOfRangeException(nameof(MaxCacheSizeInMB));
 
                 _maxCacheSizeInMB = value;
                 OnPropertyChanged();
@@ -114,8 +113,8 @@ namespace PommaLabs.KVLite.Memory
             set
             {
                 // Preconditions
-                Raise.ArgumentException.IfIsNullOrWhiteSpace(value, nameof(CacheName), ErrorMessages.NullOrEmptyCacheName);
-                Raise.ArgumentException.IfNot(Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$"), nameof(CacheName), ErrorMessages.InvalidCacheName);
+                if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyCacheName, nameof(CacheName));
+                if (!Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$")) throw new ArgumentException(ErrorMessages.InvalidCacheName, nameof(CacheName));
 
                 _cacheName = value;
                 OnPropertyChanged();
@@ -150,7 +149,7 @@ namespace PommaLabs.KVLite.Memory
             set
             {
                 // Preconditions
-                Raise.ArgumentOutOfRangeException.IfIsLess(value, 0L, nameof(value));
+                if (value < 0L) throw new ArgumentOutOfRangeException(nameof(MinValueLengthForCompression));
 
                 _minValueLengthForCompression = value;
                 OnPropertyChanged();

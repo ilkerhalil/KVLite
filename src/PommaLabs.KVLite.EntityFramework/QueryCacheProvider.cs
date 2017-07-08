@@ -25,7 +25,6 @@ using EntityFramework;
 using EntityFramework.Caching;
 using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -54,8 +53,7 @@ namespace PommaLabs.KVLite.EntityFramework
         /// <param name="cache">The cache that will be used as entry container.</param>
         public QueryCacheProvider(ICache cache)
         {
-            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
-            Cache = cache;
+            Cache = cache ?? throw new ArgumentNullException(nameof(cache), ErrorMessages.NullCache);
         }
 
         #endregion Construction
@@ -74,7 +72,9 @@ namespace PommaLabs.KVLite.EntityFramework
         /// <param name="cache">The underlying cache.</param>
         public static void Register(ICache cache)
         {
-            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            // Preconditions
+            if (cache == null) throw new ArgumentNullException(nameof(cache), ErrorMessages.NullCache);
+
             Locator.Current.Register<ICacheProvider>(() => new QueryCacheProvider(cache));
         }
 
@@ -84,8 +84,10 @@ namespace PommaLabs.KVLite.EntityFramework
         /// <param name="cacheResolver">The resolver used to get the underlying cache.</param>
         public static void Register(Func<ICache> cacheResolver)
         {
-            Raise.ArgumentNullException.IfIsNull(cacheResolver, nameof(cacheResolver), ErrorMessages.NullCacheResolver);
-            Locator.Current.Register<ICacheProvider>(() => new QueryCacheProvider(cacheResolver?.Invoke()));
+            // Preconditions
+            if (cacheResolver == null) throw new ArgumentNullException(nameof(cacheResolver), ErrorMessages.NullCacheResolver);
+
+            Locator.Current.Register<ICacheProvider>(() => new QueryCacheProvider(cacheResolver()));
         }
 
         #endregion Public members

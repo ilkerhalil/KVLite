@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
 using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
@@ -72,7 +71,7 @@ namespace PommaLabs.KVLite.SQLite
             set
             {
                 // Preconditions
-                Raise.ArgumentException.IfIsNullOrWhiteSpace(value, nameof(CacheFile), ErrorMessages.NullOrEmptyCacheFile);
+                if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyCacheFile, nameof(CacheFile));
 
                 _cacheFile = value;
                 OnPropertyChanged();

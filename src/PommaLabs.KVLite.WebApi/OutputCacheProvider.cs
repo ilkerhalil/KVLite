@@ -23,7 +23,6 @@
 
 using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,10 +54,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cache">The cache that will be used as entry container.</param>
         public OutputCacheProvider(ICache cache)
         {
-            // Preconditions
-            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
-
-            Cache = cache;
+            Cache = cache ?? throw new ArgumentNullException(nameof(cache), ErrorMessages.NullCache);
         }
 
         #endregion Construction
@@ -79,7 +75,7 @@ namespace PommaLabs.KVLite.WebApi
         public static void Register(HttpConfiguration configuration, ICache cache)
         {
             // Preconditions
-            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+            if (cache == null) throw new ArgumentNullException(nameof(cache), ErrorMessages.NullCache);
 
             configuration
                 .CacheOutputConfiguration()
@@ -94,11 +90,11 @@ namespace PommaLabs.KVLite.WebApi
         public static void Register(HttpConfiguration configuration, Func<ICache> cacheResolver)
         {
             // Preconditions
-            Raise.ArgumentNullException.IfIsNull(cacheResolver, nameof(cacheResolver), ErrorMessages.NullCacheResolver);
+            if (cacheResolver == null) throw new ArgumentNullException(nameof(cacheResolver), ErrorMessages.NullCacheResolver);
 
             configuration
                 .CacheOutputConfiguration()
-                .RegisterCacheOutputProvider(() => new OutputCacheProvider(cacheResolver?.Invoke()));
+                .RegisterCacheOutputProvider(() => new OutputCacheProvider(cacheResolver()));
         }
 
         #endregion Public members

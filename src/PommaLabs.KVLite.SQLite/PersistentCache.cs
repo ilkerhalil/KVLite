@@ -23,11 +23,11 @@
 
 using Microsoft.Data.Sqlite;
 using NodaTime;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
-using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower.Goodies;
 using PommaLabs.KVLite.Logging;
+using PommaLabs.KVLite.Resources;
 using System;
 using System.IO;
 
@@ -127,7 +127,7 @@ namespace PommaLabs.KVLite.SQLite
         private static string GetDataSource(string cacheFile)
         {
             // Map cache path, since it may be an IIS relative path.
-            var mappedPath = EnvironmentExtensions.MapPath(cacheFile);
+            var mappedPath = MiscUtils.MapPath(cacheFile);
 
             // If the directory which should contain the cache does not exist, then we create it.
             // SQLite will take care of creating the DB itself.

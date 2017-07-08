@@ -182,5 +182,10 @@ namespace PommaLabs.KVLite.Resources
         ///   An error message.
         /// </summary>
         public const string EmptyCacheResult = "Cache result has no value.";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
+        public const string InvalidCompressionLevel = "Specified compression level is not valid.";
     }
 }

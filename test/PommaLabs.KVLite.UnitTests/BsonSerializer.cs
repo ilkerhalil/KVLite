@@ -23,7 +23,7 @@
 
 using Newtonsoft.Json.Bson;
 using PommaLabs.KVLite.Extensibility;
-using PommaLabs.KVLite.Thrower;
+using System;
 using System.IO;
 
 namespace PommaLabs.KVLite.UnitTests
@@ -53,7 +53,7 @@ namespace PommaLabs.KVLite.UnitTests
         public BsonSerializer(Newtonsoft.Json.JsonSerializerSettings serializerSettings)
         {
             // Preconditions
-            Raise.ArgumentNullException.IfIsNull(serializerSettings, nameof(serializerSettings));
+            if (serializerSettings == null) throw new ArgumentNullException(nameof(serializerSettings));
 
             _bsonSerializer = Newtonsoft.Json.JsonSerializer.Create(serializerSettings);
         }

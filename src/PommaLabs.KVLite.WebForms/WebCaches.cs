@@ -24,7 +24,7 @@
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.SQLite;
-using PommaLabs.KVLite.Thrower;
+using System;
 
 namespace PommaLabs.KVLite.WebForms
 {
@@ -63,8 +63,7 @@ namespace PommaLabs.KVLite.WebForms
             }
             set
             {
-                Raise.ArgumentNullException.IfIsNull(value, nameof(value));
-                _memoryCache = value;
+                _memoryCache = value ?? throw new ArgumentNullException(nameof(Memory));
             }
         }
 
@@ -82,8 +81,7 @@ namespace PommaLabs.KVLite.WebForms
             }
             set
             {
-                Raise.ArgumentNullException.IfIsNull(value, nameof(value));
-                _persistentCache = value;
+                _persistentCache = value ?? throw new ArgumentNullException(nameof(Persistent));
             }
         }
 
@@ -101,8 +99,7 @@ namespace PommaLabs.KVLite.WebForms
             }
             set
             {
-                Raise.ArgumentNullException.IfIsNull(value, nameof(value));
-                _volatileCache = value;
+                _volatileCache = value ?? throw new ArgumentNullException(nameof(Volatile));
             }
         }
     }
