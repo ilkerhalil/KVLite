@@ -21,12 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Core;
+
 namespace PommaLabs.KVLite.Database
 {
     /// <summary>
     ///   Represents a flat value stored inside the cache.
     /// </summary>
-    public class DbCacheValue
+    public class DbCacheValue : AntiTamper.IObjectWithHashCode64
     {
         /// <summary>
         ///   Database agnostic "true".
@@ -47,26 +49,6 @@ namespace PommaLabs.KVLite.Database
         ///   Hash of partition and key.
         /// </summary>
         public ulong Hash { get; set; }
-
-        /// <summary>
-        ///   SQL column name of <see cref="Partition"/>.
-        /// </summary>
-        public const string PartitionColumn = "kvle_partition";
-
-        /// <summary>
-        ///   A partition holds a group of related keys.
-        /// </summary>
-        public string Partition { get; set; }
-
-        /// <summary>
-        ///   SQL column name of <see cref="Key"/>.
-        /// </summary>
-        public const string KeyColumn = "kvle_key";
-
-        /// <summary>
-        ///   A key uniquely identifies an entry inside a partition.
-        /// </summary>
-        public string Key { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="UtcExpiry"/>.
@@ -109,31 +91,9 @@ namespace PommaLabs.KVLite.Database
         public byte Compressed { get; set; }
 
         /// <summary>
-        ///   SQL column name of <see cref="UtcCreation"/>.
+        ///   Returns a 64 bit unsigned long hash.
         /// </summary>
-        public const string UtcCreationColumn = "kvle_creation";
-
-        /// <summary>
-        ///   When the entry was created, expressed as seconds after UNIX epoch.
-        /// </summary>
-        public long UtcCreation { get; set; }
-
-        /// <summary>
-        ///   Serves as the default hash function.
-        /// </summary>
-        /// <returns>A hash code for the current object.</returns>
-        public sealed override int GetHashCode()
-        {
-            var hash = 797;
-            unchecked
-            {
-                const int bigPrime = 179426549;
-
-                hash = bigPrime * hash + (int) (UtcCreation ^ (UtcCreation >> 32));
-                hash = bigPrime * hash + Partition.GetHashCode();
-                hash = bigPrime * hash + Key.GetHashCode();
-            }
-            return hash;
-        }
+        /// <returns>A 64 bit unsigned long hash.</returns>
+        ulong AntiTamper.IObjectWithHashCode64.GetHashCode64() => Hash;
     }
 }

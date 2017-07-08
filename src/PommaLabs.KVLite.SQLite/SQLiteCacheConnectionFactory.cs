@@ -76,13 +76,13 @@ namespace PommaLabs.KVLite.SQLite
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
                 insert or ignore into {s}{CacheEntriesTableName} (
                     {DbCacheValue.HashColumn},
-                    {DbCacheValue.PartitionColumn},
-                    {DbCacheValue.KeyColumn},
                     {DbCacheValue.UtcExpiryColumn},
                     {DbCacheValue.IntervalColumn},
                     {DbCacheValue.ValueColumn},
                     {DbCacheValue.CompressedColumn},
-                    {DbCacheValue.UtcCreationColumn},
+                    {DbCacheEntry.PartitionColumn},
+                    {DbCacheEntry.KeyColumn},
+                    {DbCacheEntry.UtcCreationColumn},
                     {DbCacheEntry.ParentHash0Column},
                     {DbCacheEntry.ParentKey0Column},
                     {DbCacheEntry.ParentHash1Column},
@@ -92,13 +92,13 @@ namespace PommaLabs.KVLite.SQLite
                 )
                 values (
                     {p}{nameof(DbCacheValue.Hash)},
-                    {p}{nameof(DbCacheValue.Partition)},
-                    {p}{nameof(DbCacheValue.Key)},
                     {p}{nameof(DbCacheValue.UtcExpiry)},
                     {p}{nameof(DbCacheValue.Interval)},
                     {p}{nameof(DbCacheValue.Value)},
                     {p}{nameof(DbCacheValue.Compressed)},
-                    {p}{nameof(DbCacheValue.UtcCreation)},
+                    {p}{nameof(DbCacheEntry.Partition)},
+                    {p}{nameof(DbCacheEntry.Key)},
+                    {p}{nameof(DbCacheEntry.UtcCreation)},
                     {p}{nameof(DbCacheEntry.ParentHash0)},
                     {p}{nameof(DbCacheEntry.ParentKey0)},
                     {p}{nameof(DbCacheEntry.ParentHash1)},
@@ -112,7 +112,7 @@ namespace PommaLabs.KVLite.SQLite
                        {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
                        {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},
                        {DbCacheValue.CompressedColumn} = {p}{nameof(DbCacheValue.Compressed)},
-                       {DbCacheValue.UtcCreationColumn} = {p}{nameof(DbCacheValue.UtcCreation)},
+                       {DbCacheEntry.UtcCreationColumn} = {p}{nameof(DbCacheEntry.UtcCreation)},
                        {DbCacheEntry.ParentHash0Column} = {p}{nameof(DbCacheEntry.ParentHash0)},
                        {DbCacheEntry.ParentKey0Column} = {p}{nameof(DbCacheEntry.ParentKey0)},
                        {DbCacheEntry.ParentHash1Column} = {p}{nameof(DbCacheEntry.ParentHash1)},
@@ -136,12 +136,12 @@ namespace PommaLabs.KVLite.SQLite
                 CREATE TABLE {s}{CacheEntriesTableName} (
                     kvle_id INTEGER PRIMARY KEY,
                     kvle_hash BIGINT NOT NULL,
-                    kvle_partition TEXT NOT NULL,
-                    kvle_key TEXT NOT NULL,
                     kvle_expiry BIGINT NOT NULL,
                     kvle_interval BIGINT NOT NULL,
                     kvle_value BLOB NOT NULL,
                     kvle_compressed BOOLEAN NOT NULL,
+                    kvle_partition TEXT NOT NULL,
+                    kvle_key TEXT NOT NULL,
                     kvle_creation BIGINT NOT NULL,
                     kvle_parent_hash0 BIGINT,
                     kvle_parent_key0 TEXT,
@@ -250,13 +250,13 @@ namespace PommaLabs.KVLite.SQLite
             return columns.Count == 15
                 && columns.Contains("kvle_id") // Automatically generated ID.
                 && columns.Contains(DbCacheValue.HashColumn)
-                && columns.Contains(DbCacheValue.PartitionColumn)
-                && columns.Contains(DbCacheValue.KeyColumn)
                 && columns.Contains(DbCacheValue.UtcExpiryColumn)
                 && columns.Contains(DbCacheValue.IntervalColumn)
                 && columns.Contains(DbCacheValue.ValueColumn)
                 && columns.Contains(DbCacheValue.CompressedColumn)
-                && columns.Contains(DbCacheValue.UtcCreationColumn)
+                && columns.Contains(DbCacheEntry.PartitionColumn)
+                && columns.Contains(DbCacheEntry.KeyColumn)
+                && columns.Contains(DbCacheEntry.UtcCreationColumn)
                 && columns.Contains(DbCacheEntry.ParentHash0Column)
                 && columns.Contains(DbCacheEntry.ParentKey0Column)
                 && columns.Contains(DbCacheEntry.ParentHash1Column)

@@ -514,7 +514,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition,
+                Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -541,7 +541,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition,
+                Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -617,7 +617,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition,
+                Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -642,7 +642,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition,
+                Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -701,7 +701,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheValue<TVal>(dbCacheValue);
+            return DeserializeCacheValue<TVal>(dbCacheValue, partition, key);
         }
 
         /// <summary>
@@ -753,7 +753,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheValue<TVal>(dbCacheValue);
+            return DeserializeCacheValue<TVal>(dbCacheValue, partition, key);
         }
 
         /// <summary>
@@ -872,7 +872,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition,
+                Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -927,7 +927,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition,
+                Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -1001,7 +1001,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheValue<TVal>(dbCacheValue);
+            return DeserializeCacheValue<TVal>(dbCacheValue, partition, key);
         }
 
         /// <summary>
@@ -1038,7 +1038,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheValue<TVal>(dbCacheValue);
+            return DeserializeCacheValue<TVal>(dbCacheValue, partition, key);
         }
 
         /// <summary>
@@ -1131,7 +1131,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition,
+                Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -1168,7 +1168,7 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
-                Partition = partition,
+                Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = DbCacheValue.False,
                 UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
             };
@@ -1265,7 +1265,7 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
-        private CacheResult<TVal> DeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
+        private CacheResult<TVal> DeserializeCacheValue<TVal>(DbCacheValue dbCacheValue, string partition, string key)
         {
             try
             {
@@ -1277,7 +1277,7 @@ namespace PommaLabs.KVLite.Database
 
                 // Something wrong happened during deserialization. Therefore, we remove the old
                 // element (in order to avoid future errors) and we return None.
-                RemoveInternal(dbCacheValue.Partition, dbCacheValue.Key);
+                RemoveInternal(partition, key);
 
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
 

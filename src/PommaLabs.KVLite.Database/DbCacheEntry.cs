@@ -29,6 +29,26 @@ namespace PommaLabs.KVLite.Database
     public sealed class DbCacheEntry : DbCacheValue
     {
         /// <summary>
+        ///   SQL column name of <see cref="Partition"/>.
+        /// </summary>
+        public const string PartitionColumn = "kvle_partition";
+
+        /// <summary>
+        ///   A partition holds a group of related keys.
+        /// </summary>
+        public string Partition { get; set; }
+
+        /// <summary>
+        ///   SQL column name of <see cref="Key"/>.
+        /// </summary>
+        public const string KeyColumn = "kvle_key";
+
+        /// <summary>
+        ///   A key uniquely identifies an entry inside a partition.
+        /// </summary>
+        public string Key { get; set; }
+
+        /// <summary>
         ///   SQL column name of <see cref="ParentHash0"/>.
         /// </summary>
         public const string ParentHash0Column = "kvle_parent_hash0";
@@ -47,6 +67,16 @@ namespace PommaLabs.KVLite.Database
         ///   Optional parent entry key, used to link entries in a hierarchical way.
         /// </summary>
         public string ParentKey0 { get; set; }
+
+        /// <summary>
+        ///   SQL column name of <see cref="UtcCreation"/>.
+        /// </summary>
+        public const string UtcCreationColumn = "kvle_creation";
+
+        /// <summary>
+        ///   When the entry was created, expressed as seconds after UNIX epoch.
+        /// </summary>
+        public long UtcCreation { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="ParentHash1"/>.
@@ -94,14 +124,9 @@ namespace PommaLabs.KVLite.Database
         public sealed class Group
         {
             /// <summary>
-            ///   Hash of partition and key.
+            ///   Hash of partition (key is not taken into account for groups).
             /// </summary>
-            public long? Hash { get; set; }
-
-            /// <summary>
-            ///   A partition holds a group of related keys.
-            /// </summary>
-            public string Partition { get; set; }
+            public ulong? Hash { get; set; }
 
             /// <summary>
             ///   Retrieve an entry even if it has expired.

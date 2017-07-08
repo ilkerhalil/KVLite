@@ -65,13 +65,13 @@ namespace PommaLabs.KVLite.MySql
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
                 replace into {s}{CacheEntriesTableName} (
                     {DbCacheValue.HashColumn},
-                    {DbCacheValue.PartitionColumn},
-                    {DbCacheValue.KeyColumn},
                     {DbCacheValue.UtcExpiryColumn},
                     {DbCacheValue.IntervalColumn},
                     {DbCacheValue.ValueColumn},
                     {DbCacheValue.CompressedColumn},
-                    {DbCacheValue.UtcCreationColumn},
+                    {DbCacheEntry.PartitionColumn},
+                    {DbCacheEntry.KeyColumn},
+                    {DbCacheEntry.UtcCreationColumn},
                     {DbCacheEntry.ParentHash0Column},
                     {DbCacheEntry.ParentKey0Column},
                     {DbCacheEntry.ParentHash1Column},
@@ -81,13 +81,13 @@ namespace PommaLabs.KVLite.MySql
                 )
                 values (
                     {p}{nameof(DbCacheValue.Hash)},
-                    {p}{nameof(DbCacheValue.Partition)},
-                    {p}{nameof(DbCacheValue.Key)},
                     {p}{nameof(DbCacheValue.UtcExpiry)},
                     {p}{nameof(DbCacheValue.Interval)},
                     {p}{nameof(DbCacheValue.Value)},
                     {p}{nameof(DbCacheValue.Compressed)},
-                    {p}{nameof(DbCacheValue.UtcCreation)},
+                    {p}{nameof(DbCacheEntry.Partition)},
+                    {p}{nameof(DbCacheEntry.Key)},
+                    {p}{nameof(DbCacheEntry.UtcCreation)},
                     {p}{nameof(DbCacheEntry.ParentHash0)},
                     {p}{nameof(DbCacheEntry.ParentKey0)},
                     {p}{nameof(DbCacheEntry.ParentHash1)},
