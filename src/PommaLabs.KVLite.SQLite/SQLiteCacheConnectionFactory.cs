@@ -134,6 +134,7 @@ namespace PommaLabs.KVLite.SQLite
             _createCacheSchemaCommand = MinifyQuery($@"
                 DROP TABLE IF EXISTS {s}{CacheEntriesTableName};
                 CREATE TABLE {s}{CacheEntriesTableName} (
+                    kvle_id INTEGER PRIMARY KEY,
                     kvle_hash BIGINT NOT NULL,
                     kvle_partition TEXT NOT NULL,
                     kvle_key TEXT NOT NULL,
@@ -148,7 +149,7 @@ namespace PommaLabs.KVLite.SQLite
                     kvle_parent_key1 TEXT,
                     kvle_parent_hash2 BIGINT,
                     kvle_parent_key2 TEXT,
-                    CONSTRAINT pk_kvle PRIMARY KEY (kvle_hash)
+                    CONSTRAINT uk_kvle UNIQUE (kvle_hash)
                 );
                 CREATE INDEX ix_kvle_parent0 ON {s}{CacheEntriesTableName} (kvle_parent_hash0);
                 CREATE INDEX ix_kvle_parent1 ON {s}{CacheEntriesTableName} (kvle_parent_hash1);
@@ -246,7 +247,8 @@ namespace PommaLabs.KVLite.SQLite
                 columns.Add(dataReader.GetValue(dataReader.GetOrdinal("name")) as string);
             }
 
-            return columns.Count == 14
+            return columns.Count == 15
+                && columns.Contains("kvle_id") // Automatically generated ID.
                 && columns.Contains(DbCacheValue.HashColumn)
                 && columns.Contains(DbCacheValue.PartitionColumn)
                 && columns.Contains(DbCacheValue.KeyColumn)
