@@ -72,8 +72,11 @@ namespace PommaLabs.KVLite.MySql
                     {DbCacheValue.ValueColumn},
                     {DbCacheValue.CompressedColumn},
                     {DbCacheValue.UtcCreationColumn},
+                    {DbCacheEntry.ParentHash0Column},
                     {DbCacheEntry.ParentKey0Column},
+                    {DbCacheEntry.ParentHash1Column},
                     {DbCacheEntry.ParentKey1Column},
+                    {DbCacheEntry.ParentHash2Column},
                     {DbCacheEntry.ParentKey2Column}
                 )
                 values (
@@ -85,8 +88,11 @@ namespace PommaLabs.KVLite.MySql
                     {p}{nameof(DbCacheValue.Value)},
                     {p}{nameof(DbCacheValue.Compressed)},
                     {p}{nameof(DbCacheValue.UtcCreation)},
+                    {p}{nameof(DbCacheEntry.ParentHash0)},
                     {p}{nameof(DbCacheEntry.ParentKey0)},
+                    {p}{nameof(DbCacheEntry.ParentHash1)},
                     {p}{nameof(DbCacheEntry.ParentKey1)},
+                    {p}{nameof(DbCacheEntry.ParentHash2)},
                     {p}{nameof(DbCacheEntry.ParentKey2)}
                 );
             ");

@@ -29,14 +29,34 @@ namespace PommaLabs.KVLite.Database
     public sealed class DbCacheEntry : DbCacheValue
     {
         /// <summary>
+        ///   SQL column name of <see cref="ParentHash0"/>.
+        /// </summary>
+        public const string ParentHash0Column = "kvle_parent_hash0";
+
+        /// <summary>
+        ///   Optional parent entry hash, used to link entries in a hierarchical way.
+        /// </summary>
+        public ulong ParentHash0 { get; set; }
+
+        /// <summary>
         ///   SQL column name of <see cref="ParentKey0"/>.
         /// </summary>
         public const string ParentKey0Column = "kvle_parent_key0";
 
         /// <summary>
-        ///   Optional parent entry, used to link entries in a hierarchical way.
+        ///   Optional parent entry key, used to link entries in a hierarchical way.
         /// </summary>
         public string ParentKey0 { get; set; }
+
+        /// <summary>
+        ///   SQL column name of <see cref="ParentHash1"/>.
+        /// </summary>
+        public const string ParentHash1Column = "kvle_parent_hash1";
+
+        /// <summary>
+        ///   Optional parent entry hash, used to link entries in a hierarchical way.
+        /// </summary>
+        public ulong ParentHash1 { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="ParentKey1"/>.
@@ -44,9 +64,19 @@ namespace PommaLabs.KVLite.Database
         public const string ParentKey1Column = "kvle_parent_key1";
 
         /// <summary>
-        ///   Optional parent entry, used to link entries in a hierarchical way.
+        ///   Optional parent entry key, used to link entries in a hierarchical way.
         /// </summary>
         public string ParentKey1 { get; set; }
+
+        /// <summary>
+        ///   SQL column name of <see cref="ParentHash2"/>.
+        /// </summary>
+        public const string ParentHash2Column = "kvle_parent_hash2";
+
+        /// <summary>
+        ///   Optional parent entry hash, used to link entries in a hierarchical way.
+        /// </summary>
+        public ulong ParentHash2 { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="ParentKey2"/>.
@@ -54,7 +84,7 @@ namespace PommaLabs.KVLite.Database
         public const string ParentKey2Column = "kvle_parent_key2";
 
         /// <summary>
-        ///   Optional parent entry, used to link entries in a hierarchical way.
+        ///   Optional parent entry key, used to link entries in a hierarchical way.
         /// </summary>
         public string ParentKey2 { get; set; }
 

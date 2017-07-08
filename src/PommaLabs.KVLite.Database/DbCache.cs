@@ -1407,12 +1407,15 @@ namespace PommaLabs.KVLite.Database
             if (parentKeyCount > 0)
             {
                 dbCacheEntry.ParentKey0 = parentKeys[0].Truncate(cf.MaxKeyNameLength);
+                dbCacheEntry.ParentHash0 = Hashing.HashPartitionAndKey(partition, dbCacheEntry.ParentKey0);
                 if (parentKeyCount > 1)
                 {
                     dbCacheEntry.ParentKey1 = parentKeys[1].Truncate(cf.MaxKeyNameLength);
+                    dbCacheEntry.ParentHash1 = Hashing.HashPartitionAndKey(partition, dbCacheEntry.ParentKey1);
                     if (parentKeyCount > 2)
                     {
                         dbCacheEntry.ParentKey2 = parentKeys[2].Truncate(cf.MaxKeyNameLength);
+                        dbCacheEntry.ParentHash2 = Hashing.HashPartitionAndKey(partition, dbCacheEntry.ParentKey2);
                     }
                 }
             }

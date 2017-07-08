@@ -74,8 +74,11 @@ namespace PommaLabs.KVLite.SqlServer
                        {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},
                        {DbCacheValue.CompressedColumn} = {p}{nameof(DbCacheValue.Compressed)},
                        {DbCacheValue.UtcCreationColumn} = {p}{nameof(DbCacheValue.UtcCreation)},
+                       {DbCacheEntry.ParentHash0Column} = {p}{nameof(DbCacheEntry.ParentHash0)},
                        {DbCacheEntry.ParentKey0Column} = {p}{nameof(DbCacheEntry.ParentKey0)},
+                       {DbCacheEntry.ParentHash1Column} = {p}{nameof(DbCacheEntry.ParentHash1)},
                        {DbCacheEntry.ParentKey1Column} = {p}{nameof(DbCacheEntry.ParentKey1)},
+                       {DbCacheEntry.ParentHash2Column} = {p}{nameof(DbCacheEntry.ParentHash2)},
                        {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)}
                  where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheValue.Hash)}
 
@@ -90,8 +93,11 @@ namespace PommaLabs.KVLite.SqlServer
                         {DbCacheValue.ValueColumn},
                         {DbCacheValue.CompressedColumn},
                         {DbCacheValue.UtcCreationColumn},
+                        {DbCacheEntry.ParentHash0Column},
                         {DbCacheEntry.ParentKey0Column},
+                        {DbCacheEntry.ParentHash1Column},
                         {DbCacheEntry.ParentKey1Column},
+                        {DbCacheEntry.ParentHash2Column},
                         {DbCacheEntry.ParentKey2Column}
                     )
                     values (
@@ -103,8 +109,11 @@ namespace PommaLabs.KVLite.SqlServer
                         {p}{nameof(DbCacheValue.Value)},
                         {p}{nameof(DbCacheValue.Compressed)},
                         {p}{nameof(DbCacheValue.UtcCreation)},
+                        {p}{nameof(DbCacheEntry.ParentHash0)},
                         {p}{nameof(DbCacheEntry.ParentKey0)},
+                        {p}{nameof(DbCacheEntry.ParentHash1)},
                         {p}{nameof(DbCacheEntry.ParentKey1)},
+                        {p}{nameof(DbCacheEntry.ParentHash2)},
                         {p}{nameof(DbCacheEntry.ParentKey2)}
                     )
                 end
