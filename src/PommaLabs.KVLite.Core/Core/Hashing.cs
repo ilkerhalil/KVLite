@@ -1,10 +1,41 @@
-﻿using System.Runtime.CompilerServices;
+﻿// File name: Hashing.cs
+//
+// Author(s): Alessio Parma <alessio.parma@gmail.com>
+//
+// The MIT License (MIT)
+//
+// Copyright (c) 2014-2017 Alessio Parma <alessio.parma@gmail.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace PommaLabs.KVLite.Database
+namespace PommaLabs.KVLite.Core
 {
-    internal unsafe static class Hashing
+    /// <summary>
+    ///   Module dedicated to fast hashing of strings (partion and key).
+    /// </summary>
+    public unsafe static class Hashing
     {
+        /// <summary>
+        ///   Hashes given partition; returns null if partition is null.
+        /// </summary>
+        /// <param name="partition">Partition.</param>
+        /// <returns>Long hash for given partition, null if partition is null.</returns>
         public static long? HashPartition(string partition)
         {
             if (partition == null) return new long?();
@@ -14,6 +45,12 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
+        /// <summary>
+        ///   Hashes given partition and key.
+        /// </summary>
+        /// <param name="partition">Partition.</param>
+        /// <param name="key">Key.</param>
+        /// <returns>Long hash for given partition and key.</returns>
         public static long HashPartitionAndKey(string partition, string key)
         {
             unchecked
@@ -30,7 +67,7 @@ namespace PommaLabs.KVLite.Database
         ///   The 32bits and 64bits hashes for the same data are different. In short those are 2
         ///   entirely different algorithms.
         /// </remarks>
-        public static class XXHash32
+        internal static class XXHash32
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static unsafe uint CalculateInline(byte* buffer, int len, uint seed = 0)
@@ -171,7 +208,7 @@ namespace PommaLabs.KVLite.Database
         ///   The 32bits and 64bits hashes for the same data are different. In short those are 2
         ///   entirely different algorithms.
         /// </remarks>
-        public static class XXHash64
+        internal static class XXHash64
         {
             public static unsafe ulong Calculate(byte* buffer, int len, ulong seed = 0)
             {
@@ -329,26 +366,6 @@ namespace PommaLabs.KVLite.Database
             {
                 return (value << count) | (value >> (64 - count));
             }
-        }
-
-        public static int Combine(int x, int y)
-        {
-            return CombineInline(x, y);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int CombineInline(int x, int y)
-        {
-            long key = x << 32 | y;
-
-            key = (~key) + (key << 18); // key = (key << 18) - key - 1;
-            key = key ^ (key >> 31);
-            key = key * 21; // key = (key + (key << 2)) + (key << 4);
-            key = key ^ (key >> 11);
-            key = key + (key << 6);
-            key = key ^ (key >> 22);
-
-            return (int) key;
         }
     }
 }

@@ -27,10 +27,26 @@ using System.IO;
 namespace PommaLabs.KVLite.Core
 {
     /// <summary>
-    ///   Miscellaneous utilities.
+    ///   Miscellaneous string utilities.
     /// </summary>
-    public static class MiscUtils
+    public static class StringUtils
     {
+        /// <summary>
+        ///   Truncates given string if its length is greater than specified <paramref name="maxLength"/>.
+        /// </summary>
+        /// <param name="str">The string to be truncated.</param>
+        /// <param name="maxLength">The length at which string should be truncated.</param>
+        /// <returns>The first <paramref name="maxLength"/> characters of <paramref name="str"/>.</returns>
+        public static string Truncate(this string str, int maxLength)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return str;
+            }
+            maxLength = Math.Max(0, maxLength);
+            return (str.Length < maxLength ? str : str.Substring(0, maxLength));
+        }
+
         private static readonly string[] MapPathStarts = { "~//", "~\\\\", "~/", "~\\", "~" };
 
         /// <summary>
@@ -38,7 +54,7 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>Given path mapped into an absolute one.</returns>
-        public static string MapPath(string path)
+        public static string MapPath(this string path)
         {
             // Preconditions
             if (path == null) throw new ArgumentNullException(nameof(path));

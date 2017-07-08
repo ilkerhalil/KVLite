@@ -127,7 +127,7 @@ namespace PommaLabs.KVLite.SQLite
         private static string GetDataSource(string cacheFile)
         {
             // Map cache path, since it may be an IIS relative path.
-            var mappedPath = MiscUtils.MapPath(cacheFile);
+            var mappedPath = cacheFile.MapPath();
 
             // If the directory which should contain the cache does not exist, then we create it.
             // SQLite will take care of creating the DB itself.

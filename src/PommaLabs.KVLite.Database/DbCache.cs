@@ -26,15 +26,12 @@ using NodaTime;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Goodies;
-using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
-using PommaLabs.KVLite.Thrower.Goodies;
 using PommaLabs.KVLite.Logging;
+using PommaLabs.KVLite.Resources;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -64,12 +61,8 @@ namespace PommaLabs.KVLite.Database
         /// <param name="random">The random number generator.</param>
         public DbCache(TSettings settings, DbCacheConnectionFactory<TConnection> connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock, IRandom random)
         {
-            // Preconditions
-            Raise.ArgumentNullException.IfIsNull(settings, nameof(settings), ErrorMessages.NullSettings);
-            Raise.ArgumentNullException.IfIsNull(connectionFactory, nameof(connectionFactory));
-
-            Settings = settings;
-            Settings.ConnectionFactory = connectionFactory;
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings), ErrorMessages.NullSettings);
+            Settings.ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
             Clock = clock ?? SystemClock.Instance;
             Serializer = serializer ?? JsonSerializer.Instance;
             Compressor = compressor ?? DeflateCompressor.Instance;
@@ -98,8 +91,8 @@ namespace PommaLabs.KVLite.Database
         public long Clear(CacheReadMode cacheReadMode)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
             {
@@ -130,8 +123,8 @@ namespace PommaLabs.KVLite.Database
         public async Task<long> ClearAsync(CacheReadMode cacheReadMode, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
             {
@@ -162,9 +155,9 @@ namespace PommaLabs.KVLite.Database
         public long Clear(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
             {
@@ -194,8 +187,8 @@ namespace PommaLabs.KVLite.Database
         public int Count(CacheReadMode cacheReadMode)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
             {
@@ -222,9 +215,9 @@ namespace PommaLabs.KVLite.Database
         public int Count(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
             {
@@ -250,8 +243,8 @@ namespace PommaLabs.KVLite.Database
         public long LongCount(CacheReadMode cacheReadMode)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
             {
@@ -278,9 +271,9 @@ namespace PommaLabs.KVLite.Database
         public long LongCount(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
-            Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
-            Raise.ArgumentException.IfIsNotValidEnum(cacheReadMode, nameof(cacheReadMode), ErrorMessages.InvalidCacheReadMode);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
             {
@@ -303,17 +296,10 @@ namespace PommaLabs.KVLite.Database
         #region FormattableObject members
 
         /// <summary>
-        ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="object.ToString"/>.
+        ///   Returns a string that represents the current object.
         /// </summary>
-        /// <returns>
-        ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="object.ToString"/>.
-        /// </returns>
-        protected override IEnumerable<KeyValuePair<string, object>> GetFormattingMembers()
-        {
-            yield return new KeyValuePair<string, object>(nameof(Settings.CacheUri), Settings.CacheUri);
-        }
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString() => $"{nameof(Settings.CacheUri)}: {Settings.CacheUri}";
 
         #endregion FormattableObject members
 

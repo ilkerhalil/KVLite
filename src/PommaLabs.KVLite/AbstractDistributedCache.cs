@@ -24,7 +24,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
-using PommaLabs.KVLite.Thrower;
+using System;
 using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
@@ -51,7 +51,8 @@ namespace PommaLabs.KVLite
 
         void IDistributedCache.Set(string key, byte[] value, DistributedCacheEntryOptions options)
         {
-            Raise.InvalidOperationException.If(options.SlidingExpiration.HasValue && (options.AbsoluteExpiration.HasValue || options.AbsoluteExpirationRelativeToNow.HasValue), ErrorMessages.CacheDoesNotAllowSlidingAndAbsolute);
+            // Preconditions
+            if (options.SlidingExpiration.HasValue && (options.AbsoluteExpiration.HasValue || options.AbsoluteExpirationRelativeToNow.HasValue)) throw new InvalidOperationException(ErrorMessages.CacheDoesNotAllowSlidingAndAbsolute);
 
             if (options.SlidingExpiration.HasValue)
             {
@@ -69,7 +70,8 @@ namespace PommaLabs.KVLite
 
         async Task IDistributedCache.SetAsync(string key, byte[] value, DistributedCacheEntryOptions options)
         {
-            Raise.InvalidOperationException.If(options.SlidingExpiration.HasValue && (options.AbsoluteExpiration.HasValue || options.AbsoluteExpirationRelativeToNow.HasValue), ErrorMessages.CacheDoesNotAllowSlidingAndAbsolute);
+            // Preconditions
+            if (options.SlidingExpiration.HasValue && (options.AbsoluteExpiration.HasValue || options.AbsoluteExpirationRelativeToNow.HasValue)) throw new InvalidOperationException(ErrorMessages.CacheDoesNotAllowSlidingAndAbsolute);
 
             if (options.SlidingExpiration.HasValue)
             {

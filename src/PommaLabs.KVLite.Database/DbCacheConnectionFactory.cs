@@ -21,7 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Thrower;
+using PommaLabs.KVLite.Resources;
+using System;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -55,11 +56,10 @@ namespace PommaLabs.KVLite.Database
         protected DbCacheConnectionFactory(DbProviderFactory dbProviderFactory, string cacheSchemaName, string cacheEntriesTableName)
         {
             // Preconditions
-            Raise.ArgumentNullException.IfIsNull(dbProviderFactory, nameof(dbProviderFactory));
-            Raise.ArgumentException.If(cacheSchemaName != null && !IsValidSqlNameRegex.IsMatch(cacheSchemaName));
-            Raise.ArgumentException.If(cacheEntriesTableName != null && !IsValidSqlNameRegex.IsMatch(cacheEntriesTableName));
+            if (cacheSchemaName != null && !IsValidSqlNameRegex.IsMatch(cacheSchemaName)) throw new ArgumentException(ErrorMessages.InvalidCacheSchemaName, nameof(cacheSchemaName));
+            if (cacheEntriesTableName != null && !IsValidSqlNameRegex.IsMatch(cacheEntriesTableName)) throw new ArgumentException(ErrorMessages.InvalidCacheEntriesTableName, nameof(cacheEntriesTableName));
 
-            _dbProviderFactory = dbProviderFactory;
+            _dbProviderFactory = dbProviderFactory ?? throw new ArgumentNullException(nameof(dbProviderFactory));
 
             _cacheSchemaName = cacheSchemaName ?? DefaultCacheSchemaName;
             _cacheEntriesTableName = cacheEntriesTableName ?? DefaultCacheEntriesTableName;
@@ -97,7 +97,7 @@ namespace PommaLabs.KVLite.Database
             set
             {
                 // Preconditions
-                Raise.ArgumentException.IfNot(IsValidSqlNameRegex.IsMatch(value));
+                if (!IsValidSqlNameRegex.IsMatch(value)) throw new ArgumentException(ErrorMessages.InvalidCacheSchemaName, nameof(CacheSchemaName));
 
                 _cacheSchemaName = value;
                 UpdateCommandsAndQueries();
@@ -120,7 +120,7 @@ namespace PommaLabs.KVLite.Database
             set
             {
                 // Preconditions
-                Raise.ArgumentException.IfNot(IsValidSqlNameRegex.IsMatch(value));
+                if (!IsValidSqlNameRegex.IsMatch(value)) throw new ArgumentException(ErrorMessages.InvalidCacheEntriesTableName, nameof(CacheEntriesTableName));
 
                 _cacheEntriesTableName = value;
                 UpdateCommandsAndQueries();

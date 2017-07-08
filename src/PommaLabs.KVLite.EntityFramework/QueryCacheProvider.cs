@@ -152,8 +152,7 @@ namespace PommaLabs.KVLite.EntityFramework
         ///   The function used to generate a value to insert into cache.
         /// </param>
         /// <param name="cachePolicy">
-        ///   A <see cref="T:EntityFramework.Caching.CachePolicy"/> that contains eviction details
-        ///   for the cache entry.
+        ///   A <see cref="CachePolicy"/> that contains eviction details for the cache entry.
         /// </param>
         /// <returns>
         ///   The value for the key. This will be either the existing value for the key if the key is
@@ -200,8 +199,7 @@ namespace PommaLabs.KVLite.EntityFramework
         ///   The asynchronous function used to generate a value to insert into cache.
         /// </param>
         /// <param name="cachePolicy">
-        ///   A <see cref="T:EntityFramework.Caching.CachePolicy"/> that contains eviction details
-        ///   for the cache entry.
+        ///   A <see cref="CachePolicy"/> that contains eviction details for the cache entry.
         /// </param>
         /// <returns>
         ///   The value for the key. This will be either the existing value for the key if the key is
@@ -233,8 +231,7 @@ namespace PommaLabs.KVLite.EntityFramework
         /// <param name="cacheKey">A unique identifier for the cache entry.</param>
         /// <param name="value">The object to insert.</param>
         /// <param name="cachePolicy">
-        ///   A <see cref="T:EntityFramework.Caching.CachePolicy"/> that contains eviction details
-        ///   for the cache entry.
+        ///   A <see cref="CachePolicy"/> that contains eviction details for the cache entry.
         /// </param>
         public bool Set(CacheKey cacheKey, object value, CachePolicy cachePolicy)
         {

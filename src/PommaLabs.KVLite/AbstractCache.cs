@@ -25,7 +25,6 @@ using NodaTime;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Resources;
 using PommaLabs.KVLite.Thrower;
-using PommaLabs.KVLite.Thrower.Goodies;
 using PommaLabs.KVLite.Logging;
 using System;
 using System.Collections.Generic;
@@ -40,7 +39,7 @@ namespace PommaLabs.KVLite
     ///   Abstract class which should make it easier to implement a new kind of cache.
     /// </summary>
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
-    public abstract partial class AbstractCache<TSettings> : FormattableObject, ICache<TSettings>
+    public abstract partial class AbstractCache<TSettings> : ICache<TSettings>
         where TSettings : AbstractCacheSettings<TSettings>
     {
         #region Abstract members
@@ -546,7 +545,7 @@ namespace PommaLabs.KVLite
             get
             {
                 // Preconditions
-                Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+                if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
                 Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
                 Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
@@ -574,7 +573,7 @@ namespace PommaLabs.KVLite
         /// <returns>An estimate of cache size in bytes.</returns>
         public long GetCacheSizeInBytes()
         {
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
 
             try
             {
@@ -612,7 +611,7 @@ namespace PommaLabs.KVLite
         public void AddSliding<TVal>(string partition, string key, TVal value, Duration interval, IList<string> parentKeys = null)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
@@ -652,7 +651,7 @@ namespace PommaLabs.KVLite
         public void AddStatic<TVal>(string partition, string key, TVal value, IList<string> parentKeys = null)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
@@ -692,7 +691,7 @@ namespace PommaLabs.KVLite
         public void AddTimed<TVal>(string partition, string key, TVal value, Instant utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
@@ -732,7 +731,7 @@ namespace PommaLabs.KVLite
         public void AddTimed<TVal>(string partition, string key, TVal value, Duration lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             Raise.ArgumentException.IfNot(ReferenceEquals(value, null) || (Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>()), nameof(value), ErrorMessages.NotSerializableValue);
@@ -760,7 +759,7 @@ namespace PommaLabs.KVLite
         public long Clear()
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
 
             try
             {
@@ -788,7 +787,7 @@ namespace PommaLabs.KVLite
         public long Clear(string partition)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             try
@@ -819,7 +818,7 @@ namespace PommaLabs.KVLite
         public bool Contains(string partition, string key)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
@@ -843,7 +842,7 @@ namespace PommaLabs.KVLite
         public int Count()
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
 
             try
             {
@@ -870,7 +869,7 @@ namespace PommaLabs.KVLite
         public int Count(string partition)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             try
@@ -897,7 +896,7 @@ namespace PommaLabs.KVLite
         public long LongCount()
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
 
             try
             {
@@ -924,7 +923,7 @@ namespace PommaLabs.KVLite
         public long LongCount(string partition)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             try
@@ -959,7 +958,7 @@ namespace PommaLabs.KVLite
         public CacheResult<TVal> Get<TVal>(string partition, string key)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
@@ -995,7 +994,7 @@ namespace PommaLabs.KVLite
         public CacheResult<ICacheItem<TVal>> GetItem<TVal>(string partition, string key)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 
@@ -1029,7 +1028,7 @@ namespace PommaLabs.KVLite
         public IList<ICacheItem<TVal>> GetItems<TVal>()
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
 
             try
             {
@@ -1064,7 +1063,7 @@ namespace PommaLabs.KVLite
         public IList<ICacheItem<TVal>> GetItems<TVal>(string partition)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
 
             try
@@ -1114,7 +1113,7 @@ namespace PommaLabs.KVLite
         public TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, Duration interval, IList<string> parentKeys = null)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
@@ -1187,7 +1186,7 @@ namespace PommaLabs.KVLite
         public TVal GetOrAddStatic<TVal>(string partition, string key, Func<TVal> valueGetter, IList<string> parentKeys = null)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
@@ -1260,7 +1259,7 @@ namespace PommaLabs.KVLite
         public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, Instant utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
@@ -1333,7 +1332,7 @@ namespace PommaLabs.KVLite
         public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, Duration lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             Raise.ArgumentNullException.IfIsNull(valueGetter, nameof(valueGetter), ErrorMessages.NullValueGetter);
@@ -1397,7 +1396,7 @@ namespace PommaLabs.KVLite
         public CacheResult<TVal> Peek<TVal>(string partition, string key)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             Raise.NotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
@@ -1438,7 +1437,7 @@ namespace PommaLabs.KVLite
         public CacheResult<ICacheItem<TVal>> PeekItem<TVal>(string partition, string key)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
             Raise.NotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
@@ -1475,7 +1474,7 @@ namespace PommaLabs.KVLite
         public IList<ICacheItem<TVal>> PeekItems<TVal>()
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.NotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
             try
@@ -1513,7 +1512,7 @@ namespace PommaLabs.KVLite
         public IList<ICacheItem<TVal>> PeekItems<TVal>(string partition)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.NotSupportedException.IfNot(CanPeek, ErrorMessages.CacheDoesNotAllowPeeking);
 
@@ -1543,7 +1542,7 @@ namespace PommaLabs.KVLite
         public void Remove(string partition, string key)
         {
             // Preconditions
-            Raise.ObjectDisposedException.If(Disposed, nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
             Raise.ArgumentNullException.IfIsNull(partition, nameof(partition), ErrorMessages.NullPartition);
             Raise.ArgumentNullException.IfIsNull(key, nameof(key), ErrorMessages.NullKey);
 

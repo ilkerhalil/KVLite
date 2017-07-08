@@ -21,7 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Thrower;
+using PommaLabs.KVLite.Resources;
 using System;
 using System.Collections.Generic;
 using System.Web.Http;
@@ -39,8 +39,7 @@ namespace PommaLabs.KVLite.Examples.WebApi.Controllers
 
         public ValuesController(ICache cache)
         {
-            Raise.ArgumentNullException.IfIsNull(cache, nameof(cache));
-            _cache = cache;
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache), ErrorMessages.NullCache);
         }
 
         // GET api/values

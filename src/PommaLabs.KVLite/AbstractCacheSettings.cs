@@ -22,7 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NodaTime;
-using PommaLabs.KVLite.Thrower;
+using PommaLabs.KVLite.Resources;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -58,7 +58,7 @@ namespace PommaLabs.KVLite
             set
             {
                 // Preconditions
-                Raise.ArgumentException.IfIsNullOrWhiteSpace(value, nameof(DefaultPartition));
+                if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyDefaultPartition, nameof(DefaultPartition));
 
                 _defaultPartition = value;
                 OnPropertyChanged();
@@ -82,7 +82,7 @@ namespace PommaLabs.KVLite
             set
             {
                 // Preconditions
-                Raise.ArgumentOutOfRangeException.If(value <= 0);
+                if (value <= 0) throw new ArgumentOutOfRangeException(nameof(StaticIntervalInDays));
 
                 _staticIntervalInDays = value;
                 StaticInterval = Duration.FromDays(value);

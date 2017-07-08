@@ -22,8 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NodaTime;
-using PommaLabs.KVLite.Thrower;
-using PommaLabs.KVLite.Thrower.Goodies;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -35,7 +33,7 @@ namespace PommaLabs.KVLite
     /// </summary>
     /// <typeparam name="TVal">The type of the cached value.</typeparam>
     [Serializable, DataContract]
-    public sealed class CacheItem<TVal> : EquatableObject<CacheItem<TVal>>, ICacheItem<TVal>, IEquatable<ICacheItem<TVal>>
+    public sealed class CacheItem<TVal> : ICacheItem<TVal>, IEquatable<CacheItem<TVal>>, IEquatable<ICacheItem<TVal>>
     {
         #region Construction
 
@@ -55,7 +53,7 @@ namespace PommaLabs.KVLite
         public CacheItem(ICacheItem<TVal> other)
         {
             // Preconditions
-            Raise.ArgumentNullException.IfIsNull(other, nameof(other));
+            if (other == null) throw new ArgumentNullException(nameof(other));
 
             Partition = other.Partition;
             Key = other.Key;
@@ -155,28 +153,55 @@ namespace PommaLabs.KVLite
         #region EquatableObject<CacheItem<TVal>> Members
 
         /// <summary>
-        ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="object.ToString"/>.
+        ///   Returns a string that represents the current object.
         /// </summary>
-        /// <returns>
-        ///   Returns all property (or field) values, along with their names, so that they can be
-        ///   used to produce a meaningful <see cref="object.ToString"/>.
-        /// </returns>
-        protected override IEnumerable<KeyValuePair<string, object>> GetFormattingMembers()
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString() => $"{nameof(Partition)}: {Partition?.ToString()}, {nameof(Key)}: {Key?.ToString()}, {nameof(UtcExpiry)}: {UtcExpiry.ToString()}";
+
+        /// <summary>
+        ///   Serves as the default hash function.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode()
         {
-            yield return new KeyValuePair<string, object>(nameof(Partition), Partition?.ToString());
-            yield return new KeyValuePair<string, object>(nameof(Key), Key?.ToString());
-            yield return new KeyValuePair<string, object>(nameof(UtcExpiry), UtcExpiry.ToString());
+            var result = 17;
+            unchecked
+            {
+                result = 31 * result + Partition.GetHashCode();
+                result = 31 * result + Key.GetHashCode();
+            }
+            return result;
         }
 
         /// <summary>
-        ///   Gets the identifying members.
+        ///   Determines whether the specified <see cref="object"/> is equal to the current <see cref="CacheItem{TVal}"/>.
         /// </summary>
-        /// <returns>The identifying members.</returns>
-        protected override IEnumerable<object> GetIdentifyingMembers()
+        /// <returns>
+        ///   true if the specified <see cref="object"/> is equal to the current
+        ///   <see cref="CacheItem{TVal}"/>; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The <see cref="object"/> to compare with the current <see cref="CacheItem{TVal}"/>.</param>
+        public override bool Equals(object obj)
         {
-            yield return Partition;
-            yield return Key;
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            var info = obj as CacheItem<TVal>;
+            return info != null && Equals(info);
+        }
+
+        /// <summary>
+        ///   Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        ///   <c>true</c> if the current object is equal to the <paramref name="other"/> parameter;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        public bool Equals(CacheItem<TVal> other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Partition == other.Partition && Key == other.Key;
         }
 
         /// <summary>
