@@ -112,7 +112,7 @@ namespace PommaLabs.KVLite.Database
             /// <summary>
             ///   Hash of partition and key.
             /// </summary>
-            public long Hash { get; set; }
+            public ulong Hash { get; set; }
 
             /// <summary>
             ///   A partition holds a group of related keys.

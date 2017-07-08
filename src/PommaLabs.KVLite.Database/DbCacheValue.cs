@@ -46,7 +46,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   Hash of partition and key.
         /// </summary>
-        public long Hash { get; set; }
+        public ulong Hash { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="Partition"/>.
