@@ -1317,7 +1317,7 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
-        private void RemoveByHash(ulong hash)
+        private void RemoveByHash(long hash)
         {
             // Compute all parameters _before_ opening the connection.
             var cf = Settings.ConnectionFactory;

@@ -5,16 +5,22 @@ namespace PommaLabs.KVLite.Database
 {
     internal unsafe static class Hashing
     {
-        public static ulong? HashPartition(string partition)
+        public static long? HashPartition(string partition)
         {
-            if (partition == null) return new ulong?();
-            return (ulong) XXHash32.CalculateRaw(partition) << 32;
+            if (partition == null) return new long?();
+            unchecked
+            {
+                return (long) XXHash32.CalculateRaw(partition) << 32;
+            }
         }
 
-        public static ulong HashPartitionAndKey(string partition, string key)
+        public static long HashPartitionAndKey(string partition, string key)
         {
-            var pHash = (ulong) XXHash32.CalculateRaw(partition) << 32;
-            return pHash + XXHash32.CalculateRaw(key);
+            unchecked
+            {
+                var pHash = (long) XXHash32.CalculateRaw(partition) << 32;
+                return pHash + XXHash32.CalculateRaw(key);
+            }
         }
 
         /// <summary>

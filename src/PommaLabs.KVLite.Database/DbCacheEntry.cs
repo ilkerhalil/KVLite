@@ -49,6 +49,16 @@ namespace PommaLabs.KVLite.Database
         public string Key { get; set; }
 
         /// <summary>
+        ///   SQL column name of <see cref="UtcCreation"/>.
+        /// </summary>
+        public const string UtcCreationColumn = "kvle_creation";
+
+        /// <summary>
+        ///   When the entry was created, expressed as seconds after UNIX epoch.
+        /// </summary>
+        public long UtcCreation { get; set; }
+
+        /// <summary>
         ///   SQL column name of <see cref="ParentHash0"/>.
         /// </summary>
         public const string ParentHash0Column = "kvle_parent_hash0";
@@ -56,7 +66,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   Optional parent entry hash, used to link entries in a hierarchical way.
         /// </summary>
-        public ulong ParentHash0 { get; set; }
+        public long ParentHash0 { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="ParentKey0"/>.
@@ -69,16 +79,6 @@ namespace PommaLabs.KVLite.Database
         public string ParentKey0 { get; set; }
 
         /// <summary>
-        ///   SQL column name of <see cref="UtcCreation"/>.
-        /// </summary>
-        public const string UtcCreationColumn = "kvle_creation";
-
-        /// <summary>
-        ///   When the entry was created, expressed as seconds after UNIX epoch.
-        /// </summary>
-        public long UtcCreation { get; set; }
-
-        /// <summary>
         ///   SQL column name of <see cref="ParentHash1"/>.
         /// </summary>
         public const string ParentHash1Column = "kvle_parent_hash1";
@@ -86,7 +86,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   Optional parent entry hash, used to link entries in a hierarchical way.
         /// </summary>
-        public ulong ParentHash1 { get; set; }
+        public long ParentHash1 { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="ParentKey1"/>.
@@ -106,7 +106,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   Optional parent entry hash, used to link entries in a hierarchical way.
         /// </summary>
-        public ulong ParentHash2 { get; set; }
+        public long ParentHash2 { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="ParentKey2"/>.
@@ -126,7 +126,7 @@ namespace PommaLabs.KVLite.Database
             /// <summary>
             ///   Hash of partition (key is not taken into account for groups).
             /// </summary>
-            public ulong? Hash { get; set; }
+            public long? Hash { get; set; }
 
             /// <summary>
             ///   Retrieve an entry even if it has expired.
@@ -147,7 +147,7 @@ namespace PommaLabs.KVLite.Database
             /// <summary>
             ///   Hash of partition and key.
             /// </summary>
-            public ulong Hash { get; set; }
+            public long Hash { get; set; }
 
             /// <summary>
             ///   Retrieve an entry even if it has expired.

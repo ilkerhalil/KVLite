@@ -42,7 +42,7 @@ namespace PommaLabs.KVLite.Core
         public static void WriteAntiTamperHashCode<T>(Stream s, T v)
             where T : class, IObjectWithHashCode64
         {
-            var c = new UnsignedLongToBytesConverter { UnsignedLong = v.GetHashCode64() };
+            var c = new LongToBytesConverter { Long = v.GetHashCode64() };
 
             s.WriteByte(c.Byte1);
             s.WriteByte(c.Byte2);
@@ -63,10 +63,10 @@ namespace PommaLabs.KVLite.Core
         public static void ReadAntiTamperHashCode<T>(Stream s, T v)
             where T : class, IObjectWithHashCode64
         {
-            UnsignedLongToBytesConverter c;
+            LongToBytesConverter c;
             try
             {
-                c = new UnsignedLongToBytesConverter
+                c = new LongToBytesConverter
                 {
                     Byte1 = (byte) s.ReadByte(),
                     Byte2 = (byte) s.ReadByte(),
@@ -85,17 +85,17 @@ namespace PommaLabs.KVLite.Core
             }
 
             // Value is valid if hashes match.
-            if (c.UnsignedLong != v.GetHashCode64())
+            if (c.Long != v.GetHashCode64())
             {
-                throw new InvalidDataException(string.Format(ErrorMessages.HashMismatch, v.GetHashCode64(), c.UnsignedLong));
+                throw new InvalidDataException(string.Format(ErrorMessages.HashMismatch, v.GetHashCode64(), c.Long));
             }
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        private struct UnsignedLongToBytesConverter
+        private struct LongToBytesConverter
         {
             [FieldOffset(0)]
-            public ulong UnsignedLong;
+            public long Long;
 
             [FieldOffset(0)]
             public byte Byte1;
@@ -123,15 +123,15 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        ///   Represents an object with a 64 bit unsigned long hash.
+        ///   Represents an object with a 64 bit long hash.
         /// </summary>
         public interface IObjectWithHashCode64
         {
             /// <summary>
-            ///   Returns a 64 bit unsigned long hash.
+            ///   Returns a 64 bit long hash.
             /// </summary>
-            /// <returns>A 64 bit unsigned long hash.</returns>
-            ulong GetHashCode64();
+            /// <returns>A 64 bit long hash.</returns>
+            long GetHashCode64();
         }
     }
 }

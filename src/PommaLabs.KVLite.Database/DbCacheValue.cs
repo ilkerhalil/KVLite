@@ -48,7 +48,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   Hash of partition and key.
         /// </summary>
-        public ulong Hash { get; set; }
+        public long Hash { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="UtcExpiry"/>.
@@ -91,9 +91,9 @@ namespace PommaLabs.KVLite.Database
         public byte Compressed { get; set; }
 
         /// <summary>
-        ///   Returns a 64 bit unsigned long hash.
+        ///   Returns a 64 bit long hash.
         /// </summary>
-        /// <returns>A 64 bit unsigned long hash.</returns>
-        ulong AntiTamper.IObjectWithHashCode64.GetHashCode64() => Hash;
+        /// <returns>A 64 bit long hash.</returns>
+        long AntiTamper.IObjectWithHashCode64.GetHashCode64() => Hash;
     }
 }
