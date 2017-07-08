@@ -55,7 +55,9 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cache">The cache that will be used as entry container.</param>
         public OutputCacheProvider(ICache cache)
         {
+            // Preconditions
             Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
+
             Cache = cache;
         }
 
@@ -76,8 +78,12 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cache">The underlying cache.</param>
         public static void Register(HttpConfiguration configuration, ICache cache)
         {
+            // Preconditions
             Raise.ArgumentNullException.IfIsNull(cache, nameof(cache), ErrorMessages.NullCache);
-            configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new OutputCacheProvider(cache));
+
+            configuration
+                .CacheOutputConfiguration()
+                .RegisterCacheOutputProvider(() => new OutputCacheProvider(cache));
         }
 
         /// <summary>
@@ -87,8 +93,12 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="cacheResolver">The resolver used to get the underlying cache.</param>
         public static void Register(HttpConfiguration configuration, Func<ICache> cacheResolver)
         {
+            // Preconditions
             Raise.ArgumentNullException.IfIsNull(cacheResolver, nameof(cacheResolver), ErrorMessages.NullCacheResolver);
-            configuration.CacheOutputConfiguration().RegisterCacheOutputProvider(() => new OutputCacheProvider(cacheResolver?.Invoke()));
+
+            configuration
+                .CacheOutputConfiguration()
+                .RegisterCacheOutputProvider(() => new OutputCacheProvider(cacheResolver?.Invoke()));
         }
 
         #endregion Public members
@@ -109,14 +119,10 @@ namespace PommaLabs.KVLite.WebApi
 
         public bool Contains(string key) => Cache.Contains(ResponseCachePartition, key);
 
-        public void Add(string key, object o, DateTimeOffset expiration, string dependsOnKey = null)
+        public void Add(string key, object o, DateTimeOffset expiration, string dependsOnKey)
         {
-            string[] parentKeys = null;
-            if (dependsOnKey != null)
-            {
-                parentKeys = new[] { dependsOnKey };
-            }
-            Cache.AddTimed(ResponseCachePartition, key, o, expiration.UtcDateTime.ToInstant(), parentKeys);
+            var parentKeys = (dependsOnKey != null) ? new[] { dependsOnKey } : CacheExtensions.NoParentKeys;
+            Cache.AddTimed(ResponseCachePartition, key, o, expiration.ToInstant(), parentKeys);
         }
 
 #pragma warning restore 1591

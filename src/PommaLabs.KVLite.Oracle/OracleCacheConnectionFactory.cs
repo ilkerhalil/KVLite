@@ -80,9 +80,7 @@ namespace PommaLabs.KVLite.Oracle
                         {DbCacheValue.UtcCreationColumn},
                         {DbCacheEntry.ParentKey0Column},
                         {DbCacheEntry.ParentKey1Column},
-                        {DbCacheEntry.ParentKey2Column},
-                        {DbCacheEntry.ParentKey3Column},
-                        {DbCacheEntry.ParentKey4Column}
+                        {DbCacheEntry.ParentKey2Column}
                     )
                     values (
                         {p}{nameof(DbCacheValue.Partition)},
@@ -94,9 +92,7 @@ namespace PommaLabs.KVLite.Oracle
                         {p}{nameof(DbCacheValue.UtcCreation)},
                         {p}{nameof(DbCacheEntry.ParentKey0)},
                         {p}{nameof(DbCacheEntry.ParentKey1)},
-                        {p}{nameof(DbCacheEntry.ParentKey2)},
-                        {p}{nameof(DbCacheEntry.ParentKey3)},
-                        {p}{nameof(DbCacheEntry.ParentKey4)}
+                        {p}{nameof(DbCacheEntry.ParentKey2)}
                     );
 
                     exception
@@ -109,9 +105,7 @@ namespace PommaLabs.KVLite.Oracle
                                {DbCacheValue.UtcCreationColumn} = {p}{nameof(DbCacheValue.UtcCreation)},
                                {DbCacheEntry.ParentKey0Column} = {p}{nameof(DbCacheEntry.ParentKey0)},
                                {DbCacheEntry.ParentKey1Column} = {p}{nameof(DbCacheEntry.ParentKey1)},
-                               {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)},
-                               {DbCacheEntry.ParentKey3Column} = {p}{nameof(DbCacheEntry.ParentKey3)},
-                               {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)}
+                               {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)}
                          where {DbCacheValue.PartitionColumn} = {p}{nameof(DbCacheValue.Partition)}
                            and {DbCacheValue.KeyColumn} = {p}{nameof(DbCacheValue.Key)};
                 end;

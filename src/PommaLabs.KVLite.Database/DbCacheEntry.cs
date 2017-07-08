@@ -59,26 +59,6 @@ namespace PommaLabs.KVLite.Database
         public string ParentKey2 { get; set; }
 
         /// <summary>
-        ///   SQL column name of <see cref="ParentKey3"/>.
-        /// </summary>
-        public const string ParentKey3Column = "kvle_parent_key3";
-
-        /// <summary>
-        ///   Optional parent entry, used to link entries in a hierarchical way.
-        /// </summary>
-        public string ParentKey3 { get; set; }
-
-        /// <summary>
-        ///   SQL column name of <see cref="ParentKey4"/>.
-        /// </summary>
-        public const string ParentKey4Column = "kvle_parent_key4";
-
-        /// <summary>
-        ///   Optional parent entry, used to link entries in a hierarchical way.
-        /// </summary>
-        public string ParentKey4 { get; set; }
-
-        /// <summary>
         ///   Used to query a group of entries.
         /// </summary>
         public sealed class Group

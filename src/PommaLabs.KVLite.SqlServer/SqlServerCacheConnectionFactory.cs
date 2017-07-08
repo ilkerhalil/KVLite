@@ -76,9 +76,7 @@ namespace PommaLabs.KVLite.SqlServer
                        {DbCacheValue.UtcCreationColumn} = {p}{nameof(DbCacheValue.UtcCreation)},
                        {DbCacheEntry.ParentKey0Column} = {p}{nameof(DbCacheEntry.ParentKey0)},
                        {DbCacheEntry.ParentKey1Column} = {p}{nameof(DbCacheEntry.ParentKey1)},
-                       {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)},
-                       {DbCacheEntry.ParentKey3Column} = {p}{nameof(DbCacheEntry.ParentKey3)},
-                       {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)}
+                       {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)}
                  where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheValue.Hash)}
 
                 if @@rowcount = 0
@@ -94,9 +92,7 @@ namespace PommaLabs.KVLite.SqlServer
                         {DbCacheValue.UtcCreationColumn},
                         {DbCacheEntry.ParentKey0Column},
                         {DbCacheEntry.ParentKey1Column},
-                        {DbCacheEntry.ParentKey2Column},
-                        {DbCacheEntry.ParentKey3Column},
-                        {DbCacheEntry.ParentKey4Column}
+                        {DbCacheEntry.ParentKey2Column}
                     )
                     values (
                         {p}{nameof(DbCacheValue.Hash)},
@@ -109,9 +105,7 @@ namespace PommaLabs.KVLite.SqlServer
                         {p}{nameof(DbCacheValue.UtcCreation)},
                         {p}{nameof(DbCacheEntry.ParentKey0)},
                         {p}{nameof(DbCacheEntry.ParentKey1)},
-                        {p}{nameof(DbCacheEntry.ParentKey2)},
-                        {p}{nameof(DbCacheEntry.ParentKey3)},
-                        {p}{nameof(DbCacheEntry.ParentKey4)}
+                        {p}{nameof(DbCacheEntry.ParentKey2)}
                     )
                 end
             ");

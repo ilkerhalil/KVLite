@@ -85,9 +85,7 @@ namespace PommaLabs.KVLite.SQLite
                     {DbCacheValue.UtcCreationColumn},
                     {DbCacheEntry.ParentKey0Column},
                     {DbCacheEntry.ParentKey1Column},
-                    {DbCacheEntry.ParentKey2Column},
-                    {DbCacheEntry.ParentKey3Column},
-                    {DbCacheEntry.ParentKey4Column}
+                    {DbCacheEntry.ParentKey2Column}
                 )
                 values (
                     {p}{nameof(DbCacheValue.Hash)},
@@ -100,9 +98,7 @@ namespace PommaLabs.KVLite.SQLite
                     {p}{nameof(DbCacheValue.UtcCreation)},
                     {p}{nameof(DbCacheEntry.ParentKey0)},
                     {p}{nameof(DbCacheEntry.ParentKey1)},
-                    {p}{nameof(DbCacheEntry.ParentKey2)},
-                    {p}{nameof(DbCacheEntry.ParentKey3)},
-                    {p}{nameof(DbCacheEntry.ParentKey4)}
+                    {p}{nameof(DbCacheEntry.ParentKey2)}
                 );
 
                 update {s}{CacheEntriesTableName}
@@ -113,9 +109,7 @@ namespace PommaLabs.KVLite.SQLite
                        {DbCacheValue.UtcCreationColumn} = {p}{nameof(DbCacheValue.UtcCreation)},
                        {DbCacheEntry.ParentKey0Column} = {p}{nameof(DbCacheEntry.ParentKey0)},
                        {DbCacheEntry.ParentKey1Column} = {p}{nameof(DbCacheEntry.ParentKey1)},
-                       {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)},
-                       {DbCacheEntry.ParentKey3Column} = {p}{nameof(DbCacheEntry.ParentKey3)},
-                       {DbCacheEntry.ParentKey4Column} = {p}{nameof(DbCacheEntry.ParentKey4)}
+                       {DbCacheEntry.ParentKey2Column} = {p}{nameof(DbCacheEntry.ParentKey2)}
                  where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheValue.Hash)}
                    and changes() = 0; -- Above INSERT has failed
             ");
@@ -142,8 +136,6 @@ namespace PommaLabs.KVLite.SQLite
                     kvle_parent_key0 TEXT,
                     kvle_parent_key1 TEXT,
                     kvle_parent_key2 TEXT,
-                    kvle_parent_key3 TEXT,
-                    kvle_parent_key4 TEXT,
                     CONSTRAINT pk_kvle PRIMARY KEY (kvle_hash)
                 );
                 CREATE INDEX ix_kvle_part_exp ON {s}{CacheEntriesTableName} (kvle_partition ASC, kvle_expiry DESC);
@@ -251,9 +243,7 @@ namespace PommaLabs.KVLite.SQLite
                 && columns.Contains(DbCacheValue.UtcCreationColumn)
                 && columns.Contains(DbCacheEntry.ParentKey0Column)
                 && columns.Contains(DbCacheEntry.ParentKey1Column)
-                && columns.Contains(DbCacheEntry.ParentKey2Column)
-                && columns.Contains(DbCacheEntry.ParentKey3Column)
-                && columns.Contains(DbCacheEntry.ParentKey4Column);
+                && columns.Contains(DbCacheEntry.ParentKey2Column);
         }
     }
 }
