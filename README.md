@@ -7,11 +7,11 @@ KVLite can be stored either in persistent or volatile fashion, and each key/valu
 
 Following RDBMS systems are currently supported by KVLite or will be supported soon:
 
-* MySQL and MariaDB
+* MySQL and MariaDB (.NET only)
 * Postgres (work in progress)
-* Oracle
-* SQL Server
-* SQLite
+* Oracle (.NET only)
+* SQL Server (.NET and .NET Core)
+* SQLite (.NET and .NET Core)
 
 ## Summary
 
@@ -195,6 +195,29 @@ Specialized schemas for supported RDBMS systems are available inside this projec
 * [SQL Server](TODO)
 
 Each script might have a few comments suggesting how to further optimize cache entries table storage depending on the actual version of the specific RDBMS system.
+
+### Customizing table name or SQL schema
+
+Default name for cache entries table is `kvle_cache_entries` and default SQL schema is `kvlite`. 
+However, those values can be easily changed at runtime, as we do in the following snippet:
+
+```cs
+// Change cache entries table name for Oracle cache.
+OracleCache.DefaultInstance.ConnectionFactory.CacheEntriesTableName = "my_custom_name";
+
+// Change SQL schema name for MySQL cache.
+MySqlCache.DefaultInstance.ConnectionFactory.CacheSchemaName = "my_schema_name";
+
+// Change both table ans schema name for SQL Server cache.
+SqlServerCache.DefaultInstance.ConnectionFactory.CacheEntriesTableName = "my_custom_name";
+SqlServerCache.DefaultInstance.ConnectionFactory.CacheSchemaName = "my_schema_name";
+```
+
+Please perform those customizations as early as your application starts; for example, these are good places where to put the lines:
+
+* `Program.cs` for console and Windows applications.
+* `Global.asax.cs` for classic web applications.
+* `Startup.cs` for Owin-based web applications.
 
 ## About this repository and its maintainer
 
