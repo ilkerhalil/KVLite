@@ -8,8 +8,8 @@ KVLite can be stored either in persistent or volatile fashion, and each key/valu
 Following RDBMS systems are currently supported by KVLite or will be supported soon:
 
 * MySQL and MariaDB (.NET only)
-* Postgres (work in progress)
 * Oracle (.NET only)
+* PostgreSQL (work in progress)
 * SQL Server (.NET and .NET Core)
 * SQLite (.NET and .NET Core)
 
@@ -21,6 +21,11 @@ Following RDBMS systems are currently supported by KVLite or will be supported s
 * [NuGet](https://www.nuget.org) package(s):
     + [PommaLabs.KVLite](https://www.nuget.org/packages/PommaLabs.KVLite/), includes Core and all native libraries.
     + [PommaLabs.KVLite (Core)](https://www.nuget.org/packages/PommaLabs.KVLite.Core/), all managed APIs.
+    + [PommaLabs.KVLite (MySQL)](https://www.nuget.org/packages/PommaLabs.KVLite.MySql/), driver for MySQL and MariaDB.
+    + [PommaLabs.KVLite (Oracle)](https://www.nuget.org/packages/PommaLabs.KVLite.Oracle/), driver for Oracle.
+    + [PommaLabs.KVLite (PostgreSQL)](https://www.nuget.org/packages/PommaLabs.KVLite.PostgreSql/), driver for PostgreSQL.
+    + [PommaLabs.KVLite (SQL Server)](https://www.nuget.org/packages/PommaLabs.KVLite.SqlServer/), driver for SQL Server.
+    + [PommaLabs.KVLite (SQLite)](https://www.nuget.org/packages/PommaLabs.KVLite.SQLite/), driver for SQLite.
     + [PommaLabs.KVLite (Entity Framework Query Cache Provider)](https://www.nuget.org/packages/PommaLabs.KVLite.EntityFramework/)
     + [PommaLabs.KVLite (Nancy Caching Bootstrapper)](https://www.nuget.org/packages/PommaLabs.KVLite.Nancy/)
     + [PommaLabs.KVLite (Web API Output Cache Provider)](https://www.nuget.org/packages/PommaLabs.KVLite.WebApi/)
@@ -189,10 +194,10 @@ The logical schema for cache entries table is the following:
 
 Specialized schemas for supported RDBMS systems are available inside this project repository or at following links:
 
-* [MySQL and MariaDB](TODO)
-* [Oracle](TODO)
-* [Postgres](TODO)
-* [SQL Server](TODO)
+* [MySQL and MariaDB](https://github.com/pomma89/KVLite/blob/master/src/PommaLabs.KVLite.MySql/Scripts/kvl_cache_entries.sql)
+* [Oracle](https://github.com/pomma89/KVLite/blob/master/src/PommaLabs.KVLite.Oracle/Scripts/kvl_cache_entries.sql)
+* [PostgreSQL](https://github.com/pomma89/KVLite/blob/master/src/PommaLabs.KVLite.PostgreSql/Scripts/kvl_cache_entries.sql)
+* [SQL Server](https://github.com/pomma89/KVLite/blob/master/src/PommaLabs.KVLite.SqlServer/Scripts/kvl_cache_entries.sql)
 
 Each script might have a few comments suggesting how to further optimize cache entries table storage depending on the actual version of the specific RDBMS system.
 
