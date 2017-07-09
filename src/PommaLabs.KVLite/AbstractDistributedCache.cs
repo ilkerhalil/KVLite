@@ -31,23 +31,17 @@ namespace PommaLabs.KVLite
 {
     public abstract partial class AbstractCache<TSettings> : IDistributedCache
     {
-        /// <summary>
-        ///   The partition used to store all keys received through the
-        ///   <see cref="IDistributedCache"/> interface.
-        /// </summary>
-        public const string DistributedCachePartition = nameof(IDistributedCache);
+        byte[] IDistributedCache.Get(string key) => Get<byte[]>(CachePartitions.DistributedCache, key).ValueOrDefault();
 
-        byte[] IDistributedCache.Get(string key) => Get<byte[]>(DistributedCachePartition, key).ValueOrDefault();
+        async Task<byte[]> IDistributedCache.GetAsync(string key) => (await GetAsync<byte[]>(CachePartitions.DistributedCache, key).ConfigureAwait(false)).ValueOrDefault();
 
-        async Task<byte[]> IDistributedCache.GetAsync(string key) => (await GetAsync<byte[]>(DistributedCachePartition, key).ConfigureAwait(false)).ValueOrDefault();
+        void IDistributedCache.Refresh(string key) => Get<byte[]>(CachePartitions.DistributedCache, key);
 
-        void IDistributedCache.Refresh(string key) => Get<byte[]>(DistributedCachePartition, key);
+        async Task IDistributedCache.RefreshAsync(string key) => await GetAsync<byte[]>(CachePartitions.DistributedCache, key).ConfigureAwait(false);
 
-        async Task IDistributedCache.RefreshAsync(string key) => await GetAsync<byte[]>(DistributedCachePartition, key).ConfigureAwait(false);
+        void IDistributedCache.Remove(string key) => Remove(CachePartitions.DistributedCache, key);
 
-        void IDistributedCache.Remove(string key) => Remove(DistributedCachePartition, key);
-
-        async Task IDistributedCache.RemoveAsync(string key) => await RemoveAsync(DistributedCachePartition, key).ConfigureAwait(false);
+        async Task IDistributedCache.RemoveAsync(string key) => await RemoveAsync(CachePartitions.DistributedCache, key).ConfigureAwait(false);
 
         void IDistributedCache.Set(string key, byte[] value, DistributedCacheEntryOptions options)
         {
@@ -56,15 +50,15 @@ namespace PommaLabs.KVLite
 
             if (options.SlidingExpiration.HasValue)
             {
-                AddSliding(DistributedCachePartition, key, value, options.SlidingExpiration.Value.ToDuration());
+                AddSliding(CachePartitions.DistributedCache, key, value, options.SlidingExpiration.Value.ToDuration());
             }
             else if (options.AbsoluteExpiration.HasValue)
             {
-                AddTimed(DistributedCachePartition, key, value, options.AbsoluteExpiration.Value.ToInstant());
+                AddTimed(CachePartitions.DistributedCache, key, value, options.AbsoluteExpiration.Value.ToInstant());
             }
             else if (options.AbsoluteExpirationRelativeToNow.HasValue)
             {
-                AddTimed(DistributedCachePartition, key, value, options.AbsoluteExpirationRelativeToNow.Value.ToDuration());
+                AddTimed(CachePartitions.DistributedCache, key, value, options.AbsoluteExpirationRelativeToNow.Value.ToDuration());
             }
         }
 
@@ -75,15 +69,15 @@ namespace PommaLabs.KVLite
 
             if (options.SlidingExpiration.HasValue)
             {
-                await AddSlidingAsync(DistributedCachePartition, key, value, options.SlidingExpiration.Value.ToDuration()).ConfigureAwait(false);
+                await AddSlidingAsync(CachePartitions.DistributedCache, key, value, options.SlidingExpiration.Value.ToDuration()).ConfigureAwait(false);
             }
             else if (options.AbsoluteExpiration.HasValue)
             {
-                await AddTimedAsync(DistributedCachePartition, key, value, options.AbsoluteExpiration.Value.ToInstant()).ConfigureAwait(false);
+                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpiration.Value.ToInstant()).ConfigureAwait(false);
             }
             else if (options.AbsoluteExpirationRelativeToNow.HasValue)
             {
-                await AddTimedAsync(DistributedCachePartition, key, value, options.AbsoluteExpirationRelativeToNow.Value.ToDuration()).ConfigureAwait(false);
+                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpirationRelativeToNow.Value.ToDuration()).ConfigureAwait(false);
             }
         }
     }

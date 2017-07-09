@@ -299,7 +299,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            PersistentCache.DefaultInstance.AddStaticToDefaultPartition("TABLE_LIST", tables);
+            PersistentCache.DefaultInstance.AddStatic("TABLE_LIST", tables);
             stopwatch.Stop();
 
             Debug.Assert(PersistentCache.DefaultInstance.Count() == 1);
@@ -322,7 +322,7 @@ namespace PommaLabs.KVLite.Benchmarks
             stopwatch.Start();
             foreach (var table in tables)
             {
-                cache.AddStaticToDefaultPartition(table.TableName, table);
+                cache.AddStatic(table.TableName, table);
             }
             stopwatch.Stop();
 
@@ -346,11 +346,11 @@ namespace PommaLabs.KVLite.Benchmarks
             stopwatch.Start();
             foreach (var table in tables)
             {
-                cache.AddStaticToDefaultPartition(table.TableName, table);
+                cache.AddStatic(table.TableName, table);
             }
             foreach (var table in tables)
             {
-                cache.AddStaticToDefaultPartition(table.TableName, table);
+                cache.AddStatic(table.TableName, table);
             }
             stopwatch.Stop();
 
@@ -377,7 +377,7 @@ namespace PommaLabs.KVLite.Benchmarks
             {
                 var logMessage = _logMessages[i];
                 var logMessageKey = i.ToString();
-                tasks[i] = Task.Run(async () => await cache.AddStaticToDefaultPartitionAsync(logMessageKey, logMessage));
+                tasks[i] = Task.Run(async () => await cache.AddStaticAsync(logMessageKey, logMessage));
             }
             Task.WaitAll(tasks);
             stopwatch.Stop();
@@ -404,7 +404,7 @@ namespace PommaLabs.KVLite.Benchmarks
             for (var i = 0; i < tables.Count; ++i)
             {
                 var table = tables[i];
-                tasks[i] = Task.Run(async () => await cache.AddStaticToDefaultPartitionAsync(table.TableName, table));
+                tasks[i] = Task.Run(async () => await cache.AddStaticAsync(table.TableName, table));
             }
             Task.WaitAll(tasks);
             stopwatch.Stop();
@@ -427,7 +427,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(Task.Run(() => VolatileCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
+                tasks.Add(Task.Run(() => VolatileCache.DefaultInstance.AddStatic(table.TableName, table)));
             }
             foreach (var task in tasks)
             {
@@ -453,7 +453,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(Task.Run(() => MemoryCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
+                tasks.Add(Task.Run(() => MemoryCache.DefaultInstance.AddStatic(table.TableName, table)));
             }
             foreach (var task in tasks)
             {
@@ -479,11 +479,11 @@ namespace PommaLabs.KVLite.Benchmarks
             var tasks = new List<Task>();
             foreach (var table in tables)
             {
-                tasks.Add(Task.Run(() => PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
+                tasks.Add(Task.Run(() => PersistentCache.DefaultInstance.AddStatic(table.TableName, table)));
             }
             foreach (var table in tables)
             {
-                tasks.Add(Task.Run(() => PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
+                tasks.Add(Task.Run(() => PersistentCache.DefaultInstance.AddStatic(table.TableName, table)));
             }
             foreach (var task in tasks)
             {
@@ -509,7 +509,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
             foreach (var table in tables)
             {
-                cache.AddStaticToDefaultPartition(table.TableName, table);
+                cache.AddStatic(table.TableName, table);
             }
 
             var stopwatch = new Stopwatch();
@@ -539,7 +539,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
             foreach (var table in tables)
             {
-                cache.AddStaticToDefaultPartition(table.TableName, table);
+                cache.AddStatic(table.TableName, table);
             }
 
             var stopwatch = new Stopwatch();
@@ -569,7 +569,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
             foreach (var table in tables)
             {
-                cache.AddStaticToDefaultPartition(table.TableName, table);
+                cache.AddStatic(table.TableName, table);
             }
 
             var stopwatch = new Stopwatch();
@@ -599,7 +599,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
             foreach (var table in tables)
             {
-                cache.AddTimedToDefaultPartition(table.TableName, table, cache.Clock.GetCurrentInstant() + Duration.FromHours(1));
+                cache.AddTimed(table.TableName, table, cache.Clock.GetCurrentInstant() + Duration.FromHours(1));
             }
 
             var stopwatch = new Stopwatch();
@@ -630,7 +630,7 @@ namespace PommaLabs.KVLite.Benchmarks
             for (var i = 0; i < tables.Count; ++i)
             {
                 var table = tables[i];
-                tasks[i] = Task.Run(async () => await cache.AddTimedToDefaultPartitionAsync(table.TableName, table, cache.Clock.GetCurrentInstant() + Duration.FromHours(1)));
+                tasks[i] = Task.Run(async () => await cache.AddTimedAsync(table.TableName, table, cache.Clock.GetCurrentInstant() + Duration.FromHours(1)));
             }
             Task.WaitAll(tasks);
 
@@ -659,7 +659,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
             foreach (var table in tables)
             {
-                PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table);
+                PersistentCache.DefaultInstance.AddStatic(table.TableName, table);
             }
 
             var stopwatch = new Stopwatch();
@@ -695,7 +695,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var writeTasks = new List<Task>();
             foreach (var table in tables)
             {
-                writeTasks.Add(Task.Run(() => PersistentCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
+                writeTasks.Add(Task.Run(() => PersistentCache.DefaultInstance.AddStatic(table.TableName, table)));
             }
             var readTasks = new List<Task<CacheResult<DataTable>>>();
             foreach (var table in tables)
@@ -731,7 +731,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var writeTasks = new List<Task>();
             foreach (var table in tables)
             {
-                writeTasks.Add(Task.Run(() => VolatileCache.DefaultInstance.AddStaticToDefaultPartition(table.TableName, table)));
+                writeTasks.Add(Task.Run(() => VolatileCache.DefaultInstance.AddStatic(table.TableName, table)));
             }
             var readTasks = new List<Task<CacheResult<DataTable>>>();
             foreach (var table in tables)

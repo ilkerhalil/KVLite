@@ -29,7 +29,7 @@ namespace PommaLabs.KVLite.SqlServer
     /// <summary>
     ///   Cache connection factory specialized for SQL Server.
     /// </summary>
-    public class SqlServerCacheConnectionFactory : DbCacheConnectionFactory<SqlConnection>
+    public sealed class SqlServerCacheConnectionFactory : DbCacheConnectionFactory<SqlConnection>
     {
         /// <summary>
         ///   Cache connection factory specialized for SQL Server.

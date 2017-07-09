@@ -32,7 +32,7 @@ namespace PommaLabs.KVLite.Oracle
     ///   Settings used by <see cref="OracleCache"/>.
     /// </summary>
     [Serializable, DataContract]
-    public class OracleCacheSettings : DbCacheSettings<OracleCacheSettings, OracleConnection>
+    public sealed class OracleCacheSettings : DbCacheSettings<OracleCacheSettings, OracleConnection>
     {
         #region Properties
 

@@ -31,7 +31,7 @@ using System.Linq;
 
 namespace PommaLabs.KVLite.Oracle
 {
-    internal class OracleDynamicParameters : SqlMapper.IDynamicParameters
+    internal sealed class OracleDynamicParameters : SqlMapper.IDynamicParameters
     {
         private static readonly Hashtable ParamReaderCache = new Hashtable();
 

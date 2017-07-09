@@ -127,20 +127,20 @@ namespace PommaLabs.KVLite.UnitTests
         {
             foreach (var t in StringItems)
             {
-                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
+                Cache.AddTimed(t, t, Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
             }
             Cache.Clear();
             Assert.AreEqual(0, Cache.Count());
             foreach (var t in StringItems)
             {
-                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
+                Cache.AddTimed(t, t, Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
             }
             var volatileCache = (VolatileCache) Cache;
             volatileCache.Clear(CacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(0, Cache.Count());
             foreach (var t in StringItems)
             {
-                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
+                Cache.AddTimed(t, t, Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
             }
             volatileCache.Clear(CacheReadMode.IgnoreExpiryDate);
             Assert.AreEqual(0, Cache.Count());
@@ -151,14 +151,14 @@ namespace PommaLabs.KVLite.UnitTests
         {
             foreach (var t in StringItems)
             {
-                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
+                Cache.AddTimed(t, t, Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
             }
             Cache.Clear();
             Assert.AreEqual(0, Cache.Count());
 
             foreach (var t in StringItems)
             {
-                Cache.AddTimedToDefaultPartition(t, t, Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
+                Cache.AddTimed(t, t, Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
             }
             var volatileCache = (VolatileCache) Cache;
             volatileCache.Clear(CacheReadMode.ConsiderExpiryDate);
@@ -180,14 +180,14 @@ namespace PommaLabs.KVLite.UnitTests
             {
                 try
                 {
-                    Cache.AddStaticToDefaultPartition(key, 1);
-                    another.AddStaticToDefaultPartition(key, 2);
+                    Cache.AddStatic(key, 1);
+                    another.AddStatic(key, 2);
                     Assert.True(Cache.DefaultPartitionContains(key));
                     Assert.True(another.DefaultPartitionContains(key));
                     Assert.AreEqual(1, ((VolatileCache) Cache)[Cache.Settings.DefaultPartition, key].Value);
                     Assert.AreEqual(2, another[Cache.Settings.DefaultPartition, key].Value);
 
-                    another.AddStaticToDefaultPartition(key + key, 3);
+                    another.AddStatic(key + key, 3);
                     Assert.False(Cache.DefaultPartitionContains(key + key));
                     Assert.True(another.DefaultPartitionContains(key + key));
                     Assert.AreEqual(3, another[Cache.Settings.DefaultPartition, key + key].Value);

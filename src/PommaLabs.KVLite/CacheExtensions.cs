@@ -62,7 +62,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static void AddSlidingToDefaultPartition<TVal>(this ICache cache, string key, TVal value, Duration interval, IList<string> parentKeys = null)
+        public static void AddSliding<TVal>(this ICache cache, string key, TVal value, Duration interval, IList<string> parentKeys = null)
             => cache.AddSliding(cache.Settings.DefaultPartition, key, value, interval, parentKeys);
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static void AddStaticToDefaultPartition<TVal>(this ICache cache, string key, TVal value, IList<string> parentKeys = null)
+        public static void AddStatic<TVal>(this ICache cache, string key, TVal value, IList<string> parentKeys = null)
             => cache.AddStatic(cache.Settings.DefaultPartition, key, value, parentKeys);
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static void AddTimedToDefaultPartition<TVal>(this ICache cache, string key, TVal value, Instant utcExpiry, IList<string> parentKeys = null)
+        public static void AddTimed<TVal>(this ICache cache, string key, TVal value, Instant utcExpiry, IList<string> parentKeys = null)
             => cache.AddTimed(cache.Settings.DefaultPartition, key, value, utcExpiry, parentKeys);
 
         /// <summary>
@@ -123,22 +123,10 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static void AddTimedToDefaultPartition<TVal>(this ICache cache, string key, TVal value, Duration lifetime, IList<string> parentKeys = null)
+        public static void AddTimed<TVal>(this ICache cache, string key, TVal value, Duration lifetime, IList<string> parentKeys = null)
             => cache.AddTimed(cache.Settings.DefaultPartition, key, value, lifetime, parentKeys);
 
         #endregion Add
-
-        #region Clear
-
-        /// <summary>
-        ///   Clears the default partition, that is, it removes all its items.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <returns>The number of items that have been removed.</returns>
-        public static long ClearDefaultPartition(this ICache cache)
-            => cache.Clear(cache.Settings.DefaultPartition);
-
-        #endregion Clear
 
         #region Count
 

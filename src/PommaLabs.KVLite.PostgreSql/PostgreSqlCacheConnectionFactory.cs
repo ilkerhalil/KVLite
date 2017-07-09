@@ -29,7 +29,7 @@ namespace PommaLabs.KVLite.PostgreSql
     /// <summary>
     ///   Cache connection factory specialized for PostgreSQL.
     /// </summary>
-    public class PostgreSqlCacheConnectionFactory : DbCacheConnectionFactory<NpgsqlConnection>
+    public sealed class PostgreSqlCacheConnectionFactory : DbCacheConnectionFactory<NpgsqlConnection>
     {
         /// <summary>
         ///   Cache connection factory specialized for PostgreSQL.
