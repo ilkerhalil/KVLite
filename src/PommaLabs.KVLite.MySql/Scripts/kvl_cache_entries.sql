@@ -23,6 +23,6 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_entries` (
     INDEX `ix_kvle_parent2` (`kvle_parent_hash2`)
 )
 COLLATE='utf8_general_ci'
-ENGINE=MyISAM
+ENGINE=MyISAM /* You can use ARIA if running under MariaDB */
 ROW_FORMAT=DYNAMIC
 ;

@@ -5,7 +5,15 @@
 
 KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
 
-## Summary ##
+Following RDBMS systems are currently supported by KVLite or will be supported soon:
+
+* MySQL and MariaDB (.NET only)
+* Oracle (.NET only)
+* PostgreSQL (work in progress)
+* SQL Server (.NET and .NET Core)
+* SQLite (.NET and .NET Core)
+
+## Summary
 
 * Latest release version: `v6.3.1`
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/7qgv5o7or96rr8a2?svg=true)](https://ci.appveyor.com/project/pomma89/kvlite)
@@ -13,12 +21,17 @@ KVLite can be stored either in persistent or volatile fashion, and each key/valu
 * [NuGet](https://www.nuget.org) package(s):
     + [PommaLabs.KVLite](https://www.nuget.org/packages/PommaLabs.KVLite/), includes Core and all native libraries.
     + [PommaLabs.KVLite (Core)](https://www.nuget.org/packages/PommaLabs.KVLite.Core/), all managed APIs.
+    + [PommaLabs.KVLite (MySQL)](https://www.nuget.org/packages/PommaLabs.KVLite.MySql/), driver for MySQL and MariaDB.
+    + [PommaLabs.KVLite (Oracle)](https://www.nuget.org/packages/PommaLabs.KVLite.Oracle/), driver for Oracle.
+    + [PommaLabs.KVLite (PostgreSQL)](https://www.nuget.org/packages/PommaLabs.KVLite.PostgreSql/), driver for PostgreSQL.
+    + [PommaLabs.KVLite (SQL Server)](https://www.nuget.org/packages/PommaLabs.KVLite.SqlServer/), driver for SQL Server.
+    + [PommaLabs.KVLite (SQLite)](https://www.nuget.org/packages/PommaLabs.KVLite.SQLite/), driver for SQLite.
     + [PommaLabs.KVLite (Entity Framework Query Cache Provider)](https://www.nuget.org/packages/PommaLabs.KVLite.EntityFramework/)
     + [PommaLabs.KVLite (Nancy Caching Bootstrapper)](https://www.nuget.org/packages/PommaLabs.KVLite.Nancy/)
     + [PommaLabs.KVLite (Web API Output Cache Provider)](https://www.nuget.org/packages/PommaLabs.KVLite.WebApi/)
     + [PommaLabs.KVLite (Web Forms Caching Components)](https://www.nuget.org/packages/PommaLabs.KVLite.WebForms/)
 
-## Introduction ##
+## Introduction
 
 Let's start with a simple example of what you can do with KVLite:
 
@@ -156,7 +169,62 @@ internal static class Program
 }
 ```
 
-## About this repository and its maintainer ##
+## Storage layout
+
+KVLite stores cache entries in a dedicated table, whose schema is as much tuned as possible for each RDBMS.
+The logical schema for cache entries table is the following:
+
+| Column name         | Data type        | Content                                                                            |
+|---------------------|------------------|------------------------------------------------------------------------------------|
+| `kvle_id`           | `guid` or `long` | Automatically generated ID. This is the primary key.                               |
+| `kvle_hash`         | `long`           | Hash of partition and key. This is the unique key.                                 |
+| `kvle_expiry`       | `long`           | When the entry will expire, expressed as seconds after UNIX epoch.                 |
+| `kvle_interval`     | `long`           | How many seconds should be used to extend expiry time when the entry is retrieved. |
+| `kvle_value`        | `byte[]`         | Serialized and optionally compressed content of this entry.                        |
+| `kvle_compressed`   | `bool`           | Whether the entry content was compressed or not.                                   |
+| `kvle_partition`    | `string`         | A partition holds a group of related keys.                                         |
+| `kvle_key`          | `string`         | A key uniquely identifies an entry inside a partition.                             |
+| `kvle_creation`     | `long`           | When the entry was created, expressed as seconds after UNIX epoch.                 |
+| `kvle_parent_hash0` | `long`           | Optional parent entry hash, used to link entries in a hierarchical way.            |
+| `kvle_parent_key0`  | `string`         | Optional parent entry key, used to link entries in a hierarchical way.             |
+| `kvle_parent_hash1` | `long`           | Optional parent entry hash, used to link entries in a hierarchical way.            |
+| `kvle_parent_key1`  | `string`         | Optional parent entry key, used to link entries in a hierarchical way.             |
+| `kvle_parent_hash2` | `long`           | Optional parent entry hash, used to link entries in a hierarchical way.            |
+| `kvle_parent_key2`  | `string`         | Optional parent entry key, used to link entries in a hierarchical way.             |
+
+Specialized schemas for supported RDBMS systems are available inside this project repository or at following links:
+
+* [MySQL and MariaDB](https://github.com/pomma89/KVLite/blob/master/src/PommaLabs.KVLite.MySql/Scripts/kvl_cache_entries.sql)
+* [Oracle](https://github.com/pomma89/KVLite/blob/master/src/PommaLabs.KVLite.Oracle/Scripts/kvl_cache_entries.sql)
+* [PostgreSQL](https://github.com/pomma89/KVLite/blob/master/src/PommaLabs.KVLite.PostgreSql/Scripts/kvl_cache_entries.sql)
+* [SQL Server](https://github.com/pomma89/KVLite/blob/master/src/PommaLabs.KVLite.SqlServer/Scripts/kvl_cache_entries.sql)
+
+Each script might have a few comments suggesting how to further optimize cache entries table storage depending on the actual version of the specific RDBMS system.
+
+### Customizing table name or SQL schema
+
+Default name for cache entries table is `kvle_cache_entries` and default SQL schema is `kvlite`. 
+However, those values can be easily changed at runtime, as we do in the following snippet:
+
+```cs
+// Change cache entries table name for Oracle cache.
+OracleCache.DefaultInstance.ConnectionFactory.CacheEntriesTableName = "my_custom_name";
+
+// Change SQL schema name for MySQL cache.
+MySqlCache.DefaultInstance.ConnectionFactory.CacheSchemaName = "my_schema_name";
+
+// Change both table ans schema name for SQL Server cache.
+SqlServerCache.DefaultInstance.ConnectionFactory.CacheEntriesTableName = "my_custom_name";
+SqlServerCache.DefaultInstance.ConnectionFactory.CacheSchemaName = "my_schema_name";
+```
+
+Please perform those customizations as early as your application starts; for example, these are good places where to put the lines:
+
+* `Program.cs` for console and Windows applications.
+* `Global.asax.cs` for classic web applications.
+* `Startup.cs` for Owin-based web applications.
+
+## About this repository and its maintainer
 
 Everything done on this repository is freely offered on the terms of the project license. You are free to do everything you want with the code and its related files, as long as you respect the license and use common sense while doing it :-)
 
