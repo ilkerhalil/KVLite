@@ -32,7 +32,7 @@ namespace PommaLabs.KVLite.PostgreSql
     ///   Settings used by <see cref="PostgreSqlCache"/>.
     /// </summary>
     [Serializable, DataContract]
-    public class PostgreSqlCacheSettings : DbCacheSettings<PostgreSqlCacheSettings, NpgsqlConnection>
+    public sealed class PostgreSqlCacheSettings : DbCacheSettings<PostgreSqlCacheSettings, NpgsqlConnection>
     {
         #region Properties
 

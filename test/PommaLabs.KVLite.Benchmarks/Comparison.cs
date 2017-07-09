@@ -150,7 +150,7 @@ namespace PommaLabs.KVLite.Benchmarks
         public void AddManyLogMessages()
         {
             var k = Guid.NewGuid().ToString();
-            _cache.AddStaticToDefaultPartition(k, LogMessage.GenerateRandomLogMessages(Count));
+            _cache.AddStatic(k, LogMessage.GenerateRandomLogMessages(Count));
         }
     }
 }

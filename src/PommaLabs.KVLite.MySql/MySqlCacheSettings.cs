@@ -32,7 +32,7 @@ namespace PommaLabs.KVLite.MySql
     ///   Settings used by <see cref="MySqlCache"/>.
     /// </summary>
     [Serializable, DataContract]
-    public class MySqlCacheSettings : DbCacheSettings<MySqlCacheSettings, MySqlConnection>
+    public sealed class MySqlCacheSettings : DbCacheSettings<MySqlCacheSettings, MySqlConnection>
     {
         #region Properties
 

@@ -32,7 +32,7 @@ namespace PommaLabs.KVLite.SqlServer
     ///   Settings used by <see cref="SqlServerCache"/>.
     /// </summary>
     [Serializable, DataContract]
-    public class SqlServerCacheSettings : DbCacheSettings<SqlServerCacheSettings, SqlConnection>
+    public sealed class SqlServerCacheSettings : DbCacheSettings<SqlServerCacheSettings, SqlConnection>
     {
         #region Properties
 

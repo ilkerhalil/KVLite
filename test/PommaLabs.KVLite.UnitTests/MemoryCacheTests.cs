@@ -194,8 +194,8 @@ namespace PommaLabs.KVLite.UnitTests
         {
             var k = StringItems[1];
             var v = StringItems[2];
-            Cache.AddStaticToDefaultPartition(k, v);
-            Assert.Throws<NotSupportedException>(() => { Cache.PeekIntoDefaultPartition<string>(k); });
+            Cache.AddStatic(k, v);
+            Assert.Throws<NotSupportedException>(() => { Cache.Peek<string>(k); });
         }
 
         [Test]
@@ -213,8 +213,8 @@ namespace PommaLabs.KVLite.UnitTests
         {
             var k = StringItems[1];
             var v = StringItems[2];
-            Cache.AddStaticToDefaultPartition(k, v);
-            Assert.Throws<NotSupportedException>(() => { Cache.PeekItemIntoDefaultPartition<string>(k); });
+            Cache.AddStatic(k, v);
+            Assert.Throws<NotSupportedException>(() => { Cache.PeekItem<string>(k); });
         }
 
         [Test]
@@ -296,13 +296,13 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant().Plus(Duration.FromMinutes(10)));
-                Assert.True(Cache.DefaultPartitionContains(StringItems[i]));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant().Plus(Duration.FromMinutes(10)));
+                Assert.True(Cache.Contains(StringItems[i]));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant().Plus(Duration.FromMinutes(10)));
-                Assert.True(Cache.DefaultPartitionContains(StringItems[i]));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant().Plus(Duration.FromMinutes(10)));
+                Assert.True(Cache.Contains(StringItems[i]));
             }
         }
 
@@ -313,13 +313,13 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant().Plus(Duration.FromMinutes(10)));
-                Assert.True(Cache.DefaultPartitionContains(StringItems[i]));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant().Plus(Duration.FromMinutes(10)));
+                Assert.True(Cache.Contains(StringItems[i]));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant().Plus(Duration.FromMinutes(10)));
-                Assert.True(Cache.DefaultPartitionContains(StringItems[i]));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant().Plus(Duration.FromMinutes(10)));
+                Assert.True(Cache.Contains(StringItems[i]));
             }
             var items = Cache.GetItems<string>();
             for (var i = 0; i < itemCount; ++i)
@@ -340,8 +340,8 @@ namespace PommaLabs.KVLite.UnitTests
                 var l = i;
                 var task = Task.Factory.StartNew(() =>
                 {
-                    Cache.AddTimedToDefaultPartition(StringItems[l], StringItems[l], Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
-                    Cache.DefaultPartitionContains(StringItems[l]);
+                    Cache.AddTimed(StringItems[l], StringItems[l], Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
+                    Cache.Contains(StringItems[l]);
                 });
                 tasks.Add(task);
             }
@@ -350,8 +350,8 @@ namespace PommaLabs.KVLite.UnitTests
                 var l = i;
                 var task = Task.Factory.StartNew(() =>
                 {
-                    Cache.AddTimedToDefaultPartition(StringItems[l], StringItems[l], Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
-                    Cache.DefaultPartitionContains(StringItems[l]);
+                    Cache.AddTimed(StringItems[l], StringItems[l], Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
+                    Cache.Contains(StringItems[l]);
                 });
                 tasks.Add(task);
             }
@@ -364,10 +364,10 @@ namespace PommaLabs.KVLite.UnitTests
         [Test]
         public void AddTimed_TwoValues_SameKey()
         {
-            Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[1], Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
-            Assert.AreEqual(StringItems[1], Cache.GetFromDefaultPartition<string>(StringItems[0]).Value);
-            Cache.AddTimedToDefaultPartition(StringItems[0], StringItems[2], Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
-            Assert.AreEqual(StringItems[2], Cache.GetFromDefaultPartition<string>(StringItems[0]).Value);
+            Cache.AddTimed(StringItems[0], StringItems[1], Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
+            Assert.AreEqual(StringItems[1], Cache.Get<string>(StringItems[0]).Value);
+            Cache.AddTimed(StringItems[0], StringItems[2], Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
+            Assert.AreEqual(StringItems[2], Cache.Get<string>(StringItems[0]).Value);
         }
 
         [TestCase(SmallItemCount)]
@@ -377,7 +377,7 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
             }
 
             Assert.That(Cache.Clear(), Is.EqualTo(itemCount));
@@ -392,13 +392,13 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
                 Cache.AddTimed(StringItems[i], StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
             }
 
-            Assert.That(Cache.ClearDefaultPartition(), Is.EqualTo(itemCount));
-            Assert.That(Cache.DefaultPartitionCount(), Is.EqualTo(0));
-            Assert.That(Cache.DefaultPartitionLongCount(), Is.EqualTo(0L));
+            Assert.That(Cache.Clear(Cache.Settings.DefaultPartition), Is.EqualTo(itemCount));
+            Assert.That(Cache.Count(Cache.Settings.DefaultPartition), Is.EqualTo(0));
+            Assert.That(Cache.LongCount(Cache.Settings.DefaultPartition), Is.EqualTo(0L));
             Assert.That(Cache.Count(), Is.EqualTo(itemCount));
             Assert.That(Cache.LongCount(), Is.EqualTo(itemCount));
         }
@@ -472,7 +472,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache.Get<object>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
-                Assert.IsFalse(Cache.GetFromDefaultPartition<object>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.Get<object>(StringItems[i]).HasValue);
             }
         }
 
@@ -484,7 +484,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache.Get<string>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
-                Assert.IsFalse(Cache.GetFromDefaultPartition<string>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.Get<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -496,7 +496,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache.GetItem<object>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
-                Assert.IsFalse(Cache.GetItemFromDefaultPartition<object>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.GetItem<object>(StringItems[i]).HasValue);
             }
         }
 
@@ -508,7 +508,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Assert.IsFalse(Cache.GetItem<string>(Cache.Settings.DefaultPartition, StringItems[i]).HasValue);
-                Assert.IsFalse(Cache.GetItemFromDefaultPartition<string>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.GetItem<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -521,7 +521,7 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 var l = i;
-                var task = Task.Run(() => Cache.GetFromDefaultPartition<string>(StringItems[l]));
+                var task = Task.Run(() => Cache.Get<string>(StringItems[l]));
                 tasks.Add(task);
             }
             for (var i = 0; i < itemCount; ++i)
@@ -537,11 +537,11 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                var item = Cache.GetFromDefaultPartition<string>(StringItems[i]);
+                var item = Cache.Get<string>(StringItems[i]);
                 Assert.AreEqual(StringItems[i], item.Value);
             }
         }
@@ -553,11 +553,11 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimedToDefaultPartition(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.GetCurrentInstant().Minus(Duration.FromMinutes(10)));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Assert.IsFalse(Cache.GetFromDefaultPartition<string>(StringItems[i]).HasValue);
+                Assert.IsFalse(Cache.Get<string>(StringItems[i]).HasValue);
             }
         }
 
@@ -565,8 +565,8 @@ namespace PommaLabs.KVLite.UnitTests
         public void Get_LargeDataTable()
         {
             var dt = new RandomDataTableGenerator("A123", "Test", "Pi", "<3", "Pu").GenerateDataTable(LargeItemCount);
-            Cache.AddStaticToDefaultPartition(dt.TableName, dt);
-            var storedDt = Cache.GetFromDefaultPartition<DataTable>(dt.TableName).Value;
+            Cache.AddStatic(dt.TableName, dt);
+            var storedDt = Cache.Get<DataTable>(dt.TableName).Value;
             Assert.AreEqual(dt.Rows.Count, storedDt.Rows.Count);
             for (var i = 0; i < dt.Rows.Count; ++i)
             {

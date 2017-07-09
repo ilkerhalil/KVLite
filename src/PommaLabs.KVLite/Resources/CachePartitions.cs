@@ -42,5 +42,10 @@ namespace PommaLabs.KVLite.Resources
         ///   Partition reserved for <see cref="Goodies.CachingEnumerable{T}"/>.
         /// </summary>
         public static string CachingEnumerablePrefix { get; } = $"{Prefix}.CachingEnumerables";
+
+        /// <summary>
+        ///   Partition reserved for <see cref="Microsoft.Extensions.Caching.Distributed.IDistributedCache"/>.
+        /// </summary>
+        public static string DistributedCache { get; } = $"{Prefix}.DistributedCache";
     }
 }

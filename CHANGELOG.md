@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.3.1 (2017-07-09) ###
+
+* [UPD] Renamed all methods involving default partition.
+* [UPD] Updated NodaTime.
+
 ### v6.3.0 (2017-07-09) ###
 
 * [UPD] Changed SQL table structure, now using hashs for faster lookups.

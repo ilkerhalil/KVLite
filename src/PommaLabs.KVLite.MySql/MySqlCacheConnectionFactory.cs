@@ -29,7 +29,7 @@ namespace PommaLabs.KVLite.MySql
     /// <summary>
     ///   Cache connection factory specialized for MySQL.
     /// </summary>
-    public class MySqlCacheConnectionFactory : DbCacheConnectionFactory<MySqlConnection>
+    public sealed class MySqlCacheConnectionFactory : DbCacheConnectionFactory<MySqlConnection>
     {
         /// <summary>
         ///   Cache connection factory specialized for MySQL.
