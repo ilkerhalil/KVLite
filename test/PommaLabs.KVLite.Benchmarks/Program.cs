@@ -516,7 +516,7 @@ namespace PommaLabs.KVLite.Benchmarks
             stopwatch.Start();
             foreach (var table in tables)
             {
-                var returnedTable = cache.GetFromDefaultPartition<DataTable>(table.TableName);
+                var returnedTable = cache.Get<DataTable>(table.TableName);
                 if (!returnedTable.HasValue)
                 {
                     throw new Exception("Wrong data table read from cache! :(");
@@ -546,7 +546,7 @@ namespace PommaLabs.KVLite.Benchmarks
             stopwatch.Start();
             foreach (var table in tables)
             {
-                var returnedTable = cache.GetItemFromDefaultPartition<DataTable>(table.TableName);
+                var returnedTable = cache.GetItem<DataTable>(table.TableName);
                 if (!returnedTable.HasValue)
                 {
                     throw new Exception("Wrong data table item read from cache! :(");
@@ -576,7 +576,7 @@ namespace PommaLabs.KVLite.Benchmarks
             stopwatch.Start();
             foreach (var table in tables)
             {
-                var returnedTable = cache.PeekIntoDefaultPartition<DataTable>(table.TableName);
+                var returnedTable = cache.Peek<DataTable>(table.TableName);
                 if (!returnedTable.HasValue)
                 {
                     throw new Exception("Wrong data table read from cache! :(");
@@ -606,7 +606,7 @@ namespace PommaLabs.KVLite.Benchmarks
             stopwatch.Start();
             foreach (var table in tables)
             {
-                cache.RemoveFromDefaultPartition(table.TableName);
+                cache.Remove(table.TableName);
             }
             stopwatch.Stop();
 
@@ -639,7 +639,7 @@ namespace PommaLabs.KVLite.Benchmarks
             for (var i = 0; i < tables.Count; ++i)
             {
                 var table = tables[i];
-                tasks[i] = Task.Run(async () => await cache.RemoveFromDefaultPartitionAsync(table.TableName));
+                tasks[i] = Task.Run(async () => await cache.RemoveAsync(table.TableName));
             }
             Task.WaitAll(tasks);
             stopwatch.Stop();
@@ -668,7 +668,7 @@ namespace PommaLabs.KVLite.Benchmarks
             foreach (var table in tables)
             {
                 var tmp = table; // Suggested by R#
-                tasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.GetFromDefaultPartition<DataTable>(tmp.TableName)));
+                tasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get<DataTable>(tmp.TableName)));
             }
             foreach (var task in tasks)
             {
@@ -701,7 +701,7 @@ namespace PommaLabs.KVLite.Benchmarks
             foreach (var table in tables)
             {
                 var localTable = table;
-                readTasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.GetFromDefaultPartition<DataTable>(localTable.TableName)));
+                readTasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get<DataTable>(localTable.TableName)));
             }
             foreach (var task in writeTasks)
             {
@@ -737,7 +737,7 @@ namespace PommaLabs.KVLite.Benchmarks
             foreach (var table in tables)
             {
                 var localTable = table;
-                readTasks.Add(Task.Factory.StartNew(() => VolatileCache.DefaultInstance.GetFromDefaultPartition<DataTable>(localTable.TableName)));
+                readTasks.Add(Task.Factory.StartNew(() => VolatileCache.DefaultInstance.Get<DataTable>(localTable.TableName)));
             }
             foreach (var task in writeTasks)
             {

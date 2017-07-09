@@ -138,7 +138,7 @@ namespace PommaLabs.KVLite
         /// <returns>Whether this cache contains the specified key in the default partition.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        public static bool DefaultPartitionContains(this ICache cache, string key)
+        public static bool Contains(this ICache cache, string key)
             => cache.Contains(cache.Settings.DefaultPartition, key);
 
         #endregion Contains
@@ -159,7 +159,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        public static CacheResult<TVal> GetFromDefaultPartition<TVal>(this ICache cache, string key) => cache.Get<TVal>(cache.Settings.DefaultPartition, key);
+        public static CacheResult<TVal> Get<TVal>(this ICache cache, string key) => cache.Get<TVal>(cache.Settings.DefaultPartition, key);
 
         /// <summary>
         ///   Gets the cache item with default partition and specified key. If it is a "sliding" or
@@ -175,7 +175,7 @@ namespace PommaLabs.KVLite
         ///   class or not.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        public static CacheResult<ICacheItem<TVal>> GetItemFromDefaultPartition<TVal>(this ICache cache, string key) => cache.GetItem<TVal>(cache.Settings.DefaultPartition, key);
+        public static CacheResult<ICacheItem<TVal>> GetItem<TVal>(this ICache cache, string key) => cache.GetItem<TVal>(cache.Settings.DefaultPartition, key);
 
         #endregion Get & GetItem(s)
 
@@ -211,7 +211,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static TVal GetOrAddSlidingToDefaultPartition<TVal>(this ICache cache, string key, Func<TVal> valueGetter, Duration interval, IList<string> parentKeys = null)
+        public static TVal GetOrAddSliding<TVal>(this ICache cache, string key, Func<TVal> valueGetter, Duration interval, IList<string> parentKeys = null)
             => cache.GetOrAddSliding(cache.Settings.DefaultPartition, key, valueGetter, interval, parentKeys);
 
         /// <summary>
@@ -244,7 +244,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static TVal GetOrAddStaticToDefaultPartition<TVal>(this ICache cache, string key, Func<TVal> valueGetter, IList<string> parentKeys = null)
+        public static TVal GetOrAddStatic<TVal>(this ICache cache, string key, Func<TVal> valueGetter, IList<string> parentKeys = null)
             => cache.GetOrAddStatic(cache.Settings.DefaultPartition, key, valueGetter, parentKeys);
 
         /// <summary>
@@ -276,7 +276,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static TVal GetOrAddTimedToDefaultPartition<TVal>(this ICache cache, string key, Func<TVal> valueGetter, Instant utcExpiry, IList<string> parentKeys = null)
+        public static TVal GetOrAddTimed<TVal>(this ICache cache, string key, Func<TVal> valueGetter, Instant utcExpiry, IList<string> parentKeys = null)
             => cache.GetOrAddTimed(cache.Settings.DefaultPartition, key, valueGetter, utcExpiry, parentKeys);
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static TVal GetOrAddTimedToDefaultPartition<TVal>(this ICache cache, string key, Func<TVal> valueGetter, Duration lifetime, IList<string> parentKeys = null)
+        public static TVal GetOrAddTimed<TVal>(this ICache cache, string key, Func<TVal> valueGetter, Duration lifetime, IList<string> parentKeys = null)
             => cache.GetOrAddTimed(cache.Settings.DefaultPartition, key, valueGetter, lifetime, parentKeys);
 
         #endregion GetOrAdd
@@ -335,7 +335,7 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        public static CacheResult<TVal> PeekIntoDefaultPartition<TVal>(this ICache cache, string key)
+        public static CacheResult<TVal> Peek<TVal>(this ICache cache, string key)
             => cache.Peek<TVal>(cache.Settings.DefaultPartition, key);
 
         /// <summary>
@@ -357,7 +357,7 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the
         ///   <see cref="IEssentialCache.CanPeek"/> property).
         /// </exception>
-        public static CacheResult<ICacheItem<TVal>> PeekItemIntoDefaultPartition<TVal>(this ICache cache, string key)
+        public static CacheResult<ICacheItem<TVal>> PeekItem<TVal>(this ICache cache, string key)
             => cache.PeekItem<TVal>(cache.Settings.DefaultPartition, key);
 
         #endregion Peek & PeekItem(s)
@@ -370,7 +370,7 @@ namespace PommaLabs.KVLite
         /// <param name="cache">The cache.</param>
         /// <param name="key">The key.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
-        public static void RemoveFromDefaultPartition(this ICache cache, string key)
+        public static void Remove(this ICache cache, string key)
             => cache.Remove(cache.Settings.DefaultPartition, key);
 
         #endregion Remove

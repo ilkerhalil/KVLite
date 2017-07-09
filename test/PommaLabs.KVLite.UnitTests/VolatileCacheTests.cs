@@ -182,14 +182,14 @@ namespace PommaLabs.KVLite.UnitTests
                 {
                     Cache.AddStatic(key, 1);
                     another.AddStatic(key, 2);
-                    Assert.True(Cache.DefaultPartitionContains(key));
-                    Assert.True(another.DefaultPartitionContains(key));
+                    Assert.True(Cache.Contains(key));
+                    Assert.True(another.Contains(key));
                     Assert.AreEqual(1, ((VolatileCache) Cache)[Cache.Settings.DefaultPartition, key].Value);
                     Assert.AreEqual(2, another[Cache.Settings.DefaultPartition, key].Value);
 
                     another.AddStatic(key + key, 3);
-                    Assert.False(Cache.DefaultPartitionContains(key + key));
-                    Assert.True(another.DefaultPartitionContains(key + key));
+                    Assert.False(Cache.Contains(key + key));
+                    Assert.True(another.Contains(key + key));
                     Assert.AreEqual(3, another[Cache.Settings.DefaultPartition, key + key].Value);
                 }
                 catch (Exception ex)
