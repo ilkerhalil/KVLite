@@ -1184,8 +1184,8 @@ namespace PommaLabs.KVLite.UnitTests
             }
 
             Assert.That(Cache.Clear(Cache.Settings.DefaultPartition), Is.EqualTo(itemCount));
-            Assert.That(Cache.DefaultPartitionCount(), Is.EqualTo(0));
-            Assert.That(Cache.DefaultPartitionLongCount(), Is.EqualTo(0L));
+            Assert.That(Cache.Count(Cache.Settings.DefaultPartition), Is.EqualTo(0));
+            Assert.That(Cache.LongCount(Cache.Settings.DefaultPartition), Is.EqualTo(0L));
             Assert.That(Cache.Count(), Is.EqualTo(itemCount));
             Assert.That(Cache.LongCount(), Is.EqualTo(itemCount));
         }

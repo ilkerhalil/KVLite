@@ -128,28 +128,6 @@ namespace PommaLabs.KVLite
 
         #endregion Add
 
-        #region Count
-
-        /// <summary>
-        ///   The number of items stored in the default partition.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <returns>The number of items stored in the default partition.</returns>
-        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        public static int DefaultPartitionCount(this ICache cache)
-            => cache.Count(cache.Settings.DefaultPartition);
-
-        /// <summary>
-        ///   The number of items stored in the default partition.
-        /// </summary>
-        /// <param name="cache">The cache.</param>
-        /// <returns>The number of items stored in the default partition.</returns>
-        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        public static long DefaultPartitionLongCount(this ICache cache)
-            => cache.LongCount(cache.Settings.DefaultPartition);
-
-        #endregion Count
-
         #region Contains
 
         /// <summary>

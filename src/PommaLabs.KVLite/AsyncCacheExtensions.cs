@@ -127,30 +127,6 @@ namespace PommaLabs.KVLite
 
         #endregion Add
 
-        #region Count
-
-        /// <summary>
-        ///   The number of items stored in the default partition.
-        /// </summary>
-        /// <param name="cache">The async cache.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>The number of items stored in the default partition.</returns>
-        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        public static Task<int> DefaultPartitionCountAsync(this IAsyncCache cache, CancellationToken cancellationToken = default(CancellationToken))
-            => cache.CountAsync(cache.Settings.DefaultPartition, cancellationToken);
-
-        /// <summary>
-        ///   The number of items stored in the default partition.
-        /// </summary>
-        /// <param name="cache">The async cache.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>The number of items stored in the default partition.</returns>
-        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        public static Task<long> DefaultPartitionLongCountAsync(this IAsyncCache cache, CancellationToken cancellationToken = default(CancellationToken))
-            => cache.LongCountAsync(cache.Settings.DefaultPartition, cancellationToken);
-
-        #endregion Count
-
         #region Contains
 
         /// <summary>
