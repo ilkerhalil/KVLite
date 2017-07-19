@@ -22,7 +22,9 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Newtonsoft.Json;
+using PommaLabs.KVLite.Core.Extensibility.Converters;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace PommaLabs.KVLite.Extensibility
@@ -65,6 +67,7 @@ namespace PommaLabs.KVLite.Extensibility
         /// </remarks>
         public static JsonSerializerSettings DefaultSerializerSettings = new JsonSerializerSettings
         {
+            Converters = new List<JsonConverter> { new ClaimConverter() },
             DateFormatHandling = DateFormatHandling.IsoDateFormat,
             DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
             DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,

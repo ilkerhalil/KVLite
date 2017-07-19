@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.3.2 (2017-07-19) ###
+
+* [ADD] Default JSON serializer now has a custom converter for Claim class.
+* [UPD] Updated NodaTime.
+
 ### v6.3.1 (2017-07-09) ###
 
 * [UPD] Renamed all methods involving default partition.
