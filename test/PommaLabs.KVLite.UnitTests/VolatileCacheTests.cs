@@ -31,7 +31,7 @@ using System;
 
 namespace PommaLabs.KVLite.UnitTests
 {
-    internal sealed class VolatileCacheTests : AbstractCacheTests<VolatileCache, VolatileCacheSettings, SqliteConnection>
+    internal sealed class VolatileCacheTests : AbstractCacheTests<VolatileCache, VolatileCacheSettings, SQLiteCacheConnectionFactory<VolatileCacheSettings>, SqliteConnection>
     {
         #region Setup/Teardown
 

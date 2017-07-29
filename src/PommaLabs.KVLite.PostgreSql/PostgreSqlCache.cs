@@ -31,7 +31,7 @@ namespace PommaLabs.KVLite.PostgreSql
     /// <summary>
     ///   Cache backed by PostgreSQL.
     /// </summary>
-    public sealed class PostgreSqlCache : DbCache<PostgreSqlCache, PostgreSqlCacheSettings, NpgsqlConnection>
+    public sealed class PostgreSqlCache : DbCache<PostgreSqlCache, PostgreSqlCacheSettings, PostgreSqlCacheConnectionFactory, NpgsqlConnection>
     {
         #region Default Instance
 

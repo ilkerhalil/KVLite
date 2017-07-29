@@ -34,7 +34,7 @@ namespace PommaLabs.KVLite.SQLite
     ///   An SQLite-based in-memory cache.
     /// </summary>
     /// <remarks>SQLite-based caches do not allow more than ten parent keys per item.</remarks>
-    public sealed class VolatileCache : DbCache<VolatileCache, VolatileCacheSettings, SqliteConnection>
+    public sealed class VolatileCache : DbCache<VolatileCache, VolatileCacheSettings, SQLiteCacheConnectionFactory<VolatileCacheSettings>, SqliteConnection>
     {
         #region Default Instance
 
@@ -91,13 +91,12 @@ namespace PommaLabs.KVLite.SQLite
 
         private void UpdateConnectionString()
         {
-            var sqliteConnFactory = (ConnectionFactory as SQLiteCacheConnectionFactory<VolatileCacheSettings>);
-            Settings.ConnectionString = sqliteConnFactory.InitConnectionString(Settings.CacheName);
+            Settings.ConnectionString = ConnectionFactory.InitConnectionString(Settings.CacheName);
 
             _keepAliveConnection?.Dispose();
-            _keepAliveConnection = sqliteConnFactory.Open();
+            _keepAliveConnection = ConnectionFactory.Open();
 
-            sqliteConnFactory.EnsureSchemaIsReady();
+            ConnectionFactory.EnsureSchemaIsReady();
         }
 
         /// <summary>

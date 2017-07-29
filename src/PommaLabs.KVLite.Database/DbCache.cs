@@ -43,17 +43,20 @@ namespace PommaLabs.KVLite.Database
     /// </summary>
     /// <typeparam name="TCache">The type of the cache.</typeparam>
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
+    /// <typeparam name="TConnectionFactory">The type of the cache connection factory.</typeparam>
     /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
-    public class DbCache<TCache, TSettings, TConnection> : AbstractCache<TCache, TSettings>
-        where TCache : DbCache<TCache, TSettings, TConnection>
+    public class DbCache<TCache, TSettings, TConnectionFactory, TConnection> : AbstractCache<TCache, TSettings>
+        where TCache : DbCache<TCache, TSettings, TConnectionFactory, TConnection>
         where TSettings : DbCacheSettings<TSettings>
+        where TConnectionFactory : DbCacheConnectionFactory<TSettings, TConnection>
         where TConnection : DbConnection
     {
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="DbCache{TCache, TSettings, TConnection}"/>
-        ///   class with given settings.
+        ///   Initializes a new instance of the
+        ///   <see cref="DbCache{TCache, TSettings, TConnectionFactory, TConnection}"/> class with
+        ///   given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="connectionFactory">The DB connection factory.</param>
@@ -61,7 +64,7 @@ namespace PommaLabs.KVLite.Database
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="random">The random number generator.</param>
-        public DbCache(TSettings settings, DbCacheConnectionFactory<TSettings, TConnection> connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock, IRandom random)
+        public DbCache(TSettings settings, TConnectionFactory connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock, IRandom random)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings), ErrorMessages.NullSettings);
             ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
@@ -78,7 +81,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   The connection factory used to retrieve connections to the cache data store.
         /// </summary>
-        public DbCacheConnectionFactory<TSettings, TConnection> ConnectionFactory { get; }
+        public TConnectionFactory ConnectionFactory { get; }
 
         /// <summary>
         ///   Generates random numbers. Used to determine when to perform automatic soft cleanups.

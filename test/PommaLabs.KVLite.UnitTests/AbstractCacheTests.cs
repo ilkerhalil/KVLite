@@ -39,14 +39,15 @@ using System.Threading.Tasks;
 namespace PommaLabs.KVLite.UnitTests
 {
     [TestFixture]
-    internal abstract class AbstractCacheTests<TCache, TSettings, TConnection> : AbstractTests
-        where TCache : DbCache<TCache, TSettings, TConnection>
+    internal abstract class AbstractCacheTests<TCache, TSettings, TConnectionFactory, TConnection> : AbstractTests
+        where TCache : DbCache<TCache, TSettings, TConnectionFactory, TConnection>
         where TSettings : DbCacheSettings<TSettings>
+        where TConnectionFactory : DbCacheConnectionFactory<TSettings, TConnection>
         where TConnection : DbConnection
     {
         #region Setup/Teardown
 
-        protected DbCache<TCache, TSettings, TConnection> Cache;
+        protected DbCache<TCache, TSettings, TConnectionFactory, TConnection> Cache;
 
         [SetUp]
         public virtual void SetUp()

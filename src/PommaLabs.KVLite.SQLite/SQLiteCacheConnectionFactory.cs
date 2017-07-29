@@ -32,7 +32,10 @@ using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.SQLite
 {
-    internal sealed class SQLiteCacheConnectionFactory<TSettings> : DbCacheConnectionFactory<TSettings, SqliteConnection>
+    /// <summary>
+    ///   Cache connection factory specialized for SQLite.
+    /// </summary>
+    public sealed class SQLiteCacheConnectionFactory<TSettings> : DbCacheConnectionFactory<TSettings, SqliteConnection>
         where TSettings : SQLiteCacheSettings<TSettings>
     {
         private readonly string _mode;
@@ -41,6 +44,12 @@ namespace PommaLabs.KVLite.SQLite
         private string _createCacheSchemaCommand;
         private string _getCacheEntriesSchemaQuery;
 
+        /// <summary>
+        ///   Cache connection factory specialized for SQLite.
+        /// </summary>
+        /// <param name="settings">Cache settings.</param>
+        /// <param name="mode">Storage mode.</param>
+        /// <param name="journal">Journal type.</param>
         public SQLiteCacheConnectionFactory(TSettings settings, string mode, string journal)
             : base(settings, SqliteFactory.Instance)
         {

@@ -31,7 +31,7 @@ namespace PommaLabs.KVLite.SqlServer
     /// <summary>
     ///   Cache backed by SQL Server.
     /// </summary>
-    public sealed class SqlServerCache : DbCache<SqlServerCache, SqlServerCacheSettings, SqlConnection>
+    public sealed class SqlServerCache : DbCache<SqlServerCache, SqlServerCacheSettings, SqlServerCacheConnectionFactory, SqlConnection>
     {
         #region Default Instance
 

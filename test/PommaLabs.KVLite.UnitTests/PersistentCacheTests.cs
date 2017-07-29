@@ -31,7 +31,7 @@ using System;
 
 namespace PommaLabs.KVLite.UnitTests
 {
-    internal sealed class PersistentCacheTests : AbstractCacheTests<PersistentCache, PersistentCacheSettings, SqliteConnection>
+    internal sealed class PersistentCacheTests : AbstractCacheTests<PersistentCache, PersistentCacheSettings, SQLiteCacheConnectionFactory<PersistentCacheSettings>, SqliteConnection>
     {
         private const string BlankPath = "   ";
 
