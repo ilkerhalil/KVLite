@@ -215,7 +215,7 @@ namespace PommaLabs.KVLite.Memory
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value?.ToString());
+                Log.ErrorException(ErrorMessages.InternalErrorOnSerialization, ex, value);
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
@@ -308,7 +308,7 @@ namespace PommaLabs.KVLite.Memory
         {
             var maybeCacheKey = SerializeCacheKey(partition, key);
             var maybeCacheValue = _store.Get(maybeCacheKey) as CacheValue;
-            return DeserializeCacheValue<TVal>(maybeCacheValue);
+            return DeserializeCacheValue<TVal>(maybeCacheValue, partition, key);
         }
 
         /// <summary>
@@ -366,7 +366,7 @@ namespace PommaLabs.KVLite.Memory
         /// </exception>
         protected override CacheResult<TVal> PeekInternal<TVal>(string partition, string key)
         {
-            throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
+            throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, nameof(MemoryCache)));
         }
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace PommaLabs.KVLite.Memory
         /// </exception>
         protected override CacheResult<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
-            throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
+            throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, nameof(MemoryCache)));
         }
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace PommaLabs.KVLite.Memory
         /// </exception>
         protected override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
         {
-            throw new NotSupportedException(ErrorMessages.CacheDoesNotAllowPeeking);
+            throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, nameof(MemoryCache)));
         }
 
         /// <summary>
@@ -529,7 +529,7 @@ namespace PommaLabs.KVLite.Memory
             }
         }
 
-        private CacheResult<TVal> DeserializeCacheValue<TVal>(CacheValue cacheValue)
+        private CacheResult<TVal> DeserializeCacheValue<TVal>(CacheValue cacheValue, string partition, string key)
         {
             if (cacheValue == null || cacheValue.Value == null)
             {
@@ -543,7 +543,7 @@ namespace PommaLabs.KVLite.Memory
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, nameof(MemoryCache));
                 return default(CacheResult<TVal>);
             }
         }
@@ -570,7 +570,7 @@ namespace PommaLabs.KVLite.Memory
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, nameof(MemoryCache));
                 return default(CacheResult<ICacheItem<TVal>>);
             }
         }

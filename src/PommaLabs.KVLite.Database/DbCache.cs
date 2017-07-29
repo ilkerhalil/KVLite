@@ -93,7 +93,7 @@ namespace PommaLabs.KVLite.Database
         public long Clear(CacheReadMode cacheReadMode)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
@@ -125,7 +125,7 @@ namespace PommaLabs.KVLite.Database
         public async Task<long> ClearAsync(CacheReadMode cacheReadMode, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
@@ -157,13 +157,47 @@ namespace PommaLabs.KVLite.Database
         public long Clear(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
             {
                 var result = ClearInternal(partition, cacheReadMode);
+
+                // Postconditions - NOT VALID: Methods below return counters which are not related to
+                // the number of items the call above actually cleared.
+
+                //Debug.Assert(Count(cacheReadMode) == 0);
+                //Debug.Assert(LongCount(cacheReadMode) == 0L);
+                Debug.Assert(result >= 0L);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearPartition, ex, typeof(TCache).Name, partition);
+                return 0L;
+            }
+        }
+
+        /// <summary>
+        ///   Clears the specified partition using the specified cache read mode.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="cacheReadMode">The cache read mode.</param>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>The number of items that have been removed.</returns>
+        public async Task<long> ClearAsync(string partition, CacheReadMode cacheReadMode, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Preconditions
+            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
+            if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
+
+            try
+            {
+                var result = await ClearAsyncInternal(partition, cacheReadMode, cancellationToken);
 
                 // Postconditions - NOT VALID: Methods below return counters which are not related to
                 // the number of items the call above actually cleared.
@@ -189,7 +223,7 @@ namespace PommaLabs.KVLite.Database
         public int Count(CacheReadMode cacheReadMode)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
@@ -203,7 +237,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, typeof(TCache).Name);
                 return 0;
             }
         }
@@ -217,7 +251,7 @@ namespace PommaLabs.KVLite.Database
         public int Count(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
@@ -232,7 +266,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, typeof(TCache).Name, partition);
                 return 0;
             }
         }
@@ -245,7 +279,7 @@ namespace PommaLabs.KVLite.Database
         public long LongCount(CacheReadMode cacheReadMode)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
@@ -259,7 +293,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, typeof(TCache).Name);
                 return 0L;
             }
         }
@@ -273,7 +307,7 @@ namespace PommaLabs.KVLite.Database
         public long LongCount(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(nameof(ICache), ErrorMessages.CacheHasBeenDisposed);
+            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
@@ -288,7 +322,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnCountPartition, partition), ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, typeof(TCache).Name, partition);
                 return 0L;
             }
         }
@@ -689,7 +723,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheValue<TVal>(dbCacheValue);
+            return DeserializeCacheValue<TVal>(dbCacheValue, partition, key);
         }
 
         /// <summary>
@@ -741,7 +775,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheValue<TVal>(dbCacheValue);
+            return DeserializeCacheValue<TVal>(dbCacheValue, partition, key);
         }
 
         /// <summary>
@@ -989,7 +1023,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheValue<TVal>(dbCacheValue);
+            return DeserializeCacheValue<TVal>(dbCacheValue, partition, key);
         }
 
         /// <summary>
@@ -1026,7 +1060,7 @@ namespace PommaLabs.KVLite.Database
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
-            return DeserializeCacheValue<TVal>(dbCacheValue);
+            return DeserializeCacheValue<TVal>(dbCacheValue, partition, key);
         }
 
         /// <summary>
@@ -1240,7 +1274,7 @@ namespace PommaLabs.KVLite.Database
             }
         }
 
-        private CacheResult<TVal> DeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
+        private CacheResult<TVal> DeserializeCacheValue<TVal>(DbCacheValue dbCacheValue, string partition, string key)
         {
             try
             {
@@ -1254,7 +1288,7 @@ namespace PommaLabs.KVLite.Database
                 // element (in order to avoid future errors) and we return None.
                 RemoveByHash(dbCacheValue.Hash);
 
-                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, typeof(TCache).Name);
 
                 return default(CacheResult<TVal>);
             }
@@ -1262,12 +1296,15 @@ namespace PommaLabs.KVLite.Database
 
         private CacheResult<ICacheItem<TVal>> DeserializeCacheEntry<TVal>(DbCacheEntry dbCacheEntry, string partition, string key)
         {
+            partition = partition ?? dbCacheEntry.Partition;
+            key = key ?? dbCacheEntry.Key;
+
             try
             {
                 var cacheItem = new CacheItem<TVal>
                 {
-                    Partition = partition ?? dbCacheEntry.Partition,
-                    Key = key ?? dbCacheEntry.Key,
+                    Partition = partition,
+                    Key = key,
                     Value = UnsafeDeserializeCacheValue<TVal>(dbCacheEntry),
                     UtcCreation = Instant.FromUnixTimeSeconds(dbCacheEntry.UtcCreation),
                     UtcExpiry = Instant.FromUnixTimeSeconds(dbCacheEntry.UtcExpiry),
@@ -1299,7 +1336,7 @@ namespace PommaLabs.KVLite.Database
                 // element (in order to avoid future errors) and we return None.
                 RemoveByHash(dbCacheEntry.Hash);
 
-                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex);
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, typeof(TCache).Name);
 
                 return default(CacheResult<ICacheItem<TVal>>);
             }
@@ -1375,7 +1412,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnSerializationFormat, ex, value?.ToString());
+                Log.ErrorException(ErrorMessages.InternalErrorOnSerialization, ex, value);
                 throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
             }
 
