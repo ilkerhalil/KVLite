@@ -40,16 +40,6 @@ namespace PommaLabs.KVLite.SQLite
 
         #endregion Fields
 
-        #region Properties
-
-        /// <summary>
-        ///   Gets the default settings for <see cref="PersistentCache"/>.
-        /// </summary>
-        /// <value>The default settings for <see cref="PersistentCache"/>.</value>
-        public static PersistentCacheSettings Default { get; } = new PersistentCacheSettings();
-
-        #endregion Properties
-
         #region Settings
 
         /// <summary>

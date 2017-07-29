@@ -442,7 +442,7 @@ namespace PommaLabs.KVLite.Memory
                 _store.Dispose();
             }
 
-            if (Settings.CacheName == MemoryCacheSettings.Default.CacheName)
+            if (Settings.CacheName == new MemoryCacheSettings().CacheName)
             {
                 // If the default cache name is used, then refer to the Default memory cache. It is
                 // the safest and most efficient way to use that kind of cache.

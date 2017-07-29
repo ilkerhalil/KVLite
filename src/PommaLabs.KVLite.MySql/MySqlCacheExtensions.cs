@@ -23,6 +23,7 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace PommaLabs.KVLite.MySql
 {
@@ -31,11 +32,11 @@ namespace PommaLabs.KVLite.MySql
     /// </summary>
     public static class MySqlCacheExtensions
     {
-        public static IServiceCollection AddKVLiteMySqlCache(this IServiceCollection services)
+        public static IServiceCollection AddKVLiteMySqlCache(this IServiceCollection services, Func<MySqlCacheSettings, MySqlCacheSettings> getSettings)
         {
-#pragma warning disable CC0022 // Should dispose object
-            var cache = new MySqlCache(new MySqlCacheSettings());
-#pragma warning restore CC0022 // Should dispose object
+            var cache = (getSettings == null)
+                ? new MySqlCache(new MySqlCacheSettings())
+                : new MySqlCache(getSettings(new MySqlCacheSettings()));
 
             services.AddSingleton<ICache>(cache);
             services.AddSingleton<IAsyncCache>(cache);

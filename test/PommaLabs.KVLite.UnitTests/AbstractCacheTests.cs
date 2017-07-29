@@ -41,7 +41,7 @@ namespace PommaLabs.KVLite.UnitTests
     [TestFixture]
     internal abstract class AbstractCacheTests<TCache, TSettings, TConnection> : AbstractTests
         where TCache : DbCache<TCache, TSettings, TConnection>
-        where TSettings : DbCacheSettings<TSettings, TConnection>
+        where TSettings : DbCacheSettings<TSettings>
         where TConnection : DbConnection
     {
         #region Setup/Teardown

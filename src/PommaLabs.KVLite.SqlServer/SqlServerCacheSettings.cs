@@ -23,7 +23,6 @@
 
 using PommaLabs.KVLite.Database;
 using System;
-using System.Data.SqlClient;
 using System.Runtime.Serialization;
 
 namespace PommaLabs.KVLite.SqlServer
@@ -32,12 +31,7 @@ namespace PommaLabs.KVLite.SqlServer
     ///   Settings used by <see cref="SqlServerCache"/>.
     /// </summary>
     [Serializable, DataContract]
-    public sealed class SqlServerCacheSettings : DbCacheSettings<SqlServerCacheSettings, SqlConnection>
+    public sealed class SqlServerCacheSettings : DbCacheSettings<SqlServerCacheSettings>
     {
-        /// <summary>
-        ///   Gets the default settings for <see cref="SqlServerCache"/>.
-        /// </summary>
-        /// <value>The default settings for <see cref="SqlServerCache"/>.</value>
-        public static SqlServerCacheSettings Default { get; } = new SqlServerCacheSettings();
     }
 }

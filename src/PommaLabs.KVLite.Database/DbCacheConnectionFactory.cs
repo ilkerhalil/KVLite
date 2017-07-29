@@ -38,7 +38,7 @@ namespace PommaLabs.KVLite.Database
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
     /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
     public abstract class DbCacheConnectionFactory<TSettings, TConnection>
-        where TSettings : DbCacheSettings<TSettings, TConnection>
+        where TSettings : DbCacheSettings<TSettings>
         where TConnection : DbConnection
     {
         /// <summary>
@@ -82,7 +82,7 @@ namespace PommaLabs.KVLite.Database
         /// <param name="e">Arguments.</param>
         private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(DbCacheSettings<TSettings, TConnection>.CacheSchemaName) || e.PropertyName == nameof(DbCacheSettings<TSettings, TConnection>.CacheEntriesTableName))
+            if (e.PropertyName == nameof(DbCacheSettings<TSettings>.CacheSchemaName) || e.PropertyName == nameof(DbCacheSettings<TSettings>.CacheEntriesTableName))
             {
                 UpdateCommandsAndQueries();
             }

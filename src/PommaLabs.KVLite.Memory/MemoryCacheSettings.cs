@@ -37,12 +37,6 @@ namespace PommaLabs.KVLite.Memory
     public sealed class MemoryCacheSettings : AbstractCacheSettings<MemoryCacheSettings>
     {
         /// <summary>
-        ///   Gets the default settings for <see cref="MemoryCache"/>.
-        /// </summary>
-        /// <value>The default settings for <see cref="MemoryCache"/>.</value>
-        public static MemoryCacheSettings Default { get; } = new MemoryCacheSettings();
-
-        /// <summary>
         ///   Gets the cache URI; used for logging.
         /// </summary>
         /// <value>The cache URI.</value>

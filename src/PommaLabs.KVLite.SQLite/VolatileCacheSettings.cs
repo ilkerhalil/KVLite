@@ -41,16 +41,6 @@ namespace PommaLabs.KVLite.SQLite
 
         #endregion Fields
 
-        #region Properties
-
-        /// <summary>
-        ///   Gets the default settings for <see cref="VolatileCache"/>.
-        /// </summary>
-        /// <value>The default settings for <see cref="VolatileCache"/>.</value>
-        public static VolatileCacheSettings Default { get; } = new VolatileCacheSettings();
-
-        #endregion Properties
-
         #region Settings
 
         /// <summary>

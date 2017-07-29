@@ -91,7 +91,7 @@ namespace PommaLabs.KVLite.SQLite
 
         private void UpdateConnectionString()
         {
-            var sqliteConnFactory = (Settings.ConnectionFactory as SQLiteCacheConnectionFactory<VolatileCacheSettings>);
+            var sqliteConnFactory = (ConnectionFactory as SQLiteCacheConnectionFactory<VolatileCacheSettings>);
             Settings.ConnectionString = sqliteConnFactory.InitConnectionString(Settings.CacheName);
 
             _keepAliveConnection?.Dispose();

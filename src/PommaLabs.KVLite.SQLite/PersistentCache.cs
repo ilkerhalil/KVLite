@@ -90,7 +90,7 @@ namespace PommaLabs.KVLite.SQLite
             try
             {
                 Log.Info($"Vacuuming the SQLite DB '{Settings.CacheFile}'...");
-                (Settings.ConnectionFactory as SQLiteCacheConnectionFactory<PersistentCacheSettings>).Vacuum();
+                (ConnectionFactory as SQLiteCacheConnectionFactory<PersistentCacheSettings>).Vacuum();
             }
             catch (Exception ex)
             {
@@ -105,7 +105,7 @@ namespace PommaLabs.KVLite.SQLite
 
         private void UpdateConnectionString()
         {
-            var sqliteConnFactory = (Settings.ConnectionFactory as SQLiteCacheConnectionFactory<PersistentCacheSettings>);
+            var sqliteConnFactory = (ConnectionFactory as SQLiteCacheConnectionFactory<PersistentCacheSettings>);
             var dataSource = GetDataSource(Settings.CacheFile);
             Settings.ConnectionString = sqliteConnFactory.InitConnectionString(dataSource);
             sqliteConnFactory.EnsureSchemaIsReady();

@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Oracle.ManagedDataAccess.Client;
 using PommaLabs.KVLite.Database;
 using System;
 using System.Runtime.Serialization;
@@ -32,12 +31,7 @@ namespace PommaLabs.KVLite.Oracle
     ///   Settings used by <see cref="OracleCache"/>.
     /// </summary>
     [Serializable, DataContract]
-    public sealed class OracleCacheSettings : DbCacheSettings<OracleCacheSettings, OracleConnection>
+    public sealed class OracleCacheSettings : DbCacheSettings<OracleCacheSettings>
     {
-        /// <summary>
-        ///   Gets the default settings for <see cref="OracleCache"/>.
-        /// </summary>
-        /// <value>The default settings for <see cref="OracleCache"/>.</value>
-        public static OracleCacheSettings Default { get; } = new OracleCacheSettings();
     }
 }

@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Npgsql;
 using PommaLabs.KVLite.Database;
 using System;
 using System.Runtime.Serialization;
@@ -32,12 +31,7 @@ namespace PommaLabs.KVLite.PostgreSql
     ///   Settings used by <see cref="PostgreSqlCache"/>.
     /// </summary>
     [Serializable, DataContract]
-    public sealed class PostgreSqlCacheSettings : DbCacheSettings<PostgreSqlCacheSettings, NpgsqlConnection>
+    public sealed class PostgreSqlCacheSettings : DbCacheSettings<PostgreSqlCacheSettings>
     {
-        /// <summary>
-        ///   Gets the default settings for <see cref="PostgreSqlCache"/>.
-        /// </summary>
-        /// <value>The default settings for <see cref="PostgreSqlCache"/>.</value>
-        public static PostgreSqlCacheSettings Default { get; } = new PostgreSqlCacheSettings();
     }
 }

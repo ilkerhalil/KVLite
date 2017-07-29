@@ -24,7 +24,6 @@
 using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
-using System.Data.Common;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
@@ -35,21 +34,14 @@ namespace PommaLabs.KVLite.Database
     ///   Base class for cache settings. Contains settings shared among different caches.
     /// </summary>
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
-    /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
     [Serializable, DataContract]
-    public class DbCacheSettings<TSettings, TConnection> : AbstractCacheSettings<TSettings>
-        where TSettings : DbCacheSettings<TSettings, TConnection>
-        where TConnection : DbConnection
+    public class DbCacheSettings<TSettings> : AbstractCacheSettings<TSettings>
+        where TSettings : DbCacheSettings<TSettings>
     {
         /// <summary>
         ///   Used to validate SQL names.
         /// </summary>
         private static Regex IsValidSqlNameRegex { get; } = new Regex("[a-z0-9_]*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        /// <summary>
-        ///   The DB connection factory.
-        /// </summary>
-        public DbCacheConnectionFactory<TSettings, TConnection> ConnectionFactory { get; internal set; }
 
         /// <summary>
         ///   Gets the cache URI; used for logging.

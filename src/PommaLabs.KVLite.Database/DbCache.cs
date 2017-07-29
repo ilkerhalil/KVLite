@@ -46,7 +46,7 @@ namespace PommaLabs.KVLite.Database
     /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
     public class DbCache<TCache, TSettings, TConnection> : AbstractCache<TCache, TSettings>
         where TCache : DbCache<TCache, TSettings, TConnection>
-        where TSettings : DbCacheSettings<TSettings, TConnection>
+        where TSettings : DbCacheSettings<TSettings>
         where TConnection : DbConnection
     {
         #region Construction
@@ -64,7 +64,7 @@ namespace PommaLabs.KVLite.Database
         public DbCache(TSettings settings, DbCacheConnectionFactory<TSettings, TConnection> connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock, IRandom random)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings), ErrorMessages.NullSettings);
-            Settings.ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+            ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
             Clock = clock ?? SystemClock.Instance;
             Serializer = serializer ?? JsonSerializer.Instance;
             Compressor = compressor ?? DeflateCompressor.Instance;
@@ -78,7 +78,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   The connection factory used to retrieve connections to the cache data store.
         /// </summary>
-        public DbCacheConnectionFactory<TSettings, TConnection> ConnectionFactory => Settings.ConnectionFactory;
+        public DbCacheConnectionFactory<TSettings, TConnection> ConnectionFactory { get; }
 
         /// <summary>
         ///   Generates random numbers. Used to determine when to perform automatic soft cleanups.
@@ -422,7 +422,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override long GetCacheSizeInBytesInternal()
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
 
             using (var db = cf.Open())
             {
@@ -439,7 +439,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override async Task<long> GetCacheSizeInBytesAsyncInternal(CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
 
             using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
             {
@@ -462,7 +462,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override void AddInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             partition = partition.Truncate(Settings.MaxPartitionNameLength);
             key = key.Truncate(Settings.MaxKeyNameLength);
 
@@ -506,7 +506,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override async Task AddAsyncInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             partition = partition.Truncate(Settings.MaxPartitionNameLength);
             key = key.Truncate(Settings.MaxKeyNameLength);
 
@@ -543,7 +543,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override long ClearInternal(string partition, CacheReadMode cacheReadMode)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Hash = Hashing.HashPartition(partition),
@@ -570,7 +570,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override async Task<long> ClearAsyncInternal(string partition, CacheReadMode cacheReadMode, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Hash = Hashing.HashPartition(partition),
@@ -597,7 +597,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override bool ContainsInternal(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
@@ -622,7 +622,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override async Task<bool> ContainsAsyncInternal(string partition, string key, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
@@ -646,7 +646,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override long CountInternal(string partition, CacheReadMode cacheReadMode)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Hash = Hashing.HashPartition(partition),
@@ -671,7 +671,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override async Task<long> CountAsyncInternal(string partition, CacheReadMode cacheReadMode, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Hash = Hashing.HashPartition(partition),
@@ -696,7 +696,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override CacheResult<TVal> GetInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
@@ -748,7 +748,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override async Task<CacheResult<TVal>> GetAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
@@ -799,7 +799,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override CacheResult<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
@@ -851,7 +851,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override async Task<CacheResult<ICacheItem<TVal>>> GetItemAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
@@ -901,7 +901,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Hash = Hashing.HashPartition(partition),
@@ -956,7 +956,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override async Task<IList<ICacheItem<TVal>>> GetItemsAsyncInternal<TVal>(string partition, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Hash = Hashing.HashPartition(partition),
@@ -1012,7 +1012,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override CacheResult<TVal> PeekInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
@@ -1049,7 +1049,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override async Task<CacheResult<TVal>> PeekAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
@@ -1085,7 +1085,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override CacheResult<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
@@ -1122,7 +1122,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override async Task<CacheResult<ICacheItem<TVal>>> PeekItemAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
@@ -1160,7 +1160,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Hash = Hashing.HashPartition(partition),
@@ -1197,7 +1197,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override async Task<IList<ICacheItem<TVal>>> PeekItemsAsyncInternal<TVal>(string partition, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntryGroup = new DbCacheEntry.Group
             {
                 Hash = Hashing.HashPartition(partition),
@@ -1238,7 +1238,7 @@ namespace PommaLabs.KVLite.Database
         protected sealed override async Task RemoveAsyncInternal(string partition, string key, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key)
@@ -1355,7 +1355,7 @@ namespace PommaLabs.KVLite.Database
         private void RemoveByHash(long hash)
         {
             // Compute all parameters _before_ opening the connection.
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = hash
@@ -1372,7 +1372,7 @@ namespace PommaLabs.KVLite.Database
 
         private SqlMapper.IDynamicParameters PrepareCacheEntryForAdd<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)
         {
-            var cf = Settings.ConnectionFactory;
+            var cf = ConnectionFactory;
 
             // Create the new entry here, before the serialization, so that we can use its hash code
             // to perform some anti-tamper checks when the value will be read.
