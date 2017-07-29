@@ -111,7 +111,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex, typeof(TCache).Name);
                 return 0L;
             }
         }
@@ -143,7 +143,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex, typeof(TCache).Name);
                 return 0L;
             }
         }
@@ -176,7 +176,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnClearPartition, partition), ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearPartition, ex, typeof(TCache).Name, partition);
                 return 0L;
             }
         }
@@ -1413,6 +1413,10 @@ namespace PommaLabs.KVLite.Database
 
         private static void RetryOnFail(Action retry)
         {
+            if (retry == null)
+            {
+                return;
+            }
             for (var i = 1; i <= RetryLimit; ++i)
             {
                 try
@@ -1429,6 +1433,10 @@ namespace PommaLabs.KVLite.Database
 
         private static async Task RetryOnFailAsync(Func<Task> retry)
         {
+            if (retry == null)
+            {
+                return;
+            }
             for (var i = 1; i <= RetryLimit; ++i)
             {
                 try
@@ -1445,6 +1453,10 @@ namespace PommaLabs.KVLite.Database
 
         private static T RetryOnFail<T>(Func<T> retry)
         {
+            if (retry == null)
+            {
+                return default(T);
+            }
             for (var i = 1; i <= RetryLimit; ++i)
             {
                 try
@@ -1461,6 +1473,10 @@ namespace PommaLabs.KVLite.Database
 
         private static async Task<T> RetryOnFailAsync<T>(Func<Task<T>> retry)
         {
+            if (retry == null)
+            {
+                return default(T);
+            }
             for (var i = 1; i <= RetryLimit; ++i)
             {
                 try

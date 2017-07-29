@@ -281,7 +281,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex, typeof(TCache).Name);
                 return 0L;
             }
         }
@@ -312,7 +312,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnClearPartition, partition), ex);
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearPartition, ex, typeof(TCache).Name, partition);
                 return 0L;
             }
         }

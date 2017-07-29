@@ -31,12 +31,12 @@ namespace PommaLabs.KVLite.Resources
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnClearAll = "An error occurred while clearing all cache partitions.";
+        public const string InternalErrorOnClearAll = "An error occurred while clearing all {Cache} partitions.";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnClearPartition = "An error occurred while clearing cache partition '{0}'.";
+        public const string InternalErrorOnClearPartition = "An error occurred while clearing {Cache} partition '{Partition}'.";
 
         /// <summary>
         ///   An error message.
