@@ -197,7 +197,7 @@ namespace PommaLabs.KVLite.Database
 
             try
             {
-                var result = await ClearAsyncInternal(partition, cacheReadMode, cancellationToken);
+                var result = await ClearAsyncInternal(partition, cacheReadMode, cancellationToken).ConfigureAwait(false);
 
                 // Postconditions - NOT VALID: Methods below return counters which are not related to
                 // the number of items the call above actually cleared.

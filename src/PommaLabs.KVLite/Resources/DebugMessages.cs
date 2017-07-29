@@ -31,6 +31,11 @@ namespace PommaLabs.KVLite.Resources
         /// <summary>
         ///   A debug message.
         /// </summary>
-        public static string AddItem { get; } = "Adding item '{Partition}/{Key}' to {Cache} with UTC expiry '{UtcExpiry}' and interval '{Interval}'.";
+        public static string AddItem { get; } = "Adding item '{Partition}/{Key}' to {Cache} with UTC expiry '{UtcExpiry}' and interval '{Interval}'";
+
+        /// <summary>
+        ///   A debug message.
+        /// </summary>
+        public static string GetItem { get; } = "Reading item '{Partition}/{Key}' from {Cache}";
     }
 }

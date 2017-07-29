@@ -963,6 +963,11 @@ namespace PommaLabs.KVLite
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
 
+            if (Log.IsDebugEnabled())
+            {
+                Log.DebugFormat(DebugMessages.GetItem, partition, key, typeof(TCache).Name);
+            }
+
             try
             {
                 var result = GetInternal<TVal>(partition, key);
@@ -998,6 +1003,11 @@ namespace PommaLabs.KVLite
             if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
+
+            if (Log.IsDebugEnabled())
+            {
+                Log.DebugFormat(DebugMessages.GetItem, partition, key, typeof(TCache).Name);
+            }
 
             try
             {
@@ -1121,6 +1131,11 @@ namespace PommaLabs.KVLite
             if (parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem) throw new NotSupportedException(ErrorMessages.TooManyParentKeys);
             if (parentKeys != null && parentKeys.Any(pk => pk == null)) throw new ArgumentException(ErrorMessages.NullKey, nameof(parentKeys));
 
+            if (Log.IsDebugEnabled())
+            {
+                Log.DebugFormat(DebugMessages.GetItem, partition, key, typeof(TCache).Name);
+            }
+
             try
             {
                 var result = GetInternal<TVal>(partition, key);
@@ -1193,6 +1208,11 @@ namespace PommaLabs.KVLite
             if (valueGetter == null) throw new ArgumentNullException(nameof(valueGetter), ErrorMessages.NullValueGetter);
             if (parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem) throw new NotSupportedException(ErrorMessages.TooManyParentKeys);
             if (parentKeys != null && parentKeys.Any(pk => pk == null)) throw new ArgumentException(ErrorMessages.NullKey, nameof(parentKeys));
+
+            if (Log.IsDebugEnabled())
+            {
+                Log.DebugFormat(DebugMessages.GetItem, partition, key, typeof(TCache).Name);
+            }
 
             try
             {
@@ -1267,6 +1287,11 @@ namespace PommaLabs.KVLite
             if (parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem) throw new NotSupportedException(ErrorMessages.TooManyParentKeys);
             if (parentKeys != null && parentKeys.Any(pk => pk == null)) throw new ArgumentException(ErrorMessages.NullKey, nameof(parentKeys));
 
+            if (Log.IsDebugEnabled())
+            {
+                Log.DebugFormat(DebugMessages.GetItem, partition, key, typeof(TCache).Name);
+            }
+
             try
             {
                 var result = GetInternal<TVal>(partition, key);
@@ -1339,6 +1364,11 @@ namespace PommaLabs.KVLite
             if (valueGetter == null) throw new ArgumentNullException(nameof(valueGetter), ErrorMessages.NullValueGetter);
             if (parentKeys != null && parentKeys.Count > MaxParentKeyCountPerItem) throw new NotSupportedException(ErrorMessages.TooManyParentKeys);
             if (parentKeys != null && parentKeys.Any(pk => pk == null)) throw new ArgumentException(ErrorMessages.NullKey, nameof(parentKeys));
+
+            if (Log.IsDebugEnabled())
+            {
+                Log.DebugFormat(DebugMessages.GetItem, partition, key, typeof(TCache).Name);
+            }
 
             try
             {
