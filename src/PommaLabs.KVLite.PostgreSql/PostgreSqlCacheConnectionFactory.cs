@@ -29,13 +29,14 @@ namespace PommaLabs.KVLite.PostgreSql
     /// <summary>
     ///   Cache connection factory specialized for PostgreSQL.
     /// </summary>
-    public sealed class PostgreSqlCacheConnectionFactory : DbCacheConnectionFactory<NpgsqlConnection>
+    public sealed class PostgreSqlCacheConnectionFactory : DbCacheConnectionFactory<PostgreSqlCacheSettings, NpgsqlConnection>
     {
         /// <summary>
         ///   Cache connection factory specialized for PostgreSQL.
         /// </summary>
-        public PostgreSqlCacheConnectionFactory()
-            : base(NpgsqlFactory.Instance, null, null)
+        /// <param name="settings">Cache settings.</param>
+        public PostgreSqlCacheConnectionFactory(PostgreSqlCacheSettings settings)
+            : base(settings, NpgsqlFactory.Instance)
         {
         }
 
@@ -63,7 +64,7 @@ namespace PommaLabs.KVLite.PostgreSql
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
-                insert into {s}{CacheEntriesTableName} (
+                insert into {s}{Settings.CacheEntriesTableName} (
                     {DbCacheValue.HashColumn},
                     {DbCacheValue.UtcExpiryColumn},
                     {DbCacheValue.IntervalColumn},

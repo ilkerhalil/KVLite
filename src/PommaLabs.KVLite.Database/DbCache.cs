@@ -55,13 +55,13 @@ namespace PommaLabs.KVLite.Database
         ///   Initializes a new instance of the <see cref="DbCache{TCache, TSettings, TConnection}"/>
         ///   class with given settings.
         /// </summary>
-        /// <param name="settings">The settings.</param>
+        /// <param name="settings">Cache settings.</param>
         /// <param name="connectionFactory">The DB connection factory.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
         /// <param name="random">The random number generator.</param>
-        public DbCache(TSettings settings, DbCacheConnectionFactory<TConnection> connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock, IRandom random)
+        public DbCache(TSettings settings, DbCacheConnectionFactory<TSettings, TConnection> connectionFactory, ISerializer serializer, ICompressor compressor, IClock clock, IRandom random)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings), ErrorMessages.NullSettings);
             Settings.ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
@@ -78,7 +78,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   The connection factory used to retrieve connections to the cache data store.
         /// </summary>
-        public DbCacheConnectionFactory<TConnection> ConnectionFactory => Settings.ConnectionFactory;
+        public DbCacheConnectionFactory<TSettings, TConnection> ConnectionFactory => Settings.ConnectionFactory;
 
         /// <summary>
         ///   Generates random numbers. Used to determine when to perform automatic soft cleanups.
@@ -463,8 +463,8 @@ namespace PommaLabs.KVLite.Database
         {
             // Compute all parameters _before_ opening the connection.
             var cf = Settings.ConnectionFactory;
-            partition = partition.Truncate(cf.MaxPartitionNameLength);
-            key = key.Truncate(cf.MaxKeyNameLength);
+            partition = partition.Truncate(Settings.MaxPartitionNameLength);
+            key = key.Truncate(Settings.MaxKeyNameLength);
 
             if (Log.IsDebugEnabled())
             {
@@ -507,8 +507,8 @@ namespace PommaLabs.KVLite.Database
         {
             // Compute all parameters _before_ opening the connection.
             var cf = Settings.ConnectionFactory;
-            partition = partition.Truncate(cf.MaxPartitionNameLength);
-            key = key.Truncate(cf.MaxKeyNameLength);
+            partition = partition.Truncate(Settings.MaxPartitionNameLength);
+            key = key.Truncate(Settings.MaxKeyNameLength);
 
             if (Log.IsDebugEnabled())
             {
@@ -1430,15 +1430,15 @@ namespace PommaLabs.KVLite.Database
             var parentKeyCount = parentKeys?.Count ?? 0;
             if (parentKeyCount > 0)
             {
-                dbCacheEntry.ParentKey0 = parentKeys[0].Truncate(cf.MaxKeyNameLength);
+                dbCacheEntry.ParentKey0 = parentKeys[0].Truncate(Settings.MaxKeyNameLength);
                 dbCacheEntry.ParentHash0 = Hashing.HashPartitionAndKey(partition, dbCacheEntry.ParentKey0);
                 if (parentKeyCount > 1)
                 {
-                    dbCacheEntry.ParentKey1 = parentKeys[1].Truncate(cf.MaxKeyNameLength);
+                    dbCacheEntry.ParentKey1 = parentKeys[1].Truncate(Settings.MaxKeyNameLength);
                     dbCacheEntry.ParentHash1 = Hashing.HashPartitionAndKey(partition, dbCacheEntry.ParentKey1);
                     if (parentKeyCount > 2)
                     {
-                        dbCacheEntry.ParentKey2 = parentKeys[2].Truncate(cf.MaxKeyNameLength);
+                        dbCacheEntry.ParentKey2 = parentKeys[2].Truncate(Settings.MaxKeyNameLength);
                         dbCacheEntry.ParentHash2 = Hashing.HashPartitionAndKey(partition, dbCacheEntry.ParentKey2);
                     }
                 }

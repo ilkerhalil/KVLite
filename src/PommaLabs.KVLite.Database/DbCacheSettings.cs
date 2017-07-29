@@ -21,11 +21,13 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 namespace PommaLabs.KVLite.Database
 {
@@ -39,41 +41,86 @@ namespace PommaLabs.KVLite.Database
         where TSettings : DbCacheSettings<TSettings, TConnection>
         where TConnection : DbConnection
     {
-        #region Fields
-
-        private double _chancesOfAutoCleanup;
-        private long _minValueLengthForCompression;
-
-        #endregion Fields
-
-        #region Construction
-
         /// <summary>
-        ///   Sets default values for SQL cache settings.
+        ///   Used to validate SQL names.
         /// </summary>
-        public DbCacheSettings()
-        {
-            // Default values.
-            DefaultPartition = CachePartitions.Default;
-            StaticIntervalInDays = 30;
-            ChancesOfAutoCleanup = 0.01;
-            MinValueLengthForCompression = 4096;
-        }
+        private static Regex IsValidSqlNameRegex { get; } = new Regex("[a-z0-9_]*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         /// <summary>
         ///   The DB connection factory.
         /// </summary>
-        public DbCacheConnectionFactory<TConnection> ConnectionFactory { get; internal set; }
-
-        #endregion Construction
-
-        #region Settings
+        public DbCacheConnectionFactory<TSettings, TConnection> ConnectionFactory { get; internal set; }
 
         /// <summary>
         ///   Gets the cache URI; used for logging.
         /// </summary>
         [IgnoreDataMember]
-        public override sealed string CacheUri => ConnectionFactory?.ConnectionString ?? "Data Source=UNDEFINED";
+        public override sealed string CacheUri => ConnectionString ?? "Data Source=UNDEFINED";
+
+        /// <summary>
+        ///   Backing field for <see cref="CacheSchemaName"/>.
+        /// </summary>
+        private string _cacheSchemaName = string.Empty;
+
+        /// <summary>
+        ///   The schema which holds cache entries table.
+        /// </summary>
+        [DataMember]
+        public string CacheSchemaName
+        {
+            get
+            {
+                var result = _cacheSchemaName;
+
+                // Postconditions
+                Debug.Assert(IsValidSqlNameRegex.IsMatch(result));
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                if (!IsValidSqlNameRegex.IsMatch(value)) throw new ArgumentException(ErrorMessages.InvalidCacheSchemaName, nameof(CacheSchemaName));
+
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(CacheSchemaName), _cacheSchemaName, value);
+                _cacheSchemaName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        ///   Backing field for <see cref="CacheEntriesTableName"/>.
+        /// </summary>
+        private string _cacheEntriesTableName = "kvl_cache_entries";
+
+        /// <summary>
+        ///   The name of the table which holds cache entries.
+        /// </summary>
+        [DataMember]
+        public string CacheEntriesTableName
+        {
+            get
+            {
+                var result = _cacheEntriesTableName;
+
+                // Postconditions
+                Debug.Assert(IsValidSqlNameRegex.IsMatch(result));
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                if (!IsValidSqlNameRegex.IsMatch(value)) throw new ArgumentException(ErrorMessages.InvalidCacheEntriesTableName, nameof(CacheEntriesTableName));
+
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(CacheEntriesTableName), _cacheEntriesTableName, value);
+                _cacheEntriesTableName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        ///   Backing field for <see cref="ChancesOfAutoCleanup"/>.
+        /// </summary>
+        private double _chancesOfAutoCleanup = 0.01;
 
         /// <summary>
         ///   Chances of an automatic cleanup happening right after an insert operation. Defaults to 1%.
@@ -102,10 +149,16 @@ namespace PommaLabs.KVLite.Database
                 // Preconditions
                 if (value < 0.0 || value > 1.0) throw new ArgumentOutOfRangeException(nameof(ChancesOfAutoCleanup));
 
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(ChancesOfAutoCleanup), _chancesOfAutoCleanup, value);
                 _chancesOfAutoCleanup = value;
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>
+        ///   Backing field for <see cref="MinValueLengthForCompression"/>.
+        /// </summary>
+        private long _minValueLengthForCompression = 4096;
 
         /// <summary>
         ///   When a serialized value is longer than specified quantity, then the cache will compress
@@ -115,6 +168,7 @@ namespace PommaLabs.KVLite.Database
         /// <exception cref="ArgumentOutOfRangeException">
         ///   <paramref name="value"/> is less than zero.
         /// </exception>
+        [DataMember]
         public long MinValueLengthForCompression
         {
             get
@@ -130,11 +184,27 @@ namespace PommaLabs.KVLite.Database
                 // Preconditions
                 if (value < 0L) throw new ArgumentOutOfRangeException(nameof(MinValueLengthForCompression));
 
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(MinValueLengthForCompression), _minValueLengthForCompression, value);
                 _minValueLengthForCompression = value;
                 OnPropertyChanged();
             }
         }
 
-        #endregion Settings
+        /// <summary>
+        ///   The connection string used to connect to the cache data provider.
+        /// </summary>
+        public string ConnectionString { get; set; }
+
+        /// <summary>
+        ///   The maximum length a partition can have. Longer partitions will be truncated. Default
+        ///   value is 2000, but each SQL connection factory might change it.
+        /// </summary>
+        public int MaxPartitionNameLength { get; } = 2000;
+
+        /// <summary>
+        ///   The maximum length a key can have. Longer keys will be truncated. Default value is
+        ///   2000, but each SQL connection factory might change it.
+        /// </summary>
+        public int MaxKeyNameLength { get; } = 2000;
     }
 }

@@ -635,8 +635,8 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   Adds a "static" value with given partition and key. Value will last as much as
-        ///   specified in <see cref="IEssentialCacheSettings.StaticIntervalInDays"/> and, if
-        ///   accessed before expiry, its lifetime will be extended by that interval.
+        ///   specified in <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>

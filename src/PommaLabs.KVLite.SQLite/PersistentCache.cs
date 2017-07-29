@@ -107,7 +107,7 @@ namespace PommaLabs.KVLite.SQLite
         {
             var sqliteConnFactory = (Settings.ConnectionFactory as SQLiteCacheConnectionFactory<PersistentCacheSettings>);
             var dataSource = GetDataSource(Settings.CacheFile);
-            sqliteConnFactory.InitConnectionString(dataSource);
+            Settings.ConnectionString = sqliteConnFactory.InitConnectionString(dataSource);
             sqliteConnFactory.EnsureSchemaIsReady();
         }
 

@@ -34,14 +34,10 @@ namespace PommaLabs.KVLite.Oracle
     [Serializable, DataContract]
     public sealed class OracleCacheSettings : DbCacheSettings<OracleCacheSettings, OracleConnection>
     {
-        #region Properties
-
         /// <summary>
         ///   Gets the default settings for <see cref="OracleCache"/>.
         /// </summary>
         /// <value>The default settings for <see cref="OracleCache"/>.</value>
         public static OracleCacheSettings Default { get; } = new OracleCacheSettings();
-
-        #endregion Properties
     }
 }

@@ -56,7 +56,7 @@ namespace PommaLabs.KVLite.MySql
         /// <param name="clock">The clock.</param>
         /// <param name="random">The random number generator.</param>
         public MySqlCache(MySqlCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
-            : this(settings, new MySqlCacheConnectionFactory(), serializer, compressor, clock, random)
+            : this(settings, new MySqlCacheConnectionFactory(settings), serializer, compressor, clock, random)
         {
         }
 

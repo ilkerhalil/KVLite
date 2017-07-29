@@ -1,4 +1,4 @@
-﻿// File name: MySqlCacheSettings.cs
+﻿// File name: MySqlCacheExtensions.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,23 +21,27 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using MySql.Data.MySqlClient;
-using PommaLabs.KVLite.Database;
-using System;
-using System.Runtime.Serialization;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PommaLabs.KVLite.MySql
 {
     /// <summary>
-    ///   Settings used by <see cref="MySqlCache"/>.
+    ///   Extension methods related to <see cref="MySqlCache"/>.
     /// </summary>
-    [Serializable, DataContract]
-    public sealed class MySqlCacheSettings : DbCacheSettings<MySqlCacheSettings, MySqlConnection>
+    public static class MySqlCacheExtensions
     {
-        /// <summary>
-        ///   Gets the default settings for <see cref="MySqlCache"/>.
-        /// </summary>
-        /// <value>The default settings for <see cref="MySqlCache"/>.</value>
-        public static MySqlCacheSettings Default { get; } = new MySqlCacheSettings();
+        public static IServiceCollection AddKVLiteMySqlCache(this IServiceCollection services)
+        {
+#pragma warning disable CC0022 // Should dispose object
+            var cache = new MySqlCache(new MySqlCacheSettings());
+#pragma warning restore CC0022 // Should dispose object
+
+            services.AddSingleton<ICache>(cache);
+            services.AddSingleton<IAsyncCache>(cache);
+            services.AddSingleton<IDistributedCache>(cache);
+
+            return services;
+        }
     }
 }

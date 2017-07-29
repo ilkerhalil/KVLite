@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using NodaTime;
 using System.ComponentModel;
 
 namespace PommaLabs.KVLite
@@ -31,7 +32,7 @@ namespace PommaLabs.KVLite
     public interface IEssentialCacheSettings : INotifyPropertyChanged
     {
         /// <summary>
-        ///   Gets the cache URI; can be used for logging.
+        ///   The cache URI, can be used for logging.
         /// </summary>
         /// <value>The cache URI.</value>
         string CacheUri { get; }
@@ -42,8 +43,8 @@ namespace PommaLabs.KVLite
         string DefaultPartition { get; set; }
 
         /// <summary>
-        ///   How many days static values will last.
+        ///   How long static values will last.
         /// </summary>
-        int StaticIntervalInDays { get; set; }
+        Duration StaticInterval { get; set; }
     }
 }

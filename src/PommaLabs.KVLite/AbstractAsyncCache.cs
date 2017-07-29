@@ -69,14 +69,6 @@ namespace PommaLabs.KVLite
             }
         }
 
-        Task<CacheResult<object>> IAsyncCache.this[string partition, string key]
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         /// <summary>
         ///   Adds a "sliding" value with given partition and key. Value will last as much as
         ///   specified in given interval and, if accessed before expiry, its lifetime will be
@@ -125,8 +117,8 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   Adds a "static" value with given partition and key. Value will last as much as
-        ///   specified in <see cref="IEssentialCacheSettings.StaticIntervalInDays"/> and, if
-        ///   accessed before expiry, its lifetime will be extended by that interval.
+        ///   specified in <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
@@ -714,8 +706,8 @@ namespace PommaLabs.KVLite
         ///
         ///   If the value is not found, then it adds a "static" value with given partition and key.
         ///   Value will last as much as specified in
-        ///   <see cref="IEssentialCacheSettings.StaticIntervalInDays"/> and, if accessed before
-        ///   expiry, its lifetime will be extended by that interval.
+        ///   <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed before expiry,
+        ///   its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>

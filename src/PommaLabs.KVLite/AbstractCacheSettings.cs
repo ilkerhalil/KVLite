@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NodaTime;
+using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.ComponentModel;
@@ -38,8 +39,15 @@ namespace PommaLabs.KVLite
     public abstract partial class AbstractCacheSettings<TSettings> : ICacheSettings
         where TSettings : AbstractCacheSettings<TSettings>
     {
-        private string _defaultPartition;
-        private int _staticIntervalInDays;
+        /// <summary>
+        ///   Log for cache settings class.
+        /// </summary>
+        protected static ILog Log { get; } = LogProvider.For<TSettings>();
+
+        /// <summary>
+        ///   Backing field for <see cref="DefaultPartition"/>.
+        /// </summary>
+        private string _defaultPartition = CachePartitions.Default;
 
         /// <summary>
         ///   The partition used when none is specified.
@@ -60,43 +68,43 @@ namespace PommaLabs.KVLite
                 // Preconditions
                 if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyDefaultPartition, nameof(DefaultPartition));
 
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(DefaultPartition), _defaultPartition, value);
                 _defaultPartition = value;
                 OnPropertyChanged();
             }
         }
 
         /// <summary>
-        ///   How many days static values will last.
+        ///   Backing field for <see cref="StaticInterval"/>.
+        /// </summary>
+        private Duration _staticInterval = Duration.FromDays(30);
+
+        /// <summary>
+        ///   How long static values will last.
         /// </summary>
         [DataMember]
-        public int StaticIntervalInDays
+        public Duration StaticInterval
         {
             get
             {
-                var result = _staticIntervalInDays;
+                var result = _staticInterval;
 
                 // Postconditions
-                Debug.Assert(result > 0);
+                Debug.Assert(result.TotalTicks > 0.0);
                 return result;
             }
             set
             {
                 // Preconditions
-                if (value <= 0) throw new ArgumentOutOfRangeException(nameof(StaticIntervalInDays));
+                if (value.TotalTicks <= 0.0) throw new ArgumentOutOfRangeException(nameof(StaticInterval));
 
-                _staticIntervalInDays = value;
-                StaticInterval = Duration.FromDays(value);
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(StaticInterval), _staticInterval, value);
+                _staticInterval = value;
                 OnPropertyChanged();
             }
         }
 
-        /// <summary>
-        ///   How long static values will last. Computed from <see cref="StaticIntervalInDays"/>.
-        /// </summary>
-        [IgnoreDataMember]
-        public Duration StaticInterval { get; private set; }
-
-        #region Abstract Settings
+        #region Abstract settings
 
         /// <summary>
         ///   Gets the cache URI; used for logging.
@@ -105,9 +113,9 @@ namespace PommaLabs.KVLite
         [IgnoreDataMember]
         public abstract string CacheUri { get; }
 
-        #endregion Abstract Settings
+        #endregion Abstract settings
 
-        #region INotifyPropertyChanged Members
+        #region INotifyPropertyChanged members
 
         /// <summary>
         ///   Occurs when a property value changes.
@@ -123,6 +131,6 @@ namespace PommaLabs.KVLite
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion INotifyPropertyChanged Members
+        #endregion INotifyPropertyChanged members
     }
 }

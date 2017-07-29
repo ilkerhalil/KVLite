@@ -67,7 +67,7 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   Adds a "static" value with given key and default partition. Value will last as much as
-        ///   specified in <see cref="IEssentialCacheSettings.StaticIntervalInDays"/> and, if
+        ///   specified in <see cref="IEssentialCacheSettings.StaticInterval"/> and, if
         ///   accessed before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
@@ -220,7 +220,7 @@ namespace PommaLabs.KVLite
         ///
         ///   If the value is not found, then it adds a "static" value with given key and default
         ///   partition. Value will last as much as specified in
-        ///   <see cref="IEssentialCacheSettings.StaticIntervalInDays"/> and, if accessed before
+        ///   <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed before
         ///   expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>

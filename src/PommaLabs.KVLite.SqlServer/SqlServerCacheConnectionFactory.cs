@@ -29,13 +29,14 @@ namespace PommaLabs.KVLite.SqlServer
     /// <summary>
     ///   Cache connection factory specialized for SQL Server.
     /// </summary>
-    public sealed class SqlServerCacheConnectionFactory : DbCacheConnectionFactory<SqlConnection>
+    public sealed class SqlServerCacheConnectionFactory : DbCacheConnectionFactory<SqlServerCacheSettings, SqlConnection>
     {
         /// <summary>
         ///   Cache connection factory specialized for SQL Server.
         /// </summary>
-        public SqlServerCacheConnectionFactory()
-            : base(SqlClientFactory.Instance, null, null)
+        /// <param name="settings">Cache settings.</param>
+        public SqlServerCacheConnectionFactory(SqlServerCacheSettings settings)
+            : base(settings, SqlClientFactory.Instance)
         {
         }
 
@@ -68,7 +69,7 @@ namespace PommaLabs.KVLite.SqlServer
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
-                update {s}{CacheEntriesTableName}
+                update {s}{Settings.CacheEntriesTableName}
                    set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheValue.UtcExpiry)},
                        {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
                        {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},
@@ -84,7 +85,7 @@ namespace PommaLabs.KVLite.SqlServer
 
                 if @@rowcount = 0
                 begin
-                    insert into {s}{CacheEntriesTableName} (
+                    insert into {s}{Settings.CacheEntriesTableName} (
                         {DbCacheValue.HashColumn},
                         {DbCacheValue.UtcExpiryColumn},
                         {DbCacheValue.IntervalColumn},

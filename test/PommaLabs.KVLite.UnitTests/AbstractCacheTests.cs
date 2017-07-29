@@ -415,7 +415,7 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v1, info.Value.Item1);
             Assert.AreEqual(v2, info.Value.Item2);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(Duration.FromDays(Cache.Settings.StaticIntervalInDays), info.Interval);
+            Assert.AreEqual(Cache.Settings.StaticInterval, info.Interval);
         }
 
         [Test]
@@ -437,7 +437,7 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v1, info.Value.Item1);
             Assert.AreEqual(v2, info.Value.Item2);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(Duration.FromDays(Cache.Settings.StaticIntervalInDays), info.Interval);
+            Assert.AreEqual(Cache.Settings.StaticInterval, info.Interval);
 
             Assert.That(info.ParentKeys.Count, Is.EqualTo(1));
             Assert.That(info.ParentKeys, Contains.Item(t));
@@ -462,7 +462,7 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v1, r.Item1);
             Assert.AreEqual(v2, r.Item2);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(Duration.FromDays(Cache.Settings.StaticIntervalInDays), info.Interval);
+            Assert.AreEqual(Cache.Settings.StaticInterval, info.Interval);
         }
 
         [Test]
@@ -487,7 +487,7 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v1, r.Item1);
             Assert.AreEqual(v2, r.Item2);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(Duration.FromDays(Cache.Settings.StaticIntervalInDays), info.Interval);
+            Assert.AreEqual(Cache.Settings.StaticInterval, info.Interval);
         }
 
         [Test]
@@ -508,7 +508,7 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v1, info.Value.Item1);
             Assert.AreEqual(v2, info.Value.Item2);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(Duration.FromDays(Cache.Settings.StaticIntervalInDays), info.Interval);
+            Assert.AreEqual(Cache.Settings.StaticInterval, info.Interval);
         }
 
         [Test]

@@ -29,13 +29,14 @@ namespace PommaLabs.KVLite.MySql
     /// <summary>
     ///   Cache connection factory specialized for MySQL.
     /// </summary>
-    public sealed class MySqlCacheConnectionFactory : DbCacheConnectionFactory<MySqlConnection>
+    public sealed class MySqlCacheConnectionFactory : DbCacheConnectionFactory<MySqlCacheSettings, MySqlConnection>
     {
         /// <summary>
         ///   Cache connection factory specialized for MySQL.
         /// </summary>
-        public MySqlCacheConnectionFactory()
-            : base(MySqlClientFactory.Instance, null, null)
+        /// <param name="settings">Cache settings.</param>
+        public MySqlCacheConnectionFactory(MySqlCacheSettings settings)
+            : base(settings, MySqlClientFactory.Instance)
         {
         }
 
@@ -63,7 +64,7 @@ namespace PommaLabs.KVLite.MySql
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
-                replace into {s}{CacheEntriesTableName} (
+                replace into {s}{Settings.CacheEntriesTableName} (
                     {DbCacheValue.HashColumn},
                     {DbCacheValue.UtcExpiryColumn},
                     {DbCacheValue.IntervalColumn},

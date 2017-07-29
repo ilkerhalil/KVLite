@@ -37,5 +37,10 @@ namespace PommaLabs.KVLite.Resources
         ///   A debug message.
         /// </summary>
         public static string GetItem { get; } = "Reading item '{Partition}/{Key}' from {Cache}";
+
+        /// <summary>
+        ///   A debug message.
+        /// </summary>
+        public static string UpdateSetting { get; } = "Updating setting {Setting}, old value was '{OldValue}', new value is '{NewValue}'";
     }
 }

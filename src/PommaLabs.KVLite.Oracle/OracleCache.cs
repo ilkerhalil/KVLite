@@ -57,7 +57,7 @@ namespace PommaLabs.KVLite.Oracle
         /// <param name="clock">The clock.</param>
         /// <param name="random">The random number generator.</param>
         public OracleCache(OracleCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
-            : this(settings, new OracleCacheConnectionFactory(), serializer, compressor, clock, random)
+            : this(settings, new OracleCacheConnectionFactory(settings), serializer, compressor, clock, random)
         {
         }
 

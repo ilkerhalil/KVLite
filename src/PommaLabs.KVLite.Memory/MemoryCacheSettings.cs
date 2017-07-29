@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.Diagnostics;
@@ -35,64 +36,23 @@ namespace PommaLabs.KVLite.Memory
     [Serializable, DataContract]
     public sealed class MemoryCacheSettings : AbstractCacheSettings<MemoryCacheSettings>
     {
-        #region Fields
-
-        private string _cacheName = nameof(MemoryCache);
-        private int _maxCacheSizeInMB;
-        private long _minValueLengthForCompression;
-
-        #endregion Fields
-
-        #region Construction
-
-        /// <summary>
-        ///   Sets default values for memory cache settings.
-        /// </summary>
-        public MemoryCacheSettings()
-        {
-            DefaultPartition = CachePartitions.Default;
-            StaticIntervalInDays = 30;
-            MaxCacheSizeInMB = 256;
-            MinValueLengthForCompression = 4096;
-        }
-
-        #endregion Construction
-
-        #region Properties
-
         /// <summary>
         ///   Gets the default settings for <see cref="MemoryCache"/>.
         /// </summary>
         /// <value>The default settings for <see cref="MemoryCache"/>.</value>
         public static MemoryCacheSettings Default { get; } = new MemoryCacheSettings();
 
-        #endregion Properties
-
-        #region Settings
+        /// <summary>
+        ///   Gets the cache URI; used for logging.
+        /// </summary>
+        /// <value>The cache URI.</value>
+        [IgnoreDataMember]
+        public override string CacheUri => CacheName;
 
         /// <summary>
-        ///   Max size in megabytes for the cache.
+        ///   Backing field for <see cref="CacheName"/>.
         /// </summary>
-        [DataMember]
-        public int MaxCacheSizeInMB
-        {
-            get
-            {
-                var result = _maxCacheSizeInMB;
-
-                // Postconditions
-                Debug.Assert(result > 0);
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                if (value <= 0) throw new ArgumentOutOfRangeException(nameof(MaxCacheSizeInMB));
-
-                _maxCacheSizeInMB = value;
-                OnPropertyChanged();
-            }
-        }
+        private string _cacheName = nameof(MemoryCache);
 
         /// <summary>
         ///   The name of the in-memory store used as the backend for the cache.
@@ -116,17 +76,46 @@ namespace PommaLabs.KVLite.Memory
                 if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyCacheName, nameof(CacheName));
                 if (!Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$")) throw new ArgumentException(ErrorMessages.InvalidCacheName, nameof(CacheName));
 
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(CacheName), _cacheName, value);
                 _cacheName = value;
                 OnPropertyChanged();
             }
         }
 
         /// <summary>
-        ///   Gets the cache URI; used for logging.
+        ///   Backing field for <see cref="MaxCacheSizeInMB"/>.
         /// </summary>
-        /// <value>The cache URI.</value>
-        [IgnoreDataMember]
-        public override string CacheUri => CacheName;
+        private int _maxCacheSizeInMB = 256;
+
+        /// <summary>
+        ///   Max size in megabytes for the cache.
+        /// </summary>
+        [DataMember]
+        public int MaxCacheSizeInMB
+        {
+            get
+            {
+                var result = _maxCacheSizeInMB;
+
+                // Postconditions
+                Debug.Assert(result > 0);
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                if (value <= 0) throw new ArgumentOutOfRangeException(nameof(MaxCacheSizeInMB));
+
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(MaxCacheSizeInMB), _maxCacheSizeInMB, value);
+                _maxCacheSizeInMB = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        ///   Backing field for <see cref="MinValueLengthForCompression"/>.
+        /// </summary>
+        private long _minValueLengthForCompression = 4096;
 
         /// <summary>
         ///   When a serialized value is longer than specified quantity, then the cache will compress
@@ -136,6 +125,7 @@ namespace PommaLabs.KVLite.Memory
         /// <exception cref="ArgumentOutOfRangeException">
         ///   <paramref name="value"/> is less than zero.
         /// </exception>
+        [DataMember]
         public long MinValueLengthForCompression
         {
             get
@@ -151,11 +141,10 @@ namespace PommaLabs.KVLite.Memory
                 // Preconditions
                 if (value < 0L) throw new ArgumentOutOfRangeException(nameof(MinValueLengthForCompression));
 
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(MinValueLengthForCompression), _minValueLengthForCompression, value);
                 _minValueLengthForCompression = value;
                 OnPropertyChanged();
             }
         }
-
-        #endregion Settings
     }
 }

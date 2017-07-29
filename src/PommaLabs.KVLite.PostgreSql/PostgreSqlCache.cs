@@ -56,7 +56,7 @@ namespace PommaLabs.KVLite.PostgreSql
         /// <param name="clock">The clock.</param>
         /// <param name="random">The random number generator.</param>
         public PostgreSqlCache(PostgreSqlCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
-            : this(settings, new PostgreSqlCacheConnectionFactory(), serializer, compressor, clock, random)
+            : this(settings, new PostgreSqlCacheConnectionFactory(settings), serializer, compressor, clock, random)
         {
         }
 
