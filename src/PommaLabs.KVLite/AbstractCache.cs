@@ -37,8 +37,10 @@ namespace PommaLabs.KVLite
     /// <summary>
     ///   Abstract class which should make it easier to implement a new kind of cache.
     /// </summary>
+    /// <typeparam name="TCache">The type of the cache.</typeparam>
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
-    public abstract partial class AbstractCache<TSettings> : ICache<TSettings>
+    public abstract partial class AbstractCache<TCache, TSettings> : ICache<TSettings>
+        where TCache : AbstractCache<TCache, TSettings>
         where TSettings : AbstractCacheSettings<TSettings>
     {
         #region Abstract members
@@ -94,7 +96,7 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Gets the log used by the cache.
         /// </summary>
-        protected ILog Log { get; } = LogProvider.GetLogger(typeof(AbstractCache<TSettings>));
+        protected ILog Log { get; } = LogProvider.For<TCache>();
 
         /// <summary>
         ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
@@ -559,7 +561,7 @@ namespace PommaLabs.KVLite
                 catch (Exception ex)
                 {
                     LastError = ex;
-                    Log.ErrorException(string.Format(ErrorMessages.InternalErrorOnRead, partition, key), ex);
+                    Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key);
                     return default(CacheResult<object>);
                 }
             }

@@ -31,7 +31,7 @@ namespace PommaLabs.KVLite.NoOp
     /// <summary>
     ///   A cache which does really nothing. It might be used for unit testing.
     /// </summary>
-    public sealed class NoOpCache : AbstractCache<NoOpCacheSettings>
+    public sealed class NoOpCache : AbstractCache<NoOpCache, NoOpCacheSettings>
     {
         /// <summary>
         ///   <c>true</c> if the Peek methods are implemented, <c>false</c> otherwise.

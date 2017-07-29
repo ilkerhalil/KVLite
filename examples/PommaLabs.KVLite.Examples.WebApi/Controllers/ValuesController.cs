@@ -37,11 +37,19 @@ namespace PommaLabs.KVLite.Examples.WebApi.Controllers
     {
         private readonly ICache _cache;
 
+        /// <summary>
+        ///   Injects cache dependency.
+        /// </summary>
+        /// <param name="cache"></param>
         public ValuesController(ICache cache)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache), ErrorMessages.NullCache);
         }
 
+        /// <summary>
+        ///   Gets all values.
+        /// </summary>
+        /// <returns>Values.</returns>
         // GET api/values
         [Route(""), CacheOutput(ServerTimeSpan = 60)]
         public IEnumerable<string> Get()
@@ -49,6 +57,11 @@ namespace PommaLabs.KVLite.Examples.WebApi.Controllers
             return new[] { "value1", "value2" };
         }
 
+        /// <summary>
+        ///   Gets value for given ID.
+        /// </summary>
+        /// <param name="id">ID.</param>
+        /// <returns>A value.</returns>
         // GET api/values/5
         [Route("{id}")]
         public string Get(int id)
@@ -56,6 +69,10 @@ namespace PommaLabs.KVLite.Examples.WebApi.Controllers
             return "value";
         }
 
+        /// <summary>
+        ///   Posts a value.
+        /// </summary>
+        /// <param name="value">A value.</param>
         // POST api/values
         [Route("")]
         public void Post([FromBody] string value)
@@ -63,12 +80,21 @@ namespace PommaLabs.KVLite.Examples.WebApi.Controllers
             _cache.AddStatic("WebApi", Guid.NewGuid().ToString(), value);
         }
 
+        /// <summary>
+        ///   Puts a value for given ID.
+        /// </summary>
+        /// <param name="id">ID.</param>
+        /// <param name="value">A value.</param>
         // PUT api/values/5
         [Route("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public void Put(int id, [FromBody] string value)
         {
         }
 
+        /// <summary>
+        ///   Deletes given ID.
+        /// </summary>
+        /// <param name="id">ID.</param>
         // DELETE api/values/5
         [Route("{id}")]
         public void Delete(int id)

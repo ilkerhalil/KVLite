@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
 {
-    public abstract partial class AbstractCache<TSettings> : IDistributedCache
+    public abstract partial class AbstractCache<TCache, TSettings> : IDistributedCache
     {
         byte[] IDistributedCache.Get(string key) => Get<byte[]>(CachePartitions.DistributedCache, key).ValueOrDefault();
 

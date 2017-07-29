@@ -139,6 +139,44 @@
               Example controller.
             </summary>
         </member>
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.ValuesController.#ctor(PommaLabs.KVLite.ICache)">
+            <summary>
+              Injects cache dependency.
+            </summary>
+            <param name="cache"></param>
+        </member>
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.ValuesController.Get">
+            <summary>
+              Gets all values.
+            </summary>
+            <returns>Values.</returns>
+        </member>
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.ValuesController.Get(System.Int32)">
+            <summary>
+              Gets value for given ID.
+            </summary>
+            <param name="id">ID.</param>
+            <returns>A value.</returns>
+        </member>
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.ValuesController.Post(System.String)">
+            <summary>
+              Posts a value.
+            </summary>
+            <param name="value">A value.</param>
+        </member>
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.ValuesController.Put(System.Int32,System.String)">
+            <summary>
+              Puts a value for given ID.
+            </summary>
+            <param name="id">ID.</param>
+            <param name="value">A value.</param>
+        </member>
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.ValuesController.Delete(System.Int32)">
+            <summary>
+              Deletes given ID.
+            </summary>
+            <param name="id">ID.</param>
+        </member>
         <member name="T:PommaLabs.KVLite.Examples.WebApi.Startup">
             <summary>
               Configures the example service.

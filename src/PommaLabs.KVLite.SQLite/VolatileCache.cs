@@ -34,7 +34,7 @@ namespace PommaLabs.KVLite.SQLite
     ///   An SQLite-based in-memory cache.
     /// </summary>
     /// <remarks>SQLite-based caches do not allow more than ten parent keys per item.</remarks>
-    public sealed class VolatileCache : DbCache<VolatileCacheSettings, SqliteConnection>
+    public sealed class VolatileCache : DbCache<VolatileCache, VolatileCacheSettings, SqliteConnection>
     {
         #region Default Instance
 

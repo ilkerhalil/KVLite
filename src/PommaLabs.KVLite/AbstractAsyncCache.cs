@@ -33,7 +33,7 @@ using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
 {
-    public abstract partial class AbstractCache<TSettings> : IAsyncCache<TSettings>
+    public abstract partial class AbstractCache<TCache, TSettings> : IAsyncCache<TSettings>
     {
         #region IAsyncCache members
 

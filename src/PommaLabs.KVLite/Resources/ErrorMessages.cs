@@ -61,7 +61,7 @@ namespace PommaLabs.KVLite.Resources
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnRead = "An error occurred while reading item '{0}/{1}' from the cache.";
+        public const string InternalErrorOnRead = "An error occurred while reading item '{Partition}/{Key}' from the cache.";
 
         /// <summary>
         ///   An error message.

@@ -37,7 +37,7 @@ namespace PommaLabs.KVLite.SQLite
     ///   An SQLite-based persistent cache.
     /// </summary>
     /// <remarks>SQLite-based caches do not allow more than ten parent keys per item.</remarks>
-    public sealed class PersistentCache : DbCache<PersistentCacheSettings, SqliteConnection>
+    public sealed class PersistentCache : DbCache<PersistentCache, PersistentCacheSettings, SqliteConnection>
     {
         #region Default Instance
 

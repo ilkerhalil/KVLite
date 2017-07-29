@@ -41,17 +41,19 @@ namespace PommaLabs.KVLite.Database
     /// <summary>
     ///   Base class for SQL caches, implements common functionalities.
     /// </summary>
+    /// <typeparam name="TCache">The type of the cache.</typeparam>
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
     /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
-    public class DbCache<TSettings, TConnection> : AbstractCache<TSettings>
+    public class DbCache<TCache, TSettings, TConnection> : AbstractCache<TCache, TSettings>
+        where TCache : DbCache<TCache, TSettings, TConnection>
         where TSettings : DbCacheSettings<TSettings, TConnection>
         where TConnection : DbConnection
     {
         #region Construction
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="DbCache{TSettings, TConnection}"/> class
-        ///   with given settings.
+        ///   Initializes a new instance of the <see cref="DbCache{TCache, TSettings, TConnection}"/>
+        ///   class with given settings.
         /// </summary>
         /// <param name="settings">The settings.</param>
         /// <param name="connectionFactory">The DB connection factory.</param>

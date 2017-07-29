@@ -40,7 +40,7 @@ namespace PommaLabs.KVLite.Memory
     /// <summary>
     ///   An in-memory cache based on the .NET <see cref="SystemMemoryCache"/>.
     /// </summary>
-    public sealed class MemoryCache : AbstractCache<MemoryCacheSettings>
+    public sealed class MemoryCache : AbstractCache<MemoryCache, MemoryCacheSettings>
     {
         #region Default Instance
 
