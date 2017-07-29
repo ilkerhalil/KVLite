@@ -182,6 +182,11 @@ namespace PommaLabs.KVLite.Memory
         /// </param>
         protected override void AddInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)
         {
+            if (Log.IsDebugEnabled())
+            {
+                Log.DebugFormat(DebugMessages.AddItem, partition, key, nameof(MemoryCache), utcExpiry, interval);
+            }
+
             byte[] serializedValue;
             bool compressed;
             try

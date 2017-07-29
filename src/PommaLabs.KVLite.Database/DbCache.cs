@@ -466,6 +466,11 @@ namespace PommaLabs.KVLite.Database
             partition = partition.Truncate(cf.MaxPartitionNameLength);
             key = key.Truncate(cf.MaxKeyNameLength);
 
+            if (Log.IsDebugEnabled())
+            {
+                Log.DebugFormat(DebugMessages.AddItem, partition, key, typeof(TCache).Name, utcExpiry, interval);
+            }
+
             var dynamicParameters = PrepareCacheEntryForAdd(partition, key, value, utcExpiry, interval, parentKeys);
 
             RetryOnFail(() =>
@@ -504,6 +509,11 @@ namespace PommaLabs.KVLite.Database
             var cf = Settings.ConnectionFactory;
             partition = partition.Truncate(cf.MaxPartitionNameLength);
             key = key.Truncate(cf.MaxKeyNameLength);
+
+            if (Log.IsDebugEnabled())
+            {
+                Log.DebugFormat(DebugMessages.AddItem, partition, key, typeof(TCache).Name, utcExpiry, interval);
+            }
 
             var dynamicParameters = PrepareCacheEntryForAdd(partition, key, value, utcExpiry, interval, parentKeys);
 
