@@ -149,7 +149,7 @@ namespace PommaLabs.KVLite.NoOp
         ///   Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
-        public override string ToString() => $"{nameof(Settings.CacheUri)}: {Settings.CacheUri}";
+        public override string ToString() => $"{nameof(Settings.CacheName)}: {Settings.CacheName}";
 
         /// <summary>
         ///   Gets the value with specified partition and key. If it is a "sliding" or "static"

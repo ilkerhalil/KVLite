@@ -21,11 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Resources;
 using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
 
 namespace PommaLabs.KVLite.SQLite
 {
@@ -35,39 +32,5 @@ namespace PommaLabs.KVLite.SQLite
     [Serializable, DataContract]
     public sealed class VolatileCacheSettings : SQLiteCacheSettings<VolatileCacheSettings>
     {
-        #region Fields
-
-        private string _cacheName = nameof(VolatileCache);
-
-        #endregion Fields
-
-        #region Settings
-
-        /// <summary>
-        ///   The name of the in-memory SQLite DB used as the backend for the cache.
-        /// </summary>
-        [DataMember]
-        public string CacheName
-        {
-            get
-            {
-                var result = _cacheName;
-
-                // Postconditions
-                Debug.Assert(!string.IsNullOrWhiteSpace(result));
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyCacheName, nameof(CacheName));
-                if (!Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$")) throw new ArgumentException(ErrorMessages.InvalidCacheName, nameof(CacheName));
-
-                _cacheName = value;
-                OnPropertyChanged();
-            }
-        }
-
-        #endregion Settings
     }
 }

@@ -32,10 +32,10 @@ namespace PommaLabs.KVLite
     public interface IEssentialCacheSettings : INotifyPropertyChanged
     {
         /// <summary>
-        ///   The cache URI, can be used for logging.
+        ///   The cache name, can be used for logging.
         /// </summary>
-        /// <value>The cache URI.</value>
-        string CacheUri { get; }
+        /// <value>The cache name.</value>
+        string CacheName { get; set; }
 
         /// <summary>
         ///   The partition used when none is specified.

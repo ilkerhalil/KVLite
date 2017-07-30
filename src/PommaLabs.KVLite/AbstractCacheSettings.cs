@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 namespace PommaLabs.KVLite
 {
@@ -43,6 +44,38 @@ namespace PommaLabs.KVLite
         ///   Log for cache settings class.
         /// </summary>
         protected static ILog Log { get; } = LogProvider.For<TSettings>();
+
+        /// <summary>
+        ///   Backing field for <see cref="CacheName"/>.
+        /// </summary>
+        private string _cacheName = typeof(TSettings).Name.Replace("Settings", string.Empty);
+
+        /// <summary>
+        ///   The cache name, can be used for logging.
+        /// </summary>
+        /// <value>The cache name.</value>
+        [DataMember]
+        public string CacheName
+        {
+            get
+            {
+                var result = _cacheName;
+
+                // Postconditions
+                Debug.Assert(!string.IsNullOrWhiteSpace(result));
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyCacheName, nameof(CacheName));
+                if (!Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$")) throw new ArgumentException(ErrorMessages.InvalidCacheName, nameof(CacheName));
+
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(CacheName), _cacheName, value);
+                _cacheName = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         ///   Backing field for <see cref="DefaultPartition"/>.
@@ -104,18 +137,7 @@ namespace PommaLabs.KVLite
             }
         }
 
-        #region Abstract settings
-
-        /// <summary>
-        ///   Gets the cache URI; used for logging.
-        /// </summary>
-        /// <value>The cache URI.</value>
-        [IgnoreDataMember]
-        public abstract string CacheUri { get; }
-
-        #endregion Abstract settings
-
-        #region INotifyPropertyChanged members
+        #region INotifyPropertyChanged
 
         /// <summary>
         ///   Occurs when a property value changes.
@@ -131,6 +153,6 @@ namespace PommaLabs.KVLite
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion INotifyPropertyChanged members
+        #endregion INotifyPropertyChanged
     }
 }

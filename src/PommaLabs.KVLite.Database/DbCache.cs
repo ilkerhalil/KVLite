@@ -96,7 +96,7 @@ namespace PommaLabs.KVLite.Database
         public long Clear(CacheReadMode cacheReadMode)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
@@ -114,7 +114,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex, Settings.CacheName);
                 return 0L;
             }
         }
@@ -128,7 +128,7 @@ namespace PommaLabs.KVLite.Database
         public async Task<long> ClearAsync(CacheReadMode cacheReadMode, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
@@ -146,7 +146,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex, Settings.CacheName);
                 return 0L;
             }
         }
@@ -160,7 +160,7 @@ namespace PommaLabs.KVLite.Database
         public long Clear(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
@@ -179,7 +179,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnClearPartition, ex, typeof(TCache).Name, partition);
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearPartition, ex, Settings.CacheName, partition);
                 return 0L;
             }
         }
@@ -194,7 +194,7 @@ namespace PommaLabs.KVLite.Database
         public async Task<long> ClearAsync(string partition, CacheReadMode cacheReadMode, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
@@ -213,7 +213,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnClearPartition, ex, typeof(TCache).Name, partition);
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearPartition, ex, Settings.CacheName, partition);
                 return 0L;
             }
         }
@@ -226,7 +226,7 @@ namespace PommaLabs.KVLite.Database
         public int Count(CacheReadMode cacheReadMode)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
@@ -240,7 +240,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, Settings.CacheName);
                 return 0;
             }
         }
@@ -254,7 +254,7 @@ namespace PommaLabs.KVLite.Database
         public int Count(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
@@ -269,7 +269,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, typeof(TCache).Name, partition);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, Settings.CacheName, partition);
                 return 0;
             }
         }
@@ -282,7 +282,7 @@ namespace PommaLabs.KVLite.Database
         public long LongCount(CacheReadMode cacheReadMode)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
             try
@@ -296,7 +296,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, Settings.CacheName);
                 return 0L;
             }
         }
@@ -310,7 +310,7 @@ namespace PommaLabs.KVLite.Database
         public long LongCount(string partition, CacheReadMode cacheReadMode)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (!Enum.IsDefined(typeof(CacheReadMode), cacheReadMode)) throw new ArgumentException(ErrorMessages.InvalidCacheReadMode, nameof(cacheReadMode));
 
@@ -325,7 +325,7 @@ namespace PommaLabs.KVLite.Database
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, typeof(TCache).Name, partition);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, Settings.CacheName, partition);
                 return 0L;
             }
         }
@@ -338,7 +338,7 @@ namespace PommaLabs.KVLite.Database
         ///   Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
-        public override string ToString() => $"{nameof(Settings.CacheUri)}: {Settings.CacheUri}";
+        public override string ToString() => $"{nameof(Settings.CacheName)}: {Settings.CacheName}";
 
         #endregion FormattableObject members
 
@@ -471,7 +471,7 @@ namespace PommaLabs.KVLite.Database
 
             if (Log.IsDebugEnabled())
             {
-                Log.DebugFormat(DebugMessages.AddItem, partition, key, typeof(TCache).Name, utcExpiry, interval);
+                Log.DebugFormat(DebugMessages.AddItem, partition, key, Settings.CacheName, utcExpiry, interval);
             }
 
             var dynamicParameters = PrepareCacheEntryForAdd(partition, key, value, utcExpiry, interval, parentKeys);
@@ -515,7 +515,7 @@ namespace PommaLabs.KVLite.Database
 
             if (Log.IsDebugEnabled())
             {
-                Log.DebugFormat(DebugMessages.AddItem, partition, key, typeof(TCache).Name, utcExpiry, interval);
+                Log.DebugFormat(DebugMessages.AddItem, partition, key, Settings.CacheName, utcExpiry, interval);
             }
 
             var dynamicParameters = PrepareCacheEntryForAdd(partition, key, value, utcExpiry, interval, parentKeys);
@@ -1301,7 +1301,7 @@ namespace PommaLabs.KVLite.Database
                 // element (in order to avoid future errors) and we return None.
                 RemoveByHash(dbCacheValue.Hash);
 
-                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, typeof(TCache).Name);
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, Settings.CacheName);
 
                 return default(CacheResult<TVal>);
             }
@@ -1349,7 +1349,7 @@ namespace PommaLabs.KVLite.Database
                 // element (in order to avoid future errors) and we return None.
                 RemoveByHash(dbCacheEntry.Hash);
 
-                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, typeof(TCache).Name);
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, Settings.CacheName);
 
                 return default(CacheResult<ICacheItem<TVal>>);
             }

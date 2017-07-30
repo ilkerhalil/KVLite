@@ -546,7 +546,7 @@ namespace PommaLabs.KVLite
             get
             {
                 // Preconditions
-                if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+                if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
                 if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
                 if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
 
@@ -561,7 +561,7 @@ namespace PommaLabs.KVLite
                 catch (Exception ex)
                 {
                     LastError = ex;
-                    Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, typeof(TCache).Name);
+                    Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
                     return default(CacheResult<object>);
                 }
             }
@@ -574,7 +574,7 @@ namespace PommaLabs.KVLite
         /// <returns>An estimate of cache size in bytes.</returns>
         public long GetCacheSizeInBytes()
         {
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
 
             try
             {
@@ -587,7 +587,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnReadAll, ex, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnReadAll, ex, Settings.CacheName);
                 return 0L;
             }
         }
@@ -612,7 +612,7 @@ namespace PommaLabs.KVLite
         public void AddSliding<TVal>(string partition, string key, TVal value, Duration interval, IList<string> parentKeys = null)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
             if (!ReferenceEquals(value, null) && !(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>())) throw new ArgumentException(ErrorMessages.NotSerializableValue, nameof(value));
@@ -629,7 +629,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
             }
         }
 
@@ -652,7 +652,7 @@ namespace PommaLabs.KVLite
         public void AddStatic<TVal>(string partition, string key, TVal value, IList<string> parentKeys = null)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
             if (!ReferenceEquals(value, null) && !(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>())) throw new ArgumentException(ErrorMessages.NotSerializableValue, nameof(value));
@@ -669,7 +669,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
             }
         }
 
@@ -692,7 +692,7 @@ namespace PommaLabs.KVLite
         public void AddTimed<TVal>(string partition, string key, TVal value, Instant utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
             if (!ReferenceEquals(value, null) && !(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>())) throw new ArgumentException(ErrorMessages.NotSerializableValue, nameof(value));
@@ -709,7 +709,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
             }
         }
 
@@ -732,7 +732,7 @@ namespace PommaLabs.KVLite
         public void AddTimed<TVal>(string partition, string key, TVal value, Duration lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
             if (!ReferenceEquals(value, null) && !(Serializer.CanSerialize<TVal>() && Serializer.CanDeserialize<TVal>())) throw new ArgumentException(ErrorMessages.NotSerializableValue, nameof(value));
@@ -749,7 +749,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
             }
         }
 
@@ -760,7 +760,7 @@ namespace PommaLabs.KVLite
         public long Clear()
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
 
             try
             {
@@ -775,7 +775,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex, Settings.CacheName);
                 return 0L;
             }
         }
@@ -788,7 +788,7 @@ namespace PommaLabs.KVLite
         public long Clear(string partition)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
 
             try
@@ -804,7 +804,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnClearPartition, ex, typeof(TCache).Name, partition);
+                Log.ErrorException(ErrorMessages.InternalErrorOnClearPartition, ex, Settings.CacheName, partition);
                 return 0L;
             }
         }
@@ -819,7 +819,7 @@ namespace PommaLabs.KVLite
         public bool Contains(string partition, string key)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
 
@@ -830,7 +830,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
                 return false;
             }
         }
@@ -843,7 +843,7 @@ namespace PommaLabs.KVLite
         public int Count()
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
 
             try
             {
@@ -856,7 +856,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, Settings.CacheName);
                 return 0;
             }
         }
@@ -870,7 +870,7 @@ namespace PommaLabs.KVLite
         public int Count(string partition)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
 
             try
@@ -884,7 +884,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, typeof(TCache).Name, partition);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, Settings.CacheName, partition);
                 return 0;
             }
         }
@@ -897,7 +897,7 @@ namespace PommaLabs.KVLite
         public long LongCount()
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
 
             try
             {
@@ -910,7 +910,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, Settings.CacheName);
                 return 0L;
             }
         }
@@ -924,7 +924,7 @@ namespace PommaLabs.KVLite
         public long LongCount(string partition)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
 
             try
@@ -938,7 +938,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, typeof(TCache).Name, partition);
+                Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, Settings.CacheName, partition);
                 return 0L;
             }
         }
@@ -959,13 +959,13 @@ namespace PommaLabs.KVLite
         public CacheResult<TVal> Get<TVal>(string partition, string key)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
 
             if (Log.IsDebugEnabled())
             {
-                Log.DebugFormat(DebugMessages.GetItem, partition, key, typeof(TCache).Name);
+                Log.DebugFormat(DebugMessages.GetItem, partition, key, Settings.CacheName);
             }
 
             try
@@ -979,7 +979,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
                 return default(CacheResult<TVal>);
             }
         }
@@ -1000,13 +1000,13 @@ namespace PommaLabs.KVLite
         public CacheResult<ICacheItem<TVal>> GetItem<TVal>(string partition, string key)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
 
             if (Log.IsDebugEnabled())
             {
-                Log.DebugFormat(DebugMessages.GetItem, partition, key, typeof(TCache).Name);
+                Log.DebugFormat(DebugMessages.GetItem, partition, key, Settings.CacheName);
             }
 
             try
@@ -1020,7 +1020,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
                 return default(CacheResult<ICacheItem<TVal>>);
             }
         }
@@ -1039,7 +1039,7 @@ namespace PommaLabs.KVLite
         public IList<ICacheItem<TVal>> GetItems<TVal>()
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
 
             try
             {
@@ -1054,7 +1054,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnReadAll, ex, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnReadAll, ex, Settings.CacheName);
                 return new ICacheItem<TVal>[0];
             }
         }
@@ -1074,7 +1074,7 @@ namespace PommaLabs.KVLite
         public IList<ICacheItem<TVal>> GetItems<TVal>(string partition)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
 
             try
@@ -1090,7 +1090,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnReadPartition, ex, typeof(TCache).Name, partition);
+                Log.ErrorException(ErrorMessages.InternalErrorOnReadPartition, ex, Settings.CacheName, partition);
                 return new ICacheItem<TVal>[0];
             }
         }
@@ -1124,7 +1124,7 @@ namespace PommaLabs.KVLite
         public TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, Duration interval, IList<string> parentKeys = null)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
             if (valueGetter == null) throw new ArgumentNullException(nameof(valueGetter), ErrorMessages.NullValueGetter);
@@ -1133,7 +1133,7 @@ namespace PommaLabs.KVLite
 
             if (Log.IsDebugEnabled())
             {
-                Log.DebugFormat(DebugMessages.GetItem, partition, key, typeof(TCache).Name);
+                Log.DebugFormat(DebugMessages.GetItem, partition, key, Settings.CacheName);
             }
 
             try
@@ -1150,7 +1150,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
             }
 
             // This line is reached when the cache does not contain the item or an error has occurred.
@@ -1167,7 +1167,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
             }
 
             return value;
@@ -1202,7 +1202,7 @@ namespace PommaLabs.KVLite
         public TVal GetOrAddStatic<TVal>(string partition, string key, Func<TVal> valueGetter, IList<string> parentKeys = null)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
             if (valueGetter == null) throw new ArgumentNullException(nameof(valueGetter), ErrorMessages.NullValueGetter);
@@ -1211,7 +1211,7 @@ namespace PommaLabs.KVLite
 
             if (Log.IsDebugEnabled())
             {
-                Log.DebugFormat(DebugMessages.GetItem, partition, key, typeof(TCache).Name);
+                Log.DebugFormat(DebugMessages.GetItem, partition, key, Settings.CacheName);
             }
 
             try
@@ -1228,7 +1228,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
             }
 
             // This line is reached when the cache does not contain the item or an error has occurred.
@@ -1245,7 +1245,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
             }
 
             return value;
@@ -1280,7 +1280,7 @@ namespace PommaLabs.KVLite
         public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, Instant utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
             if (valueGetter == null) throw new ArgumentNullException(nameof(valueGetter), ErrorMessages.NullValueGetter);
@@ -1289,7 +1289,7 @@ namespace PommaLabs.KVLite
 
             if (Log.IsDebugEnabled())
             {
-                Log.DebugFormat(DebugMessages.GetItem, partition, key, typeof(TCache).Name);
+                Log.DebugFormat(DebugMessages.GetItem, partition, key, Settings.CacheName);
             }
 
             try
@@ -1306,7 +1306,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
             }
 
             // This line is reached when the cache does not contain the item or an error has occurred.
@@ -1323,7 +1323,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
             }
 
             return value;
@@ -1358,7 +1358,7 @@ namespace PommaLabs.KVLite
         public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, Duration lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
             if (valueGetter == null) throw new ArgumentNullException(nameof(valueGetter), ErrorMessages.NullValueGetter);
@@ -1367,7 +1367,7 @@ namespace PommaLabs.KVLite
 
             if (Log.IsDebugEnabled())
             {
-                Log.DebugFormat(DebugMessages.GetItem, partition, key, typeof(TCache).Name);
+                Log.DebugFormat(DebugMessages.GetItem, partition, key, Settings.CacheName);
             }
 
             try
@@ -1384,7 +1384,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
             }
 
             // This line is reached when the cache does not contain the item or an error has occurred.
@@ -1401,7 +1401,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
             }
 
             return value;
@@ -1427,10 +1427,10 @@ namespace PommaLabs.KVLite
         public CacheResult<TVal> Peek<TVal>(string partition, string key)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
-            if (!CanPeek) throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, typeof(TCache).Name));
+            if (!CanPeek) throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, Settings.CacheName));
 
             try
             {
@@ -1443,7 +1443,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
                 return default(CacheResult<TVal>);
             }
         }
@@ -1468,10 +1468,10 @@ namespace PommaLabs.KVLite
         public CacheResult<ICacheItem<TVal>> PeekItem<TVal>(string partition, string key)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
-            if (!CanPeek) throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, typeof(TCache).Name));
+            if (!CanPeek) throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, Settings.CacheName));
 
             try
             {
@@ -1484,7 +1484,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
                 return default(CacheResult<ICacheItem<TVal>>);
             }
         }
@@ -1505,8 +1505,8 @@ namespace PommaLabs.KVLite
         public IList<ICacheItem<TVal>> PeekItems<TVal>()
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
-            if (!CanPeek) throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
+            if (!CanPeek) throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, Settings.CacheName));
 
             try
             {
@@ -1521,7 +1521,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnReadAll, ex, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnReadAll, ex, Settings.CacheName);
                 return new ICacheItem<TVal>[0];
             }
         }
@@ -1543,9 +1543,9 @@ namespace PommaLabs.KVLite
         public IList<ICacheItem<TVal>> PeekItems<TVal>(string partition)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
-            if (!CanPeek) throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, typeof(TCache).Name));
+            if (!CanPeek) throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, Settings.CacheName));
 
             try
             {
@@ -1560,7 +1560,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnReadPartition, ex, typeof(TCache).Name, partition);
+                Log.ErrorException(ErrorMessages.InternalErrorOnReadPartition, ex, Settings.CacheName, partition);
                 return new ICacheItem<TVal>[0];
             }
         }
@@ -1573,7 +1573,7 @@ namespace PommaLabs.KVLite
         public void Remove(string partition, string key)
         {
             // Preconditions
-            if (Disposed) throw new ObjectDisposedException(typeof(TCache).Name, string.Format(ErrorMessages.CacheHasBeenDisposed, typeof(TCache).Name));
+            if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
             if (partition == null) throw new ArgumentNullException(nameof(partition), ErrorMessages.NullPartition);
             if (key == null) throw new ArgumentNullException(nameof(key), ErrorMessages.NullKey);
 
@@ -1587,7 +1587,7 @@ namespace PommaLabs.KVLite
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, typeof(TCache).Name);
+                Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
             }
         }
 

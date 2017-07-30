@@ -32,11 +32,5 @@ namespace PommaLabs.KVLite.NoOp
     [Serializable, DataContract]
     public sealed class NoOpCacheSettings : AbstractCacheSettings<NoOpCacheSettings>
     {
-        /// <summary>
-        ///   Gets the cache URI; used for logging.
-        /// </summary>
-        /// <value>The cache URI.</value>
-        [DataMember]
-        public override string CacheUri { get; } = Guid.NewGuid().ToString("D");
     }
 }

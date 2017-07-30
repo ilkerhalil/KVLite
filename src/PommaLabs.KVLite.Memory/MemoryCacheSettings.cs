@@ -26,7 +26,6 @@ using PommaLabs.KVLite.Resources;
 using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
 
 namespace PommaLabs.KVLite.Memory
 {
@@ -36,46 +35,6 @@ namespace PommaLabs.KVLite.Memory
     [Serializable, DataContract]
     public sealed class MemoryCacheSettings : AbstractCacheSettings<MemoryCacheSettings>
     {
-        /// <summary>
-        ///   Gets the cache URI; used for logging.
-        /// </summary>
-        /// <value>The cache URI.</value>
-        [IgnoreDataMember]
-        public override string CacheUri => CacheName;
-
-        /// <summary>
-        ///   Backing field for <see cref="CacheName"/>.
-        /// </summary>
-        private string _cacheName = nameof(MemoryCache);
-
-        /// <summary>
-        ///   The name of the in-memory store used as the backend for the cache.
-        ///
-        ///   Default value is "MemoryCache".
-        /// </summary>
-        [DataMember]
-        public string CacheName
-        {
-            get
-            {
-                var result = _cacheName;
-
-                // Postconditions
-                Debug.Assert(!string.IsNullOrWhiteSpace(result));
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyCacheName, nameof(CacheName));
-                if (!Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$")) throw new ArgumentException(ErrorMessages.InvalidCacheName, nameof(CacheName));
-
-                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(CacheName), _cacheName, value);
-                _cacheName = value;
-                OnPropertyChanged();
-            }
-        }
-
         /// <summary>
         ///   Backing field for <see cref="MaxCacheSizeInMB"/>.
         /// </summary>

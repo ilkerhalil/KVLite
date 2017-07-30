@@ -44,12 +44,6 @@ namespace PommaLabs.KVLite.Database
         private static Regex IsValidSqlNameRegex { get; } = new Regex("[a-z0-9_]*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         /// <summary>
-        ///   Gets the cache URI; used for logging.
-        /// </summary>
-        [IgnoreDataMember]
-        public override sealed string CacheUri => ConnectionString ?? "Data Source=UNDEFINED";
-
-        /// <summary>
         ///   Backing field for <see cref="CacheSchemaName"/>.
         /// </summary>
         private string _cacheSchemaName = string.Empty;

@@ -184,7 +184,7 @@ namespace PommaLabs.KVLite.Memory
         {
             if (Log.IsDebugEnabled())
             {
-                Log.DebugFormat(DebugMessages.AddItem, partition, key, nameof(MemoryCache), utcExpiry, interval);
+                Log.DebugFormat(DebugMessages.AddItem, partition, key, Settings.CacheName, utcExpiry, interval);
             }
 
             byte[] serializedValue;
@@ -371,7 +371,7 @@ namespace PommaLabs.KVLite.Memory
         /// </exception>
         protected override CacheResult<TVal> PeekInternal<TVal>(string partition, string key)
         {
-            throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, nameof(MemoryCache)));
+            throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, Settings.CacheName));
         }
 
         /// <summary>
@@ -388,7 +388,7 @@ namespace PommaLabs.KVLite.Memory
         /// </exception>
         protected override CacheResult<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
-            throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, nameof(MemoryCache)));
+            throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, Settings.CacheName));
         }
 
         /// <summary>
@@ -407,7 +407,7 @@ namespace PommaLabs.KVLite.Memory
         /// </exception>
         protected override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
         {
-            throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, nameof(MemoryCache)));
+            throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, Settings.CacheName));
         }
 
         /// <summary>
@@ -548,7 +548,7 @@ namespace PommaLabs.KVLite.Memory
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, nameof(MemoryCache));
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, Settings.CacheName);
                 return default(CacheResult<TVal>);
             }
         }
@@ -575,7 +575,7 @@ namespace PommaLabs.KVLite.Memory
             catch (Exception ex)
             {
                 LastError = ex;
-                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, nameof(MemoryCache));
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, Settings.CacheName);
                 return default(CacheResult<ICacheItem<TVal>>);
             }
         }
