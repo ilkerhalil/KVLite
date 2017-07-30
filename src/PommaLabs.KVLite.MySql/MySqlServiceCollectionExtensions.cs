@@ -1,4 +1,4 @@
-﻿// File name: MySqlCacheExtensions.cs
+﻿// File name: MySqlServiceCollectionExtensions.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -23,26 +23,30 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using PommaLabs.KVLite.Core;
 using System;
 
 namespace PommaLabs.KVLite.MySql
 {
     /// <summary>
-    ///   Extension methods related to <see cref="MySqlCache"/>.
+    ///   Registrations for MySQL KVLite services.
     /// </summary>
-    public static class MySqlCacheExtensions
+    public static class MySqlServiceCollectionExtensions
     {
-        public static IServiceCollection AddKVLiteMySqlCache(this IServiceCollection services, Func<MySqlCacheSettings, MySqlCacheSettings> getSettings)
+        /// <summary>
+        ///   Registers <see cref="MySqlCache"/> as singleton implementation for
+        ///   <see cref="ICache"/>, <see cref="IAsyncCache"/>, <see cref="IDistributedCache"/>.
+        /// </summary>
+        /// <param name="services">Services collection.</param>
+        /// <param name="changeSettings">Can be used to customize settings.</param>
+        /// <returns>Modified services collection.</returns>
+        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services, Func<MySqlCacheSettings, MySqlCacheSettings> changeSettings)
         {
-            var cache = (getSettings == null)
+            var cache = (changeSettings == null)
                 ? new MySqlCache(new MySqlCacheSettings())
-                : new MySqlCache(getSettings(new MySqlCacheSettings()));
+                : new MySqlCache(changeSettings(new MySqlCacheSettings()));
 
-            services.AddSingleton<ICache>(cache);
-            services.AddSingleton<IAsyncCache>(cache);
-            services.AddSingleton<IDistributedCache>(cache);
-
-            return services;
+            return services.AddKVLiteCache(cache);
         }
     }
 }
