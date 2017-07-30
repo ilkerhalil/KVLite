@@ -78,6 +78,35 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
+        ///   Backing field for <see cref="DefaultDistributedCacheAbsoluteExpiration"/>.
+        /// </summary>
+        private Duration _defaultDistributedCacheAbsoluteExpiration = Duration.FromMinutes(20);
+
+        /// <summary>
+        ///   Default absolute expiration for distributed cache entries. Initial value is 20 minutes.
+        /// </summary>
+        public Duration DefaultDistributedCacheAbsoluteExpiration
+        {
+            get
+            {
+                var result = _defaultDistributedCacheAbsoluteExpiration;
+
+                // Postconditions
+                Debug.Assert(result.TotalTicks > 0.0);
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                if (value.TotalTicks <= 0.0) throw new ArgumentOutOfRangeException(nameof(DefaultDistributedCacheAbsoluteExpiration));
+
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(DefaultDistributedCacheAbsoluteExpiration), _defaultDistributedCacheAbsoluteExpiration, value);
+                _defaultDistributedCacheAbsoluteExpiration = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         ///   Backing field for <see cref="DefaultPartition"/>.
         /// </summary>
         private string _defaultPartition = CachePartitions.Default;

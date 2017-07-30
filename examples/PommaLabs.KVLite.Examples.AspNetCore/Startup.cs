@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NodaTime;
 using PommaLabs.KVLite.SQLite;
 
 namespace PommaLabs.KVLite.Examples.AspNetCore
@@ -31,6 +32,7 @@ namespace PommaLabs.KVLite.Examples.AspNetCore
             services.AddPersistentSQLiteKVLiteCache(s =>
             {
                 s.CacheFile = "AspNetCoreCache.sqlite";
+                s.DefaultDistributedCacheAbsoluteExpiration = Duration.FromSeconds(30);
             });
         }
 
