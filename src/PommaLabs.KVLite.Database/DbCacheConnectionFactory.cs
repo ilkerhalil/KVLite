@@ -176,6 +176,18 @@ namespace PommaLabs.KVLite.Database
         #region Query optimization
 
         /// <summary>
+        ///   The maximum length a partition can have. Longer partitions will be truncated. Default
+        ///   value is 2000, but each SQL connection factory might change it.
+        /// </summary>
+        public int MaxPartitionNameLength { get; protected set; } = 2000;
+
+        /// <summary>
+        ///   The maximum length a key can have. Longer keys will be truncated. Default value is
+        ///   2000, but each SQL connection factory might change it.
+        /// </summary>
+        public int MaxKeyNameLength { get; protected set; } = 2000;
+
+        /// <summary>
         ///   Function used to estimate cache size.
         /// </summary>
         protected virtual string LengthSqlFunction { get; } = "length";

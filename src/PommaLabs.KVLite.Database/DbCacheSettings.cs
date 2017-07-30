@@ -145,17 +145,5 @@ namespace PommaLabs.KVLite.Database
         ///   The connection string used to connect to the cache data provider.
         /// </summary>
         public string ConnectionString { get; set; }
-
-        /// <summary>
-        ///   The maximum length a partition can have. Longer partitions will be truncated. Default
-        ///   value is 2000, but each SQL connection factory might change it.
-        /// </summary>
-        public int MaxPartitionNameLength { get; } = 2000;
-
-        /// <summary>
-        ///   The maximum length a key can have. Longer keys will be truncated. Default value is
-        ///   2000, but each SQL connection factory might change it.
-        /// </summary>
-        public int MaxKeyNameLength { get; } = 2000;
     }
 }

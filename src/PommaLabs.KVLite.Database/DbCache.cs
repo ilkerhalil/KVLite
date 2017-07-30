@@ -466,8 +466,8 @@ namespace PommaLabs.KVLite.Database
         {
             // Compute all parameters _before_ opening the connection.
             var cf = ConnectionFactory;
-            partition = partition.Truncate(Settings.MaxPartitionNameLength);
-            key = key.Truncate(Settings.MaxKeyNameLength);
+            partition = partition.Truncate(cf.MaxPartitionNameLength);
+            key = key.Truncate(cf.MaxKeyNameLength);
 
             if (Log.IsDebugEnabled())
             {
@@ -510,8 +510,8 @@ namespace PommaLabs.KVLite.Database
         {
             // Compute all parameters _before_ opening the connection.
             var cf = ConnectionFactory;
-            partition = partition.Truncate(Settings.MaxPartitionNameLength);
-            key = key.Truncate(Settings.MaxKeyNameLength);
+            partition = partition.Truncate(cf.MaxPartitionNameLength);
+            key = key.Truncate(cf.MaxKeyNameLength);
 
             if (Log.IsDebugEnabled())
             {
