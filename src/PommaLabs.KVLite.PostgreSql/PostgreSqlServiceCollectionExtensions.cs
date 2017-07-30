@@ -48,13 +48,14 @@ namespace PommaLabs.KVLite.PostgreSql
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddPostgreSqlKVLiteCache(this IServiceCollection services, Func<PostgreSqlCacheSettings, PostgreSqlCacheSettings> changeSettings)
+        public static IServiceCollection AddPostgreSqlKVLiteCache(this IServiceCollection services, Action<PostgreSqlCacheSettings> changeSettings)
         {
-            var cache = (changeSettings == null)
-                ? new PostgreSqlCache(new PostgreSqlCacheSettings())
-                : new PostgreSqlCache(changeSettings(new PostgreSqlCacheSettings()));
+            var settings = new PostgreSqlCacheSettings();
+            changeSettings?.Invoke(settings);
 
-            return services.AddKVLiteCache(cache);
+#pragma warning disable CC0022 // Should dispose object
+            return services.AddKVLiteCache(new PostgreSqlCache(settings));
+#pragma warning restore CC0022 // Should dispose object
         }
     }
 }

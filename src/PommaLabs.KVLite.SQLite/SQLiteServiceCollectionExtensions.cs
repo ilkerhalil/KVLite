@@ -48,13 +48,14 @@ namespace PommaLabs.KVLite.SQLite
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddPersistentSQLiteKVLiteCache(this IServiceCollection services, Func<PersistentCacheSettings, PersistentCacheSettings> changeSettings)
+        public static IServiceCollection AddPersistentSQLiteKVLiteCache(this IServiceCollection services, Action<PersistentCacheSettings> changeSettings)
         {
-            var cache = (changeSettings == null)
-                ? new PersistentCache(new PersistentCacheSettings())
-                : new PersistentCache(changeSettings(new PersistentCacheSettings()));
+            var settings = new PersistentCacheSettings();
+            changeSettings?.Invoke(settings);
 
-            return services.AddKVLiteCache(cache);
+#pragma warning disable CC0022 // Should dispose object
+            return services.AddKVLiteCache(new PersistentCache(settings));
+#pragma warning restore CC0022 // Should dispose object
         }
 
         /// <summary>
@@ -72,13 +73,14 @@ namespace PommaLabs.KVLite.SQLite
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddVolatileSQLiteKVLiteCache(this IServiceCollection services, Func<VolatileCacheSettings, VolatileCacheSettings> changeSettings)
+        public static IServiceCollection AddVolatileSQLiteKVLiteCache(this IServiceCollection services, Action<VolatileCacheSettings> changeSettings)
         {
-            var cache = (changeSettings == null)
-                ? new VolatileCache(new VolatileCacheSettings())
-                : new VolatileCache(changeSettings(new VolatileCacheSettings()));
+            var settings = new VolatileCacheSettings();
+            changeSettings?.Invoke(settings);
 
-            return services.AddKVLiteCache(cache);
+#pragma warning disable CC0022 // Should dispose object
+            return services.AddKVLiteCache(new VolatileCache(settings));
+#pragma warning restore CC0022 // Should dispose object
         }
     }
 }

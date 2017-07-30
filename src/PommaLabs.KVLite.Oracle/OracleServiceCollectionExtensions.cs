@@ -48,13 +48,14 @@ namespace PommaLabs.KVLite.Oracle
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddOracleKVLiteCache(this IServiceCollection services, Func<OracleCacheSettings, OracleCacheSettings> changeSettings)
+        public static IServiceCollection AddOracleKVLiteCache(this IServiceCollection services, Action<OracleCacheSettings> changeSettings)
         {
-            var cache = (changeSettings == null)
-                ? new OracleCache(new OracleCacheSettings())
-                : new OracleCache(changeSettings(new OracleCacheSettings()));
+            var settings = new OracleCacheSettings();
+            changeSettings?.Invoke(settings);
 
-            return services.AddKVLiteCache(cache);
+#pragma warning disable CC0022 // Should dispose object
+            return services.AddKVLiteCache(new OracleCache(settings));
+#pragma warning restore CC0022 // Should dispose object
         }
     }
 }

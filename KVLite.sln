@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-52E1-43BC-971F-94784A43B73E}"
 	ProjectSection(SolutionItems) = preProject
@@ -54,34 +54,36 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.Memory", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.MySql", "src\PommaLabs.KVLite.MySql\PommaLabs.KVLite.MySql.csproj", "{E6620D62-4DAC-42DD-988A-FDAA9F2F8819}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.Oracle", "src\PommaLabs.KVLite.Oracle\PommaLabs.KVLite.Oracle.csproj", "{67EE5651-7771-4619-9F25-A23DB35AB6B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.Oracle", "src\PommaLabs.KVLite.Oracle\PommaLabs.KVLite.Oracle.csproj", "{67EE5651-7771-4619-9F25-A23DB35AB6B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.PostgreSql", "src\PommaLabs.KVLite.PostgreSql\PommaLabs.KVLite.PostgreSql.csproj", "{C6C02EEE-6457-41FB-ACE5-6AD79DD8EBE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.PostgreSql", "src\PommaLabs.KVLite.PostgreSql\PommaLabs.KVLite.PostgreSql.csproj", "{C6C02EEE-6457-41FB-ACE5-6AD79DD8EBE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.SQLite", "src\PommaLabs.KVLite.SQLite\PommaLabs.KVLite.SQLite.csproj", "{23D10FDC-E11B-4421-8CD0-5B4BDFF835BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.SQLite", "src\PommaLabs.KVLite.SQLite\PommaLabs.KVLite.SQLite.csproj", "{23D10FDC-E11B-4421-8CD0-5B4BDFF835BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.SqlServer", "src\PommaLabs.KVLite.SqlServer\PommaLabs.KVLite.SqlServer.csproj", "{EF73433A-E416-4893-B1F6-412B4C3F5ABD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.SqlServer", "src\PommaLabs.KVLite.SqlServer\PommaLabs.KVLite.SqlServer.csproj", "{EF73433A-E416-4893-B1F6-412B4C3F5ABD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.EntityFramework", "src\PommaLabs.KVLite.EntityFramework\PommaLabs.KVLite.EntityFramework.csproj", "{4DCE9EFD-4FBA-40F9-9D17-7AEE549CD50E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.EntityFramework", "src\PommaLabs.KVLite.EntityFramework\PommaLabs.KVLite.EntityFramework.csproj", "{4DCE9EFD-4FBA-40F9-9D17-7AEE549CD50E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.WebApi", "src\PommaLabs.KVLite.WebApi\PommaLabs.KVLite.WebApi.csproj", "{FECB3DA0-98C9-40E0-B69C-F0743F17E699}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.WebApi", "src\PommaLabs.KVLite.WebApi\PommaLabs.KVLite.WebApi.csproj", "{FECB3DA0-98C9-40E0-B69C-F0743F17E699}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.WebForms", "src\PommaLabs.KVLite.WebForms\PommaLabs.KVLite.WebForms.csproj", "{0CADB774-47DC-4DA4-B27D-F90B00748712}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.WebForms", "src\PommaLabs.KVLite.WebForms\PommaLabs.KVLite.WebForms.csproj", "{0CADB774-47DC-4DA4-B27D-F90B00748712}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Drivers", "Drivers", "{E2C88E6A-2F1C-442F-B7CD-A262009DEA4C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{C5E21A7F-2C68-402F-A488-13BA125416A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.UnitTests", "test\PommaLabs.KVLite.UnitTests\PommaLabs.KVLite.UnitTests.csproj", "{7D431E4A-1227-4A63-A9F3-0AF60E697420}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.UnitTests", "test\PommaLabs.KVLite.UnitTests\PommaLabs.KVLite.UnitTests.csproj", "{7D431E4A-1227-4A63-A9F3-0AF60E697420}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{09C060EE-A6D3-45ED-B82D-E81B59EABBCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.Core", "src\PommaLabs.KVLite.Core\PommaLabs.KVLite.Core.csproj", "{F62A10BB-58E1-4514-9BE0-5B28C2EACB34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.Core", "src\PommaLabs.KVLite.Core\PommaLabs.KVLite.Core.csproj", "{F62A10BB-58E1-4514-9BE0-5B28C2EACB34}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{D45E8263-41D2-4BDC-B732-58B655E84AE9}"
 	ProjectSection(SolutionItems) = preProject
 		tools\packages.config = tools\packages.config
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.Examples.AspNetCore", "examples\PommaLabs.KVLite.Examples.AspNetCore\PommaLabs.KVLite.Examples.AspNetCore.csproj", "{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -223,6 +225,14 @@ Global
 		{F62A10BB-58E1-4514-9BE0-5B28C2EACB34}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F62A10BB-58E1-4514-9BE0-5B28C2EACB34}.Release|x86.ActiveCfg = Release|Any CPU
 		{F62A10BB-58E1-4514-9BE0-5B28C2EACB34}.Release|x86.Build.0 = Release|Any CPU
+		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}.Debug|x86.Build.0 = Debug|Any CPU
+		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}.Release|x86.ActiveCfg = Release|Any CPU
+		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -248,5 +258,6 @@ Global
 		{7D431E4A-1227-4A63-A9F3-0AF60E697420} = {7BB9E3FA-1248-4572-A5AB-2BAB740AD373}
 		{F62A10BB-58E1-4514-9BE0-5B28C2EACB34} = {DA9B418B-185E-4B62-A6EE-DAFC4E5DAB51}
 		{D45E8263-41D2-4BDC-B732-58B655E84AE9} = {CB218631-52E1-43BC-971F-94784A43B73E}
+		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3} = {09C060EE-A6D3-45ED-B82D-E81B59EABBCB}
 	EndGlobalSection
 EndGlobal

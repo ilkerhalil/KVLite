@@ -48,13 +48,14 @@ namespace PommaLabs.KVLite.MySql
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services, Func<MySqlCacheSettings, MySqlCacheSettings> changeSettings)
+        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services, Action<MySqlCacheSettings> changeSettings)
         {
-            var cache = (changeSettings == null)
-                ? new MySqlCache(new MySqlCacheSettings())
-                : new MySqlCache(changeSettings(new MySqlCacheSettings()));
+            var settings = new MySqlCacheSettings();
+            changeSettings?.Invoke(settings);
 
-            return services.AddKVLiteCache(cache);
+#pragma warning disable CC0022 // Should dispose object
+            return services.AddKVLiteCache(new MySqlCache(settings));
+#pragma warning restore CC0022 // Should dispose object
         }
     }
 }

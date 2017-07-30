@@ -48,13 +48,14 @@ namespace PommaLabs.KVLite.Memory
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMemoryKVLiteCache(this IServiceCollection services, Func<MemoryCacheSettings, MemoryCacheSettings> changeSettings)
+        public static IServiceCollection AddMemoryKVLiteCache(this IServiceCollection services, Action<MemoryCacheSettings> changeSettings)
         {
-            var cache = (changeSettings == null)
-                ? new MemoryCache(new MemoryCacheSettings())
-                : new MemoryCache(changeSettings(new MemoryCacheSettings()));
+            var settings = new MemoryCacheSettings();
+            changeSettings?.Invoke(settings);
 
-            return services.AddKVLiteCache(cache);
+#pragma warning disable CC0022 // Should dispose object
+            return services.AddKVLiteCache(new MemoryCache(settings));
+#pragma warning restore CC0022 // Should dispose object
         }
     }
 }

@@ -48,13 +48,14 @@ namespace PommaLabs.KVLite.SqlServer
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddSqlServerKVLiteCache(this IServiceCollection services, Func<SqlServerCacheSettings, SqlServerCacheSettings> changeSettings)
+        public static IServiceCollection AddSqlServerKVLiteCache(this IServiceCollection services, Action<SqlServerCacheSettings> changeSettings)
         {
-            var cache = (changeSettings == null)
-                ? new SqlServerCache(new SqlServerCacheSettings())
-                : new SqlServerCache(changeSettings(new SqlServerCacheSettings()));
+            var settings = new SqlServerCacheSettings();
+            changeSettings?.Invoke(settings);
 
-            return services.AddKVLiteCache(cache);
+#pragma warning disable CC0022 // Should dispose object
+            return services.AddKVLiteCache(new SqlServerCache(settings));
+#pragma warning restore CC0022 // Should dispose object
         }
     }
 }
