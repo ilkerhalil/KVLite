@@ -87,7 +87,7 @@ namespace PommaLabs.KVLite.Examples
             var volatileCacheSettings = new VolatileCacheSettings
             {
                 CacheName = "My In-Memory Cache", // The backend.
-                StaticInterval = Duration.FromDays(10) // How many days static values will last.
+                StaticInterval = Duration.FromDays(10) // How long static values will last.
             };
 
             // Then the settings that we will use in new persistent caches.
@@ -95,7 +95,7 @@ namespace PommaLabs.KVLite.Examples
             {
                 CacheFile = "CustomCache.sqlite", // The SQLite DB used as the backend for the cache.
                 ChancesOfAutoCleanup = 0.5, // Chance of an automatic a cache cleanup being issued.
-                StaticInterval = Duration.FromDays(10) // How many days static values will last.
+                StaticInterval = Duration.FromDays(10) // How long static values will last.
             };
 
             // We create both a volatile and a persistent cache.
