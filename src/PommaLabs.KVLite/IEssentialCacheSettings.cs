@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NodaTime;
+using System;
 using System.ComponentModel;
 
 namespace PommaLabs.KVLite
@@ -41,6 +42,16 @@ namespace PommaLabs.KVLite
         ///   The partition used when none is specified.
         /// </summary>
         string DefaultPartition { get; set; }
+
+        /// <summary>
+        ///   When a serialized value is longer than specified length, then the cache will compress
+        ///   it. If a serialized value length is less than or equal to the specified length, then
+        ///   the cache will not compress it. Defaults to 4096 bytes.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="value"/> is less than zero.
+        /// </exception>
+        long MinValueLengthForCompression { get; set; }
 
         /// <summary>
         ///   How long static values will last.
