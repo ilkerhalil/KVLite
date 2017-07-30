@@ -1,4 +1,4 @@
-﻿// File name: MySqlServiceCollectionExtensions.cs
+﻿// File name: OracleServiceCollectionExtensions.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -26,33 +26,33 @@ using Microsoft.Extensions.DependencyInjection;
 using PommaLabs.KVLite.Core;
 using System;
 
-namespace PommaLabs.KVLite.MySql
+namespace PommaLabs.KVLite.Oracle
 {
     /// <summary>
-    ///   Registrations for MySQL KVLite services.
+    ///   Registrations for Oracle KVLite services.
     /// </summary>
-    public static class MySqlServiceCollectionExtensions
+    public static class OracleServiceCollectionExtensions
     {
         /// <summary>
-        ///   Registers <see cref="MySqlCache"/> as singleton implementation for
+        ///   Registers <see cref="OracleCache"/> as singleton implementation for
         ///   <see cref="ICache"/>, <see cref="IAsyncCache"/>, <see cref="IDistributedCache"/>.
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services) => services.AddKVLiteCache(new MySqlCache(new MySqlCacheSettings()));
+        public static IServiceCollection AddOracleKVLiteCache(this IServiceCollection services) => services.AddKVLiteCache(new OracleCache(new OracleCacheSettings()));
 
         /// <summary>
-        ///   Registers <see cref="MySqlCache"/> as singleton implementation for
+        ///   Registers <see cref="OracleCache"/> as singleton implementation for
         ///   <see cref="ICache"/>, <see cref="IAsyncCache"/>, <see cref="IDistributedCache"/>.
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services, Func<MySqlCacheSettings, MySqlCacheSettings> changeSettings)
+        public static IServiceCollection AddOracleKVLiteCache(this IServiceCollection services, Func<OracleCacheSettings, OracleCacheSettings> changeSettings)
         {
             var cache = (changeSettings == null)
-                ? new MySqlCache(new MySqlCacheSettings())
-                : new MySqlCache(changeSettings(new MySqlCacheSettings()));
+                ? new OracleCache(new OracleCacheSettings())
+                : new OracleCache(changeSettings(new OracleCacheSettings()));
 
             return services.AddKVLiteCache(cache);
         }

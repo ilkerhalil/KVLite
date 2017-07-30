@@ -1,4 +1,4 @@
-﻿// File name: MySqlServiceCollectionExtensions.cs
+﻿// File name: PostgreSqlServiceCollectionExtensions.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -26,33 +26,33 @@ using Microsoft.Extensions.DependencyInjection;
 using PommaLabs.KVLite.Core;
 using System;
 
-namespace PommaLabs.KVLite.MySql
+namespace PommaLabs.KVLite.PostgreSql
 {
     /// <summary>
-    ///   Registrations for MySQL KVLite services.
+    ///   Registrations for PostgreSQL KVLite services.
     /// </summary>
-    public static class MySqlServiceCollectionExtensions
+    public static class MemoryServiceCollectionExtensions
     {
         /// <summary>
-        ///   Registers <see cref="MySqlCache"/> as singleton implementation for
+        ///   Registers <see cref="PostgreSqlCache"/> as singleton implementation for
         ///   <see cref="ICache"/>, <see cref="IAsyncCache"/>, <see cref="IDistributedCache"/>.
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services) => services.AddKVLiteCache(new MySqlCache(new MySqlCacheSettings()));
+        public static IServiceCollection AddPostgreSqlKVLiteCache(this IServiceCollection services) => services.AddKVLiteCache(new PostgreSqlCache(new PostgreSqlCacheSettings()));
 
         /// <summary>
-        ///   Registers <see cref="MySqlCache"/> as singleton implementation for
+        ///   Registers <see cref="PostgreSqlCache"/> as singleton implementation for
         ///   <see cref="ICache"/>, <see cref="IAsyncCache"/>, <see cref="IDistributedCache"/>.
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services, Func<MySqlCacheSettings, MySqlCacheSettings> changeSettings)
+        public static IServiceCollection AddPostgreSqlKVLiteCache(this IServiceCollection services, Func<PostgreSqlCacheSettings, PostgreSqlCacheSettings> changeSettings)
         {
             var cache = (changeSettings == null)
-                ? new MySqlCache(new MySqlCacheSettings())
-                : new MySqlCache(changeSettings(new MySqlCacheSettings()));
+                ? new PostgreSqlCache(new PostgreSqlCacheSettings())
+                : new PostgreSqlCache(changeSettings(new PostgreSqlCacheSettings()));
 
             return services.AddKVLiteCache(cache);
         }

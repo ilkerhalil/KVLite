@@ -1,4 +1,4 @@
-﻿// File name: MySqlServiceCollectionExtensions.cs
+﻿// File name: MemoryServiceCollectionExtensions.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -26,33 +26,33 @@ using Microsoft.Extensions.DependencyInjection;
 using PommaLabs.KVLite.Core;
 using System;
 
-namespace PommaLabs.KVLite.MySql
+namespace PommaLabs.KVLite.Memory
 {
     /// <summary>
-    ///   Registrations for MySQL KVLite services.
+    ///   Registrations for in-memory KVLite services.
     /// </summary>
-    public static class MySqlServiceCollectionExtensions
+    public static class MemoryServiceCollectionExtensions
     {
         /// <summary>
-        ///   Registers <see cref="MySqlCache"/> as singleton implementation for
+        ///   Registers <see cref="MemoryCache"/> as singleton implementation for
         ///   <see cref="ICache"/>, <see cref="IAsyncCache"/>, <see cref="IDistributedCache"/>.
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services) => services.AddKVLiteCache(new MySqlCache(new MySqlCacheSettings()));
+        public static IServiceCollection AddMemoryKVLiteCache(this IServiceCollection services) => services.AddKVLiteCache(new MemoryCache(new MemoryCacheSettings()));
 
         /// <summary>
-        ///   Registers <see cref="MySqlCache"/> as singleton implementation for
+        ///   Registers <see cref="MemoryCache"/> as singleton implementation for
         ///   <see cref="ICache"/>, <see cref="IAsyncCache"/>, <see cref="IDistributedCache"/>.
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services, Func<MySqlCacheSettings, MySqlCacheSettings> changeSettings)
+        public static IServiceCollection AddMemoryKVLiteCache(this IServiceCollection services, Func<MemoryCacheSettings, MemoryCacheSettings> changeSettings)
         {
             var cache = (changeSettings == null)
-                ? new MySqlCache(new MySqlCacheSettings())
-                : new MySqlCache(changeSettings(new MySqlCacheSettings()));
+                ? new MemoryCache(new MemoryCacheSettings())
+                : new MemoryCache(changeSettings(new MemoryCacheSettings()));
 
             return services.AddKVLiteCache(cache);
         }
