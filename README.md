@@ -169,7 +169,7 @@ internal static class Program
 
 ### Examples
 
-Further examples can be found in the following project:
+Further examples can be found in the following projects:
 
 * [ASP.NET Core](https://github.com/pomma89/KVLite/tree/master/examples/PommaLabs.KVLite.Examples.AspNetCore): It shows how to register KVLite services and how to use it as a proper distributed cache implementation.
 * [ASP.NET WebAPI](https://github.com/pomma89/KVLite/tree/master/examples/PommaLabs.KVLite.Examples.WebApi): You can find how to cache action results using KVLite adapter.
