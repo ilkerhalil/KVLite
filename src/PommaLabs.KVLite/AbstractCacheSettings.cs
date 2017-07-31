@@ -22,12 +22,14 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NodaTime;
+using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 namespace PommaLabs.KVLite
 {
@@ -38,8 +40,76 @@ namespace PommaLabs.KVLite
     public abstract partial class AbstractCacheSettings<TSettings> : ICacheSettings
         where TSettings : AbstractCacheSettings<TSettings>
     {
-        private string _defaultPartition;
-        private int _staticIntervalInDays;
+        /// <summary>
+        ///   Log for cache settings class.
+        /// </summary>
+        protected static ILog Log { get; } = LogProvider.For<TSettings>();
+
+        /// <summary>
+        ///   Backing field for <see cref="CacheName"/>.
+        /// </summary>
+        private string _cacheName = typeof(TSettings).Name.Replace("Settings", string.Empty);
+
+        /// <summary>
+        ///   The cache name, can be used for logging.
+        /// </summary>
+        /// <value>The cache name.</value>
+        [DataMember]
+        public string CacheName
+        {
+            get
+            {
+                var result = _cacheName;
+
+                // Postconditions
+                Debug.Assert(!string.IsNullOrWhiteSpace(result));
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyCacheName, nameof(CacheName));
+                if (!Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$")) throw new ArgumentException(ErrorMessages.InvalidCacheName, nameof(CacheName));
+
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(CacheName), _cacheName, value);
+                _cacheName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        ///   Backing field for <see cref="DefaultDistributedCacheAbsoluteExpiration"/>.
+        /// </summary>
+        private Duration _defaultDistributedCacheAbsoluteExpiration = Duration.FromMinutes(20);
+
+        /// <summary>
+        ///   Default absolute expiration for distributed cache entries. Initial value is 20 minutes.
+        /// </summary>
+        public Duration DefaultDistributedCacheAbsoluteExpiration
+        {
+            get
+            {
+                var result = _defaultDistributedCacheAbsoluteExpiration;
+
+                // Postconditions
+                Debug.Assert(result.TotalTicks > 0.0);
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                if (value.TotalTicks <= 0.0) throw new ArgumentOutOfRangeException(nameof(DefaultDistributedCacheAbsoluteExpiration));
+
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(DefaultDistributedCacheAbsoluteExpiration), _defaultDistributedCacheAbsoluteExpiration, value);
+                _defaultDistributedCacheAbsoluteExpiration = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        ///   Backing field for <see cref="DefaultPartition"/>.
+        /// </summary>
+        private string _defaultPartition = CachePartitions.Default;
 
         /// <summary>
         ///   The partition used when none is specified.
@@ -60,54 +130,78 @@ namespace PommaLabs.KVLite
                 // Preconditions
                 if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyDefaultPartition, nameof(DefaultPartition));
 
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(DefaultPartition), _defaultPartition, value);
                 _defaultPartition = value;
                 OnPropertyChanged();
             }
         }
 
         /// <summary>
-        ///   How many days static values will last.
+        ///   Backing field for <see cref="MinValueLengthForCompression"/>.
         /// </summary>
+        private long _minValueLengthForCompression = 4096;
+
+        /// <summary>
+        ///   When a serialized value is longer than specified length, then the cache will compress
+        ///   it. If a serialized value length is less than or equal to the specified length, then
+        ///   the cache will not compress it. Defaults to 4096 bytes.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="value"/> is less than zero.
+        /// </exception>
         [DataMember]
-        public int StaticIntervalInDays
+        public long MinValueLengthForCompression
         {
             get
             {
-                var result = _staticIntervalInDays;
+                var result = _minValueLengthForCompression;
 
                 // Postconditions
-                Debug.Assert(result > 0);
+                Debug.Assert(result >= 0L);
                 return result;
             }
             set
             {
                 // Preconditions
-                if (value <= 0) throw new ArgumentOutOfRangeException(nameof(StaticIntervalInDays));
+                if (value < 0L) throw new ArgumentOutOfRangeException(nameof(MinValueLengthForCompression));
 
-                _staticIntervalInDays = value;
-                StaticInterval = Duration.FromDays(value);
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(MinValueLengthForCompression), _minValueLengthForCompression, value);
+                _minValueLengthForCompression = value;
                 OnPropertyChanged();
             }
         }
 
         /// <summary>
-        ///   How long static values will last. Computed from <see cref="StaticIntervalInDays"/>.
+        ///   Backing field for <see cref="StaticInterval"/>.
         /// </summary>
-        [IgnoreDataMember]
-        public Duration StaticInterval { get; private set; }
-
-        #region Abstract Settings
+        private Duration _staticInterval = Duration.FromDays(30);
 
         /// <summary>
-        ///   Gets the cache URI; used for logging.
+        ///   How long static values will last.
         /// </summary>
-        /// <value>The cache URI.</value>
-        [IgnoreDataMember]
-        public abstract string CacheUri { get; }
+        [DataMember]
+        public Duration StaticInterval
+        {
+            get
+            {
+                var result = _staticInterval;
 
-        #endregion Abstract Settings
+                // Postconditions
+                Debug.Assert(result.TotalTicks > 0.0);
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                if (value.TotalTicks <= 0.0) throw new ArgumentOutOfRangeException(nameof(StaticInterval));
 
-        #region INotifyPropertyChanged Members
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(StaticInterval), _staticInterval, value);
+                _staticInterval = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #region INotifyPropertyChanged
 
         /// <summary>
         ///   Occurs when a property value changes.
@@ -123,6 +217,6 @@ namespace PommaLabs.KVLite
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion INotifyPropertyChanged Members
+        #endregion INotifyPropertyChanged
     }
 }

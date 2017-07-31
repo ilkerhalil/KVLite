@@ -56,7 +56,7 @@ namespace PommaLabs.KVLite
     ///   In any case, to increase the ease of use, it is not mandatory neither to specify a
     ///   partition, nor to specify an expiration time. In both cases, a default value is used, which
     ///   can be customized by editing the KVLite configuration file. See, for example, the abstract
-    ///   configuration of all caches (see <see cref="IEssentialCacheSettings.StaticIntervalInDays"/>).
+    ///   configuration of all caches (see <see cref="IEssentialCacheSettings.StaticInterval"/>).
     /// </summary>
     public interface ICache : IEssentialCache
     {
@@ -118,7 +118,7 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   Adds a "static" value with given partition and key. Value will last as much as
-        ///   specified in <see cref="IEssentialCacheSettings.StaticIntervalInDays"/> and, if
+        ///   specified in <see cref="IEssentialCacheSettings.StaticInterval"/> and, if
         ///   accessed before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
@@ -363,7 +363,7 @@ namespace PommaLabs.KVLite
         ///
         ///   If the value is not found, then it adds a "static" value with given partition and key.
         ///   Value will last as much as specified in
-        ///   <see cref="IEssentialCacheSettings.StaticIntervalInDays"/> and, if accessed before
+        ///   <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed before
         ///   expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>

@@ -29,13 +29,14 @@ namespace PommaLabs.KVLite.Oracle
     /// <summary>
     ///   Cache connection factory specialized for Oracle.
     /// </summary>
-    public sealed class OracleCacheConnectionFactory : DbCacheConnectionFactory<OracleConnection>
+    public sealed class OracleCacheConnectionFactory : DbCacheConnectionFactory<OracleCacheSettings, OracleConnection>
     {
         /// <summary>
         ///   Cache connection factory specialized for Oracle.
         /// </summary>
-        public OracleCacheConnectionFactory()
-            : base(OracleClientFactory.Instance, null, null)
+        /// <param name="settings">Cache settings.</param>
+        public OracleCacheConnectionFactory(OracleCacheSettings settings)
+            : base(settings, OracleClientFactory.Instance)
         {
         }
 
@@ -70,7 +71,7 @@ namespace PommaLabs.KVLite.Oracle
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
                 declare
                 begin
-                    insert into {s}{CacheEntriesTableName} (
+                    insert into {s}{Settings.CacheEntriesTableName} (
                         {DbCacheValue.HashColumn},
                         {DbCacheValue.UtcExpiryColumn},
                         {DbCacheValue.IntervalColumn},
@@ -105,7 +106,7 @@ namespace PommaLabs.KVLite.Oracle
 
                     exception
                         when dup_val_on_index then -- Above INSERT has failed
-                        update {s}{CacheEntriesTableName}
+                        update {s}{Settings.CacheEntriesTableName}
                            set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheValue.UtcExpiry)},
                                {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
                                {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},

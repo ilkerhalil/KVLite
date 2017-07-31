@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.Diagnostics;
@@ -34,26 +35,13 @@ namespace PommaLabs.KVLite.SQLite
     [Serializable, DataContract]
     public sealed class PersistentCacheSettings : SQLiteCacheSettings<PersistentCacheSettings>
     {
-        #region Fields
-
+        /// <summary>
+        ///   Backing field for <see cref="CacheFile"/>.
+        /// </summary>
         private string _cacheFile = "PersistentCache.sqlite";
 
-        #endregion Fields
-
-        #region Properties
-
         /// <summary>
-        ///   Gets the default settings for <see cref="PersistentCache"/>.
-        /// </summary>
-        /// <value>The default settings for <see cref="PersistentCache"/>.</value>
-        public static PersistentCacheSettings Default { get; } = new PersistentCacheSettings();
-
-        #endregion Properties
-
-        #region Settings
-
-        /// <summary>
-        ///   The SQLite DB used as the backend for the cache.
+        ///   Path to the SQLite DB used as backend for the cache.
         ///
         ///   Default value is "PersistentCache.sqlite".
         /// </summary>
@@ -73,11 +61,10 @@ namespace PommaLabs.KVLite.SQLite
                 // Preconditions
                 if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyCacheFile, nameof(CacheFile));
 
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(CacheFile), _cacheFile, value);
                 _cacheFile = value;
                 OnPropertyChanged();
             }
         }
-
-        #endregion Settings
     }
 }

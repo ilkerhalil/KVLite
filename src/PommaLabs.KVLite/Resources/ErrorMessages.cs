@@ -1,10 +1,10 @@
 ﻿// File name: ErrorMessages.cs
 //
-// Author(s): Alessio Parma <alessio.parma@gmail.com>
+// Author(s): Alessio Parma <alessio.parmagmail.com>
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2014-2017 Alessio Parma <alessio.parma@gmail.com>
+// Copyright (c) 2014-2017 Alessio Parma <alessio.parmagmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -31,176 +31,176 @@ namespace PommaLabs.KVLite.Resources
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnClearAll = "An error occurred while clearing all cache partitions.";
+        public static string CacheDoesNotAllowPeeking { get; } = "{0} does not allow peeking items, therefore this method is not implemented";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnClearPartition = "An error occurred while clearing cache partition '{0}'.";
+        public static string CacheDoesNotAllowSlidingAndAbsolute { get; } = "KVLite caching interfaces do not allow setting a sliding item with absolute expiration";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnCountAll = "An error occurred while counting items in all cache partitions.";
+        public static string CacheHasBeenDisposed { get; } = "{0} instance has been disposed, therefore no more operations are allowed on it";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnCountPartition = "An error occurred while counting items in cache partition '{0}'.";
+        public static string EmptyCacheResult { get; } = "Cache result has no value";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnReadAll = "An error occurred while reading items in all cache partitions.";
+        public static string HashMismatch { get; } = "Hashes do not match! Expected {0}, found {1}";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnReadPartition = "An error occurred while reading items in cache partition '{0}'.";
+        public static string HashNotFound { get; } = "Hash not found inside cache value";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnRead = "An error occurred while reading item '{0}/{1}' from the cache.";
+        public static string InternalErrorOnClearAll { get; } = "An error occurred while clearing all {Cache} partitions";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnWrite = "An error occurred while writing item '{0}/{1}' into the cache.";
+        public static string InternalErrorOnClearPartition { get; } = "An error occurred while clearing {Cache} partition '{Partition}'";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnVacuum = "An error occurred while applying VACUUM on the SQLite cache.";
+        public static string InternalErrorOnCountAll { get; } = "An error occurred while counting items in all {Cache} partitions";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InvalidCacheName = "In-memory cache name can only contain alphanumeric characters, dots and underscores.";
+        public static string InternalErrorOnCountPartition { get; } = "An error occurred while counting items in {Cache} partition '{Partition}'";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InvalidCacheReadMode = "An invalid enum value was given for cache read mode.";
+        public static string InternalErrorOnDeserialization { get; } = "Item '{Partition}/{Key}' from {Cache} could not be deserialized";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NotSerializableValue = @"Only serializable objects can be stored in the cache. Try putting the [Serializable] attribute on your class, if possible.";
+        public static string InternalErrorOnRead { get; } = "An error occurred while reading item '{Partition}/{Key}' from {Cache}";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NullOrEmptyCacheName = @"Cache name cannot be null or empty.";
+        public static string InternalErrorOnReadAll { get; } = "An error occurred while reading items in all {Cache} partitions";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NullOrEmptyCacheFile = @"Cache file cannot be null or empty.";
+        public static string InternalErrorOnReadPartition { get; } = "An error occurred while reading items in {Cache} partition '{Partition}'";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NullOrEmptyDefaultPartition = @"Default partition cannot be null or empty.";
+        public static string InternalErrorOnSerialization { get; } = "Value '{Value}' could not be serialized";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NullCache = @"Cache cannot be null, please specify one valid cache or use either PersistentCache or VolatileCache default instances.";
+        public static string InternalErrorOnVacuum { get; } = "An error occurred while applying VACUUM on the SQLite cache";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NullCacheResolver = @"Cache resolver function cannot be null, please specify one non-null function.";
+        public static string InternalErrorOnWrite { get; } = "An error occurred while writing item '{Partition}/{Key}' into {Cache}";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NullKey = @"Key cannot be null, please specify one non-null string.";
+        public static string InvalidCacheEntriesTableName { get; } = "Specified name for SQL entries table is not valid";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NullPartition = @"Partition cannot be null, please specify one non-null string.";
+        public static string InvalidCacheName { get; } = "In-memory cache name can only contain alphanumeric characters, dots and underscores";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NullSettings = @"Settings cannot be null, please specify valid settings or use the default instance.";
+        public static string InvalidCacheReadMode { get; } = "An invalid enum value was given for cache read mode";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NullValue = @"Value cannot be null, please specify one non-null object.";
+        public static string InvalidCacheSchemaName { get; } = "Specified SQL schema name is not valid";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string NullValueGetter = @"Value getter function cannot be null, please specify one non-null function.";
+        public static string InvalidCompressionLevel { get; } = "Specified compression level is not valid";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string CacheHasBeenDisposed = @"Cache instance has been disposed, therefore no more operations are allowed on it.";
+        public static string InvalidDataType { get; } = "Value data type is not valid";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string CacheDoesNotAllowPeeking = @"This cache does not allow peeking items, therefore this method is not implemented.";
+        public static string NotSerializableValue { get; } = "Only serializable objects can be stored into the cache. Try putting the [Serializable] attribute on your class, if possible";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string CacheDoesNotAllowSlidingAndAbsolute = @"KVLite caching interfaces do not allow setting a sliding item with absolute expiration";
+        public static string NullCache { get; } = "Cache cannot be null, please specify one valid cache or use either PersistentCache or VolatileCache default instances";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string TooManyParentKeys = @"Too many parent keys have been specified for this item.";
+        public static string NullCacheResolver { get; } = "Cache resolver function cannot be null, please specify one non-null function";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnSerializationFormat = "Something wrong happened during serialization of given value '{0}'";
+        public static string NullKey { get; } = "Key cannot be null, please specify one non-null string";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InternalErrorOnDeserialization = "Something wrong happened during deserialization";
+        public static string NullOrEmptyCacheFile { get; } = "Cache file cannot be null or empty";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string HashNotFound = "Hash not found inside cache value.";
+        public static string NullOrEmptyCacheName { get; } = "Cache name cannot be null or empty";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string HashMismatch = "Hashes do not match! Expected {0}, found {1}.";
+        public static string NullOrEmptyDefaultPartition { get; } = "Default partition cannot be null or empty";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InvalidDataType = "Value data type is not valid.";
+        public static string NullPartition { get; } = "Partition cannot be null, please specify one non-null string";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string EmptyCacheResult = "Cache result has no value.";
+        public static string NullSettings { get; } = "Settings cannot be null, please specify valid settings or use the default instance";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InvalidCompressionLevel = "Specified compression level is not valid.";
+        public static string NullValue { get; } = "Value cannot be null, please specify one non-null object";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InvalidCacheSchemaName = "Specified SQL schema name is not valid.";
+        public static string NullValueGetter { get; } = "Value getter function cannot be null, please specify one non-null function";
 
         /// <summary>
         ///   An error message.
         /// </summary>
-        public const string InvalidCacheEntriesTableName = "Specified name for SQL entries table is not valid.";
+        public static string TooManyParentKeys { get; } = "Too many parent keys have been specified for this item";
     }
 }

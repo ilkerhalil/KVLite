@@ -31,8 +31,22 @@ namespace PommaLabs.KVLite.NoOp
     /// <summary>
     ///   A cache which does really nothing. It might be used for unit testing.
     /// </summary>
-    public sealed class NoOpCache : AbstractCache<NoOpCacheSettings>
+    public sealed class NoOpCache : AbstractCache<NoOpCache, NoOpCacheSettings>
     {
+        #region Default Instance
+
+        /// <summary>
+        ///   Gets the default instance for this cache kind. Default instance is configured using
+        ///   default cache settings.
+        /// </summary>
+#pragma warning disable CC0022 // Should dispose object
+
+        public static NoOpCache DefaultInstance { get; } = new NoOpCache();
+
+#pragma warning restore CC0022 // Should dispose object
+
+        #endregion Default Instance
+
         /// <summary>
         ///   <c>true</c> if the Peek methods are implemented, <c>false</c> otherwise.
         /// </summary>
@@ -149,7 +163,7 @@ namespace PommaLabs.KVLite.NoOp
         ///   Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
-        public override string ToString() => $"{nameof(Settings.CacheUri)}: {Settings.CacheUri}";
+        public override string ToString() => $"{nameof(Settings.CacheName)}: {Settings.CacheName}";
 
         /// <summary>
         ///   Gets the value with specified partition and key. If it is a "sliding" or "static"

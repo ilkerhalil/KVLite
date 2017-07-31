@@ -23,6 +23,7 @@
 
 using PommaLabs.KVLite.Resources;
 using System;
+using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -34,8 +35,10 @@ namespace PommaLabs.KVLite.Database
     /// <summary>
     ///   Base class for cache connection factories.
     /// </summary>
+    /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
     /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
-    public abstract class DbCacheConnectionFactory<TConnection>
+    public abstract class DbCacheConnectionFactory<TSettings, TConnection>
+        where TSettings : DbCacheSettings<TSettings>
         where TConnection : DbConnection
     {
         /// <summary>
@@ -43,26 +46,22 @@ namespace PommaLabs.KVLite.Database
         /// </summary>
         private static Regex IsValidSqlNameRegex { get; } = new Regex("[a-z0-9_]*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+        /// <summary>
+        ///   DB provider factory used to create SQL connections.
+        /// </summary>
         private readonly DbProviderFactory _dbProviderFactory;
-        private string _cacheSchemaName;
-        private string _cacheEntriesTableName;
 
         /// <summary>
         ///   Initializes the cache connection factory.
         /// </summary>
+        /// <param name="settings">Cache settings.</param>
         /// <param name="dbProviderFactory">Provider used to open connection.</param>
-        /// <param name="cacheSchemaName">Optional cache schema name.</param>
-        /// <param name="cacheEntriesTableName">Optional cache entries table name.</param>
-        protected DbCacheConnectionFactory(DbProviderFactory dbProviderFactory, string cacheSchemaName, string cacheEntriesTableName)
+        protected DbCacheConnectionFactory(TSettings settings, DbProviderFactory dbProviderFactory)
         {
-            // Preconditions
-            if (cacheSchemaName != null && !IsValidSqlNameRegex.IsMatch(cacheSchemaName)) throw new ArgumentException(ErrorMessages.InvalidCacheSchemaName, nameof(cacheSchemaName));
-            if (cacheEntriesTableName != null && !IsValidSqlNameRegex.IsMatch(cacheEntriesTableName)) throw new ArgumentException(ErrorMessages.InvalidCacheEntriesTableName, nameof(cacheEntriesTableName));
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            Settings.PropertyChanged += Settings_PropertyChanged;
 
             _dbProviderFactory = dbProviderFactory ?? throw new ArgumentNullException(nameof(dbProviderFactory));
-
-            _cacheSchemaName = cacheSchemaName ?? DefaultCacheSchemaName;
-            _cacheEntriesTableName = cacheEntriesTableName ?? DefaultCacheEntriesTableName;
 
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
             UpdateCommandsAndQueries();
@@ -72,77 +71,22 @@ namespace PommaLabs.KVLite.Database
         #region Configuration
 
         /// <summary>
-        ///   Default cache schema name.
+        ///   Cache settings.
         /// </summary>
-        public static string DefaultCacheSchemaName { get; } = string.Empty;
+        protected TSettings Settings { get; }
 
         /// <summary>
-        ///   Default cache entries table name.
+        ///   Updates commands and queries if schema name or entries table name have been changed.
         /// </summary>
-        public static string DefaultCacheEntriesTableName { get; } = "kvl_cache_entries";
-
-        /// <summary>
-        ///   The schema which holds cache entries table.
-        /// </summary>
-        public string CacheSchemaName
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">Arguments.</param>
+        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            get
+            if (e.PropertyName == nameof(DbCacheSettings<TSettings>.CacheSchemaName) || e.PropertyName == nameof(DbCacheSettings<TSettings>.CacheEntriesTableName))
             {
-                var result = _cacheSchemaName;
-
-                // Postconditions
-                Debug.Assert(IsValidSqlNameRegex.IsMatch(result));
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                if (!IsValidSqlNameRegex.IsMatch(value)) throw new ArgumentException(ErrorMessages.InvalidCacheSchemaName, nameof(CacheSchemaName));
-
-                _cacheSchemaName = value;
                 UpdateCommandsAndQueries();
             }
         }
-
-        /// <summary>
-        ///   The name of the table which holds cache entries.
-        /// </summary>
-        public string CacheEntriesTableName
-        {
-            get
-            {
-                var result = _cacheEntriesTableName;
-
-                // Postconditions
-                Debug.Assert(IsValidSqlNameRegex.IsMatch(result));
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                if (!IsValidSqlNameRegex.IsMatch(value)) throw new ArgumentException(ErrorMessages.InvalidCacheEntriesTableName, nameof(CacheEntriesTableName));
-
-                _cacheEntriesTableName = value;
-                UpdateCommandsAndQueries();
-            }
-        }
-
-        /// <summary>
-        ///   The maximum length a partition can have. Longer partitions will be truncated. Default
-        ///   value is 2000, but each SQL connection factory might change it.
-        /// </summary>
-        public int MaxPartitionNameLength { get; } = 2000;
-
-        /// <summary>
-        ///   The maximum length a key can have. Longer keys will be truncated. Default value is
-        ///   2000, but each SQL connection factory might change it.
-        /// </summary>
-        public int MaxKeyNameLength { get; } = 2000;
-
-        /// <summary>
-        ///   The connection string used to connect to the cache data provider.
-        /// </summary>
-        public virtual string ConnectionString { get; set; }
 
         #endregion Configuration
 
@@ -211,7 +155,7 @@ namespace PommaLabs.KVLite.Database
         public virtual TConnection Open()
         {
             var connection = _dbProviderFactory.CreateConnection() as TConnection;
-            connection.ConnectionString = ConnectionString;
+            connection.ConnectionString = Settings.ConnectionString;
             connection.Open();
             return connection;
         }
@@ -224,12 +168,24 @@ namespace PommaLabs.KVLite.Database
         public virtual async Task<TConnection> OpenAsync(CancellationToken cancellationToken)
         {
             var connection = _dbProviderFactory.CreateConnection() as TConnection;
-            connection.ConnectionString = ConnectionString;
+            connection.ConnectionString = Settings.ConnectionString;
             await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
             return connection;
         }
 
         #region Query optimization
+
+        /// <summary>
+        ///   The maximum length a partition can have. Longer partitions will be truncated. Default
+        ///   value is 2000, but each SQL connection factory might change it.
+        /// </summary>
+        public int MaxPartitionNameLength { get; protected set; } = 2000;
+
+        /// <summary>
+        ///   The maximum length a key can have. Longer keys will be truncated. Default value is
+        ///   2000, but each SQL connection factory might change it.
+        /// </summary>
+        public int MaxKeyNameLength { get; protected set; } = 2000;
 
         /// <summary>
         ///   Function used to estimate cache size.
@@ -254,7 +210,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   SQL schema including DOT character. If schema was empty, then this property will be empty.
         /// </summary>
-        protected virtual string SqlSchemaWithDot => string.IsNullOrEmpty(CacheSchemaName) ? string.Empty : $"{CacheSchemaName}.";
+        protected virtual string SqlSchemaWithDot => string.IsNullOrEmpty(Settings.CacheSchemaName) ? string.Empty : $"{Settings.CacheSchemaName}.";
 
         /// <summary>
         ///   This method is called when either the cache schema name or the cache entries table name
@@ -271,7 +227,7 @@ namespace PommaLabs.KVLite.Database
             #region Commands
 
             DeleteCacheEntryCommand = MinifyQuery($@"
-                delete from {s}{CacheEntriesTableName}
+                delete from {s}{Settings.CacheEntriesTableName}
                  where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
                     or {DbCacheEntry.ParentHash0Column} = {p}{nameof(DbCacheEntry.Single.Hash)}
                     or {DbCacheEntry.ParentHash1Column} = {p}{nameof(DbCacheEntry.Single.Hash)}
@@ -279,25 +235,25 @@ namespace PommaLabs.KVLite.Database
             ");
 
             DeleteCacheEntriesCommand = MinifyQuery($@"
-                delete from {s}{CacheEntriesTableName}
+                delete from {s}{Settings.CacheEntriesTableName}
                  where ({p}{nameof(DbCacheEntry.Group.Hash)} is null or ({DbCacheValue.HashColumn} >= {p}{nameof(DbCacheEntry.Group.Hash)} and {DbCacheValue.HashColumn} <= {p}{nameof(DbCacheEntry.Group.Hash)} + {t}))
                    and (({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
                      or ({DbCacheEntry.ParentHash0Column} in (select x.{DbCacheValue.HashColumn} from
-                                                             (select y.{DbCacheValue.HashColumn} from {s}{CacheEntriesTableName} y
+                                                             (select y.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} y
                                                                where y.{DbCacheValue.HashColumn} = {DbCacheValue.HashColumn}
                                                                  and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)
                       or {DbCacheEntry.ParentHash1Column} in (select x.{DbCacheValue.HashColumn} from
-                                                             (select y.{DbCacheValue.HashColumn} from {s}{CacheEntriesTableName} y
+                                                             (select y.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} y
                                                                where y.{DbCacheValue.HashColumn} = {DbCacheValue.HashColumn}
                                                                  and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)
                       or {DbCacheEntry.ParentHash2Column} in (select x.{DbCacheValue.HashColumn} from
-                                                             (select y.{DbCacheValue.HashColumn} from {s}{CacheEntriesTableName} y
+                                                             (select y.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} y
                                                                where y.{DbCacheValue.HashColumn} = {DbCacheValue.HashColumn}
                                                                  and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)))
             ");
 
             UpdateCacheEntryExpiryCommand = MinifyQuery($@"
-                update {s}{CacheEntriesTableName}
+                update {s}{Settings.CacheEntriesTableName}
                    set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheEntry.Single.UtcExpiry)}
                  where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
             ");
@@ -308,14 +264,14 @@ namespace PommaLabs.KVLite.Database
 
             ContainsCacheEntryQuery = MinifyQuery($@"
                 select count(*)
-                  from {s}{CacheEntriesTableName}
+                  from {s}{Settings.CacheEntriesTableName}
                  where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
                    and {DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}
             ");
 
             CountCacheEntriesQuery = MinifyQuery($@"
                 select count(*)
-                  from {s}{CacheEntriesTableName}
+                  from {s}{Settings.CacheEntriesTableName}
                  where ({p}{nameof(DbCacheEntry.Group.Hash)} is null or ({DbCacheValue.HashColumn} >= {p}{nameof(DbCacheEntry.Group.Hash)} and {DbCacheValue.HashColumn} <= {p}{nameof(DbCacheEntry.Group.Hash)} + {t}))
                    and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
@@ -332,7 +288,7 @@ namespace PommaLabs.KVLite.Database
                        x.{DbCacheEntry.ParentKey0Column}  {l}{nameof(DbCacheEntry.ParentKey0)}{r},
                        x.{DbCacheEntry.ParentKey1Column}  {l}{nameof(DbCacheEntry.ParentKey1)}{r},
                        x.{DbCacheEntry.ParentKey2Column}  {l}{nameof(DbCacheEntry.ParentKey2)}{r}
-                  from {s}{CacheEntriesTableName} x
+                  from {s}{Settings.CacheEntriesTableName} x
                  where ({p}{nameof(DbCacheEntry.Group.Hash)} is null or (x.{DbCacheValue.HashColumn} >= {p}{nameof(DbCacheEntry.Group.Hash)} and x.{DbCacheValue.HashColumn} <= {p}{nameof(DbCacheEntry.Group.Hash)} + {t}))
                    and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
@@ -348,7 +304,7 @@ namespace PommaLabs.KVLite.Database
                        x.{DbCacheEntry.ParentKey0Column}  {l}{nameof(DbCacheEntry.ParentKey0)}{r},
                        x.{DbCacheEntry.ParentKey1Column}  {l}{nameof(DbCacheEntry.ParentKey1)}{r},
                        x.{DbCacheEntry.ParentKey2Column}  {l}{nameof(DbCacheEntry.ParentKey2)}{r}
-                  from {s}{CacheEntriesTableName} x
+                  from {s}{Settings.CacheEntriesTableName} x
                  where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
                    and ({p}{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)})
             ");
@@ -359,7 +315,7 @@ namespace PommaLabs.KVLite.Database
                        x.{DbCacheValue.IntervalColumn}    {l}{nameof(DbCacheValue.Interval)}{r},
                        x.{DbCacheValue.ValueColumn}       {l}{nameof(DbCacheValue.Value)}{r},
                        x.{DbCacheValue.CompressedColumn}  {l}{nameof(DbCacheValue.Compressed)}{r}
-                  from {s}{CacheEntriesTableName} x
+                  from {s}{Settings.CacheEntriesTableName} x
                  where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
                    and ({p}{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)})
             ");
@@ -369,7 +325,7 @@ namespace PommaLabs.KVLite.Database
                      + sum({LengthSqlFunction}({DbCacheEntry.PartitionColumn}))
                      + sum({LengthSqlFunction}({DbCacheEntry.KeyColumn}))
                      + count(*) * (4*8) -- Four fields of 8 bytes: hash, expiry, interval, creation
-                  from {s}{CacheEntriesTableName}
+                  from {s}{Settings.CacheEntriesTableName}
             ");
 
             #endregion Queries

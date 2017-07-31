@@ -31,7 +31,7 @@ namespace PommaLabs.KVLite.SqlServer
     /// <summary>
     ///   Cache backed by SQL Server.
     /// </summary>
-    public sealed class SqlServerCache : DbCache<SqlServerCacheSettings, SqlConnection>
+    public sealed class SqlServerCache : DbCache<SqlServerCache, SqlServerCacheSettings, SqlServerCacheConnectionFactory, SqlConnection>
     {
         #region Default Instance
 
@@ -56,7 +56,7 @@ namespace PommaLabs.KVLite.SqlServer
         /// <param name="clock">The clock.</param>
         /// <param name="random">The random number generator.</param>
         public SqlServerCache(SqlServerCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
-            : this(settings, new SqlServerCacheConnectionFactory(), serializer, compressor, clock, random)
+            : this(settings, new SqlServerCacheConnectionFactory(settings), serializer, compressor, clock, random)
         {
         }
 

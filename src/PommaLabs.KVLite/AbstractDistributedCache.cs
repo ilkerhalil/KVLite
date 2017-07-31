@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
 {
-    public abstract partial class AbstractCache<TSettings> : IDistributedCache
+    public abstract partial class AbstractCache<TCache, TSettings> : IDistributedCache
     {
         byte[] IDistributedCache.Get(string key) => Get<byte[]>(CachePartitions.DistributedCache, key).ValueOrDefault();
 
@@ -60,6 +60,10 @@ namespace PommaLabs.KVLite
             {
                 AddTimed(CachePartitions.DistributedCache, key, value, options.AbsoluteExpirationRelativeToNow.Value.ToDuration());
             }
+            else
+            {
+                AddTimed(CachePartitions.DistributedCache, key, value, Settings.DefaultDistributedCacheAbsoluteExpiration);
+            }
         }
 
         async Task IDistributedCache.SetAsync(string key, byte[] value, DistributedCacheEntryOptions options)
@@ -78,6 +82,10 @@ namespace PommaLabs.KVLite
             else if (options.AbsoluteExpirationRelativeToNow.HasValue)
             {
                 await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpirationRelativeToNow.Value.ToDuration()).ConfigureAwait(false);
+            }
+            else
+            {
+                await AddTimedAsync(CachePartitions.DistributedCache, key, value, Settings.DefaultDistributedCacheAbsoluteExpiration).ConfigureAwait(false);
             }
         }
     }

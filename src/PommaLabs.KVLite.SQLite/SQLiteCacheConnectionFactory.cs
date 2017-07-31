@@ -32,10 +32,12 @@ using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.SQLite
 {
-    internal sealed class SQLiteCacheConnectionFactory<TSettings> : DbCacheConnectionFactory<SqliteConnection>
+    /// <summary>
+    ///   Cache connection factory specialized for SQLite.
+    /// </summary>
+    public sealed class SQLiteCacheConnectionFactory<TSettings> : DbCacheConnectionFactory<TSettings, SqliteConnection>
         where TSettings : SQLiteCacheSettings<TSettings>
     {
-        private readonly TSettings _settings;
         private readonly string _mode;
         private readonly string _pragmas;
         private string _vacuumCommand;
@@ -43,14 +45,14 @@ namespace PommaLabs.KVLite.SQLite
         private string _getCacheEntriesSchemaQuery;
 
         /// <summary>
-        ///   The connection string used to connect to the SQLite database.
+        ///   Cache connection factory specialized for SQLite.
         /// </summary>
-        private string _connectionString;
-
+        /// <param name="settings">Cache settings.</param>
+        /// <param name="mode">Storage mode.</param>
+        /// <param name="journal">Journal type.</param>
         public SQLiteCacheConnectionFactory(TSettings settings, string mode, string journal)
-            : base(SqliteFactory.Instance, null, null)
+            : base(settings, SqliteFactory.Instance)
         {
-            _settings = settings;
             _mode = mode;
 
             // Used to configure each connection.
@@ -74,7 +76,7 @@ namespace PommaLabs.KVLite.SQLite
             #region Commands
 
             InsertOrUpdateCacheEntryCommand = MinifyQuery($@"
-                insert or ignore into {s}{CacheEntriesTableName} (
+                insert or ignore into {s}{Settings.CacheEntriesTableName} (
                     {DbCacheValue.HashColumn},
                     {DbCacheValue.UtcExpiryColumn},
                     {DbCacheValue.IntervalColumn},
@@ -107,7 +109,7 @@ namespace PommaLabs.KVLite.SQLite
                     {p}{nameof(DbCacheEntry.ParentKey2)}
                 );
 
-                update {s}{CacheEntriesTableName}
+                update {s}{Settings.CacheEntriesTableName}
                    set {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheValue.UtcExpiry)},
                        {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
                        {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},
@@ -132,8 +134,8 @@ namespace PommaLabs.KVLite.SQLite
             ");
 
             _createCacheSchemaCommand = MinifyQuery($@"
-                DROP TABLE IF EXISTS {s}{CacheEntriesTableName};
-                CREATE TABLE {s}{CacheEntriesTableName} (
+                DROP TABLE IF EXISTS {s}{Settings.CacheEntriesTableName};
+                CREATE TABLE {s}{Settings.CacheEntriesTableName} (
                     kvle_id INTEGER PRIMARY KEY,
                     kvle_hash BIGINT NOT NULL,
                     kvle_expiry BIGINT NOT NULL,
@@ -151,28 +153,19 @@ namespace PommaLabs.KVLite.SQLite
                     kvle_parent_key2 TEXT,
                     CONSTRAINT uk_kvle UNIQUE (kvle_hash)
                 );
-                CREATE INDEX ix_kvle_parent0 ON {s}{CacheEntriesTableName} (kvle_parent_hash0);
-                CREATE INDEX ix_kvle_parent1 ON {s}{CacheEntriesTableName} (kvle_parent_hash1);
-                CREATE INDEX ix_kvle_parent2 ON {s}{CacheEntriesTableName} (kvle_parent_hash2);
+                CREATE INDEX ix_kvle_parent0 ON {s}{Settings.CacheEntriesTableName} (kvle_parent_hash0);
+                CREATE INDEX ix_kvle_parent1 ON {s}{Settings.CacheEntriesTableName} (kvle_parent_hash1);
+                CREATE INDEX ix_kvle_parent2 ON {s}{Settings.CacheEntriesTableName} (kvle_parent_hash2);
             ");
 
             _getCacheEntriesSchemaQuery = MinifyQuery($@"
-                PRAGMA table_info({s}{CacheEntriesTableName})
+                PRAGMA table_info({s}{Settings.CacheEntriesTableName})
             ");
 
             #endregion Specific queries and commands
         }
 
         #region IDbCacheConnectionFactory members
-
-        /// <summary>
-        ///   The connection string used to connect to the cache data provider.
-        /// </summary>
-        public override string ConnectionString
-        {
-            get { return _connectionString; }
-            set { throw new NotSupportedException(); }
-        }
 
         /// <summary>
         ///   Opens a new connection to the specified data provider.
@@ -211,9 +204,9 @@ namespace PommaLabs.KVLite.SQLite
             }
         }
 
-        internal void InitConnectionString(string dataSource)
+        internal string InitConnectionString(string dataSource)
         {
-            _connectionString = $"Data Source={dataSource};Mode={_mode};Cache=Shared";
+            return $"Data Source={dataSource};Mode={_mode};Cache=Shared";
         }
 
         internal void EnsureSchemaIsReady()

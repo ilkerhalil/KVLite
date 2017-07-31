@@ -21,11 +21,12 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
-using System.Data.Common;
 using System.Diagnostics;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 namespace PommaLabs.KVLite.Database
 {
@@ -33,47 +34,79 @@ namespace PommaLabs.KVLite.Database
     ///   Base class for cache settings. Contains settings shared among different caches.
     /// </summary>
     /// <typeparam name="TSettings">The type of the cache settings.</typeparam>
-    /// <typeparam name="TConnection">The type of the cache connection.</typeparam>
     [Serializable, DataContract]
-    public class DbCacheSettings<TSettings, TConnection> : AbstractCacheSettings<TSettings>
-        where TSettings : DbCacheSettings<TSettings, TConnection>
-        where TConnection : DbConnection
+    public class DbCacheSettings<TSettings> : AbstractCacheSettings<TSettings>
+        where TSettings : DbCacheSettings<TSettings>
     {
-        #region Fields
-
-        private double _chancesOfAutoCleanup;
-        private long _minValueLengthForCompression;
-
-        #endregion Fields
-
-        #region Construction
+        /// <summary>
+        ///   Used to validate SQL names.
+        /// </summary>
+        private static Regex IsValidSqlNameRegex { get; } = new Regex("[a-z0-9_]*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         /// <summary>
-        ///   Sets default values for SQL cache settings.
+        ///   Backing field for <see cref="CacheSchemaName"/>.
         /// </summary>
-        public DbCacheSettings()
+        private string _cacheSchemaName = string.Empty;
+
+        /// <summary>
+        ///   The schema which holds cache entries table.
+        /// </summary>
+        [DataMember]
+        public string CacheSchemaName
         {
-            // Default values.
-            DefaultPartition = CachePartitions.Default;
-            StaticIntervalInDays = 30;
-            ChancesOfAutoCleanup = 0.01;
-            MinValueLengthForCompression = 4096;
+            get
+            {
+                var result = _cacheSchemaName;
+
+                // Postconditions
+                Debug.Assert(IsValidSqlNameRegex.IsMatch(result));
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                if (!IsValidSqlNameRegex.IsMatch(value)) throw new ArgumentException(ErrorMessages.InvalidCacheSchemaName, nameof(CacheSchemaName));
+
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(CacheSchemaName), _cacheSchemaName, value);
+                _cacheSchemaName = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>
-        ///   The DB connection factory.
+        ///   Backing field for <see cref="CacheEntriesTableName"/>.
         /// </summary>
-        public DbCacheConnectionFactory<TConnection> ConnectionFactory { get; internal set; }
-
-        #endregion Construction
-
-        #region Settings
+        private string _cacheEntriesTableName = "kvl_cache_entries";
 
         /// <summary>
-        ///   Gets the cache URI; used for logging.
+        ///   The name of the table which holds cache entries.
         /// </summary>
-        [IgnoreDataMember]
-        public override sealed string CacheUri => ConnectionFactory?.ConnectionString ?? "Data Source=UNDEFINED";
+        [DataMember]
+        public string CacheEntriesTableName
+        {
+            get
+            {
+                var result = _cacheEntriesTableName;
+
+                // Postconditions
+                Debug.Assert(IsValidSqlNameRegex.IsMatch(result));
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                if (!IsValidSqlNameRegex.IsMatch(value)) throw new ArgumentException(ErrorMessages.InvalidCacheEntriesTableName, nameof(CacheEntriesTableName));
+
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(CacheEntriesTableName), _cacheEntriesTableName, value);
+                _cacheEntriesTableName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        ///   Backing field for <see cref="ChancesOfAutoCleanup"/>.
+        /// </summary>
+        private double _chancesOfAutoCleanup = 0.01;
 
         /// <summary>
         ///   Chances of an automatic cleanup happening right after an insert operation. Defaults to 1%.
@@ -102,39 +135,15 @@ namespace PommaLabs.KVLite.Database
                 // Preconditions
                 if (value < 0.0 || value > 1.0) throw new ArgumentOutOfRangeException(nameof(ChancesOfAutoCleanup));
 
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(ChancesOfAutoCleanup), _chancesOfAutoCleanup, value);
                 _chancesOfAutoCleanup = value;
                 OnPropertyChanged();
             }
         }
 
         /// <summary>
-        ///   When a serialized value is longer than specified quantity, then the cache will compress
-        ///   it. If a serialized value length is less than or equal to the specified quantity, then
-        ///   the cache will not compress it. Defaults to 4096 bytes.
+        ///   The connection string used to connect to the cache data provider.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///   <paramref name="value"/> is less than zero.
-        /// </exception>
-        public long MinValueLengthForCompression
-        {
-            get
-            {
-                var result = _minValueLengthForCompression;
-
-                // Postconditions
-                Debug.Assert(result >= 0L);
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                if (value < 0L) throw new ArgumentOutOfRangeException(nameof(MinValueLengthForCompression));
-
-                _minValueLengthForCompression = value;
-                OnPropertyChanged();
-            }
-        }
-
-        #endregion Settings
+        public string ConnectionString { get; set; }
     }
 }

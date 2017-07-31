@@ -21,6 +21,8 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using NodaTime;
+using System;
 using System.ComponentModel;
 
 namespace PommaLabs.KVLite
@@ -31,10 +33,10 @@ namespace PommaLabs.KVLite
     public interface IEssentialCacheSettings : INotifyPropertyChanged
     {
         /// <summary>
-        ///   Gets the cache URI; can be used for logging.
+        ///   The cache name, can be used for logging.
         /// </summary>
-        /// <value>The cache URI.</value>
-        string CacheUri { get; }
+        /// <value>The cache name.</value>
+        string CacheName { get; set; }
 
         /// <summary>
         ///   The partition used when none is specified.
@@ -42,8 +44,18 @@ namespace PommaLabs.KVLite
         string DefaultPartition { get; set; }
 
         /// <summary>
-        ///   How many days static values will last.
+        ///   When a serialized value is longer than specified length, then the cache will compress
+        ///   it. If a serialized value length is less than or equal to the specified length, then
+        ///   the cache will not compress it. Defaults to 4096 bytes.
         /// </summary>
-        int StaticIntervalInDays { get; set; }
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   <paramref name="value"/> is less than zero.
+        /// </exception>
+        long MinValueLengthForCompression { get; set; }
+
+        /// <summary>
+        ///   How long static values will last.
+        /// </summary>
+        Duration StaticInterval { get; set; }
     }
 }

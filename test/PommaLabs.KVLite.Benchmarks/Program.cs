@@ -70,12 +70,12 @@ namespace PommaLabs.KVLite.Benchmarks
                 return;
             }
 
-            MySqlCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(MySql)].ConnectionString;
-            SqlServerCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(SqlServer)].ConnectionString;
+            MySqlCache.DefaultInstance.Settings.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(MySql)].ConnectionString;
+            SqlServerCache.DefaultInstance.Settings.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(SqlServer)].ConnectionString;
 
-            OracleCache.DefaultInstance.ConnectionFactory.CacheSchemaName = "CARAVAN";
-            OracleCache.DefaultInstance.ConnectionFactory.CacheEntriesTableName = "CRVN_KVL_ENTRIES";
-            OracleCache.DefaultInstance.ConnectionFactory.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(Oracle)].ConnectionString;
+            OracleCache.DefaultInstance.Settings.CacheSchemaName = "CARAVAN";
+            OracleCache.DefaultInstance.Settings.CacheEntriesTableName = "CRVN_KVL_ENTRIES";
+            OracleCache.DefaultInstance.Settings.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(Oracle)].ConnectionString;
 
             Console.WriteLine(@"Running vacuum on DB...");
             PersistentCache.DefaultInstance.Vacuum();
@@ -313,7 +313,7 @@ namespace PommaLabs.KVLite.Benchmarks
         private static void StoreEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
             where TCache : ICache
         {
-            var cacheName = typeof(TCache).Name;
+            var cacheName = cache.Settings.CacheName;
 
             Console.WriteLine(); // Spacer
             Console.WriteLine($"[{cacheName}] Storing each data table, iteration {iteration}...");
@@ -337,7 +337,7 @@ namespace PommaLabs.KVLite.Benchmarks
         private static void StoreEachDataTableTwoTimes<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
             where TCache : ICache
         {
-            var cacheName = typeof(TCache).Name;
+            var cacheName = cache.Settings.CacheName;
 
             Console.WriteLine(); // Spacer
             Console.WriteLine($"[{cacheName}] Storing each data table two times, iteration {iteration}...");
@@ -365,7 +365,7 @@ namespace PommaLabs.KVLite.Benchmarks
         private static void StoreEachLogMessageAsync<TCache>(TCache cache, int iteration)
             where TCache : IAsyncCache
         {
-            var cacheName = typeof(TCache).Name;
+            var cacheName = cache.Settings.CacheName;
 
             Console.WriteLine(); // Spacer
             Console.WriteLine($"[{cacheName}] Storing each log message asynchronously, iteration {iteration}...");
@@ -393,7 +393,7 @@ namespace PommaLabs.KVLite.Benchmarks
         private static void StoreEachDataTableAsync<TCache>(TCache cache, IList<DataTable> tables, int iteration)
             where TCache : IAsyncCache
         {
-            var cacheName = typeof(TCache).Name;
+            var cacheName = cache.Settings.CacheName;
 
             Console.WriteLine(); // Spacer
             Console.WriteLine($"[{cacheName}] Storing each data table asynchronously, iteration {iteration}...");
@@ -502,7 +502,7 @@ namespace PommaLabs.KVLite.Benchmarks
         private static void RetrieveEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
             where TCache : ICache
         {
-            var cacheName = typeof(TCache).Name;
+            var cacheName = cache.Settings.CacheName;
 
             Console.WriteLine(); // Spacer
             Console.WriteLine($"[{cacheName}] Retrieving each data table, iteration {iteration}...");
@@ -532,7 +532,7 @@ namespace PommaLabs.KVLite.Benchmarks
         private static void RetrieveEachDataTableItem<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
             where TCache : ICache
         {
-            var cacheName = typeof(TCache).Name;
+            var cacheName = cache.Settings.CacheName;
 
             Console.WriteLine(); // Spacer
             Console.WriteLine($"[{cacheName}] Retrieving each data table item, iteration {iteration}...");
@@ -562,7 +562,7 @@ namespace PommaLabs.KVLite.Benchmarks
         private static void PeekEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
             where TCache : ICache
         {
-            var cacheName = typeof(TCache).Name;
+            var cacheName = cache.Settings.CacheName;
 
             Console.WriteLine(); // Spacer
             Console.WriteLine($"[{cacheName}] Peeking each data table, iteration {iteration}...");
@@ -592,7 +592,7 @@ namespace PommaLabs.KVLite.Benchmarks
         private static void RemoveEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
             where TCache : ICache
         {
-            var cacheName = typeof(TCache).Name;
+            var cacheName = cache.Settings.CacheName;
 
             Console.WriteLine(); // Spacer
             Console.WriteLine($"[{cacheName}] Removing each data table, iteration {iteration}...");
@@ -621,7 +621,7 @@ namespace PommaLabs.KVLite.Benchmarks
         private static void RemoveEachDataTableAsync<TCache>(TCache cache, IList<DataTable> tables, int iteration)
             where TCache : IAsyncCache
         {
-            var cacheName = typeof(TCache).Name;
+            var cacheName = cache.Settings.CacheName;
 
             Console.WriteLine(); // Spacer
             Console.WriteLine($"[{cacheName}] Removing each data table asynchronously, iteration {iteration}...");

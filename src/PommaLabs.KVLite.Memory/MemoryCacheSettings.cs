@@ -21,11 +21,11 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
 
 namespace PommaLabs.KVLite.Memory
 {
@@ -35,40 +35,10 @@ namespace PommaLabs.KVLite.Memory
     [Serializable, DataContract]
     public sealed class MemoryCacheSettings : AbstractCacheSettings<MemoryCacheSettings>
     {
-        #region Fields
-
-        private string _cacheName = nameof(MemoryCache);
-        private int _maxCacheSizeInMB;
-        private long _minValueLengthForCompression;
-
-        #endregion Fields
-
-        #region Construction
-
         /// <summary>
-        ///   Sets default values for memory cache settings.
+        ///   Backing field for <see cref="MaxCacheSizeInMB"/>.
         /// </summary>
-        public MemoryCacheSettings()
-        {
-            DefaultPartition = CachePartitions.Default;
-            StaticIntervalInDays = 30;
-            MaxCacheSizeInMB = 256;
-            MinValueLengthForCompression = 4096;
-        }
-
-        #endregion Construction
-
-        #region Properties
-
-        /// <summary>
-        ///   Gets the default settings for <see cref="MemoryCache"/>.
-        /// </summary>
-        /// <value>The default settings for <see cref="MemoryCache"/>.</value>
-        public static MemoryCacheSettings Default { get; } = new MemoryCacheSettings();
-
-        #endregion Properties
-
-        #region Settings
+        private int _maxCacheSizeInMB = 256;
 
         /// <summary>
         ///   Max size in megabytes for the cache.
@@ -89,73 +59,10 @@ namespace PommaLabs.KVLite.Memory
                 // Preconditions
                 if (value <= 0) throw new ArgumentOutOfRangeException(nameof(MaxCacheSizeInMB));
 
+                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(MaxCacheSizeInMB), _maxCacheSizeInMB, value);
                 _maxCacheSizeInMB = value;
                 OnPropertyChanged();
             }
         }
-
-        /// <summary>
-        ///   The name of the in-memory store used as the backend for the cache.
-        ///
-        ///   Default value is "MemoryCache".
-        /// </summary>
-        [DataMember]
-        public string CacheName
-        {
-            get
-            {
-                var result = _cacheName;
-
-                // Postconditions
-                Debug.Assert(!string.IsNullOrWhiteSpace(result));
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyCacheName, nameof(CacheName));
-                if (!Regex.IsMatch(value, @"^[a-zA-Z0-9_\-\. ]*$")) throw new ArgumentException(ErrorMessages.InvalidCacheName, nameof(CacheName));
-
-                _cacheName = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        ///   Gets the cache URI; used for logging.
-        /// </summary>
-        /// <value>The cache URI.</value>
-        [IgnoreDataMember]
-        public override string CacheUri => CacheName;
-
-        /// <summary>
-        ///   When a serialized value is longer than specified quantity, then the cache will compress
-        ///   it. If a serialized value length is less than or equal to the specified quantity, then
-        ///   the cache will not compress it. Defaults to 4096 bytes.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///   <paramref name="value"/> is less than zero.
-        /// </exception>
-        public long MinValueLengthForCompression
-        {
-            get
-            {
-                var result = _minValueLengthForCompression;
-
-                // Postconditions
-                Debug.Assert(result >= 0L);
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                if (value < 0L) throw new ArgumentOutOfRangeException(nameof(MinValueLengthForCompression));
-
-                _minValueLengthForCompression = value;
-                OnPropertyChanged();
-            }
-        }
-
-        #endregion Settings
     }
 }

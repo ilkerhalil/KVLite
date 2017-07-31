@@ -37,7 +37,7 @@ namespace PommaLabs.KVLite.SQLite
     ///   An SQLite-based persistent cache.
     /// </summary>
     /// <remarks>SQLite-based caches do not allow more than ten parent keys per item.</remarks>
-    public sealed class PersistentCache : DbCache<PersistentCacheSettings, SqliteConnection>
+    public sealed class PersistentCache : DbCache<PersistentCache, PersistentCacheSettings, SQLiteCacheConnectionFactory<PersistentCacheSettings>, SqliteConnection>
     {
         #region Default Instance
 
@@ -89,8 +89,8 @@ namespace PommaLabs.KVLite.SQLite
         {
             try
             {
-                Log.Info($"Vacuuming the SQLite DB '{Settings.CacheFile}'...");
-                (Settings.ConnectionFactory as SQLiteCacheConnectionFactory<PersistentCacheSettings>).Vacuum();
+                Log.InfoFormat("Vacuuming SQLite DB '{CacheFile}'", Settings.CacheFile);
+                ConnectionFactory.Vacuum();
             }
             catch (Exception ex)
             {
@@ -105,10 +105,9 @@ namespace PommaLabs.KVLite.SQLite
 
         private void UpdateConnectionString()
         {
-            var sqliteConnFactory = (Settings.ConnectionFactory as SQLiteCacheConnectionFactory<PersistentCacheSettings>);
             var dataSource = GetDataSource(Settings.CacheFile);
-            sqliteConnFactory.InitConnectionString(dataSource);
-            sqliteConnFactory.EnsureSchemaIsReady();
+            Settings.ConnectionString = ConnectionFactory.InitConnectionString(dataSource);
+            ConnectionFactory.EnsureSchemaIsReady();
         }
 
         /// <summary>

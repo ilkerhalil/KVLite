@@ -58,7 +58,7 @@ namespace PommaLabs.KVLite
     ///   In any case, to increase the ease of use, it is not mandatory neither to specify a
     ///   partition, nor to specify an expiration time. In both cases, a default value is used, which
     ///   can be customized by editing the KVLite configuration file. See, for example, the abstract
-    ///   configuration of all caches (see <see cref="IEssentialCacheSettings.StaticIntervalInDays"/>).
+    ///   configuration of all caches (see <see cref="IEssentialCacheSettings.StaticInterval"/>).
     /// </summary>
     public interface IAsyncCache : IEssentialCache
     {
@@ -67,25 +67,6 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <value>The settings available for the async cache.</value>
         IAsyncCacheSettings Settings { get; }
-
-        /// <summary>
-        ///   Gets the value with the specified partition and key.
-        /// </summary>
-        /// <value>The value with the specified partition and key.</value>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>The value with the specified partition and key.</returns>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="partition"/> or <paramref name="key"/> are null.
-        /// </exception>
-        /// <remarks>
-        ///   This method, differently from other readers (like
-        ///   <see cref="GetAsync{TVal}(string,string,CancellationToken)"/> or
-        ///   <see cref="PeekAsync{TVal}(string,string,CancellationToken)"/>), does not have a typed
-        ///   return object, because indexers cannot be generic. Therefore, we have to return a
-        ///   simple <see cref="object"/>.
-        /// </remarks>
-        Task<CacheResult<object>> this[string partition, string key] { get; }
 
         /// <summary>
         ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
@@ -123,8 +104,8 @@ namespace PommaLabs.KVLite
 
         /// <summary>
         ///   Adds a "static" value with given partition and key. Value will last as much as
-        ///   specified in <see cref="IEssentialCacheSettings.StaticIntervalInDays"/> and, if
-        ///   accessed before expiry, its lifetime will be extended by that interval.
+        ///   specified in <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
@@ -383,8 +364,8 @@ namespace PommaLabs.KVLite
         ///
         ///   If the value is not found, then it adds a "static" value with given partition and key.
         ///   Value will last as much as specified in
-        ///   <see cref="IEssentialCacheSettings.StaticIntervalInDays"/> and, if accessed before
-        ///   expiry, its lifetime will be extended by that interval.
+        ///   <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed before expiry,
+        ///   its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="partition">The partition.</param>
