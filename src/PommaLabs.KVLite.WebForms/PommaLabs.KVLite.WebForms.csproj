@@ -7,22 +7,18 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Label="NuGet">
     <Title>KVLite - Web Forms caching components</Title>
     <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains many Web Forms caching components.</Summary>
     <Description>$(Summary)</Description>
     <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;webforms</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup Label="NuGet">
+  <ItemGroup>
     <ProjectReference Include="..\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
     <ProjectReference Include="..\PommaLabs.KVLite.Memory\PommaLabs.KVLite.Memory.csproj" />
     <ProjectReference Include="..\PommaLabs.KVLite.SQLite\PommaLabs.KVLite.SQLite.csproj" />
   </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <DefineConstants>$(DefineConstants);NET46</DefineConstants>
-  </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="System.Configuration" />
