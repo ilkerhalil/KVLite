@@ -37,17 +37,39 @@ namespace PommaLabs.KVLite.Core
         /// </summary>
         private static readonly ArrayPool<byte> ByteArrayPool = ArrayPool<byte>.Shared;
 
+        /// <summary>
+        ///   Buffer used by the stream.
+        /// </summary>
         private byte[] _buffer;
+
+        /// <summary>
+        ///   Whether current buffer has been retrieved from the pool or not.
+        /// </summary>
+        private bool _pooled;
+
+        /// <summary>
+        ///   Stream length.
+        /// </summary>
         private int _length;
+
+        /// <summary>
+        ///   Stream position.
+        /// </summary>
         private int _position;
+
+        /// <summary>
+        ///   Whether current stream has been disposed or not.
+        /// </summary>
         private bool _disposed;
 
         /// <summary>
         ///   Builds a memory stream with a buffer of 1024 bytes.
         /// </summary>
         public PooledMemoryStream()
-            : this(ByteArrayPool.Rent(1024))
         {
+            _buffer = ByteArrayPool.Rent(1024);
+            _pooled = true;
+            _length = 0;
         }
 
         /// <summary>
@@ -58,6 +80,8 @@ namespace PommaLabs.KVLite.Core
         public PooledMemoryStream(byte[] buffer)
         {
             _buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            _pooled = false;
+            _length = buffer.Length;
         }
 
         /// <summary>
@@ -159,7 +183,33 @@ namespace PommaLabs.KVLite.Core
             count = Math.Min(count, _length - _position);
 
             Buffer.BlockCopy(_buffer, _position, buffer, offset, count);
+
+            _position += count;
             return count;
+        }
+
+        /// <summary>
+        ///   Reads a byte from the stream and advances the position within the stream by one byte,
+        ///   or returns -1 if at the end of the stream.
+        /// </summary>
+        /// <returns>
+        ///   The unsigned byte cast to an <see cref="int"/>, or -1 if at the end of the stream.
+        /// </returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">
+        ///   Methods were called after the stream was closed.
+        /// </exception>
+        public override int ReadByte()
+        {
+            // Preconditions
+            if (_disposed) throw new ObjectDisposedException(nameof(PooledMemoryStream));
+
+            if (_position == _length)
+            {
+                // End of stream.
+                return -1;
+            }
+            return _buffer[_position++];
         }
 
         /// <summary>
@@ -260,15 +310,42 @@ namespace PommaLabs.KVLite.Core
             if (offset + count > buffer.Length) throw new ArgumentException();
             if (offset < 0 || count < 0) throw new ArgumentOutOfRangeException();
 
-            if (_position + count > _buffer.Length)
+            var newPosition = _position + count;
+            if (newPosition > _buffer.Length)
             {
                 // Current buffer is too small, we need to enlarge it before writing new bytes.
-                EnlargeYourBuffer();
+                EnlargeYourBuffer(newPosition);
             }
 
             Buffer.BlockCopy(buffer, offset, _buffer, _position, count);
 
-            _position += count;
+            _position = newPosition;
+            _length = Math.Max(_length, newPosition);
+        }
+
+        /// <summary>
+        ///   Writes a byte to the current position in the stream and advances the position within
+        ///   the stream by one byte.
+        /// </summary>
+        /// <param name="value">The byte to write to the stream.</param>
+        /// <exception cref="NotSupportedException">
+        ///   The stream does not support writing, or the stream is already closed.
+        /// </exception>
+        /// <exception cref="ObjectDisposedException">
+        ///   Methods were called after the stream was closed.
+        /// </exception>
+        public override void WriteByte(byte value)
+        {
+            // Preconditions
+            if (_disposed) throw new ObjectDisposedException(nameof(PooledMemoryStream));
+
+            if (_position == _buffer.Length)
+            {
+                // Current buffer is too small, we need to enlarge it before writing new bytes.
+                EnlargeYourBuffer(_position + 1);
+            }
+
+            _buffer[_position++] = value;
             _length = Math.Max(_length, _position);
         }
 
@@ -281,9 +358,11 @@ namespace PommaLabs.KVLite.Core
         /// </param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposing && !_disposed && _pooled)
             {
                 ByteArrayPool.Return(_buffer);
+                _buffer = null;
+                _pooled = false;
             }
 
             // Mark this object as disposed, in order to disallow its usage.
@@ -293,21 +372,29 @@ namespace PommaLabs.KVLite.Core
         }
 
         /// <summary>
-        ///   Doubles the length of stream buffer and returns old one to the pool.
+        ///   Increases the length of stream buffer and returns old one to the pool.
         /// </summary>
-        private void EnlargeYourBuffer()
+        /// <param name="newRequiredLength">New required length.</param>
+        private void EnlargeYourBuffer(int newRequiredLength)
         {
-            // Ask for a buffer whose length is double the previous one.
-            var biggerBuffer = ByteArrayPool.Rent(_buffer.Length * 2);
+            // Compute the exponent which should be applied as a power of 2.
+            var exp = (int) Math.Ceiling(Math.Log((double) newRequiredLength / _buffer.Length, 2.0));
+
+            // Ask for a buffer whose length is 2^exp the previous one.
+            var biggerBuffer = ByteArrayPool.Rent(_buffer.Length * (1 << exp));
 
             // Copy all required bytes from previous buffer.
-            Buffer.BlockCopy(_buffer, 0, biggerBuffer, 0, (int) _length);
+            Buffer.BlockCopy(_buffer, 0, biggerBuffer, 0, _length);
+
+            // Return previous buffer to the pool.
+            if (_pooled)
+            {
+                ByteArrayPool.Return(_buffer);
+            }
 
             // Replace stream buffer with new buffer.
             _buffer = biggerBuffer;
-
-            // Return previous buffer to the pool.
-            ByteArrayPool.Return(_buffer);
+            _pooled = true;
         }
     }
 }

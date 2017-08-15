@@ -68,7 +68,7 @@ namespace PommaLabs.KVLite.Extensibility
         ///   We apply many customizations to the JSON serializer, in order to achieve a small output size.
         /// </remarks>
         public static JsonSerializerSettings DefaultSerializerSettings = new JsonSerializerSettings
-        {   
+        {
             Converters = new List<JsonConverter> { new ClaimConverter() },
             DateFormatHandling = DateFormatHandling.IsoDateFormat,
             DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
