@@ -99,7 +99,7 @@ namespace PommaLabs.KVLite.Core
                     return (T) (object) sr.ReadToEnd();
 
                 case DataTypes.ByteArray:
-                    using (var ms = MemoryStreamManager.Instance.GetStream(nameof(KVLite)))
+                    using (var ms = new PooledMemoryStream())
                     {
                         input.CopyTo(ms);
                         return (T) (object) ms.ToArray();

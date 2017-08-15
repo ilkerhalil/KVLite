@@ -29,6 +29,7 @@ using PommaLabs.KVLite.Goodies;
 using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
@@ -1270,7 +1271,7 @@ namespace PommaLabs.KVLite.Database
         private TVal UnsafeDeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
         {
             var buffer = dbCacheValue.Value;
-            using (var memoryStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite), buffer, 0, buffer.Length))
+            using (var memoryStream = new PooledMemoryStream(buffer))
             {
                 if (dbCacheValue.Compressed == DbCacheValue.False)
                 {
@@ -1283,7 +1284,7 @@ namespace PommaLabs.KVLite.Database
                 {
                     AntiTamper.ReadAntiTamperHashCode(decompressionStream, dbCacheValue);
                     return BlobSerializer.Deserialize<TVal>(Serializer, decompressionStream);
-                }
+                }              
             }
         }
 
@@ -1392,7 +1393,7 @@ namespace PommaLabs.KVLite.Database
             // Serializing may be pretty expensive, therefore we keep it out of the connection.
             try
             {
-                using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite)))
+                using (var serializedStream = new PooledMemoryStream())
                 {
                     // First write the anti-tamper hash code...
                     AntiTamper.WriteAntiTamperHashCode(serializedStream, dbCacheEntry);
@@ -1403,7 +1404,7 @@ namespace PommaLabs.KVLite.Database
                     if (serializedStream.Length > Settings.MinValueLengthForCompression)
                     {
                         // Stream is too long, we should compress it.
-                        using (var compressedStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite)))
+                        using (var compressedStream = new PooledMemoryStream())
                         {
                             using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
                             {

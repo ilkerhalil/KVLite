@@ -25,6 +25,7 @@ using Newtonsoft.Json;
 using NodaTime.Serialization.JsonNet;
 using PommaLabs.KVLite.Core.Extensibility.Converters;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 
@@ -67,7 +68,7 @@ namespace PommaLabs.KVLite.Extensibility
         ///   We apply many customizations to the JSON serializer, in order to achieve a small output size.
         /// </remarks>
         public static JsonSerializerSettings DefaultSerializerSettings = new JsonSerializerSettings
-        {
+        {   
             Converters = new List<JsonConverter> { new ClaimConverter() },
             DateFormatHandling = DateFormatHandling.IsoDateFormat,
             DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
@@ -104,7 +105,10 @@ namespace PommaLabs.KVLite.Extensibility
         {
 #pragma warning disable CC0022 // Should dispose object
             var streamWriter = new StreamWriter(outputStream);
-            var jsonWriter = new JsonTextWriter(streamWriter);
+            var jsonWriter = new JsonTextWriter(streamWriter)
+            {
+                ArrayPool = JsonArrayPool.Instance
+            };
 #pragma warning restore CC0022 // Should dispose object
             _jsonSerializer.Serialize(jsonWriter, obj);
             jsonWriter.Flush();
@@ -127,9 +131,21 @@ namespace PommaLabs.KVLite.Extensibility
         {
 #pragma warning disable CC0022 // Should dispose object
             var streamReader = new StreamReader(inputStream);
-            var jsonReader = new JsonTextReader(streamReader);
+            var jsonReader = new JsonTextReader(streamReader)
+            {
+                ArrayPool = JsonArrayPool.Instance
+            };
 #pragma warning restore CC0022 // Should dispose object
             return _jsonSerializer.Deserialize<TObj>(jsonReader);
+        }
+
+        private sealed class JsonArrayPool : IArrayPool<char>
+        {
+            public static JsonArrayPool Instance { get; } = new JsonArrayPool();
+
+            public char[] Rent(int minimumLength) => ArrayPool<char>.Shared.Rent(minimumLength);
+
+            public void Return(char[] array) => ArrayPool<char>.Shared.Return(array);
         }
     }
 }

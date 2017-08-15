@@ -759,7 +759,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
         private static double GetObjectSizeInMB(object obj)
         {
-            using (var ms = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
+            using (var ms = new PooledMemoryStream())
             {
                 new BinarySerializer().SerializeToStream(obj, ms);
                 return ms.Length / (1024.0 * 1024.0);

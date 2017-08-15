@@ -63,7 +63,7 @@ namespace PommaLabs.KVLite.Benchmarks.Serialization
         [Benchmark]
         public string JsonSerializer_Default()
         {
-            using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
+            using (var serializedStream = new PooledMemoryStream())
             {
                 JsonSerializer.SerializeToStream(LogMessage.GenerateRandomLogMessages(Count), serializedStream);
                 serializedStream.Position = 0L;
@@ -77,7 +77,7 @@ namespace PommaLabs.KVLite.Benchmarks.Serialization
         [Benchmark]
         public string BsonSerializer_Default()
         {
-            using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
+            using (var serializedStream = new PooledMemoryStream())
             {
                 BsonSerializer.SerializeToStream(LogMessage.GenerateRandomLogMessages(Count), serializedStream);
                 serializedStream.Position = 0L;
@@ -91,7 +91,7 @@ namespace PommaLabs.KVLite.Benchmarks.Serialization
         [Benchmark]
         public string BinarySerializer_Default()
         {
-            using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(Benchmarks)))
+            using (var serializedStream = new PooledMemoryStream())
             {
                 BinarySerializer.SerializeToStream(LogMessage.GenerateRandomLogMessages(Count), serializedStream);
                 serializedStream.Position = 0L;
