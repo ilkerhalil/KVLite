@@ -25,6 +25,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
@@ -33,15 +34,15 @@ namespace PommaLabs.KVLite
     {
         byte[] IDistributedCache.Get(string key) => Get<byte[]>(CachePartitions.DistributedCache, key).ValueOrDefault();
 
-        async Task<byte[]> IDistributedCache.GetAsync(string key) => (await GetAsync<byte[]>(CachePartitions.DistributedCache, key).ConfigureAwait(false)).ValueOrDefault();
+        async Task<byte[]> IDistributedCache.GetAsync(string key, CancellationToken token) => (await GetAsync<byte[]>(CachePartitions.DistributedCache, key, token).ConfigureAwait(false)).ValueOrDefault();
 
         void IDistributedCache.Refresh(string key) => Get<byte[]>(CachePartitions.DistributedCache, key);
 
-        async Task IDistributedCache.RefreshAsync(string key) => await GetAsync<byte[]>(CachePartitions.DistributedCache, key).ConfigureAwait(false);
+        async Task IDistributedCache.RefreshAsync(string key, CancellationToken token) => await GetAsync<byte[]>(CachePartitions.DistributedCache, key, token).ConfigureAwait(false);
 
         void IDistributedCache.Remove(string key) => Remove(CachePartitions.DistributedCache, key);
 
-        async Task IDistributedCache.RemoveAsync(string key) => await RemoveAsync(CachePartitions.DistributedCache, key).ConfigureAwait(false);
+        async Task IDistributedCache.RemoveAsync(string key, CancellationToken token) => await RemoveAsync(CachePartitions.DistributedCache, key, token).ConfigureAwait(false);
 
         void IDistributedCache.Set(string key, byte[] value, DistributedCacheEntryOptions options)
         {
@@ -66,26 +67,26 @@ namespace PommaLabs.KVLite
             }
         }
 
-        async Task IDistributedCache.SetAsync(string key, byte[] value, DistributedCacheEntryOptions options)
+        async Task IDistributedCache.SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token)
         {
             // Preconditions
             if (options.SlidingExpiration.HasValue && (options.AbsoluteExpiration.HasValue || options.AbsoluteExpirationRelativeToNow.HasValue)) throw new InvalidOperationException(ErrorMessages.CacheDoesNotAllowSlidingAndAbsolute);
 
             if (options.SlidingExpiration.HasValue)
             {
-                await AddSlidingAsync(CachePartitions.DistributedCache, key, value, options.SlidingExpiration.Value.ToDuration()).ConfigureAwait(false);
+                await AddSlidingAsync(CachePartitions.DistributedCache, key, value, options.SlidingExpiration.Value.ToDuration(), null, token).ConfigureAwait(false);
             }
             else if (options.AbsoluteExpiration.HasValue)
             {
-                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpiration.Value.ToInstant()).ConfigureAwait(false);
+                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpiration.Value.ToInstant(), null, token).ConfigureAwait(false);
             }
             else if (options.AbsoluteExpirationRelativeToNow.HasValue)
             {
-                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpirationRelativeToNow.Value.ToDuration()).ConfigureAwait(false);
+                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpirationRelativeToNow.Value.ToDuration(), null, token).ConfigureAwait(false);
             }
             else
             {
-                await AddTimedAsync(CachePartitions.DistributedCache, key, value, Settings.DefaultDistributedCacheAbsoluteExpiration).ConfigureAwait(false);
+                await AddTimedAsync(CachePartitions.DistributedCache, key, value, Settings.DefaultDistributedCacheAbsoluteExpiration, null, token).ConfigureAwait(false);
             }
         }
     }
