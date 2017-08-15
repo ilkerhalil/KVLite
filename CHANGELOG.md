@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.4.0 (2017-08-16)
+
+* [ADD] Added support for .NET Standard 2.0 and .NET Framework 4.6.1.
+* [REM] All previous versions of above toolkits are not supported anymore.
+
 ### v6.3.3 (2017-07-30)
 
 * [ADD] Default JSON serializer now has all converters for NodaTime types.
