@@ -21,8 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#if !(NETSTD13 || NETSTD20)
-
 using System;
 using System.IO;
 using System.Runtime.Serialization;
@@ -58,7 +56,7 @@ namespace PommaLabs.KVLite.Extensibility
             // Preconditions
             if (serializerSettings == null) throw new ArgumentNullException(nameof(serializerSettings));
 
-            _binaryFormatter.AssemblyFormat = serializerSettings.AssemblyFormat;
+            //_binaryFormatter.AssemblyFormat = serializerSettings.AssemblyFormat;
             _binaryFormatter.Binder = serializerSettings.Binder ?? _binaryFormatter.Binder;
             _binaryFormatter.FilterLevel = serializerSettings.FilterLevel;
             _binaryFormatter.SurrogateSelector = serializerSettings.SurrogateSelector ?? _binaryFormatter.SurrogateSelector;
@@ -70,7 +68,7 @@ namespace PommaLabs.KVLite.Extensibility
         /// </summary>
         public static BinarySerializerSettings DefaultSerializerSettings = new BinarySerializerSettings
         {
-            AssemblyFormat = FormatterAssemblyStyle.Simple,
+            //AssemblyFormat = FormatterAssemblyStyle.Simple,
             FilterLevel = TypeFilterLevel.Full,
             TypeFormat = FormatterTypeStyle.TypesWhenNeeded
         };
@@ -147,13 +145,13 @@ namespace PommaLabs.KVLite.Extensibility
     /// </summary>
     public sealed class BinarySerializerSettings
     {
-        /// <summary>
-        ///   Gets or sets the behavior of the deserializer with regards to finding and loading assemblies.
-        /// </summary>
-        /// <returns>
-        ///   One of the <see cref="FormatterAssemblyStyle"/> values that specifies the deserializer behavior.
-        /// </returns>
-        public FormatterAssemblyStyle AssemblyFormat { get; set; }
+        ///// <summary>
+        /////   Gets or sets the behavior of the deserializer with regards to finding and loading assemblies.
+        ///// </summary>
+        ///// <returns>
+        /////   One of the <see cref="FormatterAssemblyStyle"/> values that specifies the deserializer behavior.
+        ///// </returns>
+        //public FormatterAssemblyStyle AssemblyFormat { get; set; }
 
         /// <summary>
         ///   Gets or sets an object of type SerializationBinder that controls the binding of a
@@ -187,5 +185,3 @@ namespace PommaLabs.KVLite.Extensibility
         public FormatterTypeStyle TypeFormat { get; set; }
     }
 }
-
-#endif
