@@ -25,7 +25,4 @@
   <ItemGroup>
     <PackageReference Include="MySql.Data" Version="6.9.9" />
   </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-  </ItemGroup>
 </Project>

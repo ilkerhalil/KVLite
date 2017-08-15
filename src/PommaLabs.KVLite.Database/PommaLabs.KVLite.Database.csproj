@@ -21,10 +21,4 @@
   <ItemGroup>
     <PackageReference Include="Dapper.StrongName" Version="1.50.2" />
   </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-  </ItemGroup>
 </Project>

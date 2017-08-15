@@ -22,7 +22,4 @@
   <ItemGroup>
     <PackageReference Include="Strathweb.CacheOutput.WebApi2" Version="0.10.0" />
   </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-  </ItemGroup>
 </Project>
