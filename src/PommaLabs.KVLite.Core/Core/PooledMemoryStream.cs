@@ -104,7 +104,7 @@ namespace PommaLabs.KVLite.Core
         public override long Position
         {
             get => !_disposed ? _position : throw new ObjectDisposedException(nameof(PooledMemoryStream));
-            set => throw new NotImplementedException();
+            set => Seek(value, SeekOrigin.Begin);
         }
 
         /// <summary>
@@ -162,24 +162,69 @@ namespace PommaLabs.KVLite.Core
             return count;
         }
 
+        /// <summary>
+        ///   When overridden in a derived class, sets the position within the current stream.
+        /// </summary>
+        /// <returns>The new position within the current stream.</returns>
+        /// <param name="offset">A byte offset relative to the <paramref name="origin"/> parameter.</param>
+        /// <param name="origin">
+        ///   A value of type <see cref="SeekOrigin"/> indicating the reference point used to obtain
+        ///   the new position.
+        /// </param>
+        /// <exception cref="NotSupportedException">
+        ///   The stream does not support seeking, such as if the stream is constructed from a pipe
+        ///   or console output.
+        /// </exception>
+        /// <exception cref="ObjectDisposedException">
+        ///   Methods were called after the stream was closed.
+        /// </exception>
         public override long Seek(long offset, SeekOrigin origin)
         {
-            throw new NotImplementedException();
+            // Preconditions
+            if (_disposed) throw new ObjectDisposedException(nameof(PooledMemoryStream));
+
+            switch (origin)
+            {
+                case SeekOrigin.Begin:
+                    _position = Math.Min((int) offset, _length);
+                    break;
+
+                case SeekOrigin.Current:
+                    _position = Math.Min(_position + (int) offset, _length);
+                    break;
+
+                case SeekOrigin.End:
+                    _position = _length;
+                    break;
+            }
+            return _position;
         }
 
-        public override void SetLength(long value)
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>
+        ///   When overridden in a derived class, sets the length of the current stream.
+        /// </summary>
+        /// <param name="value">The desired length of the current stream in bytes.</param>
+        /// <exception cref="NotSupportedException">
+        ///   The stream does not support both writing and seeking, such as if the stream is
+        ///   constructed from a pipe or console output.
+        /// </exception>
+        /// <exception cref="ObjectDisposedException">
+        ///   Methods were called after the stream was closed.
+        /// </exception>
+        public override void SetLength(long value) => throw new NotSupportedException();
 
+        /// <summary>
+        ///   Writes the stream contents to a byte array, regardless of the <see cref="Position"/> property.
+        /// </summary>
+        /// <returns>A new byte array.</returns>
         public byte[] ToArray()
         {
             // Preconditions
             if (_disposed) throw new ObjectDisposedException(nameof(PooledMemoryStream));
 
-            var copyBuffer = new byte[_length];
-            Buffer.BlockCopy(_buffer, 0, copyBuffer, 0, _length);
-            return copyBuffer;
+            var copy = new byte[_length];
+            Buffer.BlockCopy(_buffer, 0, copy, 0, _length);
+            return copy;
         }
 
         /// <summary>
@@ -221,7 +266,7 @@ namespace PommaLabs.KVLite.Core
                 EnlargeYourBuffer();
             }
 
-            Buffer.BlockCopy(buffer, offset, _buffer, (int) _position, count);
+            Buffer.BlockCopy(buffer, offset, _buffer, _position, count);
 
             _position += count;
             _length = Math.Max(_length, _position);
@@ -240,6 +285,10 @@ namespace PommaLabs.KVLite.Core
             {
                 ByteArrayPool.Return(_buffer);
             }
+
+            // Mark this object as disposed, in order to disallow its usage.
+            _disposed = true;
+
             base.Dispose(disposing);
         }
 
