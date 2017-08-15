@@ -53,8 +53,10 @@ namespace PommaLabs.KVLite.SQLite
             var settings = new PersistentCacheSettings();
             changeSettings?.Invoke(settings);
 
+            var ext = services.GetKVLiteExtensionServices();
+
 #pragma warning disable CC0022 // Should dispose object
-            return services.AddKVLiteCache(new PersistentCache(settings));
+            return services.AddKVLiteCache(new PersistentCache(settings, ext.Serializer, ext.Compressor, ext.Clock, ext.Random));
 #pragma warning restore CC0022 // Should dispose object
         }
 
@@ -78,8 +80,10 @@ namespace PommaLabs.KVLite.SQLite
             var settings = new VolatileCacheSettings();
             changeSettings?.Invoke(settings);
 
+            var ext = services.GetKVLiteExtensionServices();
+
 #pragma warning disable CC0022 // Should dispose object
-            return services.AddKVLiteCache(new VolatileCache(settings));
+            return services.AddKVLiteCache(new VolatileCache(settings, ext.Serializer, ext.Compressor, ext.Clock, ext.Random));
 #pragma warning restore CC0022 // Should dispose object
         }
     }

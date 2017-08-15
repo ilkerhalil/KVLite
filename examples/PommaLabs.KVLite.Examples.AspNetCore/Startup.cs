@@ -28,6 +28,9 @@ namespace PommaLabs.KVLite.Examples.AspNetCore
             // Add framework services.
             services.AddMvc();
 
+            // Add custom NodaTime clock.
+            services.AddSingleton<IClock>(NetworkClock.Instance);
+
             // Add KVLite caching services.
             services.AddPersistentSQLiteKVLiteCache(s =>
             {

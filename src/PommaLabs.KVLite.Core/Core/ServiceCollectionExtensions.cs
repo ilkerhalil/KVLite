@@ -23,6 +23,8 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
+using PommaLabs.KVLite.Extensibility;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -53,6 +55,23 @@ namespace PommaLabs.KVLite.Core
                 services.AddSingleton<IDistributedCache>(cache);
             }
             return services;
+        }
+
+        /// <summary>
+        ///   Gets extension services, if any, or returns default services.
+        /// </summary>
+        /// <param name="services">Services collection.</param>
+        /// <returns>KVLite extension services.</returns>
+        public static (ISerializer Serializer, ICompressor Compressor, IClock Clock, IRandom Random) GetKVLiteExtensionServices(this IServiceCollection services)
+        {
+            var provider = services.BuildServiceProvider();
+
+            var serializer = provider.GetService<ISerializer>() ?? JsonSerializer.Instance;
+            var compressor = provider.GetService<ICompressor>() ?? DeflateCompressor.Instance;
+            var clock = provider.GetService<IClock>() ?? SystemClock.Instance;
+            var random = provider.GetService<IRandom>() ?? new SystemRandom();
+
+            return (serializer, compressor, clock, random);
         }
     }
 }
