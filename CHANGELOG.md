@@ -4,6 +4,7 @@
 
 * [ADD] Added support for .NET Standard 2.0 and .NET Framework 4.6.1.
 * [REM] All previous versions of above toolkits are not supported anymore.
+* [UPD] Completed PostgreSQL driver.
 
 ### v6.3.3 (2017-07-30)
 
