@@ -50,17 +50,18 @@ namespace PommaLabs.KVLite.Benchmarks
 {
     public static class Program
     {
+        private const int IterationCount = 3;
+        private const int TablesCount = 1000;
         private const int RowCount = 100;
-        private const int IterationCount = 5;
-        private const int RandomItemCount = 1000;
-        private const int LogMessagesCount = 5000;
+        private const int LogMessagesCount = 3000;
         private const string Spacer = "------------------------------";
 
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         private static readonly string[] ColumnNames = { "A", "B", "C", "D", "E" };
 
+        private static IList<DataTable> _tables;
         private static double _tableListSize;
-        private static LogMessage[] _logMessages;
+        private static IList<LogMessage> _logMessages;
         private static double _logMessagesSize;
 
         public static async Task Main(string[] args)
@@ -91,14 +92,18 @@ namespace PommaLabs.KVLite.Benchmarks
             PersistentCache.DefaultInstance.Vacuum();
 
             Logger.Info("Generating random data tables...");
-            var tables = GenerateRandomDataTables();
-            _tableListSize = GetObjectSizeInMB(tables);
+            _tables = GenerateRandomDataTables();
+            _tableListSize = GetObjectSizeInMB(_tables);
+
+            Logger.Info($"Table count: {TablesCount}");
+            Logger.Info($"Row count: {RowCount}");
+            Logger.Info($"Total table size: {_tableListSize:0.0} MB");
+
+            Logger.Info("Generating random log messages...");
             _logMessages = LogMessage.GenerateRandomLogMessages(LogMessagesCount);
             _logMessagesSize = GetObjectSizeInMB(_logMessages);
 
-            Logger.Info($"Table count: {RandomItemCount}");
-            Logger.Info($"Row count: {RowCount}");
-            Logger.Info($"Total table size: {_tableListSize:0.0} MB");
+            Logger.Info($"Log messages count: {TablesCount}");
             Logger.Info($"Total log messages size: {_logMessagesSize:0.0} MB");
 
             var caches = new ICache[]
@@ -118,7 +123,7 @@ namespace PommaLabs.KVLite.Benchmarks
             {
                 /*** STORE EACH LOG MESSAGE ASYNC ***/
 
-                FullyCleanCaches();
+                await FullyCleanCachesAsync();
                 foreach (var asyncCache in asyncCaches)
                 {
                     await StoreEachLogMessageAsync(asyncCache, i);
@@ -126,153 +131,99 @@ namespace PommaLabs.KVLite.Benchmarks
 
                 /*** STORE EACH DATA TABLE ASYNC ***/
 
-                FullyCleanCaches();
+                await FullyCleanCachesAsync();
                 foreach (var asyncCache in asyncCaches)
                 {
-                    await StoreEachDataTableAsync(asyncCache, tables, i);
+                    await StoreEachDataTableAsync(asyncCache, i);
+                }
+
+                /*** STORE AND RETRIEVE EACH DATA TABLE TWO TIMES ASYNC ***/
+
+                await FullyCleanCachesAsync();
+                foreach (var asyncCache in asyncCaches)
+                {
+                    await StoreAndRetrieveEachDataTableAsync(asyncCache, i);
                 }
 
                 /*** STORE EACH DATA TABLE ***/
 
                 FullyCleanCaches();
-                StoreEachDataTable(MySqlCache.DefaultInstance, tables, i);
-                //StoreEachDataTable(OracleCache.DefaultInstance, tables, i);
-                StoreEachDataTable(PostgreSqlCache.DefaultInstance, tables, i);
-                StoreEachDataTable(SqlServerCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                StoreEachDataTable(PersistentCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                StoreEachDataTable(VolatileCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                StoreEachDataTable(MemoryCache.DefaultInstance, tables, i);
+                foreach (var cache in caches)
+                {
+                    StoreEachDataTable(cache, i);
+                }
 
                 /*** STORE EACH DATA TABLE TWO TIMES ***/
 
                 FullyCleanCaches();
-                StoreEachDataTableTwoTimes(MySqlCache.DefaultInstance, tables, i);
-                //StoreEachDataTableTwoTimes(OracleCache.DefaultInstance, tables, i);
-                StoreEachDataTableTwoTimes(PostgreSqlCache.DefaultInstance, tables, i);
-                StoreEachDataTableTwoTimes(SqlServerCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                StoreEachDataTableTwoTimes(PersistentCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                StoreEachDataTableTwoTimes(VolatileCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                StoreEachDataTableTwoTimes(MemoryCache.DefaultInstance, tables, i);
+                foreach (var cache in caches)
+                {
+                    StoreEachDataTableTwoTimes(cache, i);
+                }
 
                 /*** REMOVE EACH DATA TABLE ***/
 
                 FullyCleanCaches();
-                RemoveEachDataTable(MySqlCache.DefaultInstance, tables, i);
-                //RemoveEachDataTable(OracleCache.DefaultInstance, tables, i);
-                RemoveEachDataTable(PostgreSqlCache.DefaultInstance, tables, i);
-                RemoveEachDataTable(SqlServerCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                RemoveEachDataTable(PersistentCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                RemoveEachDataTable(VolatileCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                RemoveEachDataTable(MemoryCache.DefaultInstance, tables, i);
+                foreach (var cache in caches)
+                {
+                    RemoveEachDataTable(cache, i);
+                }
 
                 /*** REMOVE EACH DATA TABLE ASYNC ***/
 
-                FullyCleanCaches();
-                RemoveEachDataTableAsync(MySqlCache.DefaultInstance, tables, i);
-                //RemoveEachDataTableAsync(OracleCache.DefaultInstance, tables, i);
-                RemoveEachDataTableAsync(PostgreSqlCache.DefaultInstance, tables, i);
-                RemoveEachDataTableAsync(SqlServerCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                RemoveEachDataTableAsync(PersistentCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                RemoveEachDataTableAsync(VolatileCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                RemoveEachDataTableAsync(MemoryCache.DefaultInstance, tables, i);
+                await FullyCleanCachesAsync();
+                foreach (var asyncCache in asyncCaches)
+                {
+                    await RemoveEachDataTableAsync(asyncCache, i);
+                }
 
                 /*** PEEK EACH DATA TABLE ***/
 
                 FullyCleanCaches();
-                PeekEachDataTable(MySqlCache.DefaultInstance, tables, i);
-                //PeekEachDataTable(OracleCache.DefaultInstance, tables, i);
-                PeekEachDataTable(PostgreSqlCache.DefaultInstance, tables, i);
-                PeekEachDataTable(SqlServerCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                PeekEachDataTable(PersistentCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                PeekEachDataTable(VolatileCache.DefaultInstance, tables, i);
-
-                //FullyCleanCache(); < --Memory cache does not allow peeking!
-                //PeekEachDataTable(MemoryCache.DefaultInstance, tables, i);
+                foreach (var cache in caches)
+                {
+                    PeekEachDataTable(cache, i);
+                }
 
                 /*** RETRIEVE EACH DATA TABLE ***/
 
                 FullyCleanCaches();
-                RetrieveEachDataTable(MySqlCache.DefaultInstance, tables, i);
-                //RetrieveEachDataTable(OracleCache.DefaultInstance, tables, i);
-                RetrieveEachDataTable(PostgreSqlCache.DefaultInstance, tables, i);
-                RetrieveEachDataTable(SqlServerCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                RetrieveEachDataTable(PersistentCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                RetrieveEachDataTable(VolatileCache.DefaultInstance, tables, i);
-
-                FullyCleanCaches();
-                RetrieveEachDataTable(MemoryCache.DefaultInstance, tables, i);
+                foreach (var cache in caches)
+                {
+                    RetrieveEachDataTable(cache, i);
+                }
 
                 /*** RETRIEVE EACH DATA TABLE ITEM ***/
 
                 FullyCleanCaches();
-                RetrieveEachDataTableItem(MySqlCache.DefaultInstance, tables, i);
-                //RetrieveEachDataTableItem(OracleCache.DefaultInstance, tables, i);
-                RetrieveEachDataTableItem(PostgreSqlCache.DefaultInstance, tables, i);
-                RetrieveEachDataTableItem(SqlServerCache.DefaultInstance, tables, i);
+                foreach (var cache in caches)
+                {
+                    RetrieveEachDataTableItem(cache, i);
+                }
+
+                /*** RETRIEVE EACH DATA TABLE ASYNC ***/
+
+                await FullyCleanCachesAsync();
+                foreach (var asyncCache in asyncCaches)
+                {
+                    await RetrieveEachDataTableAsync(asyncCache, i);
+                }
+
+                /*** STORE DATA TABLES LIST ***/
 
                 FullyCleanCaches();
-                RetrieveEachDataTableItem(PersistentCache.DefaultInstance, tables, i);
+                foreach (var cache in caches)
+                {
+                    StoreDataTableList(cache, i);
+                }
 
-                FullyCleanCaches();
-                RetrieveEachDataTableItem(VolatileCache.DefaultInstance, tables, i);
+                /*** STORE EACH DATA TABLE TWO TIMES ASYNC ***/
 
-                FullyCleanCaches();
-                RetrieveEachDataTableItem(MemoryCache.DefaultInstance, tables, i);
-
-                /*** TODO ***/
-
-                FullyCleanCaches();
-                StoreEachDataTableAsync_Volatile(tables, i);
-
-                FullyCleanCaches();
-                StoreEachDataTableAsync_Memory(tables, i);
-
-                FullyCleanCaches();
-                RetrieveEachDataTableAsync(tables, i);
-
-                FullyCleanCaches();
-                StoreEachDataTableTwoTimesAsync(tables, i);
-
-                FullyCleanCaches();
-                StoreAndRetrieveEachDataTableAsync(tables, i);
-
-                FullyCleanCaches();
-                StoreAndRetrieveEachDataTableAsync_Volatile(tables, i);
-
-                FullyCleanCaches();
-                StoreDataTableList(tables, i);
+                await FullyCleanCachesAsync();
+                foreach (var asyncCache in asyncCaches)
+                {
+                    await StoreEachDataTableTwoTimesAsync(asyncCache, i);
+                }
             }
 
             FullyCleanCaches();
@@ -286,7 +237,7 @@ namespace PommaLabs.KVLite.Benchmarks
         {
             var gen = new RandomDataTableGenerator(ColumnNames);
             var list = new List<DataTable>();
-            for (var i = 0; i < RandomItemCount; ++i)
+            for (var i = 0; i < TablesCount; ++i)
             {
                 list.Add(gen.GenerateDataTable(RowCount));
             }
@@ -305,25 +256,40 @@ namespace PommaLabs.KVLite.Benchmarks
             VolatileCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
         }
 
-        private static void StoreDataTableList(ICollection<DataTable> tables, int iteration)
+        private static async Task FullyCleanCachesAsync()
         {
+            Logger.Warn("Fully cleaning all caches (async)...");
+            await MemoryCache.DefaultInstance.ClearAsync();
+            await MySqlCache.DefaultInstance.ClearAsync(CacheReadMode.IgnoreExpiryDate);
+            //await OracleCache.DefaultInstance.ClearAsync(CacheReadMode.IgnoreExpiryDate);
+            await PostgreSqlCache.DefaultInstance.ClearAsync(CacheReadMode.IgnoreExpiryDate);
+            await SqlServerCache.DefaultInstance.ClearAsync(CacheReadMode.IgnoreExpiryDate);
+            await PersistentCache.DefaultInstance.ClearAsync(CacheReadMode.IgnoreExpiryDate);
+            await VolatileCache.DefaultInstance.ClearAsync(CacheReadMode.IgnoreExpiryDate);
+        }
+
+        private static void StoreDataTableList<TCache>(TCache cache, int iteration)
+            where TCache : ICache
+        {
+            var cacheName = cache.Settings.CacheName;
+
             Console.WriteLine(Spacer);
-            Logger.Info($"Storing data table list, iteration {iteration}...");
+            Logger.Info($"[{cacheName}] Storing data table list, iteration {iteration}...");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            PersistentCache.DefaultInstance.AddStatic("TABLE_LIST", tables);
+            cache.AddStatic("TABLE_LIST", _tables);
             stopwatch.Stop();
 
-            Debug.Assert(PersistentCache.DefaultInstance.Count() == 1);
-            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == 1);
+            Debug.Assert(cache.Count() == 1);
+            Debug.Assert(cache.LongCount() == 1);
 
-            Logger.Info($"Data table list stored in: {stopwatch.Elapsed}");
-            Logger.Info($"Current cache size: {PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
-            Logger.Info($"Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
+            Logger.Info($"[{cacheName}] Data table list stored in: {stopwatch.Elapsed}");
+            Logger.Info($"[{cacheName}] Current cache size: {cache.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
+            Logger.Info($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
-        private static void StoreEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
+        private static void StoreEachDataTable<TCache>(TCache cache, int iteration)
             where TCache : ICache
         {
             var cacheName = cache.Settings.CacheName;
@@ -333,21 +299,21 @@ namespace PommaLabs.KVLite.Benchmarks
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            foreach (var table in tables)
+            foreach (var table in _tables)
             {
                 cache.AddStatic(table.TableName, table);
             }
             stopwatch.Stop();
 
-            Debug.Assert(cache.Count() == tables.Count);
-            Debug.Assert(cache.LongCount() == tables.LongCount());
+            Debug.Assert(cache.Count() == _tables.Count);
+            Debug.Assert(cache.LongCount() == _tables.LongCount());
 
             Logger.Info($"[{cacheName}] Data tables stored in: {stopwatch.Elapsed}");
             Logger.Info($"[{cacheName}] Current cache size: {cache.GetCacheSizeInBytes() / (1024.0 * 1024.0):0.0} MB");
             Logger.Info($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
-        private static void StoreEachDataTableTwoTimes<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
+        private static void StoreEachDataTableTwoTimes<TCache>(TCache cache, int iteration)
             where TCache : ICache
         {
             var cacheName = cache.Settings.CacheName;
@@ -357,18 +323,18 @@ namespace PommaLabs.KVLite.Benchmarks
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            foreach (var table in tables)
+            foreach (var table in _tables)
             {
                 cache.AddStatic(table.TableName, table);
             }
-            foreach (var table in tables)
+            foreach (var table in _tables)
             {
                 cache.AddStatic(table.TableName, table);
             }
             stopwatch.Stop();
 
-            Debug.Assert(cache.Count() == tables.Count);
-            Debug.Assert(cache.LongCount() == tables.LongCount());
+            Debug.Assert(cache.Count() == _tables.Count);
+            Debug.Assert(cache.LongCount() == _tables.LongCount());
 
             Logger.Info($"[{cacheName}] Data tables stored two times in: {stopwatch.Elapsed}");
             Logger.Info($"[{cacheName}] Current cache size: {cache.GetCacheSizeInBytes() / (1024.0 * 1024.0):0.0} MB");
@@ -392,15 +358,15 @@ namespace PommaLabs.KVLite.Benchmarks
             }, maxDegreeOfParalellism: Environment.ProcessorCount * 2);
             stopwatch.Stop();
 
-            Debug.Assert(await cache.CountAsync() == _logMessages.Length);
-            Debug.Assert(await cache.LongCountAsync() == _logMessages.LongLength);
+            Debug.Assert(await cache.CountAsync() == _logMessages.Count);
+            Debug.Assert(await cache.LongCountAsync() == _logMessages.LongCount());
 
             Logger.Info($"[{cacheName}] Log messages stored in: {stopwatch.Elapsed}");
             Logger.Info($"[{cacheName}] Current cache size: {await cache.GetCacheSizeInBytesAsync() / (1024.0 * 1024.0):0.0} MB");
             Logger.Info($"[{cacheName}] Approximate speed (MB/sec): {_logMessagesSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
-        private static async Task StoreEachDataTableAsync<TCache>(TCache cache, IList<DataTable> tables, int iteration)
+        private static async Task StoreEachDataTableAsync<TCache>(TCache cache, int iteration)
             where TCache : IAsyncCache
         {
             var cacheName = cache.Settings.CacheName;
@@ -410,103 +376,49 @@ namespace PommaLabs.KVLite.Benchmarks
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            await tables.ParallelForEachAsync(async table =>
+            await _tables.ParallelForEachAsync(async table =>
             {
                 await cache.AddStaticAsync(table.TableName, table);
             }, maxDegreeOfParalellism: Environment.ProcessorCount * 2);
             stopwatch.Stop();
 
-            Debug.Assert(await cache.CountAsync() == tables.Count);
-            Debug.Assert(await cache.LongCountAsync() == tables.LongCount());
+            Debug.Assert(await cache.CountAsync() == _tables.Count);
+            Debug.Assert(await cache.LongCountAsync() == _tables.LongCount());
 
             Logger.Info($"[{cacheName}] Data tables stored in: {stopwatch.Elapsed}");
             Logger.Info($"[{cacheName}] Current cache size: {await cache.GetCacheSizeInBytesAsync() / (1024.0 * 1024.0):0.0} MB");
             Logger.Info($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
-        private static void StoreEachDataTableAsync_Volatile(ICollection<DataTable> tables, int iteration)
+        private static async Task StoreEachDataTableTwoTimesAsync<TCache>(TCache cache, int iteration)
+            where TCache : IAsyncCache
         {
+            var cacheName = cache.Settings.CacheName;
+
             Console.WriteLine(Spacer);
-            Logger.Info($"[Volatile] Storing each data table asynchronously, iteration {iteration}...");
+            Logger.Info($"[{cacheName}] Storing each data table (two times, asynchronously), iteration {iteration}...");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var tasks = new List<Task>();
-            foreach (var table in tables)
+            await _tables.ParallelForEachAsync(async table =>
             {
-                tasks.Add(Task.Run(() => VolatileCache.DefaultInstance.AddStatic(table.TableName, table)));
-            }
-            foreach (var task in tasks)
+                await cache.AddStaticAsync(table.TableName, table);
+            }, maxDegreeOfParalellism: Environment.ProcessorCount * 2);
+            await _tables.ParallelForEachAsync(async table =>
             {
-                task.Wait();
-            }
+                await cache.AddStaticAsync(table.TableName, table);
+            }, maxDegreeOfParalellism: Environment.ProcessorCount * 2);
             stopwatch.Stop();
 
-            Debug.Assert(VolatileCache.DefaultInstance.Count() == tables.Count);
-            Debug.Assert(VolatileCache.DefaultInstance.LongCount() == tables.LongCount());
+            Debug.Assert(await cache.CountAsync() == _tables.Count);
+            Debug.Assert(await cache.LongCountAsync() == _tables.LongCount());
 
-            Logger.Info($"[Volatile] Data tables stored in: {stopwatch.Elapsed}");
-            Logger.Info($"[Volatile] Current cache size: {VolatileCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
-            Logger.Info($"[Volatile] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
+            Logger.Info($"[{cacheName}] Data tables stored in: {stopwatch.Elapsed}");
+            Logger.Info($"[{cacheName}] Current cache size: {await cache.GetCacheSizeInBytesAsync() / (1024L * 1024L)} MB");
+            Logger.Info($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize * 2 / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
-        private static void StoreEachDataTableAsync_Memory(ICollection<DataTable> tables, int iteration)
-        {
-            Console.WriteLine(Spacer);
-            Logger.Info($"[Memory] Storing each data table asynchronously, iteration {iteration}...");
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            var tasks = new List<Task>();
-            foreach (var table in tables)
-            {
-                tasks.Add(Task.Run(() => MemoryCache.DefaultInstance.AddStatic(table.TableName, table)));
-            }
-            foreach (var task in tasks)
-            {
-                task.Wait();
-            }
-            stopwatch.Stop();
-
-            Debug.Assert(MemoryCache.DefaultInstance.Count() == tables.Count);
-            Debug.Assert(MemoryCache.DefaultInstance.LongCount() == tables.LongCount());
-
-            Logger.Info($"[Memory] Data tables stored in: {stopwatch.Elapsed}");
-            Logger.Info($"[Memory] Current cache size: {MemoryCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
-            Logger.Info($"[Memory] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
-        }
-
-        private static void StoreEachDataTableTwoTimesAsync(ICollection<DataTable> tables, int iteration)
-        {
-            Console.WriteLine(Spacer);
-            Logger.Info($"Storing each data table (two times, asynchronously), iteration {iteration}...");
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            var tasks = new List<Task>();
-            foreach (var table in tables)
-            {
-                tasks.Add(Task.Run(() => PersistentCache.DefaultInstance.AddStatic(table.TableName, table)));
-            }
-            foreach (var table in tables)
-            {
-                tasks.Add(Task.Run(() => PersistentCache.DefaultInstance.AddStatic(table.TableName, table)));
-            }
-            foreach (var task in tasks)
-            {
-                task.Wait();
-            }
-            stopwatch.Stop();
-
-            Debug.Assert(PersistentCache.DefaultInstance.Count() == tables.Count);
-            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
-
-            Logger.Info($"Data tables stored in: {stopwatch.Elapsed}");
-            Logger.Info($"Current cache size: {PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
-            Logger.Info($"Approximate speed (MB/sec): {_tableListSize * 2 / stopwatch.Elapsed.TotalSeconds:0.0}");
-        }
-
-        private static void RetrieveEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
+        private static void RetrieveEachDataTable<TCache>(TCache cache, int iteration)
             where TCache : ICache
         {
             var cacheName = cache.Settings.CacheName;
@@ -514,14 +426,14 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(Spacer);
             Logger.Info($"[{cacheName}] Retrieving each data table, iteration {iteration}...");
 
-            foreach (var table in tables)
+            foreach (var table in _tables)
             {
                 cache.AddStatic(table.TableName, table);
             }
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            foreach (var table in tables)
+            foreach (var table in _tables)
             {
                 var returnedTable = cache.Get<DataTable>(table.TableName);
                 if (!returnedTable.HasValue)
@@ -536,7 +448,37 @@ namespace PommaLabs.KVLite.Benchmarks
             Logger.Info($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
-        private static void RetrieveEachDataTableItem<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
+        private static async Task RetrieveEachDataTableAsync<TCache>(TCache cache, int iteration)
+            where TCache : IAsyncCache
+        {
+            var cacheName = cache.Settings.CacheName;
+
+            Console.WriteLine(Spacer);
+            Logger.Info($"[{cacheName}] Retrieving each data table asynchronously, iteration {iteration}...");
+
+            await _tables.ParallelForEachAsync(async table =>
+            {
+                await cache.AddStaticAsync(table.TableName, table);
+            }, maxDegreeOfParalellism: Environment.ProcessorCount * 2);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            await _tables.ParallelForEachAsync(async table =>
+            {
+                var returnedTable = await cache.GetAsync<DataTable>(table.TableName);
+                if (!returnedTable.HasValue)
+                {
+                    throw new Exception("Wrong data table read from cache! :(");
+                }
+            }, maxDegreeOfParalellism: Environment.ProcessorCount * 2);
+            stopwatch.Stop();
+
+            Logger.Info($"[{cacheName}] Data tables retrieved in: {stopwatch.Elapsed}");
+            Logger.Info($"[{cacheName}] Current cache size: {await cache.GetCacheSizeInBytesAsync() / (1024L * 1024L)} MB");
+            Logger.Info($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
+        }
+
+        private static void RetrieveEachDataTableItem<TCache>(TCache cache, int iteration)
             where TCache : ICache
         {
             var cacheName = cache.Settings.CacheName;
@@ -544,14 +486,14 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(Spacer);
             Logger.Info($"[{cacheName}] Retrieving each data table item, iteration {iteration}...");
 
-            foreach (var table in tables)
+            foreach (var table in _tables)
             {
                 cache.AddStatic(table.TableName, table);
             }
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            foreach (var table in tables)
+            foreach (var table in _tables)
             {
                 var returnedTable = cache.GetItem<DataTable>(table.TableName);
                 if (!returnedTable.HasValue)
@@ -566,22 +508,27 @@ namespace PommaLabs.KVLite.Benchmarks
             Logger.Info($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
-        private static void PeekEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
+        private static void PeekEachDataTable<TCache>(TCache cache, int iteration)
             where TCache : ICache
         {
+            if (!cache.CanPeek)
+            {
+                return;
+            }
+
             var cacheName = cache.Settings.CacheName;
 
             Console.WriteLine(Spacer);
             Logger.Info($"[{cacheName}] Peeking each data table, iteration {iteration}...");
 
-            foreach (var table in tables)
+            foreach (var table in _tables)
             {
                 cache.AddStatic(table.TableName, table);
             }
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            foreach (var table in tables)
+            foreach (var table in _tables)
             {
                 var returnedTable = cache.Peek<DataTable>(table.TableName);
                 if (!returnedTable.HasValue)
@@ -596,7 +543,7 @@ namespace PommaLabs.KVLite.Benchmarks
             Logger.Info($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
-        private static void RemoveEachDataTable<TCache>(TCache cache, ICollection<DataTable> tables, int iteration)
+        private static void RemoveEachDataTable<TCache>(TCache cache, int iteration)
             where TCache : ICache
         {
             var cacheName = cache.Settings.CacheName;
@@ -604,28 +551,28 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(Spacer);
             Logger.Info($"[{cacheName}] Removing each data table, iteration {iteration}...");
 
-            foreach (var table in tables)
+            foreach (var table in _tables)
             {
                 cache.AddTimed(table.TableName, table, cache.Clock.GetCurrentInstant() + Duration.FromHours(1));
             }
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            foreach (var table in tables)
+            foreach (var table in _tables)
             {
                 cache.Remove(table.TableName);
             }
             stopwatch.Stop();
 
-            Debug.Assert(PersistentCache.DefaultInstance.Count() == 0);
-            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == 0L);
+            Debug.Assert(cache.Count() == 0);
+            Debug.Assert(cache.LongCount() == 0L);
 
             Logger.Info($"[{cacheName}] Data tables removed in: {stopwatch.Elapsed}");
             Logger.Info($"[{cacheName}] Current cache size: {cache.GetCacheSizeInBytes() / (1024.0 * 1024.0):0.0} MB");
             Logger.Info($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
-        private static void RemoveEachDataTableAsync<TCache>(TCache cache, IList<DataTable> tables, int iteration)
+        private static async Task RemoveEachDataTableAsync<TCache>(TCache cache, int iteration)
             where TCache : IAsyncCache
         {
             var cacheName = cache.Settings.CacheName;
@@ -633,135 +580,54 @@ namespace PommaLabs.KVLite.Benchmarks
             Console.WriteLine(Spacer);
             Logger.Info($"[{cacheName}] Removing each data table asynchronously, iteration {iteration}...");
 
-            var tasks = new Task[tables.Count];
-            for (var i = 0; i < tables.Count; ++i)
+            await _tables.ParallelForEachAsync(async table =>
             {
-                var table = tables[i];
-                tasks[i] = Task.Run(async () => await cache.AddTimedAsync(table.TableName, table, cache.Clock.GetCurrentInstant() + Duration.FromHours(1)));
-            }
-            Task.WaitAll(tasks);
+                await cache.AddTimedAsync(table.TableName, table, cache.Clock.GetCurrentInstant() + Duration.FromHours(1));
+            }, maxDegreeOfParalellism: Environment.ProcessorCount * 2);
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            for (var i = 0; i < tables.Count; ++i)
+            await _tables.ParallelForEachAsync(async table =>
             {
-                var table = tables[i];
-                tasks[i] = Task.Run(async () => await cache.RemoveAsync(table.TableName));
-            }
-            Task.WaitAll(tasks);
+                await cache.RemoveAsync(table.TableName);
+            }, maxDegreeOfParalellism: Environment.ProcessorCount * 2);
             stopwatch.Stop();
 
-            Debug.Assert(cache.CountAsync().Result == 0);
-            Debug.Assert(cache.LongCountAsync().Result == 0L);
+            Debug.Assert(await cache.CountAsync() == 0);
+            Debug.Assert(await cache.LongCountAsync() == 0L);
 
             Logger.Info($"[{cacheName}] Data tables removed in: {stopwatch.Elapsed}");
-            Logger.Info($"[{cacheName}] Current cache size: {cache.GetCacheSizeInBytesAsync().Result / (1024.0 * 1024.0):0.0} MB");
+            Logger.Info($"[{cacheName}] Current cache size: {await cache.GetCacheSizeInBytesAsync() / (1024.0 * 1024.0):0.0} MB");
             Logger.Info($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
-        private static void RetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
+        private static async Task StoreAndRetrieveEachDataTableAsync<TCache>(TCache cache, int iteration)
+            where TCache : IAsyncCache
         {
-            Console.WriteLine(Spacer);
-            Logger.Info($"Retrieving each data table asynchronously, iteration {iteration}...");
+            var cacheName = cache.Settings.CacheName;
 
-            foreach (var table in tables)
-            {
-                PersistentCache.DefaultInstance.AddStatic(table.TableName, table);
-            }
+            Console.WriteLine(Spacer);
+            Logger.Info($"[{cacheName}] Storing and retrieving each data table asynchronously, iteration {iteration}...");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var tasks = new List<Task<CacheResult<DataTable>>>();
-            foreach (var table in tables)
+            await _tables.ParallelForEachAsync(async table =>
             {
-                var tmp = table; // Suggested by R#
-                tasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get<DataTable>(tmp.TableName)));
-            }
-            foreach (var task in tasks)
-            {
-                var returnedTable = task.Result;
+                await cache.AddStaticAsync(table.TableName, table);
+                var returnedTable = await cache.GetAsync<DataTable>(table.TableName);
                 if (!returnedTable.HasValue)
                 {
                     throw new Exception("Wrong data table read from cache! :(");
                 }
-            }
+            }, maxDegreeOfParalellism: Environment.ProcessorCount * 2);
             stopwatch.Stop();
 
-            Logger.Info($"Data tables retrieved in: {stopwatch.Elapsed}");
-            Logger.Info($"Current cache size: {PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
-            Logger.Info($"Approximate speed (MB/sec): {_tableListSize / stopwatch.Elapsed.TotalSeconds:0.0}");
-        }
+            Debug.Assert(await cache.CountAsync() == _tables.Count);
+            Debug.Assert(await cache.LongCountAsync() == _tables.LongCount());
 
-        private static void StoreAndRetrieveEachDataTableAsync(ICollection<DataTable> tables, int iteration)
-        {
-            Console.WriteLine(Spacer);
-            Logger.Info($"Storing and retrieving each data table asynchronously, iteration {iteration}...");
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            var writeTasks = new List<Task>();
-            foreach (var table in tables)
-            {
-                writeTasks.Add(Task.Run(() => PersistentCache.DefaultInstance.AddStatic(table.TableName, table)));
-            }
-            var readTasks = new List<Task<CacheResult<DataTable>>>();
-            foreach (var table in tables)
-            {
-                var localTable = table;
-                readTasks.Add(Task.Factory.StartNew(() => PersistentCache.DefaultInstance.Get<DataTable>(localTable.TableName)));
-            }
-            foreach (var task in writeTasks)
-            {
-                task.Wait();
-            }
-            foreach (var task in readTasks)
-            {
-                task.Wait();
-            }
-            stopwatch.Stop();
-
-            Debug.Assert(PersistentCache.DefaultInstance.Count() == tables.Count);
-            Debug.Assert(PersistentCache.DefaultInstance.LongCount() == tables.LongCount());
-
-            Logger.Info($"Data tables stored and retrieved in: {stopwatch.Elapsed}");
-            Logger.Info($"Current cache size: {PersistentCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
-            Logger.Info($"Approximate speed (MB/sec): {_tableListSize * 2 / stopwatch.Elapsed.TotalSeconds:0.0}");
-        }
-
-        private static void StoreAndRetrieveEachDataTableAsync_Volatile(ICollection<DataTable> tables, int iteration)
-        {
-            Console.WriteLine(Spacer);
-            Logger.Info($"[Volatile] Storing and retrieving each data table asynchronously, iteration {iteration}...");
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            var writeTasks = new List<Task>();
-            foreach (var table in tables)
-            {
-                writeTasks.Add(Task.Run(() => VolatileCache.DefaultInstance.AddStatic(table.TableName, table)));
-            }
-            var readTasks = new List<Task<CacheResult<DataTable>>>();
-            foreach (var table in tables)
-            {
-                var localTable = table;
-                readTasks.Add(Task.Factory.StartNew(() => VolatileCache.DefaultInstance.Get<DataTable>(localTable.TableName)));
-            }
-            foreach (var task in writeTasks)
-            {
-                task.Wait();
-            }
-            foreach (var task in readTasks)
-            {
-                task.Wait();
-            }
-            stopwatch.Stop();
-
-            Debug.Assert(VolatileCache.DefaultInstance.Count() == tables.Count);
-            Debug.Assert(VolatileCache.DefaultInstance.LongCount() == tables.LongCount());
-
-            Logger.Info($"[Volatile] Data tables stored and retrieved in: {stopwatch.Elapsed}");
-            Logger.Info($"[Volatile] Current cache size: {VolatileCache.DefaultInstance.GetCacheSizeInBytes() / (1024L * 1024L)} MB");
-            Logger.Info($"[Volatile] Approximate speed (MB/sec): {_tableListSize * 2 / stopwatch.Elapsed.TotalSeconds:0.0}");
+            Logger.Info($"[{cacheName}] Data tables stored and retrieved in: {stopwatch.Elapsed}");
+            Logger.Info($"[{cacheName}] Current cache size: {await cache.GetCacheSizeInBytesAsync() / (1024L * 1024L)} MB");
+            Logger.Info($"[{cacheName}] Approximate speed (MB/sec): {_tableListSize * 2 / stopwatch.Elapsed.TotalSeconds:0.0}");
         }
 
         private static double GetObjectSizeInMB(object obj)
