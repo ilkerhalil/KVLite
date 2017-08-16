@@ -40,6 +40,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -77,6 +78,8 @@ namespace PommaLabs.KVLite.Benchmarks
             OracleCache.DefaultInstance.Settings.CacheSchemaName = "CARAVAN";
             OracleCache.DefaultInstance.Settings.CacheEntriesTableName = "CRVN_KVL_ENTRIES";
             OracleCache.DefaultInstance.Settings.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(Oracle)].ConnectionString;
+
+            PersistentCache.DefaultInstance.Settings.CacheFile = Path.GetTempFileName();
 
             Console.WriteLine(@"Running vacuum on DB...");
             PersistentCache.DefaultInstance.Vacuum();
@@ -116,18 +119,18 @@ namespace PommaLabs.KVLite.Benchmarks
                 /*** STORE EACH DATA TABLE ASYNC ***/
 
                 FullyCleanCaches();
-                //StoreEachDataTableAsync(OracleCache.DefaultInstance, tables, i);
-                StoreEachDataTableAsync(MySqlCache.DefaultInstance, tables, i);
-                StoreEachDataTableAsync(SqlServerCache.DefaultInstance, tables, i);
+                //await StoreEachDataTableAsync(OracleCache.DefaultInstance, tables, i);
+                await StoreEachDataTableAsync(MySqlCache.DefaultInstance, tables, i);
+                await StoreEachDataTableAsync(SqlServerCache.DefaultInstance, tables, i);
 
                 FullyCleanCaches();
-                StoreEachDataTableAsync(PersistentCache.DefaultInstance, tables, i);
+                await StoreEachDataTableAsync(PersistentCache.DefaultInstance, tables, i);
 
                 FullyCleanCaches();
-                StoreEachDataTableAsync(VolatileCache.DefaultInstance, tables, i);
+                await StoreEachDataTableAsync(VolatileCache.DefaultInstance, tables, i);
 
                 FullyCleanCaches();
-                StoreEachDataTableAsync(MemoryCache.DefaultInstance, tables, i);
+                await StoreEachDataTableAsync(MemoryCache.DefaultInstance, tables, i);
 
                 /*** STORE EACH DATA TABLE ***/
 
@@ -377,7 +380,7 @@ namespace PommaLabs.KVLite.Benchmarks
             {
                 var logMessageKey = i.ToString();
                 await cache.AddStaticAsync(logMessageKey, logMessage);
-            });
+            }, maxDegreeOfParalellism: Environment.ProcessorCount * 2);
             stopwatch.Stop();
 
             Debug.Assert(await cache.CountAsync() == _logMessages.Length);
@@ -401,7 +404,7 @@ namespace PommaLabs.KVLite.Benchmarks
             await tables.ParallelForEachAsync(async table =>
             {
                 await cache.AddStaticAsync(table.TableName, table);
-            });
+            }, maxDegreeOfParalellism: Environment.ProcessorCount * 2);
             stopwatch.Stop();
 
             Debug.Assert(await cache.CountAsync() == tables.Count);
