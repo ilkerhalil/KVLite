@@ -9,7 +9,7 @@ Following RDBMS systems are currently supported by KVLite or will be supported s
 
 * MySQL and MariaDB (.NET only)
 * Oracle (.NET only)
-* PostgreSQL (work in progress)
+* PostgreSQL (.NET and .NET Core)
 * SQL Server (.NET and .NET Core)
 * SQLite (.NET and .NET Core)
 
