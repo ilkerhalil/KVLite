@@ -1,5 +1,12 @@
 ﻿DROP TABLE kvlite.kvl_cache_entries;
 
+CREATE SEQUENCE kvlite.kvl_cache_entries_kvle_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
 CREATE TABLE kvlite.kvl_cache_entries
 (
     kvle_id bigint NOT NULL DEFAULT nextval('kvlite.kvl_cache_entries_kvle_id_seq'::regclass),
@@ -7,7 +14,7 @@ CREATE TABLE kvlite.kvl_cache_entries
     kvle_expiry bigint NOT NULL,
     kvle_interval bigint NOT NULL,
     kvle_value bytea NOT NULL,
-    kvle_compressed boolean NOT NULL,
+    kvle_compressed smallint NOT NULL,
     kvle_partition character varying(2000) COLLATE pg_catalog."default" NOT NULL,
     kvle_key character varying(2000) COLLATE pg_catalog."default" NOT NULL,
     kvle_creation bigint NOT NULL,
