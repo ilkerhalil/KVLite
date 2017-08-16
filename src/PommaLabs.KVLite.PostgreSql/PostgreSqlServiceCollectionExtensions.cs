@@ -53,8 +53,10 @@ namespace PommaLabs.KVLite.PostgreSql
             var settings = new PostgreSqlCacheSettings();
             changeSettings?.Invoke(settings);
 
+            var ext = services.GetKVLiteExtensionServices();
+
 #pragma warning disable CC0022 // Should dispose object
-            return services.AddKVLiteCache(new PostgreSqlCache(settings));
+            return services.AddKVLiteCache(new PostgreSqlCache(settings, ext.Serializer, ext.Compressor, ext.Clock, ext.Random));
 #pragma warning restore CC0022 // Should dispose object
         }
     }

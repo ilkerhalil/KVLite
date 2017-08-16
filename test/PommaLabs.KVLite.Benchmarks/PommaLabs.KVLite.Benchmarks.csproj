@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net46</TargetFramework>
-    <OutputType>Exe</OutputType>
+    <TargetFramework>net461</TargetFramework>
+    <OutputType>exe</OutputType>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,20 +18,23 @@
     <!-- Drivers -->
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.Memory\PommaLabs.KVLite.Memory.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.MySql\PommaLabs.KVLite.MySql.csproj" />
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.PostgreSql\PommaLabs.KVLite.PostgreSql.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.Oracle\PommaLabs.KVLite.Oracle.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.SQLite\PommaLabs.KVLite.SQLite.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.SqlServer\PommaLabs.KVLite.SqlServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AsyncEnumerator" Version="2.1.0" />
     <PackageReference Include="BenchmarkDotNet" Version="0.10.9" />
-    <PackageReference Include="fastJSON" Version="2.1.25" />
+    <PackageReference Include="fastJSON" Version="2.1.26" />
     <PackageReference Include="Jil.StrongName" Version="2.15.2" />
     <PackageReference Include="lz4net" Version="1.0.15.93" />
     <PackageReference Include="NLipsum" Version="1.1.0" />
+    <PackageReference Include="NLog" Version="4.4.12" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="System.Configuration" />
   </ItemGroup>
 </Project>

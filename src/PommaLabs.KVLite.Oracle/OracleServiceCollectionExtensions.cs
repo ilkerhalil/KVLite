@@ -53,8 +53,10 @@ namespace PommaLabs.KVLite.Oracle
             var settings = new OracleCacheSettings();
             changeSettings?.Invoke(settings);
 
+            var ext = services.GetKVLiteExtensionServices();
+
 #pragma warning disable CC0022 // Should dispose object
-            return services.AddKVLiteCache(new OracleCache(settings));
+            return services.AddKVLiteCache(new OracleCache(settings, ext.Serializer, ext.Compressor, ext.Clock, ext.Random));
 #pragma warning restore CC0022 // Should dispose object
         }
     }

@@ -94,11 +94,6 @@ namespace PommaLabs.KVLite
         public abstract bool CanPeek { get; }
 
         /// <summary>
-        ///   Gets the log used by the cache.
-        /// </summary>
-        protected ILog Log { get; } = LogProvider.For<TCache>();
-
-        /// <summary>
         ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
         ///   therefore, it does not need to be extremely accurate.
         /// </summary>
@@ -1594,6 +1589,11 @@ namespace PommaLabs.KVLite
         #endregion ICache members
 
         #region Helpers
+
+        /// <summary>
+        ///   Gets the log used by the cache.
+        /// </summary>
+        protected static ILog Log { get; } = LogProvider.For<TCache>();
 
         /// <summary>
         ///   Gets a task that has been canceled.

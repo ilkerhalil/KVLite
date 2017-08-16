@@ -53,8 +53,10 @@ namespace PommaLabs.KVLite.Memory
             var settings = new MemoryCacheSettings();
             changeSettings?.Invoke(settings);
 
+            var ext = services.GetKVLiteExtensionServices();
+
 #pragma warning disable CC0022 // Should dispose object
-            return services.AddKVLiteCache(new MemoryCache(settings));
+            return services.AddKVLiteCache(new MemoryCache(settings, ext.Serializer, ext.Compressor));
 #pragma warning restore CC0022 // Should dispose object
         }
     }

@@ -29,6 +29,7 @@ using PommaLabs.KVLite.Goodies;
 using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
@@ -524,7 +525,8 @@ namespace PommaLabs.KVLite.Database
             {
                 using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    await db.ExecuteAsync(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters).ConfigureAwait(false);
+                    var cmd = new CommandDefinition(cf.InsertOrUpdateCacheEntryCommand, dynamicParameters, cancellationToken: cancellationToken);
+                    await db.ExecuteAsync(cmd).ConfigureAwait(false);
                 }
             }).ConfigureAwait(false);
 
@@ -585,7 +587,8 @@ namespace PommaLabs.KVLite.Database
             {
                 using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    return await db.ExecuteAsync(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup).ConfigureAwait(false);
+                    var cmd = new CommandDefinition(cf.DeleteCacheEntriesCommand, dbCacheEntryGroup, cancellationToken: cancellationToken);
+                    return await db.ExecuteAsync(cmd).ConfigureAwait(false);
                 }
             }).ConfigureAwait(false);
         }
@@ -773,7 +776,8 @@ namespace PommaLabs.KVLite.Database
                 if (dbCacheValue.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
                 {
                     // When an item expires, we should remove it from the cache.
-                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle).ConfigureAwait(false);
+                    var cmd = new CommandDefinition(cf.DeleteCacheEntryCommand, dbCacheEntrySingle, cancellationToken: cancellationToken);
+                    await db.ExecuteAsync(cmd).ConfigureAwait(false);
 
                     // Nothing to deserialize, return None.
                     return default(CacheResult<TVal>);
@@ -783,7 +787,8 @@ namespace PommaLabs.KVLite.Database
                 {
                     // Since we are in a "get" operation, we should also update the expiry.
                     dbCacheEntrySingle.UtcExpiry += dbCacheValue.Interval;
-                    await db.ExecuteAsync(cf.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle).ConfigureAwait(false);
+                    var cmd = new CommandDefinition(cf.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle, cancellationToken: cancellationToken);
+                    await db.ExecuteAsync(cmd).ConfigureAwait(false);
                 }
             }
 
@@ -876,7 +881,8 @@ namespace PommaLabs.KVLite.Database
                 if (dbCacheEntry.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
                 {
                     // When an item expires, we should remove it from the cache.
-                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle).ConfigureAwait(false);
+                    var cmd = new CommandDefinition(cf.DeleteCacheEntryCommand, dbCacheEntrySingle, cancellationToken: cancellationToken);
+                    await db.ExecuteAsync(cmd).ConfigureAwait(false);
 
                     // Nothing to deserialize, return None.
                     return default(CacheResult<ICacheItem<TVal>>);
@@ -886,7 +892,8 @@ namespace PommaLabs.KVLite.Database
                 {
                     // Since we are in a "get" operation, we should also update the expiry.
                     dbCacheEntry.UtcExpiry = (dbCacheEntrySingle.UtcExpiry += dbCacheEntry.Interval);
-                    await db.ExecuteAsync(cf.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle).ConfigureAwait(false);
+                    var cmd = new CommandDefinition(cf.UpdateCacheEntryExpiryCommand, dbCacheEntrySingle, cancellationToken: cancellationToken);
+                    await db.ExecuteAsync(cmd).ConfigureAwait(false);
                 }
             }
 
@@ -977,19 +984,21 @@ namespace PommaLabs.KVLite.Database
                     if (dbCacheEntry.UtcExpiry < dbCacheEntryGroup.UtcExpiry)
                     {
                         // When an item expires, we should remove it from the cache.
-                        await db.ExecuteAsync(cf.DeleteCacheEntryCommand, new DbCacheEntry.Single
+                        var cmd = new CommandDefinition(cf.DeleteCacheEntryCommand, new DbCacheEntry.Single
                         {
                             Hash = Hashing.HashPartitionAndKey(dbCacheEntry.Partition, dbCacheEntry.Key)
-                        }).ConfigureAwait(false);
+                        }, cancellationToken: cancellationToken);
+                        await db.ExecuteAsync(cmd).ConfigureAwait(false);
                     }
                     else if (dbCacheEntry.Interval > 0L)
                     {
                         // Since we are in a "get" operation, we should also update the expiry.
-                        await db.ExecuteAsync(cf.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
+                        var cmd = new CommandDefinition(cf.UpdateCacheEntryExpiryCommand, new DbCacheEntry.Single
                         {
                             Hash = Hashing.HashPartitionAndKey(dbCacheEntry.Partition, dbCacheEntry.Key),
                             UtcExpiry = dbCacheEntry.UtcExpiry = dbCacheEntryGroup.UtcExpiry + dbCacheEntry.Interval
-                        }).ConfigureAwait(false);
+                        }, cancellationToken: cancellationToken);
+                        await db.ExecuteAsync(cmd).ConfigureAwait(false);
                     }
                 }
             }
@@ -1251,7 +1260,8 @@ namespace PommaLabs.KVLite.Database
             {
                 using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    await db.ExecuteAsync(cf.DeleteCacheEntryCommand, dbCacheEntrySingle).ConfigureAwait(false);
+                    var cmd = new CommandDefinition(cf.DeleteCacheEntryCommand, dbCacheEntrySingle, cancellationToken: cancellationToken);
+                    await db.ExecuteAsync(cmd).ConfigureAwait(false);
                 }
             }).ConfigureAwait(false);
         }
@@ -1270,7 +1280,7 @@ namespace PommaLabs.KVLite.Database
         private TVal UnsafeDeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
         {
             var buffer = dbCacheValue.Value;
-            using (var memoryStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite), buffer, 0, buffer.Length))
+            using (var memoryStream = new PooledMemoryStream(buffer))
             {
                 if (dbCacheValue.Compressed == DbCacheValue.False)
                 {
@@ -1392,7 +1402,7 @@ namespace PommaLabs.KVLite.Database
             // Serializing may be pretty expensive, therefore we keep it out of the connection.
             try
             {
-                using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite)))
+                using (var serializedStream = new PooledMemoryStream())
                 {
                     // First write the anti-tamper hash code...
                     AntiTamper.WriteAntiTamperHashCode(serializedStream, dbCacheEntry);
@@ -1403,7 +1413,7 @@ namespace PommaLabs.KVLite.Database
                     if (serializedStream.Length > Settings.MinValueLengthForCompression)
                     {
                         // Stream is too long, we should compress it.
-                        using (var compressedStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite)))
+                        using (var compressedStream = new PooledMemoryStream())
                         {
                             using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
                             {

@@ -53,8 +53,10 @@ namespace PommaLabs.KVLite.MySql
             var settings = new MySqlCacheSettings();
             changeSettings?.Invoke(settings);
 
+            var ext = services.GetKVLiteExtensionServices();
+
 #pragma warning disable CC0022 // Should dispose object
-            return services.AddKVLiteCache(new MySqlCache(settings));
+            return services.AddKVLiteCache(new MySqlCache(settings, ext.Serializer, ext.Compressor, ext.Clock, ext.Random));
 #pragma warning restore CC0022 // Should dispose object
         }
     }

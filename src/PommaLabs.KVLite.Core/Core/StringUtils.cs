@@ -1,4 +1,4 @@
-﻿// File name: MiscUtils.cs
+﻿// File name: StringUtils.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -78,9 +78,7 @@ namespace PommaLabs.KVLite.Core
 
         private static string GetBaseDirectory()
         {
-#if (NETSTD10 || NETSTD11)
-            return string.Empty;
-#elif NETSTD13
+#if NETSTD13
             return AppContext.BaseDirectory;
 #else
             return AppDomain.CurrentDomain.BaseDirectory;

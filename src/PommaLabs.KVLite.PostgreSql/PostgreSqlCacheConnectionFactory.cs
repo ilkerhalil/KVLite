@@ -96,7 +96,7 @@ namespace PommaLabs.KVLite.PostgreSql
                     {p}{nameof(DbCacheEntry.ParentHash2)},
                     {p}{nameof(DbCacheEntry.ParentKey2)}
                 )
-                on conflict ({DbCacheValue.HashColumn}) do update
+                on conflict ({DbCacheValue.HashColumn}) do update set
                     {DbCacheValue.UtcExpiryColumn} = {p}{nameof(DbCacheValue.UtcExpiry)},
                     {DbCacheValue.IntervalColumn} = {p}{nameof(DbCacheValue.Interval)},
                     {DbCacheValue.ValueColumn} = {p}{nameof(DbCacheValue.Value)},

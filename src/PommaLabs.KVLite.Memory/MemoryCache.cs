@@ -191,14 +191,14 @@ namespace PommaLabs.KVLite.Memory
             bool compressed;
             try
             {
-                using (var serializedStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite)))
+                using (var serializedStream = new PooledMemoryStream())
                 {
                     Serializer.SerializeToStream(value, serializedStream);
 
                     if (serializedStream.Length > Settings.MinValueLengthForCompression)
                     {
                         // Stream is too long, we should compress it.
-                        using (var compressedStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite)))
+                        using (var compressedStream = new PooledMemoryStream())
                         {
                             using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
                             {
@@ -519,7 +519,7 @@ namespace PommaLabs.KVLite.Memory
         private TVal UnsafeDeserializeCacheValue<TVal>(CacheValue cacheValue)
         {
             var buffer = cacheValue.Value;
-            using (var memoryStream = MemoryStreamManager.Instance.GetStream(nameof(KVLite), buffer, 0, buffer.Length))
+            using (var memoryStream = new PooledMemoryStream(buffer))
             {
                 if (!cacheValue.Compressed)
                 {

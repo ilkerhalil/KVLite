@@ -9,13 +9,13 @@ Following RDBMS systems are currently supported by KVLite or will be supported s
 
 * MySQL and MariaDB (.NET only)
 * Oracle (.NET only)
-* PostgreSQL (work in progress)
+* PostgreSQL (.NET and .NET Core)
 * SQL Server (.NET and .NET Core)
 * SQLite (.NET and .NET Core)
 
 ## Summary
 
-* Latest release version: `v6.3.3`
+* Latest release version: `v6.4.0`
 * Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/7qgv5o7or96rr8a2?svg=true)](https://ci.appveyor.com/project/pomma89/kvlite)
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: TODO
 * [NuGet](https://www.nuget.org) package(s):
