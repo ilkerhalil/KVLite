@@ -16,7 +16,7 @@ Following RDBMS systems are currently supported by KVLite or will be supported s
 ## Summary
 
 * Latest release version: `v6.4.0`
-* Build status on [AppVeyor](https://ci.appveyor.com): [![Build status](https://ci.appveyor.com/api/projects/status/7qgv5o7or96rr8a2?svg=true)](https://ci.appveyor.com/project/pomma89/kvlite)
+* Build status on [Travis CI](https://travis-ci.org): [![Build Status](https://travis-ci.org/pomma89/KVLite.svg?branch=master)](https://travis-ci.org/pomma89/KVLite)
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: TODO
 * [NuGet](https://www.nuget.org) package(s):
     + [PommaLabs.KVLite](https://www.nuget.org/packages/PommaLabs.KVLite/), includes Core and all native libraries.
