@@ -17,19 +17,19 @@ Following RDBMS systems are currently supported by KVLite or will be supported s
 
 * Latest release version: `v6.4.0`
 * Build status on [Travis CI](https://travis-ci.org): [![Build Status](https://travis-ci.org/pomma89/KVLite.svg?branch=master)](https://travis-ci.org/pomma89/KVLite)
+* Build status on [AppVeyor](https://www.appveyor.com/): [![Build status](https://ci.appveyor.com/api/projects/status/n0tbcdkbx3vs8nmk/branch/master?svg=true)](https://ci.appveyor.com/project/pomma89/kvlite/branch/master)
 * [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: TODO
 * [NuGet](https://www.nuget.org) package(s):
     + [PommaLabs.KVLite](https://www.nuget.org/packages/PommaLabs.KVLite/), includes Core and all native libraries.
-    + [PommaLabs.KVLite (Core)](https://www.nuget.org/packages/PommaLabs.KVLite.Core/), all managed APIs.
-    + [PommaLabs.KVLite (MySQL)](https://www.nuget.org/packages/PommaLabs.KVLite.MySql/), driver for MySQL and MariaDB.
-    + [PommaLabs.KVLite (Oracle)](https://www.nuget.org/packages/PommaLabs.KVLite.Oracle/), driver for Oracle.
-    + [PommaLabs.KVLite (PostgreSQL)](https://www.nuget.org/packages/PommaLabs.KVLite.PostgreSql/), driver for PostgreSQL.
-    + [PommaLabs.KVLite (SQL Server)](https://www.nuget.org/packages/PommaLabs.KVLite.SqlServer/), driver for SQL Server.
-    + [PommaLabs.KVLite (SQLite)](https://www.nuget.org/packages/PommaLabs.KVLite.SQLite/), driver for SQLite.
-    + [PommaLabs.KVLite (Entity Framework Query Cache Provider)](https://www.nuget.org/packages/PommaLabs.KVLite.EntityFramework/)
-    + [PommaLabs.KVLite (Nancy Caching Bootstrapper)](https://www.nuget.org/packages/PommaLabs.KVLite.Nancy/)
-    + [PommaLabs.KVLite (Web API Output Cache Provider)](https://www.nuget.org/packages/PommaLabs.KVLite.WebApi/)
-    + [PommaLabs.KVLite (Web Forms Caching Components)](https://www.nuget.org/packages/PommaLabs.KVLite.WebForms/)
+    + [PommaLabs.KVLite.Core](https://www.nuget.org/packages/PommaLabs.KVLite.Core/), all managed APIs.
+    + [PommaLabs.KVLite.MySql](https://www.nuget.org/packages/PommaLabs.KVLite.MySql/), driver for MySQL and MariaDB.
+    + [PommaLabs.KVLite.Oracle](https://www.nuget.org/packages/PommaLabs.KVLite.Oracle/), driver for Oracle.
+    + [PommaLabs.KVLite.PostgreSql](https://www.nuget.org/packages/PommaLabs.KVLite.PostgreSql/), driver for PostgreSQL.
+    + [PommaLabs.KVLite.SqlServer](https://www.nuget.org/packages/PommaLabs.KVLite.SqlServer/), driver for SQL Server.
+    + [PommaLabs.KVLite.SQLite](https://www.nuget.org/packages/PommaLabs.KVLite.SQLite/), driver for SQLite.
+    + [PommaLabs.KVLite.EntityFramework](https://www.nuget.org/packages/PommaLabs.KVLite.EntityFramework/), query cache provider.
+    + [PommaLabs.KVLite.WebApi](https://www.nuget.org/packages/PommaLabs.KVLite.WebApi/), output cache provider.
+    + [PommaLabs.KVLite.WebForms](https://www.nuget.org/packages/PommaLabs.KVLite.WebForms/), caching components.
 
 ## Introduction
 
