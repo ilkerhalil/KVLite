@@ -1,0 +1,354 @@
+﻿<!DOCTYPE html><html><head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <meta name="description">
+        <meta name="keywords" content="static content generator,static site generator,static site,HTML,web development,.NET,C#,Razor,Markdown,YAML">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="/KVLite/assets/img/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/KVLite/assets/img/favicon.ico" type="image/x-icon">
+        <title>PommaLabs.KVLite - API - MemoryCache.Compressor Property</title>
+        <link href="/KVLite/assets/css/mermaid.css" rel="stylesheet">
+        <link href="/KVLite/assets/css/highlight.css" rel="stylesheet">
+        <link href="/KVLite/assets/css/bootstrap/bootstrap.css" rel="stylesheet">
+        <link href="/KVLite/assets/css/adminlte/AdminLTE.css" rel="stylesheet">
+        <link href="/KVLite/assets/css/theme/theme.css" rel="stylesheet">
+        <link href="//fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,400i,700,700i" rel="stylesheet">
+        <link href="/KVLite/assets/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="/KVLite/assets/css/override.css" rel="stylesheet">
+        <script src="/KVLite/assets/js/jquery-2.2.3.min.js"></script>
+        <script src="/KVLite/assets/js/bootstrap.min.js"></script>        
+        <script src="/KVLite/assets/js/app.min.js"></script>         
+        <script src="/KVLite/assets/js/highlight.pack.js"></script>   
+        <script src="/KVLite/assets/js/jquery.slimscroll.min.js"></script>
+        <script src="/KVLite/assets/js/jquery.sticky-kit.min.js"></script>
+        <script src="/KVLite/assets/js/mermaid.min.js"></script>
+        <!--[if lt IE 9]>
+        <script src="/KVLite/assets/js/html5shiv.min.js"></script>
+        <script src="/KVLite/assets/js/respond.min.js"></script>
+        <![endif]-->  
+
+        
+    </head>
+    <body class="hold-transition wyam layout-boxed  ">    
+        <div class="top-banner"></div>
+        <div class="wrapper with-container">
+            <!-- Header -->
+            <header class="main-header">   
+                     
+                <a href="/KVLite/" class="logo">
+                            <span>PommaLabs.KVLite</span>
+                </a>   
+                         
+                <nav class="navbar navbar-static-top" role="navigation">
+                    <!-- Sidebar toggle button-->
+                        <a href="#" class="sidebar-toggle visible-xs-block" data-toggle="offcanvas" role="button">
+                            <span class="sr-only">Toggle side menu</span>
+                            <i class="fa fa-chevron-circle-right"></i>
+                        </a>
+                                        
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                            <span class="sr-only">Toggle side menu</span>
+                            <i class="fa fa-chevron-circle-down"></i>
+                        </button>
+                    </div>
+            
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                        <ul class="nav navbar-nav">                            
+                                    <li><a href="/KVLite/about">About This Project</a></li>
+        <li><a href="/KVLite/docs">Docs</a></li>
+        <li><a href="/KVLite/blog">Blog</a></li>
+        <li class="active"><a href="/KVLite/api">API</a></li>
+ 
+                        </ul>       
+                    </div>
+                    <!-- /.navbar-collapse -->
+                
+                    <!-- Navbar Right Menu -->
+                </nav>
+            </header>
+            
+            <!-- Left side column. contains the logo and sidebar -->
+            <aside class="main-sidebar ">
+                <section class="infobar" data-spy="affix" data-offset-top="60" data-offset-bottom="200"> 
+                    	
+	<div id="infobar-headings"><h6>On This Page</h6><p><a href="#Summary">Summary</a></p>
+<p><a href="#Syntax">Syntax</a></p>
+<p><a href="#Value">Value</a></p>
+<hr class="infobar-hidden">
+</div>
+
+                </section>
+                <section class="sidebar">                    
+                    	
+	    <script src="/KVLite/assets/js/lunr.min.js"></script>
+    <script src="/KVLite/assets/js/searchIndex.js"></script>
+    <div class="sidebar-form">
+        <div class="input-group">
+            <input type="text" name="search" id="search" class="form-control" placeholder="Search Types...">
+            <span class="input-group-btn">
+                <button class="btn btn-flat"><i class="fa fa-search"></i></button>
+            </span>
+        </div>
+    </div>
+    <div id="search-results">
+    </div>
+    <script>
+        function runSearch(query){
+            $("#search-results").empty();			
+            if( query.length < 2 ){
+                return;
+            }			
+            var results = searchModule.search("*" + query + "*");
+            var listHtml = "<ul class='sidebar-menu'>";	
+            listHtml += "<li class='header'>Type Results</li>";	
+            if(results.length == 0 ){
+                listHtml += "<li>No results found</li>";
+            } else {					
+                for(var i = 0; i < results.length; ++i){
+                    var res = results[i];
+                    listHtml += "<li><a href='" + res.url + "'>" + htmlEscape(res.title) + "</a></li>";
+                }				
+            }
+            listHtml += "</ul>";				
+            $("#search-results").append(listHtml);
+        }
+
+        $(document).ready(function(){
+            $("#search").on('input propertychange paste', function() {
+                runSearch($("#search").val());
+            });
+        });
+
+        function htmlEscape(html) {
+            return document.createElement('div')
+                .appendChild(document.createTextNode(html))
+                .parentNode
+                .innerHTML;
+        }
+    </script>
+	
+    <hr>
+
+                    <ul class="sidebar-menu">
+                        
+			<li class="header">Namespace</li>
+		<li><a href="/KVLite/api/PommaLabs.KVLite.Memory">PommaLabs<wbr>.KVLite<wbr>.Memory</a></li>
+		<li class="header">Type</li>
+		<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache">MemoryCache</a></li>
+		<li role="separator" class="divider"></li>
+			<li class="header">Constructors</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/C506CA5C">MemoryCache<wbr>(<wbr>Memory<wbr>Cache<wbr>Settings, <wbr>ISerializer, <wbr>ICompressor)<wbr></a></li>
+			<li class="header">Property Members</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/F49C1F31">CanPeek</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/93D40626">Clock</a></li>
+				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/03D32715">Compressor</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/AEBF76F0">DefaultInstance</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/D90698A7">Disposed</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/AECA5DA9">LastError</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/AE54CAEE">Log</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/FB1A81BE">Max<wbr>Parent<wbr>Key<wbr>Count<wbr>Per<wbr>Item</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/C547598A">Max<wbr>Parent<wbr>Key<wbr>Tree<wbr>Depth</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/5554B2B2">Serializer</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/C6442155">Settings</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/752B5BF3">this[string, <wbr>string]</a></li>
+			<li class="header">Method Members</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/3583D148">AddAsyncInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Instant, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/3C88CCBA">AddInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Instant, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/2FF81B4D">AddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/5888A3D1">AddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/D7E2B92F">AddStatic<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/D170457C">AddStaticAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/3ADDD037">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/B3EF8EF0">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/05F73118">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/624F39B9">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/810D86BD">Clear<wbr>()<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/370F185A">Clear<wbr>(string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/1005BB61">ClearAsync<wbr>(CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/11574FF3">ClearAsync<wbr>(string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/6AA41555">ClearAsyncInternal<wbr>(string, <wbr>CacheReadMode, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/7A2ACF4D">ClearInternal<wbr>(string, <wbr>CacheReadMode)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/49C2AF9B">Contains<wbr>(string, <wbr>string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/4917FBA1">ContainsAsync<wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/241A1FE1">Contains<wbr>Async<wbr>Internal<wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/F931C84B">ContainsInternal<wbr>(string, <wbr>string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/E5B8EEDD">Count<wbr>()<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/B78FFE42">Count<wbr>(string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/3B9A11BA">CountAsync<wbr>(CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/5A71B1FC">CountAsync<wbr>(string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/F68AFB6C">CountAsyncInternal<wbr>(string, <wbr>CacheReadMode, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/335510B3">CountInternal<wbr>(string, <wbr>CacheReadMode)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/7C442913">Dispose<wbr>(bool)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/EA08ABA2">Dispose<wbr>()<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/8A726553">Get<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/0D69BBC1">GetAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/1CEA12AB">GetAsyncInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/350C90A7">GetCacheSizeInBytes<wbr>()<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/A53F0800">Get<wbr>Cache<wbr>Size<wbr>In<wbr>Bytes<wbr>Async<wbr>(CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/638E3C45">Get<wbr>Cache<wbr>Size<wbr>In<wbr>Bytes<wbr>Async<wbr>Internal<wbr>(CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/4D2AD771">Get<wbr>Cache<wbr>Size<wbr>In<wbr>Bytes<wbr>Internal<wbr>()<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/9D67CCFA">GetInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/C9E62A98">GetItem<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/F1EC7872">GetItemAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/9230E319">GetItemAsyncInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/9FA73351">GetItemInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/B2E6DB1B">GetItems<wbr>&lt;TVal&gt;<wbr><wbr>()<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/4ED9391E">GetItems<wbr>&lt;TVal&gt;<wbr><wbr>(string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/01089B1E">GetItemsAsync<wbr>&lt;TVal&gt;<wbr><wbr>(CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/B897353A">GetItemsAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/71D29B25">Get<wbr>Items<wbr>Async<wbr>Internal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/5B3028E1">GetItemsInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/9EDF401F">GetOrAddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/79D095FE">GetOrAddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/09961457">GetOrAddStatic<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/D449AEBC">GetOrAddStaticAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/C6D6DCC0">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/8F5D7244">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/53612A63">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/35A04A3B">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/EC3D3020">LongCount<wbr>()<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/7BE878BA">LongCount<wbr>(string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/68E21466">LongCountAsync<wbr>(CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/993DCADA">LongCountAsync<wbr>(string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/9F4D51B5">Peek<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/1C9D7BEF">PeekAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/B24A2BE4">PeekAsyncInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/C6FED427">PeekInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/73579922">PeekItem<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/86DD3C3F">PeekItemAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/7FD2C885">Peek<wbr>Item<wbr>Async<wbr>Internal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/739A84C5">PeekItemInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/4D4CADB7">PeekItems<wbr>&lt;TVal&gt;<wbr><wbr>()<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/A527A7F9">PeekItems<wbr>&lt;TVal&gt;<wbr><wbr>(string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/E6B02133">PeekItemsAsync<wbr>&lt;TVal&gt;<wbr><wbr>(CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/B335977E">PeekItemsAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/0C426251">Peek<wbr>Items<wbr>Async<wbr>Internal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/BFBF71E2">PeekItemsInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/6FFF46D2">Remove<wbr>(string, <wbr>string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/FA9452B7">RemoveAsync<wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/0B192BD1">RemoveAsyncInternal<wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/7745358C">RemoveInternal<wbr>(string, <wbr>string)<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache/800D1F2A">ToString<wbr>()<wbr></a></li>
+
+
+                    </ul>
+                </section>                
+            </aside>
+            
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+                
+
+
+
+<section class="content-header">
+			<h3><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache">MemoryCache</a>.</h3>
+	<h1>Compressor <small>Property</small></h1>
+</section>
+<section class="content">
+	
+	
+		<h1 id="Summary">Summary</h1>
+	<div class="lead">
+      Gets the compressor used by the cache.
+    </div>
+
+		<div class="panel panel-default">
+  			<div class="panel-body">
+				<dl class="dl-horizontal">	
+						
+						<dt>Namespace</dt>
+						<dd><a href="/KVLite/api/PommaLabs.KVLite.Memory">PommaLabs<wbr>.KVLite<wbr>.Memory</a></dd>
+					
+						<dt>Containing Type</dt>
+						<dd><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache">MemoryCache</a></dd>		
+					
+				</dl>
+  			</div>
+		</div>
+
+	<h1 id="Syntax">Syntax</h1>
+	<pre><code>public override ICompressor Compressor { get; }</code></pre>
+
+
+
+
+
+	<h1 id="Value">Value</h1>
+	<div class="box">
+		<div class="box-body no-padding table-responsive">
+			<table class="table table-striped table-hover two-cols">
+				<thead>
+					<tr>
+						<th>Type</th>
+						<th>Description</th>
+					</tr>
+				</thead>
+				<tbody><tr>
+					<td><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/ICompressor">ICompressor</a></td>
+					<td>The compressor used by the cache.</td>
+				</tr>
+			</tbody></table>
+		</div>
+	</div>	
+
+
+	
+</section>
+                
+            </div>           
+            
+            <!-- Footer -->
+            <footer class="main-footer">
+            </footer>
+            
+        </div>
+        <div class="wrapper bottom-wrapper">
+            <footer class="bottom-footer">
+                Generated by <a href="https://wyam.io">Wyam</a>
+            </footer>
+        </div>
+        <a href="javascript:" id="return-to-top"><i class="fa fa-chevron-up"></i></a>
+        
+        <script>           
+            // Close the sidebar if we select an anchor link
+            $(".main-sidebar a[href^='#']:not('.expand')").click(function(){
+                $(document.body).removeClass('sidebar-open');
+            });
+            
+            $(document).load(function() {
+                mermaid.initialize(
+                {
+                    flowchart:
+                    {
+                        htmlLabels: false,
+                        useMaxWidth:false
+                    }
+                });  
+                mermaid.init(undefined, ".mermaid")
+                $('svg').addClass('img-responsive');
+                
+                $('pre code').each(function(i, block) {
+                    hljs.highlightBlock(block);
+                });  
+            });
+            hljs.initHighlightingOnLoad();
+
+            // Back to top
+            $(window).scroll(function() {
+                if ($(this).scrollTop() >= 200) {        // If page is scrolled more than 50px
+                    $('#return-to-top').fadeIn(1000);    // Fade in the arrow
+                } else {
+                    $('#return-to-top').fadeOut(1000);   // Else fade out the arrow
+                }
+            });
+            $('#return-to-top').click(function() {      // When arrow is clicked
+                $('body,html').animate({
+                    scrollTop : 0                       // Scroll to top of body
+                }, 500);
+            });
+        </script>
+    
+</body></html>

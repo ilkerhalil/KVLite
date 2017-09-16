@@ -1,0 +1,824 @@
+﻿<!DOCTYPE html><html><head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <meta name="description">
+        <meta name="keywords" content="static content generator,static site generator,static site,HTML,web development,.NET,C#,Razor,Markdown,YAML">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="/KVLite/assets/img/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/KVLite/assets/img/favicon.ico" type="image/x-icon">
+        <title>PommaLabs.KVLite - API - IAsyncCache Interface</title>
+        <link href="/KVLite/assets/css/mermaid.css" rel="stylesheet">
+        <link href="/KVLite/assets/css/highlight.css" rel="stylesheet">
+        <link href="/KVLite/assets/css/bootstrap/bootstrap.css" rel="stylesheet">
+        <link href="/KVLite/assets/css/adminlte/AdminLTE.css" rel="stylesheet">
+        <link href="/KVLite/assets/css/theme/theme.css" rel="stylesheet">
+        <link href="//fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,400i,700,700i" rel="stylesheet">
+        <link href="/KVLite/assets/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="/KVLite/assets/css/override.css" rel="stylesheet">
+        <script src="/KVLite/assets/js/jquery-2.2.3.min.js"></script>
+        <script src="/KVLite/assets/js/bootstrap.min.js"></script>        
+        <script src="/KVLite/assets/js/app.min.js"></script>         
+        <script src="/KVLite/assets/js/highlight.pack.js"></script>   
+        <script src="/KVLite/assets/js/jquery.slimscroll.min.js"></script>
+        <script src="/KVLite/assets/js/jquery.sticky-kit.min.js"></script>
+        <script src="/KVLite/assets/js/mermaid.min.js"></script>
+        <!--[if lt IE 9]>
+        <script src="/KVLite/assets/js/html5shiv.min.js"></script>
+        <script src="/KVLite/assets/js/respond.min.js"></script>
+        <![endif]-->  
+
+        
+    </head>
+    <body class="hold-transition wyam layout-boxed  ">    
+        <div class="top-banner"></div>
+        <div class="wrapper with-container">
+            <!-- Header -->
+            <header class="main-header">   
+                     
+                <a href="/KVLite/" class="logo">
+                            <span>PommaLabs.KVLite</span>
+                </a>   
+                         
+                <nav class="navbar navbar-static-top" role="navigation">
+                    <!-- Sidebar toggle button-->
+                        <a href="#" class="sidebar-toggle visible-xs-block" data-toggle="offcanvas" role="button">
+                            <span class="sr-only">Toggle side menu</span>
+                            <i class="fa fa-chevron-circle-right"></i>
+                        </a>
+                                        
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                            <span class="sr-only">Toggle side menu</span>
+                            <i class="fa fa-chevron-circle-down"></i>
+                        </button>
+                    </div>
+            
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                        <ul class="nav navbar-nav">                            
+                                    <li><a href="/KVLite/about">About This Project</a></li>
+        <li><a href="/KVLite/docs">Docs</a></li>
+        <li><a href="/KVLite/blog">Blog</a></li>
+        <li class="active"><a href="/KVLite/api">API</a></li>
+ 
+                        </ul>       
+                    </div>
+                    <!-- /.navbar-collapse -->
+                
+                    <!-- Navbar Right Menu -->
+                </nav>
+            </header>
+            
+            <!-- Left side column. contains the logo and sidebar -->
+            <aside class="main-sidebar ">
+                <section class="infobar" data-spy="affix" data-offset-top="60" data-offset-bottom="200"> 
+                    	
+	<div id="infobar-headings"><h6>On This Page</h6><p><a href="#Summary">Summary</a></p>
+<p><a href="#Syntax">Syntax</a></p>
+<p><a href="#Properties">Properties</a></p>
+<p><a href="#Methods">Methods</a></p>
+<p><a href="#ExtensionMethods">Extension Methods</a></p>
+<hr class="infobar-hidden">
+</div>
+
+                </section>
+                <section class="sidebar">                    
+                    	
+	    <script src="/KVLite/assets/js/lunr.min.js"></script>
+    <script src="/KVLite/assets/js/searchIndex.js"></script>
+    <div class="sidebar-form">
+        <div class="input-group">
+            <input type="text" name="search" id="search" class="form-control" placeholder="Search Types...">
+            <span class="input-group-btn">
+                <button class="btn btn-flat"><i class="fa fa-search"></i></button>
+            </span>
+        </div>
+    </div>
+    <div id="search-results">
+    </div>
+    <script>
+        function runSearch(query){
+            $("#search-results").empty();			
+            if( query.length < 2 ){
+                return;
+            }			
+            var results = searchModule.search("*" + query + "*");
+            var listHtml = "<ul class='sidebar-menu'>";	
+            listHtml += "<li class='header'>Type Results</li>";	
+            if(results.length == 0 ){
+                listHtml += "<li>No results found</li>";
+            } else {					
+                for(var i = 0; i < results.length; ++i){
+                    var res = results[i];
+                    listHtml += "<li><a href='" + res.url + "'>" + htmlEscape(res.title) + "</a></li>";
+                }				
+            }
+            listHtml += "</ul>";				
+            $("#search-results").append(listHtml);
+        }
+
+        $(document).ready(function(){
+            $("#search").on('input propertychange paste', function() {
+                runSearch($("#search").val());
+            });
+        });
+
+        function htmlEscape(html) {
+            return document.createElement('div')
+                .appendChild(document.createTextNode(html))
+                .parentNode
+                .innerHTML;
+        }
+    </script>
+	
+    <hr>
+
+                    <ul class="sidebar-menu">
+                        
+			<li class="header">Namespace</li>
+		<li><a href="/KVLite/api/PommaLabs.KVLite">PommaLabs<wbr>.KVLite</a></li>
+		<li role="separator" class="divider"></li>
+			<li class="header">Interface Types</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache_1">IAsyncCache<wbr>&lt;TSettings&gt;<wbr></a></li>
+				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache">IAsyncCache</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCacheSettings">IAsyncCacheSettings</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/ICache_1">ICache<wbr>&lt;TSettings&gt;<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/ICache">ICache</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/ICacheItem_1">ICacheItem<wbr>&lt;TVal&gt;<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/ICacheSettings">ICacheSettings</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCache">IEssentialCache</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings">I<wbr>Essential<wbr>Cache<wbr>Settings</a></li>
+			<li class="header">Class Types</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1">Abstract<wbr>Cache<wbr>Settings<wbr>&lt;TSettings&gt;<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheItem_1">CacheItem<wbr>&lt;TVal&gt;<wbr></a></li>
+			<li class="header">Enum Types</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheReadMode">CacheReadMode</a></li>
+			<li class="header">Struct Types</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheResult_1">CacheResult<wbr>&lt;T&gt;<wbr></a></li>
+
+
+                    </ul>
+                </section>                
+            </aside>
+            
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+                
+
+
+
+<section class="content-header">
+	<h1>IAsyncCache <small>Interface</small></h1>
+</section>
+<section class="content">
+	
+	
+		<h1 id="Summary">Summary</h1>
+	<div class="lead">
+       This interface represents a partition based key-value store. Each (partition, key, value)
+       triple has attached either an expiry time or a refresh interval, because values should not
+       be stored forever inside a cache.
+    
+       In fact, a cache is, almost by definition, a transient store, used to temporaly store the
+       results of time consuming operations. This kind of cache should, therefore, store any kind
+       of object for a predetermined amount of time, trying to be extremely efficient while
+       handling entries. The cache does its best in order to be a reliable store, but it should
+       not be treated like a database: long story short, your code needs to be aware that values
+       in this cache may disappear as time passes.
+    
+       In any case, to increase the ease of use, it is not mandatory neither to specify a
+       partition, nor to specify an expiration time. In both cases, a default value is used, which
+       can be customized by editing the KVLite configuration file. See, for example, the abstract
+       configuration of all caches (see <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code>).
+     </div>
+
+		<div class="panel panel-default">
+  			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-6">
+						<dl class="dl-horizontal">		
+
+								<dt>Namespace</dt>
+								<dd><a href="/KVLite/api/PommaLabs.KVLite">PommaLabs<wbr>.KVLite</a></dd>
+											
+								<dt>Interfaces</dt>
+								<dd>
+									<ul class="list-unstyled">
+											<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCache">IEssentialCache</a></li>								
+											<li>IDisposable</li>								
+									</ul>
+								</dd>
+							
+							
+							
+								<dt>Implementing Types</dt>
+								<dd>
+									<ul class="list-unstyled">
+											<li><a href="/KVLite/api/PommaLabs.KVLite.NoOp/NoOpCache">NoOpCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache_1">IAsyncCache<wbr>&lt;TSettings&gt;<wbr></a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache">VolatileCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCache">PersistentCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache">PostgreSqlCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache">MemoryCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.Oracle/OracleCache">OracleCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache">SqlServerCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.Database/DbCache_4">DbCache<wbr>&lt;TCache, <wbr>TSettings, <wbr>TConnectionFactory, <wbr>TConnection&gt;<wbr></a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache">MySqlCache</a></li>								
+									</ul>
+								</dd>				
+						</dl>
+					</div>		
+					<div class="col-md-6">
+						<div class="mermaid">
+							graph TD
+	Interface0["IEssentialCache"]-.-&gt;Type
+	click Interface0 "/KVLite/api/PommaLabs.KVLite/IEssentialCache"
+	Interface1["IDisposable"]-.-&gt;Type
+	Type["IAsyncCache"]
+class Type type-node
+	Type-.-&gt;Implementing0["NoOpCache"]
+	click Implementing0 "/KVLite/api/PommaLabs.KVLite.NoOp/NoOpCache"
+	Type-.-&gt;Implementing1["IAsyncCache&lt;TSettings&gt;"]
+	click Implementing1 "/KVLite/api/PommaLabs.KVLite/IAsyncCache_1"
+	Type-.-&gt;Implementing2["VolatileCache"]
+	click Implementing2 "/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache"
+	Type-.-&gt;Implementing3["PersistentCache"]
+	click Implementing3 "/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCache"
+	Type-.-&gt;Implementing4["PostgreSqlCache"]
+	click Implementing4 "/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache"
+	Type-.-&gt;Implementing5["MemoryCache"]
+	click Implementing5 "/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache"
+	Type-.-&gt;Implementing6["AbstractCache&lt;TCache, TSettings&gt;"]
+	click Implementing6 "/KVLite/api/PommaLabs.KVLite/AbstractCache_2"
+	Type-.-&gt;Implementing7["OracleCache"]
+	click Implementing7 "/KVLite/api/PommaLabs.KVLite.Oracle/OracleCache"
+	Type-.-&gt;Implementing8["SqlServerCache"]
+	click Implementing8 "/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache"
+	Type-.-&gt;Implementing9["DbCache&lt;TCache, TSettings, TConnectionFactory, TConnection&gt;"]
+	click Implementing9 "/KVLite/api/PommaLabs.KVLite.Database/DbCache_4"
+	Type-.-&gt;Implementing10["MySqlCache"]
+	click Implementing10 "/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache"
+
+						</div>
+					</div>
+				</div>
+  			</div>
+		</div>
+
+	<h1 id="Syntax">Syntax</h1>
+	<pre><code>public interface IAsyncCache : IEssentialCache, IDisposable</code></pre>
+
+
+
+
+
+
+
+
+
+			<h1 id="Properties">Properties</h1>
+			<div class="box">
+				<div class="box-body no-padding table-responsive">
+					<table class="table table-striped table-hover three-cols">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Value</th>
+								<th>Summary</th>
+							</tr>
+						</thead>
+							<tbody><tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/B1AE0A42">Settings</a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCacheSettings">IAsyncCacheSettings</a></td>
+								<td>
+									<div>
+      The settings available for the async cache.
+    </div>
+								</td>
+							</tr>
+					</tbody></table>
+				</div>
+			</div>
+		
+
+			<h1 id="Methods">Methods</h1>
+			<div class="box">
+				<div class="box-body no-padding table-responsive">
+					<table class="table table-striped table-hover three-cols">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Value</th>
+								<th>Summary</th>
+							</tr>
+						</thead>
+							<tbody><tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/E6C81744">AddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task</td>
+								<td>
+									<div>
+      Adds a "sliding" value with given partition and key. Value will last as much as
+      specified in given interval and, if accessed before expiry, its lifetime will be
+      extended by the interval itself.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/0A0FE0B4">AddStaticAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task</td>
+								<td>
+									<div>
+      Adds a "static" value with given partition and key. Value will last as much as
+      specified in <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if accessed
+      before expiry, its lifetime will be extended by that interval.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/ADA6DA68">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task</td>
+								<td>
+									<div>
+      Adds a "timed" value with given partition and key. Value will last for the specified
+      lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/A1C9BF40">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task</td>
+								<td>
+									<div>
+      Adds a "timed" value with given partition and key. Value will last until the specified
+      time and, if accessed before expiry, its lifetime will _not_ be extended.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/8BD9524F">ClearAsync<wbr>(CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Clears this instance, that is, it removes all stored items.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/47893A6B">ClearAsync<wbr>(string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Clears given partition, that is, it removes all its items.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/6C26BD1B">ContainsAsync<wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Determines whether this cache contains the specified partition and key.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/A046F894">CountAsync<wbr>(CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      The number of items stored in the cache.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/0CAFC464">CountAsync<wbr>(string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      The number of items stored in given partition.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/471333CF">GetAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Gets the value with specified partition and key. If it is a "sliding" or "static"
+      value, its lifetime will be increased by the corresponding interval.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/F3E17D98">Get<wbr>Cache<wbr>Size<wbr>In<wbr>Bytes<wbr>Async<wbr>(CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Computes cache size in bytes. This value might be an estimate of real cache size and,
+      therefore, it does not need to be extremely accurate.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/6A8655CB">GetItemAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Gets the cache item with specified partition and key. If it is a "sliding" or "static"
+      value, its lifetime will be increased by corresponding interval.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/81199BBC">GetItemsAsync<wbr>&lt;TVal&gt;<wbr><wbr>(CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Gets all cache items. If an item is a "sliding" or "static" value, its lifetime will be
+      increased by corresponding interval.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/8C04C679">GetItemsAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Gets all cache items in given partition. If an item is a "sliding" or "static" value,
+      its lifetime will be increased by corresponding interval.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/4DFA2C09">GetOrAddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+       At first, it tries to get the cache item with specified partition and key. If it is a
+       "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+    
+       If the value is not found, then it adds a "sliding" value with given partition and key.
+       Value will last as much as specified in given interval and, if accessed before expiry,
+       its lifetime will be extended by the interval itself.
+     </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/C56340C9">GetOrAddStaticAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+       At first, it tries to get the cache item with specified partition and key. If it is a
+       "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+    
+       If the value is not found, then it adds a "static" value with given partition and key.
+       Value will last as much as specified in
+       <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if accessed before expiry,
+       its lifetime will be extended by that interval.
+     </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/1FE2EAFD">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+       At first, it tries to get the cache item with specified partition and key. If it is a
+       "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+    
+       If the value is not found, then it adds a "timed" value with given partition and key.
+       Value will last for the specified lifetime and, if accessed before expiry, its lifetime
+       will _not_ be extended.
+     </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/69F9B1CF">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+       At first, it tries to get the cache item with specified partition and key. If it is a
+       "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+    
+       If the value is not found, then it adds a "timed" value with given partition and key.
+       Value will last until the specified time and, if accessed before expiry, its lifetime
+       will _not_ be extended.
+     </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/F30DACDB">LongCountAsync<wbr>(CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      The number of items stored in the cache.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/18E3271F">LongCountAsync<wbr>(string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      The number of items stored in given partition.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/E8BD7C79">PeekAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Gets the value corresponding to given partition and key, without updating expiry date.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/20BA5858">PeekItemAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Gets the item corresponding to given partition and key, without updating expiry date.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/D7333BDE">PeekItemsAsync<wbr>&lt;TVal&gt;<wbr><wbr>(CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Gets the all values, without updating expiry dates.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/9532605F">PeekItemsAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Gets the all items in given partition, without updating expiry dates.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache/B0EEDAB9">RemoveAsync<wbr>(string, <wbr>string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task</td>
+								<td>
+									<div>
+      Removes the item with given partition and key.
+    </div>
+								</td>
+							</tr>
+					</tbody></table>
+				</div>
+			</div>
+		
+
+
+			<h1 id="ExtensionMethods">Extension Methods</h1>
+			<div class="box">
+				<div class="box-body no-padding table-responsive">
+					<table class="table table-striped table-hover three-cols">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Value</th>
+								<th>Summary</th>
+							</tr>
+						</thead>
+							<tbody><tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/2CF50317">AddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task</td>
+								<td>
+									<div>
+      Adds a "sliding" value with given key and default partition. Value will last as much as
+      specified in given interval and, if accessed before expiry, its lifetime will be
+      extended by the interval itself.
+    </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/1654BECE">AddStaticAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task</td>
+								<td>
+									<div>
+      Adds a "static" value with given key and default partition. Value will last as much as
+      specified in <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if
+      accessed before expiry, its lifetime will be extended by that interval.
+    </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/3EB8720F">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task</td>
+								<td>
+									<div>
+      Adds a "timed" value with given key and default partition. Value will last for the
+      specified lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
+    </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/3A96EB35">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task</td>
+								<td>
+									<div>
+      Adds a "timed" value with given key and default partition. Value will last until the
+      specified time and, if accessed before expiry, its lifetime will _not_ be extended.
+    </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/7810349F">ContainsAsync<wbr>(string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Determines whether this cache contains the specified key in the default partition.
+    </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/A6108FE4">GetAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Gets the value with default partition and specified key. If it is a "sliding" or
+      "static" value, its lifetime will be increased by corresponding interval.
+    </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/ED240C4A">GetItemAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Gets the cache item with default partition and specified key. If it is a "sliding" or
+      "static" value, its lifetime will be increased by corresponding interval.
+    </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/CF498E4D">GetOrAddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+       At first, it tries to get the cache item with default partition and specified key. If
+       it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+    
+       If the value is not found, then it adds a "sliding" value with given key and default
+       partition. Value will last as much as specified in given interval and, if accessed
+       before expiry, its lifetime will be extended by the interval itself.
+     </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/D6228CB8">GetOrAddStaticAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+       At first, it tries to get the cache item with default partition and specified key. If
+       it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+    
+       If the value is not found, then it adds a "static" value with given key and default
+       partition. Value will last as much as specified in
+       <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if accessed before
+       expiry, its lifetime will be extended by that interval.
+     </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/17E7DA29">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+       At first, it tries to get the cache item with default partition and specified key. If
+       it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+    
+       If the value is not found, then it adds a "timed" value with given key and default
+       partition. Value will last for the specified lifetime and, if accessed before expiry,
+       its lifetime will _not_ be extended.
+     </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/0A138444">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+       At first, it tries to get the cache item with default partition and specified key. If
+       it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+    
+       If the value is not found, then it adds a "timed" value with given key and default
+       partition. Value will last until the specified time and, if accessed before expiry, its
+       lifetime will _not_ be extended.
+     </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/A74D737C">PeekAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Gets the value corresponding to default partition and given key, without updating
+      expiry date.
+    </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/AC4B09D0">PeekItemAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+      Gets the item corresponding to default partition and given key, without updating expiry date.
+    </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/E2C8C80B">RemoveAsync<wbr>(string, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task</td>
+								<td>
+									<div>
+      Removes the item with specified key from default partition.
+    </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+					</tbody></table>
+				</div>
+			</div>
+		
+
+	
+</section>
+                
+            </div>           
+            
+            <!-- Footer -->
+            <footer class="main-footer">
+            </footer>
+            
+        </div>
+        <div class="wrapper bottom-wrapper">
+            <footer class="bottom-footer">
+                Generated by <a href="https://wyam.io">Wyam</a>
+            </footer>
+        </div>
+        <a href="javascript:" id="return-to-top"><i class="fa fa-chevron-up"></i></a>
+        
+        <script>           
+            // Close the sidebar if we select an anchor link
+            $(".main-sidebar a[href^='#']:not('.expand')").click(function(){
+                $(document.body).removeClass('sidebar-open');
+            });
+            
+            $(document).load(function() {
+                mermaid.initialize(
+                {
+                    flowchart:
+                    {
+                        htmlLabels: false,
+                        useMaxWidth:false
+                    }
+                });  
+                mermaid.init(undefined, ".mermaid")
+                $('svg').addClass('img-responsive');
+                
+                $('pre code').each(function(i, block) {
+                    hljs.highlightBlock(block);
+                });  
+            });
+            hljs.initHighlightingOnLoad();
+
+            // Back to top
+            $(window).scroll(function() {
+                if ($(this).scrollTop() >= 200) {        // If page is scrolled more than 50px
+                    $('#return-to-top').fadeIn(1000);    // Fade in the arrow
+                } else {
+                    $('#return-to-top').fadeOut(1000);   // Else fade out the arrow
+                }
+            });
+            $('#return-to-top').click(function() {      // When arrow is clicked
+                $('body,html').animate({
+                    scrollTop : 0                       // Scroll to top of body
+                }, 500);
+            });
+        </script>
+    
+</body></html>
