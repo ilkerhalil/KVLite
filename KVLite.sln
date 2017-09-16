@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.3
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-52E1-43BC-971F-94784A43B73E}"
 	ProjectSection(SolutionItems) = preProject
@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-5
 		appveyor.yml = appveyor.yml
 		build.cake = build.cake
 		CHANGELOG.md = CHANGELOG.md
+		config.wyam = config.wyam
 		Directory.Build.props = Directory.Build.props
 		LICENSE.md = LICENSE.md
 		NuGet.Config = NuGet.Config
