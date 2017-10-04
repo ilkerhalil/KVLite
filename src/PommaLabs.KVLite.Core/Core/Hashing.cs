@@ -188,11 +188,11 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
-            private static uint PRIME32_1 = 2654435761U;
-            private static uint PRIME32_2 = 2246822519U;
-            private static uint PRIME32_3 = 3266489917U;
-            private static uint PRIME32_4 = 668265263U;
-            private static uint PRIME32_5 = 374761393U;
+            private const uint PRIME32_1 = 2654435761U;
+            private const uint PRIME32_2 = 2246822519U;
+            private const uint PRIME32_3 = 3266489917U;
+            private const uint PRIME32_4 = 668265263U;
+            private const uint PRIME32_5 = 374761393U;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static uint RotateLeft32(uint value, int count)
@@ -355,11 +355,11 @@ namespace PommaLabs.KVLite.Core
                 }
             }
 
-            private static ulong PRIME64_1 = 11400714785074694791UL;
-            private static ulong PRIME64_2 = 14029467366897019727UL;
-            private static ulong PRIME64_3 = 1609587929392839161UL;
-            private static ulong PRIME64_4 = 9650029242287828579UL;
-            private static ulong PRIME64_5 = 2870177450012600261UL;
+            private const ulong PRIME64_1 = 11400714785074694791UL;
+            private const ulong PRIME64_2 = 14029467366897019727UL;
+            private const ulong PRIME64_3 = 1609587929392839161UL;
+            private const ulong PRIME64_4 = 9650029242287828579UL;
+            private const ulong PRIME64_5 = 2870177450012600261UL;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static ulong RotateLeft64(ulong value, int count)

@@ -535,7 +535,7 @@ namespace PommaLabs.KVLite.Database
                 // Run soft cleanup, so that cache is almost always clean. We do not call the
                 // internal version since we need the following method not to throw anything in case
                 // of error. A missed cleanup should not break the insertion.
-                await FireAndForget.RunAsync(async () => await ClearAsync(CacheReadMode.ConsiderExpiryDate).ConfigureAwait(false));
+                await FireAndForget.RunAsync(async () => await ClearAsync(CacheReadMode.ConsiderExpiryDate).ConfigureAwait(false)).ConfigureAwait(false);
             }
         }
 

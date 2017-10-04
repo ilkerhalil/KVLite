@@ -70,7 +70,9 @@ namespace PommaLabs.KVLite.Logging
     using System.Diagnostics;
 
 #if !LIBLOG_PORTABLE
+
     using System.Runtime.CompilerServices;
+
 #endif
 #endif
 
@@ -87,6 +89,7 @@ namespace PommaLabs.KVLite.Logging
     ///   Simple interface that represent a logger.
     /// </summary>
 #if LIBLOG_PUBLIC
+
     public
 #else
 
@@ -137,6 +140,7 @@ namespace PommaLabs.KVLite.Logging
 
 #if !LIBLOG_PROVIDERS_ONLY
 #if LIBLOG_PUBLIC
+
     public
 #else
 
@@ -500,6 +504,7 @@ namespace PommaLabs.KVLite.Logging
         /// <typeparam name="T">The type whose name will be used for the logger.</typeparam>
         /// <returns>An instance of <see cref="ILog"/></returns>
 #if LIBLOG_PUBLIC
+
         public
 #else
 
@@ -511,6 +516,7 @@ namespace PommaLabs.KVLite.Logging
         }
 
 #if !LIBLOG_PORTABLE
+
         /// <summary>
         ///   Gets a logger for the current class.
         /// </summary>
@@ -526,6 +532,7 @@ namespace PommaLabs.KVLite.Logging
             var stackFrame = new StackFrame(1, false);
             return GetLogger(stackFrame.GetMethod().DeclaringType);
         }
+
 #endif
 
         /// <summary>
@@ -537,6 +544,7 @@ namespace PommaLabs.KVLite.Logging
         /// </param>
         /// <returns>An instance of <see cref="ILog"/></returns>
 #if LIBLOG_PUBLIC
+
         public
 #else
 
@@ -554,6 +562,7 @@ namespace PommaLabs.KVLite.Logging
         /// <param name="name">The name.</param>
         /// <returns>An instance of <see cref="ILog"/></returns>
 #if LIBLOG_PUBLIC
+
         public
 #else
 
@@ -759,7 +768,9 @@ namespace PommaLabs.KVLite.Logging.LogProviders
     using System.Diagnostics.CodeAnalysis;
 
 #if !LIBLOG_PORTABLE
+
     using System.Diagnostics;
+
 #endif
 
     using System.Globalization;
@@ -768,7 +779,9 @@ namespace PommaLabs.KVLite.Logging.LogProviders
     using System.Reflection;
 
 #if !LIBLOG_PORTABLE
+
     using System.Text;
+
 #endif
 
     using System.Text.RegularExpressions;
@@ -899,7 +912,7 @@ namespace PommaLabs.KVLite.Logging.LogProviders
         {
             private readonly dynamic _logger;
 
-            private static Func<string, object, string, Exception, object> _logEventInfoFact;
+            private static readonly Func<string, object, string, Exception, object> _logEventInfoFact;
 
             private static readonly object _levelTrace;
             private static readonly object _levelDebug;
@@ -1300,7 +1313,7 @@ namespace PommaLabs.KVLite.Logging.LogProviders
             private readonly Func<object, object, bool> _isEnabledForDelegate;
             private readonly Action<object, object> _logDelegate;
             private readonly Func<object, Type, object, string, Exception, object> _createLoggingEvent;
-            private Action<object, string, object> _loggingEventPropertySetter;
+            private readonly Action<object, string, object> _loggingEventPropertySetter;
 
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ILogger")]
             internal Log4NetLogger(dynamic logger)
@@ -2313,10 +2326,12 @@ namespace PommaLabs.KVLite.Logging.LogProviders
 #endif
 
 #if !LIBLOG_PORTABLE
+
         internal static object CreateDelegate(this MethodInfo methodInfo, Type delegateType)
         {
             return Delegate.CreateDelegate(delegateType, methodInfo);
         }
+
 #endif
 
         internal static Assembly GetAssemblyPortable(this Type type)
