@@ -15,12 +15,6 @@
     <RepositoryUrl>https://github.com/pomma89/KVLite</RepositoryUrl>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="doc\**" />
-    <EmbeddedResource Remove="doc\**" />
-    <None Remove="doc\**" />
-  </ItemGroup>
-
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>$(DefineConstants);NETSTD20</DefineConstants>
   </PropertyGroup>
