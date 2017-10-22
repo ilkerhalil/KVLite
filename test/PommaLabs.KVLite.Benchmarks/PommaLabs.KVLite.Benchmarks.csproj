@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461;net471</TargetFrameworks>
     <OutputType>exe</OutputType>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -35,6 +35,10 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
     <Reference Include="System.Configuration" />
   </ItemGroup>
 </Project>
