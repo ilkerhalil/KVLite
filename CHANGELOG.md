@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.4.1 (2017-10-22)
+
+* [UPD] Updated NodaTime to v2.2.1.
+* [ADD] Added support for .NET Framework 4.7.1.
+
 ### v6.4.0 (2017-08-16)
 
 * [ADD] Added support for .NET Standard 2.0 and .NET Framework 4.6.1.
