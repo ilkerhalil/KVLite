@@ -3,7 +3,7 @@
 ### v6.4.1 (2017-10-22)
 
 * [UPD] Updated NodaTime to v2.2.1.
-* [ADD] Added support for .NET Framework 4.7.1.
+* [ADD] Added support for .NET Framework 4.7.1 and 4.5.2.
 
 ### v6.4.0 (2017-08-16)
 
