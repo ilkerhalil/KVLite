@@ -7,11 +7,6 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <!-- Temp fix required to build .NET 4.7.1 and .NET STD 2.0 together -->
-    <_HasReferenceToSystemRuntime>true</_HasReferenceToSystemRuntime>
-  </PropertyGroup>
-
   <PropertyGroup Label="NuGet">
     <Title>KVLite - SQL-based cache</Title>
     <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains core interfaces.</Summary>
