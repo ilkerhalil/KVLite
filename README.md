@@ -2,11 +2,13 @@
 
 *KVLite is a partition-based key-value cache built for SQL.*
 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ELJWKEYS9QGKA)
+
 KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
 
 Following RDBMS systems are currently supported by KVLite or will be supported soon:
 
-* MySQL and MariaDB (.NET only)
+* MySQL and MariaDB (.NET and .NET Core)
 * Oracle (.NET only)
 * PostgreSQL (.NET and .NET Core)
 * SQL Server (.NET and .NET Core)
