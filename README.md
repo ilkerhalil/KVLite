@@ -1,5 +1,4 @@
-![](http://pomma89.altervista.org/kvlite/logo-64.png "KVLite Logo") KVLite
-===============================================================================================================
+# ![](http://pomma89.altervista.org/kvlite/logo-64.png "KVLite Logo") KVLite
 
 *KVLite is a partition-based key-value cache built for SQL.*
 
@@ -18,7 +17,7 @@ Following RDBMS systems are currently supported by KVLite or will be supported s
 * Latest release version: `v6.4.1`
 * Build status on [Travis CI](https://travis-ci.org): [![Build Status](https://travis-ci.org/pomma89/KVLite.svg?branch=master)](https://travis-ci.org/pomma89/KVLite)
 * Build status on [AppVeyor](https://www.appveyor.com/): [![Build status](https://ci.appveyor.com/api/projects/status/n0tbcdkbx3vs8nmk/branch/master?svg=true)](https://ci.appveyor.com/project/pomma89/kvlite/branch/master)
-* [Doxygen](http://www.stack.nl/~dimitri/doxygen/index.html) documentation: TODO
+* [Wyam](https://wyam.io/) generated API documentation: [https://pomma89.github.io/KVLite/api/](https://pomma89.github.io/KVLite/api/)
 * [NuGet](https://www.nuget.org) package(s):
     + [PommaLabs.KVLite](https://www.nuget.org/packages/PommaLabs.KVLite/), includes Core and all native libraries.
     + [PommaLabs.KVLite.Core](https://www.nuget.org/packages/PommaLabs.KVLite.Core/), all managed APIs.
@@ -30,6 +29,23 @@ Following RDBMS systems are currently supported by KVLite or will be supported s
     + [PommaLabs.KVLite.EntityFramework](https://www.nuget.org/packages/PommaLabs.KVLite.EntityFramework/), query cache provider.
     + [PommaLabs.KVLite.WebApi](https://www.nuget.org/packages/PommaLabs.KVLite.WebApi/), output cache provider.
     + [PommaLabs.KVLite.WebForms](https://www.nuget.org/packages/PommaLabs.KVLite.WebForms/), caching components.
+
+### How to build
+
+#### Windows
+
+Clone the project, go to the root and run PowerShell script `build.ps1`. In order for it to work, you need:
+
+* At least Windows 10 Fall Creators Update
+* At least Visual Studio 2017 Update 4
+* .NET Framework 4.7.1 Developer Pack
+* .NET Core 2.0 SDK
+
+#### Linux
+
+Clone the project, go to the root and run Bash script `build.sh`. In order for it to work, you need:
+
+* TODO, still need to make it building reliably.
 
 ## Introduction
 
@@ -236,4 +252,6 @@ Everything done on this repository is freely offered on the terms of the project
 
 I maintain this project during my spare time, so I can offer limited assistance and I can offer **no kind of warranty**.
 
-Development of this project is sponsored by [Finsa SpA](https://www.finsa.it), my current employer.
+However, if this project helps you, then you might offer me an hot cup of coffee:
+
+[![Donate](http://pomma89.altervista.org/buy-me-a-coffee.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ELJWKEYS9QGKA)
