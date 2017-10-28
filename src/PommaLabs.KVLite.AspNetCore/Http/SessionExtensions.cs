@@ -32,8 +32,25 @@ namespace PommaLabs.KVLite.AspNetCore.Http
     /// </summary>
     public static class SessionExtensions
     {
+        /// <summary>
+        ///   Sets the given key and value in the current session. Value is serialized using
+        ///   <see cref="JsonSerializer"/> default instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="session">The session.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         public static void SetObject<T>(this ISession session, string key, T value) => SetObject(session, JsonSerializer.Instance, key, value);
 
+        /// <summary>
+        ///   Sets the given key and value in the current session. Value is serialized using given
+        ///   custom serializer.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="session">The session.</param>
+        /// <param name="serializer">The custom serializer.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         public static void SetObject<T>(this ISession session, ISerializer serializer, string key, T value)
         {
             using (var serializedStream = new PooledMemoryStream())
@@ -43,8 +60,25 @@ namespace PommaLabs.KVLite.AspNetCore.Http
             }
         }
 
+        /// <summary>
+        ///   Retrieves the value of the given key, if present. Value is deserialized using
+        ///   <see cref="JsonSerializer"/> default instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="session">The session.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>An optional cache result which contains result value, if any.</returns>
         public static CacheResult<T> GetObject<T>(this ISession session, string key) => GetObject<T>(session, JsonSerializer.Instance, key);
 
+        /// <summary>
+        ///   Retrieves the value of the given key, if present. Value is deserialized using given
+        ///   custom serializer.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="session">The session.</param>
+        /// <param name="serializer">The custom serializer.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>An optional cache result which contains result value, if any.</returns>
         public static CacheResult<T> GetObject<T>(this ISession session, ISerializer serializer, string key)
         {
             if (session.TryGetValue(key, out var serializedBytes))
