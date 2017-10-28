@@ -135,8 +135,17 @@ namespace PommaLabs.KVLite.Extensibility
         ///   Workaround to make binary formatter handle null objects.
         /// </summary>
         [Serializable]
-        private struct NullObject
+        private struct NullObject : IEquatable<NullObject>
         {
+            public static bool operator !=(NullObject x, NullObject y) => !x.Equals(y);
+
+            public static bool operator ==(NullObject x, NullObject y) => x.Equals(y);
+
+            public bool Equals(NullObject other) => true;
+
+            public override bool Equals(object obj) => obj is NullObject && Equals((NullObject) obj);
+
+            public override int GetHashCode() => 0;
         }
     }
 

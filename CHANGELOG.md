@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite #
 
+### v6.4.2 (2017-10-28)
+
+* [UPD] Updated NodaTime to v2.2.2.
+* [UPD] Updated EF to v6.2.0.
+
 ### v6.4.1 (2017-10-22)
 
 * [UPD] Updated NodaTime to v2.2.1.

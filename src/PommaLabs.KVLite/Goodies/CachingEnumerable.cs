@@ -143,7 +143,7 @@ namespace PommaLabs.KVLite.Goodies
 
         private static string ToCacheKey(int pageNumber) => pageNumber.ToString();
 
-        private struct ImportResult
+        private sealed class ImportResult
         {
             public string CachePartition { get; set; }
 

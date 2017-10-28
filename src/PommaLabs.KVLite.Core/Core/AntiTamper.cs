@@ -92,10 +92,9 @@ namespace PommaLabs.KVLite.Core
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        private struct LongToBytesConverter
+        private struct LongToBytesConverter : IEquatable<LongToBytesConverter>
         {
-            [FieldOffset(0)]
-            public long Long;
+#pragma warning disable HBStructReadOnlyFields // Struct fields should be readonly
 
             [FieldOffset(0)]
             public byte Byte1;
@@ -120,6 +119,21 @@ namespace PommaLabs.KVLite.Core
 
             [FieldOffset(7)]
             public byte Byte8;
+
+            [FieldOffset(0)]
+            public long Long;
+
+#pragma warning restore HBStructReadOnlyFields // Struct fields should be readonly
+
+            public static bool operator !=(LongToBytesConverter x, LongToBytesConverter y) => !x.Equals(y);
+
+            public static bool operator ==(LongToBytesConverter x, LongToBytesConverter y) => x.Equals(y);
+
+            public bool Equals(LongToBytesConverter other) => true;
+
+            public override bool Equals(object obj) => obj is LongToBytesConverter && Equals((LongToBytesConverter) obj);
+
+            public override int GetHashCode() => 0;
         }
 
         /// <summary>
