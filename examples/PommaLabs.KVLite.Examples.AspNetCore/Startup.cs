@@ -37,6 +37,9 @@ namespace PommaLabs.KVLite.Examples.AspNetCore
                 s.CacheFile = "AspNetCoreCache.sqlite";
                 s.DefaultDistributedCacheAbsoluteExpiration = Duration.FromSeconds(30);
             });
+
+            // Add Session service, which will rely on KVLite distributed cache.
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +59,9 @@ namespace PommaLabs.KVLite.Examples.AspNetCore
             }
 
             app.UseStaticFiles();
+
+            // IMPORTANT: This session call MUST go before UseMvc().
+            app.UseSession();
 
             app.UseMvc(routes =>
             {

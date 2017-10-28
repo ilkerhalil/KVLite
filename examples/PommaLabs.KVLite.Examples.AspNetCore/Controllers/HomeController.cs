@@ -1,21 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using NodaTime;
+using PommaLabs.KVLite.AspNetCore.Http;
+using System;
 
 namespace PommaLabs.KVLite.Examples.AspNetCore.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IClock _clock;
+
+        public HomeController(IClock clock)
+        {
+            _clock = clock ?? throw new ArgumentNullException(nameof(clock));
+        }
+
         public IActionResult Index()
         {
+            HttpContext.Session.SetObject("lastVisit", _clock.GetCurrentInstant());
+
             return View();
         }
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
+            var lastVisit = HttpContext.Session.GetObject<Instant>("lastVisit").ValueOrDefault();
+            ViewData["Message"] = $"Your application description page. Last visit at {lastVisit}.";
 
             return View();
         }

@@ -16,6 +16,11 @@
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.WebForms\PommaLabs.KVLite.WebForms.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net452' ">
+    <!-- Adapters -->
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.AspNetCore\PommaLabs.KVLite.AspNetCore.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Effort.EF6" Version="1.3.0" />
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.1" />

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.15
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-52E1-43BC-971F-94784A43B73E}"
 	ProjectSection(SolutionItems) = preProject
@@ -86,6 +86,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{D45E8263
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.Examples.AspNetCore", "examples\PommaLabs.KVLite.Examples.AspNetCore\PommaLabs.KVLite.Examples.AspNetCore.csproj", "{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.AspNetCore", "src\PommaLabs.KVLite.AspNetCore\PommaLabs.KVLite.AspNetCore.csproj", "{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -235,6 +237,14 @@ Global
 		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}.Release|x86.ActiveCfg = Release|Any CPU
 		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}.Release|x86.Build.0 = Release|Any CPU
+		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}.Debug|x86.Build.0 = Debug|Any CPU
+		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}.Release|x86.ActiveCfg = Release|Any CPU
+		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -261,6 +271,7 @@ Global
 		{F62A10BB-58E1-4514-9BE0-5B28C2EACB34} = {DA9B418B-185E-4B62-A6EE-DAFC4E5DAB51}
 		{D45E8263-41D2-4BDC-B732-58B655E84AE9} = {CB218631-52E1-43BC-971F-94784A43B73E}
 		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3} = {09C060EE-A6D3-45ED-B82D-E81B59EABBCB}
+		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA} = {C5E21A7F-2C68-402F-A488-13BA125416A3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C211ABFD-845B-457D-BC45-FC39EB4E5192}
