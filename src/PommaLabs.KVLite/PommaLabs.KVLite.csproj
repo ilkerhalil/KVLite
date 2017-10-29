@@ -14,9 +14,9 @@
 
   <PropertyGroup Label="NuGet">
     <Title>KVLite - SQL-based cache</Title>
-    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains core interfaces.</Summary>
+    <Summary>KVLite is a partition-based key-value cache built for SQL RDBMSs. This package contains caching interfaces and base classes.</Summary>
     <Description>$(Summary)</Description>
-    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding</PackageTags>
+    <PackageTags>kvlite;cache;partition;key;value;store;concurrent;timed;sliding</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

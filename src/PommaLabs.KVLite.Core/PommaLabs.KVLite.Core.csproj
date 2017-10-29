@@ -10,9 +10,9 @@
 
   <PropertyGroup Label="NuGet">
     <Title>KVLite - Core implementations</Title>
-    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains core implementations.</Summary>
+    <Summary>KVLite is a partition-based key-value cache built for SQL RDBMSs. This package contains core implementations.</Summary>
     <Description>$(Summary)</Description>
-    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;core</PackageTags>
+    <PackageTags>kvlite;cache;partition;key;value;store;concurrent;timed;core</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

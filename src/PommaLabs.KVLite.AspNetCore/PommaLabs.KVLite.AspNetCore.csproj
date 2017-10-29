@@ -9,9 +9,9 @@
 
   <PropertyGroup Label="NuGet">
     <Title>KVLite - ASP.NET Core extensions</Title>
-    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains ASP.NET Core extensions, helpers and components.</Summary>
+    <Summary>KVLite is a partition-based key-value cache built for SQL RDBMSs. This package contains ASP.NET Core extensions, helpers and components.</Summary>
     <Description>$(Summary) For example, this package contains efficient extensions for storing POCOs inside ASP.NET Core Session.</Description>
-    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;aspnet;core;session</PackageTags>
+    <PackageTags>kvlite;cache;partition;key;value;store;concurrent;timed;sliding;aspnet;core;session</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

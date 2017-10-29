@@ -9,9 +9,9 @@
 
   <PropertyGroup Label="NuGet">
     <Title>KVLite - Oracle driver</Title>
-    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains default Oracle driver.</Summary>
+    <Summary>KVLite is a partition-based key-value cache built for SQL RDBMSs. This package contains default Oracle driver.</Summary>
     <Description>$(Summary)</Description>
-    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;oracle</PackageTags>
+    <PackageTags>kvlite;cache;partition;key;value;store;concurrent;timed;sliding;oracle</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -32,7 +32,9 @@ KVLite implements different caching adapters for various libraries and framework
 * [Wyam](https://wyam.io/) generated API documentation: [https://pomma89.github.io/KVLite/api/](https://pomma89.github.io/KVLite/api/)
 * [NuGet](https://www.nuget.org) package(s):
     + [PommaLabs.KVLite](https://www.nuget.org/packages/PommaLabs.KVLite/), caching interfaces and base classes.
-    + [PommaLabs.KVLite.Core](https://www.nuget.org/packages/PommaLabs.KVLite.Core/), all core serialization and compression logic.
+    + [PommaLabs.KVLite.Core](https://www.nuget.org/packages/PommaLabs.KVLite.Core/), core implementations.
+    + [PommaLabs.KVLite.Memory](https://www.nuget.org/packages/PommaLabs.KVLite.Memory/), default in-memory driver.
+    + [PommaLabs.KVLite.Database](https://www.nuget.org/packages/PommaLabs.KVLite.Database/), SQL code shared by all drivers.
     + [PommaLabs.KVLite.MySql](https://www.nuget.org/packages/PommaLabs.KVLite.MySql/), driver for MySQL and MariaDB.
     + [PommaLabs.KVLite.Oracle](https://www.nuget.org/packages/PommaLabs.KVLite.Oracle/), driver for Oracle.
     + [PommaLabs.KVLite.PostgreSql](https://www.nuget.org/packages/PommaLabs.KVLite.PostgreSql/), driver for PostgreSQL.

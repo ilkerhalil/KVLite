@@ -10,9 +10,9 @@
 
   <PropertyGroup Label="NuGet">
     <Title>KVLite - Web API output cache provider</Title>
-    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains a Web API output cache provider.</Summary>
+    <Summary>KVLite is a partition-based key-value cache built for SQL RDBMSs. This package contains a Web API output cache provider.</Summary>
     <Description>$(Summary)</Description>
-    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;webapi</PackageTags>
+    <PackageTags>kvlite;cache;partition;key;value;store;concurrent;timed;sliding;webapi</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

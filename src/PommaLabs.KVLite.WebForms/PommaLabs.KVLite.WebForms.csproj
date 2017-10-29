@@ -9,9 +9,9 @@
 
   <PropertyGroup Label="NuGet">
     <Title>KVLite - Web Forms caching components</Title>
-    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains many Web Forms caching components.</Summary>
+    <Summary>KVLite is a partition-based key-value cache built for SQL RDBMSs. This package contains many Web Forms caching components.</Summary>
     <Description>$(Summary)</Description>
-    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;webforms</PackageTags>
+    <PackageTags>kvlite;cache;partition;key;value;store;concurrent;timed;sliding;webforms</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

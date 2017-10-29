@@ -9,9 +9,9 @@
 
   <PropertyGroup Label="NuGet">
     <Title>KVLite - SQLite driver</Title>
-    <Summary>KVLite is a partition-based key-value cache built for SQL. This package contains default SQLite driver.</Summary>
+    <Summary>KVLite is a partition-based key-value cache built for SQL RDBMSs. This package contains default SQLite driver.</Summary>
     <Description>$(Summary)</Description>
-    <PackageTags>kvlite;partition;key;value;store;concurrent;timed;sliding;sqlite</PackageTags>
+    <PackageTags>kvlite;cache;partition;key;value;store;concurrent;timed;sliding;sqlite</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
