@@ -1,18 +1,28 @@
 # ![](http://pomma89.altervista.org/kvlite/logo-64.png "KVLite Logo") KVLite
 
-*KVLite is a partition-based key-value cache built for SQL.*
+*KVLite is a partition-based key-value cache built for SQL RDBMSs.*
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ELJWKEYS9QGKA)
 
-KVLite can be stored either in persistent or volatile fashion, and each key/value pair can have its own lifetime and refresh mode.
+KVLite entries can be stored either in persistent or volatile fashion, 
+and each key/value pair can have its own lifetime and refresh mode.
 
-Following RDBMS systems are currently supported by KVLite or will be supported soon:
+Entries are grouped by partition, where each key must be unique only inside the partition it belongs to.
+
+Following RDBMSs are currently supported by KVLite or will be supported soon:
 
 * MySQL and MariaDB (.NET and .NET Core)
-* Oracle (.NET only)
+* Oracle (.NET only, expected driver in Q1/2018)
 * PostgreSQL (.NET and .NET Core)
 * SQL Server (.NET and .NET Core)
 * SQLite (.NET and .NET Core)
+
+KVLite implements different caching adapters for various libraries and frameworks:
+
+* ASP.NET Core distributed cache and session.
+* ASP.NET WebAPI output cache.
+* ASP.NET WebForms output cache and viewstate storage.
+* Entity Framework query cache.
 
 ## Summary
 
@@ -21,13 +31,14 @@ Following RDBMS systems are currently supported by KVLite or will be supported s
 * Build status on [AppVeyor](https://www.appveyor.com/): [![Build status](https://ci.appveyor.com/api/projects/status/n0tbcdkbx3vs8nmk/branch/master?svg=true)](https://ci.appveyor.com/project/pomma89/kvlite/branch/master)
 * [Wyam](https://wyam.io/) generated API documentation: [https://pomma89.github.io/KVLite/api/](https://pomma89.github.io/KVLite/api/)
 * [NuGet](https://www.nuget.org) package(s):
-    + [PommaLabs.KVLite](https://www.nuget.org/packages/PommaLabs.KVLite/), includes Core and all native libraries.
-    + [PommaLabs.KVLite.Core](https://www.nuget.org/packages/PommaLabs.KVLite.Core/), all managed APIs.
+    + [PommaLabs.KVLite](https://www.nuget.org/packages/PommaLabs.KVLite/), caching interfaces and base classes.
+    + [PommaLabs.KVLite.Core](https://www.nuget.org/packages/PommaLabs.KVLite.Core/), all core serialization and compression logic.
     + [PommaLabs.KVLite.MySql](https://www.nuget.org/packages/PommaLabs.KVLite.MySql/), driver for MySQL and MariaDB.
     + [PommaLabs.KVLite.Oracle](https://www.nuget.org/packages/PommaLabs.KVLite.Oracle/), driver for Oracle.
     + [PommaLabs.KVLite.PostgreSql](https://www.nuget.org/packages/PommaLabs.KVLite.PostgreSql/), driver for PostgreSQL.
     + [PommaLabs.KVLite.SqlServer](https://www.nuget.org/packages/PommaLabs.KVLite.SqlServer/), driver for SQL Server.
     + [PommaLabs.KVLite.SQLite](https://www.nuget.org/packages/PommaLabs.KVLite.SQLite/), driver for SQLite.
+    + [PommaLabs.KVLite.AspNetCore](https://www.nuget.org/packages/PommaLabs.KVLite.AspNetCore/), distributed caching and session helpers.
     + [PommaLabs.KVLite.EntityFramework](https://www.nuget.org/packages/PommaLabs.KVLite.EntityFramework/), query cache provider.
     + [PommaLabs.KVLite.WebApi](https://www.nuget.org/packages/PommaLabs.KVLite.WebApi/), output cache provider.
     + [PommaLabs.KVLite.WebForms](https://www.nuget.org/packages/PommaLabs.KVLite.WebForms/), caching components.
@@ -189,7 +200,7 @@ internal static class Program
 
 Further examples can be found in the following projects:
 
-* [ASP.NET Core](https://github.com/pomma89/KVLite/tree/master/examples/PommaLabs.KVLite.Examples.AspNetCore): It shows how to register KVLite services and how to use it as a proper distributed cache implementation.
+* [ASP.NET Core](https://github.com/pomma89/KVLite/tree/master/examples/PommaLabs.KVLite.Examples.AspNetCore): It shows how to register KVLite services and how to use it as a proper distributed cache implementation. Moreover, it shows how to use KVLite session extensions.
 * [ASP.NET WebAPI](https://github.com/pomma89/KVLite/tree/master/examples/PommaLabs.KVLite.Examples.WebApi): You can find how to cache action results using KVLite adapter.
 * [ASP.NET WebForms](https://github.com/pomma89/KVLite/tree/master/examples/PommaLabs.KVLite.Examples.WebForms): It contains a simple page configured to use KVLite as a custom viewstate persister.
 

@@ -20,7 +20,11 @@ CREATE TABLE [kvl_cache_entries] (
     CONSTRAINT [pk_kvle] PRIMARY KEY CLUSTERED ([kvle_id]), 
     CONSTRAINT [uk_kvle] UNIQUE ([kvle_hash])
 ) 
-WITH (MEMORY_OPTIMIZED=ON, DURABILITY=SCHEMA_ONLY) /* Comment this line on SQL Server 2014 or lesser */
+WITH (MEMORY_OPTIMIZED=ON, DURABILITY=SCHEMA_ONLY) 
+/* 
+ * Comment line above on SQL Server 2014 or less, 
+ * leave it from SQL Server 2016 to obtain much greater performance.
+ */
 ;
 
 

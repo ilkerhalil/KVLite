@@ -19,13 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-5
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{EFEDDCD8-239A-4197-B666-9A0D3795F8BC}"
-	ProjectSection(SolutionItems) = preProject
-		docs\Including SQLite.Interop.dll into your C# project.pdf = docs\Including SQLite.Interop.dll into your C# project.pdf
-		docs\SQLite Performance Tuning.pdf = docs\SQLite Performance Tuning.pdf
-		docs\Universal System.Data.SQLite binary for .NET and Mono.pdf = docs\Universal System.Data.SQLite binary for .NET and Mono.pdf
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DA9B418B-185E-4B62-A6EE-DAFC4E5DAB51}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7BB9E3FA-1248-4572-A5AB-2BAB740AD373}"
