@@ -1,4 +1,9 @@
-# Changelog for PommaLabs.KVLite #
+# Changelog for PommaLabs.KVLite
+
+### v6.4.3 (2017-10-29)
+
+* [UPD] Slightly improved documentation.
+* [ADD] New ASP.NET Core session helpers. 
 
 ### v6.4.2 (2017-10-28)
 

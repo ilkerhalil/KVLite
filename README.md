@@ -26,7 +26,7 @@ KVLite implements different caching adapters for various libraries and framework
 
 ## Summary
 
-* Latest release version: `v6.4.2`
+* Latest release version: `v6.4.3`
 * Build status on [Travis CI](https://travis-ci.org): [![Build Status](https://travis-ci.org/pomma89/KVLite.svg?branch=master)](https://travis-ci.org/pomma89/KVLite)
 * Build status on [AppVeyor](https://www.appveyor.com/): [![Build status](https://ci.appveyor.com/api/projects/status/n0tbcdkbx3vs8nmk/branch/master?svg=true)](https://ci.appveyor.com/project/pomma89/kvlite/branch/master)
 * [Wyam](https://wyam.io/) generated API documentation: [https://pomma89.github.io/KVLite/api/](https://pomma89.github.io/KVLite/api/)
