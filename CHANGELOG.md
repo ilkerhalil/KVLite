@@ -1,5 +1,11 @@
 # Changelog for PommaLabs.KVLite
 
+### v6.4.4 (2017-10-31)
+
+* [UPD] Using MySqlConnector as low level driver for MySQL and MariaDB.
+* [UPD] Dynamic JSON deserialization of date/time properties should produce a property with DateTimeOffset type.
+* [UPD] Dynamic JSON deserialization of double/decimal properties should produce a property with Decimal type.
+
 ### v6.4.3 (2017-10-29)
 
 * [UPD] Slightly improved documentation.
