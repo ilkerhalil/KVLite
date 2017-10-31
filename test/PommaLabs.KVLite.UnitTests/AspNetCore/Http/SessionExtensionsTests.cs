@@ -55,7 +55,7 @@ namespace PommaLabs.KVLite.UnitTests.AspNetCore.Http
         [Test]
         public void ShouldGetTheSameObjectAfterSetWithDefaultSerializer()
         {
-            var x = Math.Pow(Math.PI, 2.0);
+            var x = Math.Round(Math.Pow(Math.PI, 2.0), 7);
             var y = new string('a', 21);
             var z = DateTime.Now;
             var t = (x, y, z);
@@ -72,7 +72,7 @@ namespace PommaLabs.KVLite.UnitTests.AspNetCore.Http
         [Test]
         public void ShouldGetTheSameObjectAfterSetWithCustomSerializer()
         {
-            var x = Math.Pow(Math.PI, 2.0);
+            var x = Math.Round(Math.Pow(Math.PI, 2.0), 7);
             var y = new string('a', 21);
             var z = DateTime.Now.Date;
             var t = (x, y, z);

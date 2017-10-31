@@ -181,10 +181,10 @@
 								<dt>Interfaces</dt>
 								<dd>
 									<ul class="list-unstyled">
-											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache_1">ICache<wbr>&lt;TSettings&gt;<wbr></a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache">ICache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache_1">IAsyncCache<wbr>&lt;TSettings&gt;<wbr></a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache">IAsyncCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache_1">ICache<wbr>&lt;TSettings&gt;<wbr></a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache">ICache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCache">IEssentialCache</a></li>								
 											<li>IDisposable</li>								
 									</ul>
@@ -201,12 +201,12 @@
 								<dt>Derived Types</dt>
 								<dd>
 									<ul class="list-unstyled">
-											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache">VolatileCache</a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCache">PersistentCache</a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache">PostgreSqlCache</a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite.Oracle/OracleCache">OracleCache</a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache">SqlServerCache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache">MySqlCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache">VolatileCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache">SqlServerCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache">PostgreSqlCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCache">PersistentCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.Oracle/OracleCache">OracleCache</a></li>								
 									</ul>
 								</dd>			
 							
@@ -218,31 +218,31 @@
 	Base0["AbstractCache&lt;TCache, TSettings&gt;"]--&gt;Type
 	click Base0 "/KVLite/api/PommaLabs.KVLite/AbstractCache_2"
 	Base1["IDistributedCache"]--&gt;Base0
-	Interface0["ICache&lt;TSettings&gt;"]-.-&gt;Type
-	click Interface0 "/KVLite/api/PommaLabs.KVLite/ICache_1"
-	Interface1["ICache"]-.-&gt;Type
-	click Interface1 "/KVLite/api/PommaLabs.KVLite/ICache"
-	Interface2["IAsyncCache&lt;TSettings&gt;"]-.-&gt;Type
-	click Interface2 "/KVLite/api/PommaLabs.KVLite/IAsyncCache_1"
-	Interface3["IAsyncCache"]-.-&gt;Type
-	click Interface3 "/KVLite/api/PommaLabs.KVLite/IAsyncCache"
+	Interface0["IAsyncCache&lt;TSettings&gt;"]-.-&gt;Type
+	click Interface0 "/KVLite/api/PommaLabs.KVLite/IAsyncCache_1"
+	Interface1["IAsyncCache"]-.-&gt;Type
+	click Interface1 "/KVLite/api/PommaLabs.KVLite/IAsyncCache"
+	Interface2["ICache&lt;TSettings&gt;"]-.-&gt;Type
+	click Interface2 "/KVLite/api/PommaLabs.KVLite/ICache_1"
+	Interface3["ICache"]-.-&gt;Type
+	click Interface3 "/KVLite/api/PommaLabs.KVLite/ICache"
 	Interface4["IEssentialCache"]-.-&gt;Type
 	click Interface4 "/KVLite/api/PommaLabs.KVLite/IEssentialCache"
 	Interface5["IDisposable"]-.-&gt;Type
 	Type["DbCache&lt;TCache, TSettings, TConnectionFactory, TConnection&gt;"]
 class Type type-node
-	Type--&gt;Derived0["VolatileCache"]
-	click Derived0 "/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache"
-	Type--&gt;Derived1["PersistentCache"]
-	click Derived1 "/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCache"
-	Type--&gt;Derived2["PostgreSqlCache"]
-	click Derived2 "/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache"
-	Type--&gt;Derived3["OracleCache"]
-	click Derived3 "/KVLite/api/PommaLabs.KVLite.Oracle/OracleCache"
-	Type--&gt;Derived4["SqlServerCache"]
-	click Derived4 "/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache"
-	Type--&gt;Derived5["MySqlCache"]
-	click Derived5 "/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache"
+	Type--&gt;Derived0["MySqlCache"]
+	click Derived0 "/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache"
+	Type--&gt;Derived1["VolatileCache"]
+	click Derived1 "/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache"
+	Type--&gt;Derived2["SqlServerCache"]
+	click Derived2 "/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache"
+	Type--&gt;Derived3["PostgreSqlCache"]
+	click Derived3 "/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache"
+	Type--&gt;Derived4["PersistentCache"]
+	click Derived4 "/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCache"
+	Type--&gt;Derived5["OracleCache"]
+	click Derived5 "/KVLite/api/PommaLabs.KVLite.Oracle/OracleCache"
 
 						</div>
 					</div>
@@ -252,8 +252,8 @@ class Type type-node
 
 	<h1 id="Syntax">Syntax</h1>
 	<pre><code>public class DbCache&lt;TCache, TSettings, TConnectionFactory, TConnection&gt; : 
-    AbstractCache&lt;TCache, TSettings&gt;, ICache&lt;TSettings&gt;, ICache, IAsyncCache&lt;TSettings&gt;, 
-    IAsyncCache, IEssentialCache, IDisposable
+    AbstractCache&lt;TCache, TSettings&gt;, IAsyncCache&lt;TSettings&gt;, IAsyncCache, ICache&lt;TSettings&gt;, 
+    ICache, IEssentialCache, IDisposable
     
     where TCache : DbCache&lt;TCache, TSettings, TConnectionFactory, TConnection&gt; where TSettings : DbCacheSettings&lt;TSettings&gt; where TConnectionFactory : DbCacheConnectionFactory&lt;TSettings, TConnection&gt; where TConnection : DbConnection</code></pre>
 

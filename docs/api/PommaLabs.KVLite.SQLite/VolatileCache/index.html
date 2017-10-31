@@ -183,10 +183,10 @@
 								<dt>Interfaces</dt>
 								<dd>
 									<ul class="list-unstyled">
-											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache_1">ICache<wbr>&lt;TSettings&gt;<wbr></a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache">ICache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache_1">IAsyncCache<wbr>&lt;TSettings&gt;<wbr></a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache">IAsyncCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache_1">ICache<wbr>&lt;TSettings&gt;<wbr></a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache">ICache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCache">IEssentialCache</a></li>								
 											<li>IDisposable</li>								
 									</ul>
@@ -212,14 +212,14 @@
 	Base1["AbstractCache&lt;TCache, TSettings&gt;"]--&gt;Base0
 	click Base1 "/KVLite/api/PommaLabs.KVLite/AbstractCache_2"
 	Base2["IDistributedCache"]--&gt;Base1
-	Interface0["ICache&lt;TSettings&gt;"]-.-&gt;Type
-	click Interface0 "/KVLite/api/PommaLabs.KVLite/ICache_1"
-	Interface1["ICache"]-.-&gt;Type
-	click Interface1 "/KVLite/api/PommaLabs.KVLite/ICache"
-	Interface2["IAsyncCache&lt;TSettings&gt;"]-.-&gt;Type
-	click Interface2 "/KVLite/api/PommaLabs.KVLite/IAsyncCache_1"
-	Interface3["IAsyncCache"]-.-&gt;Type
-	click Interface3 "/KVLite/api/PommaLabs.KVLite/IAsyncCache"
+	Interface0["IAsyncCache&lt;TSettings&gt;"]-.-&gt;Type
+	click Interface0 "/KVLite/api/PommaLabs.KVLite/IAsyncCache_1"
+	Interface1["IAsyncCache"]-.-&gt;Type
+	click Interface1 "/KVLite/api/PommaLabs.KVLite/IAsyncCache"
+	Interface2["ICache&lt;TSettings&gt;"]-.-&gt;Type
+	click Interface2 "/KVLite/api/PommaLabs.KVLite/ICache_1"
+	Interface3["ICache"]-.-&gt;Type
+	click Interface3 "/KVLite/api/PommaLabs.KVLite/ICache"
 	Interface4["IEssentialCache"]-.-&gt;Type
 	click Interface4 "/KVLite/api/PommaLabs.KVLite/IEssentialCache"
 	Interface5["IDisposable"]-.-&gt;Type
@@ -236,7 +236,7 @@ class Type type-node
 	<pre><code>public sealed class VolatileCache : 
     
     DbCache&lt;VolatileCache, VolatileCacheSettings, SQLiteCacheConnectionFactory&lt;VolatileCacheSettings&gt;, SqliteConnection&gt;, 
-    ICache&lt;VolatileCacheSettings&gt;, ICache, IAsyncCache&lt;VolatileCacheSettings&gt;, IAsyncCache, 
+    IAsyncCache&lt;VolatileCacheSettings&gt;, IAsyncCache, ICache&lt;VolatileCacheSettings&gt;, ICache, 
     IEssentialCache, IDisposable</code></pre>
 
 

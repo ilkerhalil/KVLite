@@ -149,14 +149,14 @@
 				<li><a href="/KVLite/api/PommaLabs.KVLite/ICacheSettings">ICacheSettings</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCache">IEssentialCache</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings">I<wbr>Essential<wbr>Cache<wbr>Settings</a></li>
+			<li class="header">Enum Types</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheReadMode">CacheReadMode</a></li>
 			<li class="header">Class Types</li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1">Abstract<wbr>Cache<wbr>Settings<wbr>&lt;TSettings&gt;<wbr></a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheItem_1">CacheItem<wbr>&lt;TVal&gt;<wbr></a></li>
-			<li class="header">Enum Types</li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheReadMode">CacheReadMode</a></li>
 			<li class="header">Struct Types</li>
 				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite/CacheResult_1">CacheResult<wbr>&lt;T&gt;<wbr></a></li>
 
@@ -191,6 +191,12 @@
 								<dt>Namespace</dt>
 								<dd><a href="/KVLite/api/PommaLabs.KVLite">PommaLabs<wbr>.KVLite</a></dd>
 											
+								<dt>Interfaces</dt>
+								<dd>
+									<ul class="list-unstyled">
+											<li>IEquatable<wbr>&lt;T&gt;<wbr></li>								
+									</ul>
+								</dd>
 							
 								<dt>Base Types</dt>
 								<dd>
@@ -208,6 +214,7 @@
 							graph TD
 	Base0["ValueType"]--&gt;Type
 	Base1["object"]--&gt;Base0
+	Interface0["IEquatable&lt;T&gt;"]-.-&gt;Type
 	Type["CacheResult&lt;T&gt;"]
 class Type type-node
 
@@ -218,7 +225,7 @@ class Type type-node
 		</div>
 
 	<h1 id="Syntax">Syntax</h1>
-	<pre><code>public struct CacheResult&lt;T&gt; : ValueType</code></pre>
+	<pre><code>public struct CacheResult&lt;T&gt; : ValueType, IEquatable&lt;CacheResult&lt;T&gt;&gt;</code></pre>
 
 
 
@@ -291,6 +298,33 @@ class Type type-node
 							</tr>
 						</thead>
 							<tbody><tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheResult_1/7D2C6732">Equals<wbr>(CacheResult<wbr>&lt;T&gt;<wbr>)<wbr></a></td>
+								<td>bool</td>
+								<td>
+									<div>
+      Indicates whether the current object is equal to another object of the same type.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheResult_1/83B019D1">Equals<wbr>(object)<wbr></a></td>
+								<td>bool</td>
+								<td>
+									<div>
+      Indicates whether this instance and a specified object are equal.
+    </div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheResult_1/45DAFBF9">GetHashCode<wbr>()<wbr></a></td>
+								<td>int</td>
+								<td>
+									<div>
+      Returns the hash code for this instance.
+    </div>
+								</td>
+							</tr>
+							<tr>
 								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheResult_1/E1E6577B">ValueOrDefault<wbr>()<wbr></a></td>
 								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheResult_1#typeparam-T">T</a></td>
 								<td>
@@ -318,6 +352,20 @@ class Type type-node
 							<tbody><tr>
 								<td>implicit operator <wbr>Cache<wbr>Result<wbr>&lt;T&gt;<wbr><wbr>(T)<wbr></td>
 								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheResult_1">CacheResult<wbr>&lt;T&gt;<wbr></a></td>
+								<td>
+									<div></div>
+								</td>
+							</tr>
+							<tr>
+								<td>operator !=<wbr>(CacheResult<wbr>&lt;T&gt;<wbr>, <wbr>CacheResult<wbr>&lt;T&gt;<wbr>)<wbr></td>
+								<td>bool</td>
+								<td>
+									<div></div>
+								</td>
+							</tr>
+							<tr>
+								<td>operator ==<wbr>(CacheResult<wbr>&lt;T&gt;<wbr>, <wbr>CacheResult<wbr>&lt;T&gt;<wbr>)<wbr></td>
+								<td>bool</td>
 								<td>
 									<div></div>
 								</td>

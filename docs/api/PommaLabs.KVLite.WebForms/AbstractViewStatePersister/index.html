@@ -196,8 +196,8 @@
 								<dt>Derived Types</dt>
 								<dd>
 									<ul class="list-unstyled">
-											<li><a href="/KVLite/api/PommaLabs.KVLite.WebForms/PersistentViewStatePersister">Persistent<wbr>View<wbr>State<wbr>Persister</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.WebForms/VolatileViewStatePersister">Volatile<wbr>View<wbr>State<wbr>Persister</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.WebForms/PersistentViewStatePersister">Persistent<wbr>View<wbr>State<wbr>Persister</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.WebForms/MemoryViewStatePersister">Memory<wbr>View<wbr>State<wbr>Persister</a></li>								
 									</ul>
 								</dd>			
@@ -210,10 +210,10 @@
 	Base0["PageStatePersister"]--&gt;Type
 	Type["AbstractViewStatePersister"]
 class Type type-node
-	Type--&gt;Derived0["PersistentViewStatePersister"]
-	click Derived0 "/KVLite/api/PommaLabs.KVLite.WebForms/PersistentViewStatePersister"
-	Type--&gt;Derived1["VolatileViewStatePersister"]
-	click Derived1 "/KVLite/api/PommaLabs.KVLite.WebForms/VolatileViewStatePersister"
+	Type--&gt;Derived0["VolatileViewStatePersister"]
+	click Derived0 "/KVLite/api/PommaLabs.KVLite.WebForms/VolatileViewStatePersister"
+	Type--&gt;Derived1["PersistentViewStatePersister"]
+	click Derived1 "/KVLite/api/PommaLabs.KVLite.WebForms/PersistentViewStatePersister"
 	Type--&gt;Derived2["MemoryViewStatePersister"]
 	click Derived2 "/KVLite/api/PommaLabs.KVLite.WebForms/MemoryViewStatePersister"
 
