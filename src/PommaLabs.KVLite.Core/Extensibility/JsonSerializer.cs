@@ -71,9 +71,11 @@ namespace PommaLabs.KVLite.Extensibility
         {
             Converters = new List<JsonConverter> { new ClaimConverter() },
             DateFormatHandling = DateFormatHandling.IsoDateFormat,
+            DateParseHandling = DateParseHandling.DateTimeOffset,
             DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
             DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
             FloatFormatHandling = FloatFormatHandling.String,
+            FloatParseHandling = FloatParseHandling.Decimal,
             Formatting = Formatting.None,
             MissingMemberHandling = MissingMemberHandling.Ignore,
             NullValueHandling = NullValueHandling.Ignore,
