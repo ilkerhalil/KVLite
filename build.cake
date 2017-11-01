@@ -42,7 +42,7 @@ Task("Version")
 });
 
 Task("Build-Debug")
-    .IsDependentOn("Restore")
+    .IsDependentOn("Version")
     .Does(() => 
 {
     Build("Debug");
@@ -88,7 +88,7 @@ Task("Test-Release")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Pack-Release");
+    .IsDependentOn("Test-Release");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
@@ -121,25 +121,25 @@ private void Version()
 {
     var versionInfo = GitVersion();
     var buildVersion = EnvironmentVariable("APPVEYOR_BUILD_NUMBER") ?? "0";
-    var assemblyVersion =  versionInfo.Major + ".0.0.0"; // Minor and Patch versions should work with base Major version
+    var nuGetVersion = versionInfo.NuGetVersion;
+    var assemblyVersion =  versionInfo.Major + ".0.0.0";
     var fileVersion = versionInfo.MajorMinorPatch + "." + buildVersion;
     var informationalVersion = versionInfo.FullSemVer;
-    var nuGetVersion = versionInfo.NuGetVersion;
 
     Information("BuildVersion: " + buildVersion);
+    Information("Version: " + nuGetVersion);
     Information("AssemblyVersion: " + assemblyVersion);
     Information("FileVersion: " + fileVersion);
     Information("InformationalVersion: " + informationalVersion);
-    Information("NuGetVersion: " + nuGetVersion);
     
     if (AppVeyor.IsRunningOnAppVeyor)
     {
         AppVeyor.UpdateBuildVersion(informationalVersion + ".build." + buildVersion);
     }	
     
-    Information("Updating Directory.build.props...");
+    Information("Updating Directory.Build.props...");
 
-    var dbp = File("./Directory.build.props");
+    var dbp = File("./Directory.Build.props");
     XmlPoke(dbp, "/Project/PropertyGroup/Version", nuGetVersion);
     XmlPoke(dbp, "/Project/PropertyGroup/AssemblyVersion", assemblyVersion);
     XmlPoke(dbp, "/Project/PropertyGroup/FileVersion", fileVersion);
