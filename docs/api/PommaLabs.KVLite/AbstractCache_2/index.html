@@ -151,14 +151,14 @@
 				<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings">I<wbr>Essential<wbr>Cache<wbr>Settings</a></li>
 			<li class="header">Enum Types</li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheReadMode">CacheReadMode</a></li>
+			<li class="header">Struct Types</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheResult_1">CacheResult<wbr>&lt;T&gt;<wbr></a></li>
 			<li class="header">Class Types</li>
 				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1">Abstract<wbr>Cache<wbr>Settings<wbr>&lt;TSettings&gt;<wbr></a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheItem_1">CacheItem<wbr>&lt;TVal&gt;<wbr></a></li>
-			<li class="header">Struct Types</li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheResult_1">CacheResult<wbr>&lt;T&gt;<wbr></a></li>
 
 
                     </ul>
@@ -213,8 +213,8 @@
 								<dt>Derived Types</dt>
 								<dd>
 									<ul class="list-unstyled">
-											<li><a href="/KVLite/api/PommaLabs.KVLite.Database/DbCache_4">DbCache<wbr>&lt;TCache, <wbr>TSettings, <wbr>TConnectionFactory, <wbr>TConnection&gt;<wbr></a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache">MemoryCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.Database/DbCache_4">DbCache<wbr>&lt;TCache, <wbr>TSettings, <wbr>TConnectionFactory, <wbr>TConnection&gt;<wbr></a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.NoOp/NoOpCache">NoOpCache</a></li>								
 									</ul>
 								</dd>			
@@ -238,10 +238,10 @@
 	Interface5["IDisposable"]-.-&gt;Type
 	Type["AbstractCache&lt;TCache, TSettings&gt;"]
 class Type type-node
-	Type--&gt;Derived0["DbCache&lt;TCache, TSettings, TConnectionFactory, TConnection&gt;"]
-	click Derived0 "/KVLite/api/PommaLabs.KVLite.Database/DbCache_4"
-	Type--&gt;Derived1["MemoryCache"]
-	click Derived1 "/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache"
+	Type--&gt;Derived0["MemoryCache"]
+	click Derived0 "/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache"
+	Type--&gt;Derived1["DbCache&lt;TCache, TSettings, TConnectionFactory, TConnection&gt;"]
+	click Derived1 "/KVLite/api/PommaLabs.KVLite.Database/DbCache_4"
 	Type--&gt;Derived2["NoOpCache"]
 	click Derived2 "/KVLite/api/PommaLabs.KVLite.NoOp/NoOpCache"
 

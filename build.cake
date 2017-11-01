@@ -1,7 +1,6 @@
-#addin "nuget:?package=Cake.Wyam"
-#tool "nuget:?package=GitVersion.CommandLine"
-#tool "nuget:?package=NUnit.ConsoleRunner"
-#tool "nuget:?package=Wyam"
+#addin "nuget:?package=Cake.Wyam&version=1.0.0"
+#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
+#tool "nuget:?package=Wyam&version=1.0.0"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS

@@ -201,11 +201,11 @@
 								<dt>Derived Types</dt>
 								<dd>
 									<ul class="list-unstyled">
-											<li><a href="/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache">MySqlCache</a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache">VolatileCache</a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache">SqlServerCache</a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache">PostgreSqlCache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCache">PersistentCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache">SqlServerCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache">MySqlCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache">PostgreSqlCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache">VolatileCache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.Oracle/OracleCache">OracleCache</a></li>								
 									</ul>
 								</dd>			
@@ -231,16 +231,16 @@
 	Interface5["IDisposable"]-.-&gt;Type
 	Type["DbCache&lt;TCache, TSettings, TConnectionFactory, TConnection&gt;"]
 class Type type-node
-	Type--&gt;Derived0["MySqlCache"]
-	click Derived0 "/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache"
-	Type--&gt;Derived1["VolatileCache"]
-	click Derived1 "/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache"
-	Type--&gt;Derived2["SqlServerCache"]
-	click Derived2 "/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache"
+	Type--&gt;Derived0["PersistentCache"]
+	click Derived0 "/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCache"
+	Type--&gt;Derived1["SqlServerCache"]
+	click Derived1 "/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache"
+	Type--&gt;Derived2["MySqlCache"]
+	click Derived2 "/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache"
 	Type--&gt;Derived3["PostgreSqlCache"]
 	click Derived3 "/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache"
-	Type--&gt;Derived4["PersistentCache"]
-	click Derived4 "/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCache"
+	Type--&gt;Derived4["VolatileCache"]
+	click Derived4 "/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache"
 	Type--&gt;Derived5["OracleCache"]
 	click Derived5 "/KVLite/api/PommaLabs.KVLite.Oracle/OracleCache"
 

@@ -1,9 +1,11 @@
-﻿<Project>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Project>
   <PropertyGroup>
     <Version>6.4.4</Version>
     <AssemblyVersion>6.0.0.0</AssemblyVersion>
     <FileVersion>6.4.4.0</FileVersion>
-    <InformationalVersion>6.4.4+5</InformationalVersion>
+    <InformationalVersion>6.4.4+6</InformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet">
