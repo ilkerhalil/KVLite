@@ -68,7 +68,7 @@ namespace PommaLabs.KVLite.Extensibility
         /// </summary>
         public static BinarySerializerSettings DefaultSerializerSettings = new BinarySerializerSettings
         {
-            //AssemblyFormat = FormatterAssemblyStyle.Simple,
+            AssemblyFormat = FormatterAssemblyStyle.Simple,
             FilterLevel = TypeFilterLevel.Full,
             TypeFormat = FormatterTypeStyle.TypesWhenNeeded
         };
@@ -154,13 +154,13 @@ namespace PommaLabs.KVLite.Extensibility
     /// </summary>
     public sealed class BinarySerializerSettings
     {
-        ///// <summary>
-        /////   Gets or sets the behavior of the deserializer with regards to finding and loading assemblies.
-        ///// </summary>
-        ///// <returns>
-        /////   One of the <see cref="FormatterAssemblyStyle"/> values that specifies the deserializer behavior.
-        ///// </returns>
-        //public FormatterAssemblyStyle AssemblyFormat { get; set; }
+        /// <summary>
+        ///   Gets or sets the behavior of the deserializer with regards to finding and loading assemblies.
+        /// </summary>
+        /// <returns>
+        ///   One of the <see cref="FormatterAssemblyStyle"/> values that specifies the deserializer behavior.
+        /// </returns>
+        public FormatterAssemblyStyle AssemblyFormat { get; set; }
 
         /// <summary>
         ///   Gets or sets an object of type SerializationBinder that controls the binding of a
