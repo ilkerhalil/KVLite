@@ -1,5 +1,10 @@
 # Changelog for PommaLabs.KVLite
 
+### v6.5.0 (2017-12-??)
+
+* [UPD] Revert to MySql.Data as low level driver for MySQL and MariaDB.
+* [UPD] Updated to JSON.NET v11.
+
 ### v6.4.4 (2017-10-31)
 
 * [UPD] Using MySqlConnector as low level driver for MySQL and MariaDB.
