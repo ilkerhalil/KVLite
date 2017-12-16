@@ -79,7 +79,7 @@ namespace PommaLabs.KVLite.UnitTests
         public void SerializeToStream<TObj>(TObj obj, Stream outputStream)
         {
 #pragma warning disable CC0022 // Should dispose object
-            var bsonWriter = new BsonWriter(outputStream);
+            var bsonWriter = new BsonDataWriter(outputStream);
 #pragma warning restore CC0022 // Should dispose object
             _bsonSerializer.Serialize(bsonWriter, new Wrapper<TObj> { Value = obj });
             bsonWriter.Flush();
@@ -101,7 +101,7 @@ namespace PommaLabs.KVLite.UnitTests
         public TObj DeserializeFromStream<TObj>(Stream inputStream)
         {
 #pragma warning disable CC0022 // Should dispose object
-            var bsonReader = new BsonReader(inputStream);
+            var bsonReader = new BsonDataReader(inputStream);
 #pragma warning restore CC0022 // Should dispose object
             return _bsonSerializer.Deserialize<Wrapper<TObj>>(bsonReader).Value;
         }

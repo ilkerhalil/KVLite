@@ -37,6 +37,11 @@ namespace PommaLabs.KVLite.Extensibility
     public sealed class JsonSerializer : ISerializer
     {
         /// <summary>
+        ///   Instance of custom character array pool.
+        /// </summary>
+        private static readonly JsonArrayPool CustomArrayPool = new JsonArrayPool();
+
+        /// <summary>
         ///   Instance of JSON.NET serializer.
         /// </summary>
         private readonly Newtonsoft.Json.JsonSerializer _jsonSerializer;
@@ -69,6 +74,7 @@ namespace PommaLabs.KVLite.Extensibility
         /// </remarks>
         public static JsonSerializerSettings DefaultSerializerSettings = new JsonSerializerSettings
         {
+            ConstructorHandling = ConstructorHandling.Default,
             Converters = new List<JsonConverter> { new ClaimConverter() },
             DateFormatHandling = DateFormatHandling.IsoDateFormat,
             DateParseHandling = DateParseHandling.DateTimeOffset,
@@ -79,8 +85,9 @@ namespace PommaLabs.KVLite.Extensibility
             Formatting = Formatting.None,
             MissingMemberHandling = MissingMemberHandling.Ignore,
             NullValueHandling = NullValueHandling.Ignore,
-            PreserveReferencesHandling = PreserveReferencesHandling.None,
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            ObjectCreationHandling = ObjectCreationHandling.Replace,
+            PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+            ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
             TypeNameHandling = TypeNameHandling.All,
             TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
         }.ConfigureForNodaTime(NodaTime.DateTimeZoneProviders.Tzdb);
@@ -109,7 +116,7 @@ namespace PommaLabs.KVLite.Extensibility
             var streamWriter = new StreamWriter(outputStream);
             var jsonWriter = new JsonTextWriter(streamWriter)
             {
-                ArrayPool = JsonArrayPool.Instance
+                ArrayPool = CustomArrayPool
             };
 #pragma warning restore CC0022 // Should dispose object
             _jsonSerializer.Serialize(jsonWriter, obj);
@@ -135,16 +142,17 @@ namespace PommaLabs.KVLite.Extensibility
             var streamReader = new StreamReader(inputStream);
             var jsonReader = new JsonTextReader(streamReader)
             {
-                ArrayPool = JsonArrayPool.Instance
+                ArrayPool = CustomArrayPool
             };
 #pragma warning restore CC0022 // Should dispose object
             return _jsonSerializer.Deserialize<TObj>(jsonReader);
         }
 
+        /// <summary>
+        ///   Custom character array pool.
+        /// </summary>
         private sealed class JsonArrayPool : IArrayPool<char>
         {
-            public static JsonArrayPool Instance { get; } = new JsonArrayPool();
-
             public char[] Rent(int minimumLength) => ArrayPool<char>.Shared.Rent(minimumLength);
 
             public void Return(char[] array) => ArrayPool<char>.Shared.Return(array);

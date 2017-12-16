@@ -56,7 +56,7 @@ namespace PommaLabs.KVLite.Extensibility
             // Preconditions
             if (serializerSettings == null) throw new ArgumentNullException(nameof(serializerSettings));
 
-            //_binaryFormatter.AssemblyFormat = serializerSettings.AssemblyFormat;
+            _binaryFormatter.AssemblyFormat = serializerSettings.AssemblyFormat;
             _binaryFormatter.Binder = serializerSettings.Binder ?? _binaryFormatter.Binder;
             _binaryFormatter.FilterLevel = serializerSettings.FilterLevel;
             _binaryFormatter.SurrogateSelector = serializerSettings.SurrogateSelector ?? _binaryFormatter.SurrogateSelector;
