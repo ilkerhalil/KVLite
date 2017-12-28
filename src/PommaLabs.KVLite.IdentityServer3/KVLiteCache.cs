@@ -72,7 +72,7 @@ namespace PommaLabs.KVLite.IdentityServer3
         public async Task<T> GetAsync(string key)
         {
             key = string.IsNullOrWhiteSpace(key) ? NoKey : key;
-            return (await _cache.GetAsync<T>(Partition, key)).ValueOrDefault();
+            return (await _cache.GetAsync<T>(Partition, key).ConfigureAwait(false)).ValueOrDefault();
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace PommaLabs.KVLite.IdentityServer3
         public async Task SetAsync(string key, T item)
         {
             key = string.IsNullOrWhiteSpace(key) ? NoKey : key;
-            await _cache.AddTimedAsync(Partition, key, item, Lifetime);
+            await _cache.AddTimedAsync(Partition, key, item, Lifetime).ConfigureAwait(false);
         }
     }
 }

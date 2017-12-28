@@ -15,12 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HellBrick.Diagnostics" Version="2.0.0">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="LibLog" Version="4.2.6">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="HellBrick.Diagnostics" Version="2.0.0" PrivateAssets="All" />
+    <PackageReference Include="LibLog" Version="4.2.6" PrivateAssets="All" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
     <PackageReference Include="NodaTime" Version="2.2.3" />
   </ItemGroup>
