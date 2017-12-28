@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-52E1-43BC-971F-94784A43B73E}"
 	ProjectSection(SolutionItems) = preProject
@@ -81,6 +81,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.Examples.AspNetCore", "examples\PommaLabs.KVLite.Examples.AspNetCore\PommaLabs.KVLite.Examples.AspNetCore.csproj", "{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.AspNetCore", "src\PommaLabs.KVLite.AspNetCore\PommaLabs.KVLite.AspNetCore.csproj", "{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.IdentityServer3", "src\PommaLabs.KVLite.IdentityServer3\PommaLabs.KVLite.IdentityServer3.csproj", "{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.IdentityServer4", "src\PommaLabs.KVLite.IdentityServer4\PommaLabs.KVLite.IdentityServer4.csproj", "{D533B99E-84BA-4B2B-999E-BF17B0BE5623}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -238,6 +242,22 @@ Global
 		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}.Release|x86.ActiveCfg = Release|Any CPU
 		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}.Release|x86.Build.0 = Release|Any CPU
+		{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909}.Debug|x86.Build.0 = Debug|Any CPU
+		{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909}.Release|x86.ActiveCfg = Release|Any CPU
+		{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909}.Release|x86.Build.0 = Release|Any CPU
+		{D533B99E-84BA-4B2B-999E-BF17B0BE5623}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D533B99E-84BA-4B2B-999E-BF17B0BE5623}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D533B99E-84BA-4B2B-999E-BF17B0BE5623}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D533B99E-84BA-4B2B-999E-BF17B0BE5623}.Debug|x86.Build.0 = Debug|Any CPU
+		{D533B99E-84BA-4B2B-999E-BF17B0BE5623}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D533B99E-84BA-4B2B-999E-BF17B0BE5623}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D533B99E-84BA-4B2B-999E-BF17B0BE5623}.Release|x86.ActiveCfg = Release|Any CPU
+		{D533B99E-84BA-4B2B-999E-BF17B0BE5623}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -265,6 +285,8 @@ Global
 		{D45E8263-41D2-4BDC-B732-58B655E84AE9} = {CB218631-52E1-43BC-971F-94784A43B73E}
 		{CA180A12-8A07-4BFE-B2DB-9D22D8CBE8A3} = {09C060EE-A6D3-45ED-B82D-E81B59EABBCB}
 		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA} = {C5E21A7F-2C68-402F-A488-13BA125416A3}
+		{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909} = {C5E21A7F-2C68-402F-A488-13BA125416A3}
+		{D533B99E-84BA-4B2B-999E-BF17B0BE5623} = {C5E21A7F-2C68-402F-A488-13BA125416A3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C211ABFD-845B-457D-BC45-FC39EB4E5192}
