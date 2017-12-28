@@ -22,11 +22,11 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
+using PommaLabs.KVLite;
 using PommaLabs.KVLite.Extensibility;
 
-namespace PommaLabs.KVLite.Core
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     ///   Registrations for core KVLite services.

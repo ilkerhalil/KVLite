@@ -23,10 +23,11 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
-using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite;
+using PommaLabs.KVLite.MySql;
 using System;
 
-namespace PommaLabs.KVLite.MySql
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     ///   Registrations for MySQL KVLite services.
@@ -39,7 +40,7 @@ namespace PommaLabs.KVLite.MySql
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services) => services.AddKVLiteCache(new MySqlCache(new MySqlCacheSettings()));
+        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services) => services.AddMySqlKVLiteCache(null);
 
         /// <summary>
         ///   Registers <see cref="MySqlCache"/> as singleton implementation for

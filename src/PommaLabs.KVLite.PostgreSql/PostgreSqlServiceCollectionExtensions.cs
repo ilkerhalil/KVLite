@@ -23,10 +23,11 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
-using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite;
+using PommaLabs.KVLite.PostgreSql;
 using System;
 
-namespace PommaLabs.KVLite.PostgreSql
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     ///   Registrations for PostgreSQL KVLite services.
@@ -39,7 +40,7 @@ namespace PommaLabs.KVLite.PostgreSql
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddPostgreSqlKVLiteCache(this IServiceCollection services) => services.AddKVLiteCache(new PostgreSqlCache(new PostgreSqlCacheSettings()));
+        public static IServiceCollection AddPostgreSqlKVLiteCache(this IServiceCollection services) => services.AddPostgreSqlKVLiteCache(null);
 
         /// <summary>
         ///   Registers <see cref="PostgreSqlCache"/> as singleton implementation for

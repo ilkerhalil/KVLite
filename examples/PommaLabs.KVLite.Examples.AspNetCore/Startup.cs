@@ -1,32 +1,42 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using IdentityServer4.Stores;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NodaTime;
-using PommaLabs.KVLite.SQLite;
+using System;
 
 namespace PommaLabs.KVLite.Examples.AspNetCore
 {
-    public class Startup
+    public sealed class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            Configuration = configuration;
         }
 
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
             services.AddMvc();
+
+            // Add IdentityServer4 services.
+            services.AddIdentityServer(o =>
+            {
+                o.Caching.ClientStoreExpiration = TimeSpan.FromMinutes(1);
+                o.Caching.CorsExpiration = TimeSpan.FromMinutes(2);
+                o.Caching.ResourceStoreExpiration = TimeSpan.FromMinutes(3);
+            })
+                .AddDeveloperSigningCredential()
+                .AddInMemoryApiResources(Identity.GetApiResources())
+                .AddInMemoryClients(Identity.GetClients())
+                .AddKVLiteCaching()
+                .AddResourceStoreCache<InMemoryResourcesStore>()
+                .AddClientStoreCache<InMemoryClientStore>();
 
             // Add custom NodaTime clock.
             services.AddSingleton<IClock>(NetworkClock.Instance);
@@ -59,6 +69,11 @@ namespace PommaLabs.KVLite.Examples.AspNetCore
             }
 
             app.UseStaticFiles();
+
+            app.Map("/identity", identityApp =>
+            {
+                identityApp.UseIdentityServer();
+            });
 
             // IMPORTANT: This session call MUST go before UseMvc().
             app.UseSession();

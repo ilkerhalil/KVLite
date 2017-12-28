@@ -22,11 +22,12 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
+using PommaLabs.KVLite;
 using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite.Oracle;
 using System;
 
-namespace PommaLabs.KVLite.Oracle
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     ///   Registrations for Oracle KVLite services.
@@ -39,7 +40,7 @@ namespace PommaLabs.KVLite.Oracle
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddOracleKVLiteCache(this IServiceCollection services) => services.AddKVLiteCache(new OracleCache(new OracleCacheSettings()));
+        public static IServiceCollection AddOracleKVLiteCache(this IServiceCollection services) => services.AddOracleKVLiteCache(null);
 
         /// <summary>
         ///   Registers <see cref="OracleCache"/> as singleton implementation for

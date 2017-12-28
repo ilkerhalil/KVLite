@@ -22,11 +22,11 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
-using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite;
+using PommaLabs.KVLite.SqlServer;
 using System;
 
-namespace PommaLabs.KVLite.SqlServer
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     ///   Registrations for SQL Server KVLite services.
@@ -39,7 +39,7 @@ namespace PommaLabs.KVLite.SqlServer
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddSqlServerKVLiteCache(this IServiceCollection services) => services.AddKVLiteCache(new SqlServerCache(new SqlServerCacheSettings()));
+        public static IServiceCollection AddSqlServerKVLiteCache(this IServiceCollection services) => services.AddSqlServerKVLiteCache(null);
 
         /// <summary>
         ///   Registers <see cref="SqlServerCache"/> as singleton implementation for

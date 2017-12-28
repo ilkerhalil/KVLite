@@ -23,10 +23,11 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
-using PommaLabs.KVLite.Core;
+using PommaLabs.KVLite;
+using PommaLabs.KVLite.SQLite;
 using System;
 
-namespace PommaLabs.KVLite.SQLite
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     ///   Registrations for SQLite KVLite services.
@@ -39,7 +40,7 @@ namespace PommaLabs.KVLite.SQLite
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddPersistentSQLiteKVLiteCache(this IServiceCollection services) => services.AddKVLiteCache(new PersistentCache(new PersistentCacheSettings()));
+        public static IServiceCollection AddPersistentSQLiteKVLiteCache(this IServiceCollection services) => services.AddPersistentSQLiteKVLiteCache(null);
 
         /// <summary>
         ///   Registers <see cref="PersistentCache"/> as singleton implementation for
@@ -66,7 +67,7 @@ namespace PommaLabs.KVLite.SQLite
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddVolatileSQLiteKVLiteCache(this IServiceCollection services) => services.AddKVLiteCache(new VolatileCache(new VolatileCacheSettings()));
+        public static IServiceCollection AddVolatileSQLiteKVLiteCache(this IServiceCollection services) => services.AddVolatileSQLiteKVLiteCache(null);
 
         /// <summary>
         ///   Registers <see cref="VolatileCache"/> as singleton implementation for
