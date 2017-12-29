@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.MySql;
 using System;
@@ -40,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services) => services.AddMySqlKVLiteCache(null);
+        public static IServiceCollection AddKVLiteMySqlCache(this IServiceCollection services) => services.AddKVLiteMySqlCache(null);
 
         /// <summary>
         ///   Registers <see cref="MySqlCache"/> as singleton implementation for
@@ -49,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMySqlKVLiteCache(this IServiceCollection services, Action<MySqlCacheSettings> changeSettings)
+        public static IServiceCollection AddKVLiteMySqlCache(this IServiceCollection services, Action<MySqlCacheSettings> changeSettings)
         {
             var settings = new MySqlCacheSettings();
             changeSettings?.Invoke(settings);

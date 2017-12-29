@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.Threading.Tasks;
@@ -46,23 +45,20 @@ namespace PommaLabs.KVLite.IdentityServer3
         private readonly IAsyncCache _cache;
 
         /// <summary>
+        ///   KVLite cache options.
+        /// </summary>
+        private readonly KVLiteCacheOptions _options;
+
+        /// <summary>
         ///   Initializes cache provider.
         /// </summary>
         /// <param name="cache">Backing KVLite cache.</param>
-        public KVLiteCache(IAsyncCache cache)
+        /// <param name="options">KVLite cache options.</param>
+        public KVLiteCache(IAsyncCache cache, KVLiteCacheOptions options)
         {
             _cache = cache ?? throw new ArgumentNullException(ErrorMessages.NullCache);
+            _options = options ?? throw new ArgumentNullException(ErrorMessages.NullSettings);
         }
-
-        /// <summary>
-        ///   The partition used by this cache. Defaults to "IdentityServer3".
-        /// </summary>
-        public string Partition { get; set; } = nameof(IdentityServer3);
-
-        /// <summary>
-        ///   How long should entries be stored into this cache. Defaults to 30 minutes.
-        /// </summary>
-        public Duration Lifetime { get; set; } = Duration.FromMinutes(30);
 
         /// <summary>
         ///   Gets the cached data based upon a key index.
@@ -71,8 +67,9 @@ namespace PommaLabs.KVLite.IdentityServer3
         /// <returns>The cached item, or <c>null</c> if no item matches the key.</returns>
         public async Task<T> GetAsync(string key)
         {
+            var partition = _options.Partition;
             key = string.IsNullOrWhiteSpace(key) ? NoKey : key;
-            return (await _cache.GetAsync<T>(Partition, key).ConfigureAwait(false)).ValueOrDefault();
+            return (await _cache.GetAsync<T>(partition, key).ConfigureAwait(false)).ValueOrDefault();
         }
 
         /// <summary>
@@ -83,8 +80,10 @@ namespace PommaLabs.KVLite.IdentityServer3
         /// <returns>A task.</returns>
         public async Task SetAsync(string key, T item)
         {
+            var partition = _options.Partition;
             key = string.IsNullOrWhiteSpace(key) ? NoKey : key;
-            await _cache.AddTimedAsync(Partition, key, item, Lifetime).ConfigureAwait(false);
+            var lifetime = _options.Lifetime;
+            await _cache.AddTimedAsync(partition, key, item, lifetime).ConfigureAwait(false);
         }
     }
 }

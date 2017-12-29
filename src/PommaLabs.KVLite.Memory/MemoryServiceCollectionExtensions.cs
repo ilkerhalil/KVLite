@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMemoryKVLiteCache(this IServiceCollection services) => services.AddMemoryKVLiteCache(null);
+        public static IServiceCollection AddKVLiteMemoryCache(this IServiceCollection services) => services.AddKVLiteMemoryCache(null);
 
         /// <summary>
         ///   Registers <see cref="MemoryCache"/> as singleton implementation for
@@ -48,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddMemoryKVLiteCache(this IServiceCollection services, Action<MemoryCacheSettings> changeSettings)
+        public static IServiceCollection AddKVLiteMemoryCache(this IServiceCollection services, Action<MemoryCacheSettings> changeSettings)
         {
             var settings = new MemoryCacheSettings();
             changeSettings?.Invoke(settings);

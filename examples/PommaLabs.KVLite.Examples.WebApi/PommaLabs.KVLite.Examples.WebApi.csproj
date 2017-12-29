@@ -107,6 +107,10 @@
       <Project>{a02320bc-46c7-45db-adb1-824cca07cb57}</Project>
       <Name>PommaLabs.KVLite.Database</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.IdentityServer3\PommaLabs.KVLite.IdentityServer3.csproj">
+      <Project>{e602dd53-ce7e-4220-adf4-8bf8bea4c909}</Project>
+      <Name>PommaLabs.KVLite.IdentityServer3</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.SQLite\PommaLabs.KVLite.SQLite.csproj">
       <Project>{23d10fdc-e11b-4421-8cd0-5b4bdff835be}</Project>
       <Name>PommaLabs.KVLite.SQLite</Name>

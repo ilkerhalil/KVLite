@@ -23,7 +23,6 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 using PommaLabs.KVLite;
-using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Oracle;
 using System;
 
@@ -40,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddOracleKVLiteCache(this IServiceCollection services) => services.AddOracleKVLiteCache(null);
+        public static IServiceCollection AddKVLiteOracleCache(this IServiceCollection services) => services.AddKVLiteOracleCache(null);
 
         /// <summary>
         ///   Registers <see cref="OracleCache"/> as singleton implementation for
@@ -49,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddOracleKVLiteCache(this IServiceCollection services, Action<OracleCacheSettings> changeSettings)
+        public static IServiceCollection AddKVLiteOracleCache(this IServiceCollection services, Action<OracleCacheSettings> changeSettings)
         {
             var settings = new OracleCacheSettings();
             changeSettings?.Invoke(settings);

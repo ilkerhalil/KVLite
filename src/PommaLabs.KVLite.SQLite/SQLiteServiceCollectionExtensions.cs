@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.SQLite;
 using System;
@@ -40,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddPersistentSQLiteKVLiteCache(this IServiceCollection services) => services.AddPersistentSQLiteKVLiteCache(null);
+        public static IServiceCollection AddKVLitePersistentSQLiteCache(this IServiceCollection services) => services.AddKVLitePersistentSQLiteCache(null);
 
         /// <summary>
         ///   Registers <see cref="PersistentCache"/> as singleton implementation for
@@ -49,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddPersistentSQLiteKVLiteCache(this IServiceCollection services, Action<PersistentCacheSettings> changeSettings)
+        public static IServiceCollection AddKVLitePersistentSQLiteCache(this IServiceCollection services, Action<PersistentCacheSettings> changeSettings)
         {
             var settings = new PersistentCacheSettings();
             changeSettings?.Invoke(settings);
@@ -67,7 +66,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddVolatileSQLiteKVLiteCache(this IServiceCollection services) => services.AddVolatileSQLiteKVLiteCache(null);
+        public static IServiceCollection AddKVLiteVolatileSQLiteCache(this IServiceCollection services) => services.AddKVLiteVolatileSQLiteCache(null);
 
         /// <summary>
         ///   Registers <see cref="VolatileCache"/> as singleton implementation for
@@ -76,7 +75,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddVolatileSQLiteKVLiteCache(this IServiceCollection services, Action<VolatileCacheSettings> changeSettings)
+        public static IServiceCollection AddKVLiteVolatileSQLiteCache(this IServiceCollection services, Action<VolatileCacheSettings> changeSettings)
         {
             var settings = new VolatileCacheSettings();
             changeSettings?.Invoke(settings);

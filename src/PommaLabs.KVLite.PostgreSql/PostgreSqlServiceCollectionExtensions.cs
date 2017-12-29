@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.PostgreSql;
 using System;
@@ -40,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddPostgreSqlKVLiteCache(this IServiceCollection services) => services.AddPostgreSqlKVLiteCache(null);
+        public static IServiceCollection AddKVLitePostgreSqlCache(this IServiceCollection services) => services.AddKVLitePostgreSqlCache(null);
 
         /// <summary>
         ///   Registers <see cref="PostgreSqlCache"/> as singleton implementation for
@@ -49,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddPostgreSqlKVLiteCache(this IServiceCollection services, Action<PostgreSqlCacheSettings> changeSettings)
+        public static IServiceCollection AddKVLitePostgreSqlCache(this IServiceCollection services, Action<PostgreSqlCacheSettings> changeSettings)
         {
             var settings = new PostgreSqlCacheSettings();
             changeSettings?.Invoke(settings);

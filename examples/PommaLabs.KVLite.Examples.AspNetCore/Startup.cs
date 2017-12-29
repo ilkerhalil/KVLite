@@ -42,7 +42,7 @@ namespace PommaLabs.KVLite.Examples.AspNetCore
             services.AddSingleton<IClock>(NetworkClock.Instance);
 
             // Add KVLite caching services.
-            services.AddPersistentSQLiteKVLiteCache(s =>
+            services.AddKVLitePersistentSQLiteCache(s =>
             {
                 s.CacheFile = "AspNetCoreCache.sqlite";
                 s.DefaultDistributedCacheAbsoluteExpiration = Duration.FromSeconds(30);

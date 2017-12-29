@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddSqlServerKVLiteCache(this IServiceCollection services) => services.AddSqlServerKVLiteCache(null);
+        public static IServiceCollection AddKVLiteSqlServerCache(this IServiceCollection services) => services.AddKVLiteSqlServerCache(null);
 
         /// <summary>
         ///   Registers <see cref="SqlServerCache"/> as singleton implementation for
@@ -48,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">Services collection.</param>
         /// <param name="changeSettings">Can be used to customize settings.</param>
         /// <returns>Modified services collection.</returns>
-        public static IServiceCollection AddSqlServerKVLiteCache(this IServiceCollection services, Action<SqlServerCacheSettings> changeSettings)
+        public static IServiceCollection AddKVLiteSqlServerCache(this IServiceCollection services, Action<SqlServerCacheSettings> changeSettings)
         {
             var settings = new SqlServerCacheSettings();
             changeSettings?.Invoke(settings);
