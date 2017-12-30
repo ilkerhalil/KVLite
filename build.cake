@@ -1,6 +1,6 @@
-#addin "nuget:?package=Cake.Wyam&version=1.0.0"
+#addin "nuget:?package=Cake.Wyam&version=1.1.0"
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
-#tool "nuget:?package=Wyam&version=1.0.0"
+#tool "nuget:?package=Wyam&version=1.1.0"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -138,7 +138,7 @@ private void Version()
     
     Information("Updating Directory.Build.props...");
 
-    var dbp = File("./Directory.Build.props");
+    var dbp = File("./src/Directory.Build.props");
     XmlPoke(dbp, "/Project/PropertyGroup/Version", nuGetVersion);
     XmlPoke(dbp, "/Project/PropertyGroup/AssemblyVersion", assemblyVersion);
     XmlPoke(dbp, "/Project/PropertyGroup/FileVersion", fileVersion);
@@ -158,6 +158,9 @@ private void Build(string cfg)
         settings.SetConfiguration(cfg);
         settings.SetMaxCpuCount(0);
         settings.SetVerbosity(Verbosity.Quiet);
+        settings.WithTarget("rebuild");
+        settings.WithProperty("SourceLinkCreate", new[] { "true" });
+        settings.WithProperty("SourceLinkTest", new[] { "true" });
         if (!IsRunningOnWindows())
         { 
             // Hack for Linux bug - Missing MSBuild path.
@@ -209,8 +212,6 @@ private void Pack(string cfg)
             settings.SetMaxCpuCount(0);
             settings.SetVerbosity(Verbosity.Quiet);
             settings.WithTarget("pack");
-            settings.WithProperty("IncludeSource", new[] { "true" });
-            settings.WithProperty("IncludeSymbols", new[] { "true" });
             if (!IsRunningOnWindows())
             { 
                 // Hack for Linux bug - Missing MSBuild path.
@@ -230,7 +231,8 @@ private void Docs()
         Wyam(new WyamSettings()
         {
             InputPaths = new DirectoryPath[] { Directory("./pages") },
-            OutputPath = Directory("./docs")
+            OutputPath = Directory("./docs"),
+            UpdatePackages = true
         });
     }
 }

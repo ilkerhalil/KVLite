@@ -24,12 +24,11 @@
 using NodaTime;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
-using PommaLabs.KVLite.Resources;
 using PommaLabs.KVLite.Logging;
+using PommaLabs.KVLite.Resources;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using SystemCacheItemPolicy = System.Runtime.Caching.CacheItemPolicy;
@@ -423,16 +422,6 @@ namespace PommaLabs.KVLite.Memory
 
         #endregion ICache members
 
-        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(Settings.CacheName):
-                    InitSystemMemoryCache();
-                    break;
-            }
-        }
-
         private void InitSystemMemoryCache()
         {
             // If a memory cache was already instanced, and it was not the default, the dispose it
@@ -476,16 +465,6 @@ namespace PommaLabs.KVLite.Memory
         #region Cache key handling
 
         [Serializable, DataContract]
-        private struct CacheKey
-        {
-            [DataMember(Name = "p", Order = 0, EmitDefaultValue = false)]
-            public string Partition { get; set; }
-
-            [DataMember(Name = "k", Order = 1, EmitDefaultValue = false)]
-            public string Key { get; set; }
-        }
-
-        [Serializable, DataContract]
         private sealed class CacheValue
         {
             [DataMember(Name = "vl", Order = 0, EmitDefaultValue = false)]
@@ -504,16 +483,14 @@ namespace PommaLabs.KVLite.Memory
             return $"{partitionLength}${partition}${key}";
         }
 
-        private static CacheKey DeserializeCacheKey(string cacheKey)
+        private static (string Partition, string Key) DeserializeCacheKey(string cacheKey)
         {
             var partitionLengthEnd = cacheKey.IndexOf('$');
             var partitionLengthPrefix = cacheKey.Substring(0, partitionLengthEnd);
             var partitionLength = int.Parse(partitionLengthPrefix);
-            return new CacheKey
-            {
-                Partition = cacheKey.Substring(partitionLengthEnd + 1, partitionLength),
-                Key = cacheKey.Substring(partitionLengthEnd + partitionLength + 2)
-            };
+            var partition = cacheKey.Substring(partitionLengthEnd + 1, partitionLength);
+            var key = cacheKey.Substring(partitionLengthEnd + partitionLength + 2);
+            return (partition, key);
         }
 
         private TVal UnsafeDeserializeCacheValue<TVal>(CacheValue cacheValue)
@@ -539,7 +516,7 @@ namespace PommaLabs.KVLite.Memory
             if (cacheValue == null || cacheValue.Value == null)
             {
                 // Nothing to deserialize, return None.
-                return default(CacheResult<TVal>);
+                return default;
             }
             try
             {
@@ -549,7 +526,7 @@ namespace PommaLabs.KVLite.Memory
             {
                 LastError = ex;
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, Settings.CacheName);
-                return default(CacheResult<TVal>);
+                return default;
             }
         }
 
@@ -558,7 +535,7 @@ namespace PommaLabs.KVLite.Memory
             if (cacheValue == null || cacheValue.Value == null)
             {
                 // Nothing to deserialize, return None.
-                return default(CacheResult<ICacheItem<TVal>>);
+                return default;
             }
             try
             {
@@ -576,7 +553,7 @@ namespace PommaLabs.KVLite.Memory
             {
                 LastError = ex;
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, Settings.CacheName);
-                return default(CacheResult<ICacheItem<TVal>>);
+                return default;
             }
         }
 

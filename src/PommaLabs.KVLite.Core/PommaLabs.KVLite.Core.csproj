@@ -3,8 +3,9 @@
     <AssemblyTitle>KVLite - Core implementations</AssemblyTitle>
     <TargetFrameworks>netstandard2.0;net452;net461;net471</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
@@ -20,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HellBrick.Diagnostics" Version="2.0.0" PrivateAssets="All" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1-beta1" />
     <PackageReference Include="NodaTime.Serialization.JsonNet" Version="2.0.0" />
     <PackageReference Include="System.Buffers" Version="4.4.0" />

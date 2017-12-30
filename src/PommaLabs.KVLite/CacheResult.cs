@@ -31,7 +31,7 @@ namespace PommaLabs.KVLite
     ///   The result of a cache read operation.
     /// </summary>
     /// <typeparam name="T">The requested type.</typeparam>
-    public struct CacheResult<T> : IEquatable<CacheResult<T>>
+    public readonly struct CacheResult<T> : IEquatable<CacheResult<T>>
     {
         /// <summary>
         ///   Creates a result from given value.

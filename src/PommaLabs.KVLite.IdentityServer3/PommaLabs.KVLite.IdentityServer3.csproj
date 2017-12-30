@@ -3,8 +3,10 @@
     <AssemblyTitle>KVLite - IdentityServer3 cache provider</AssemblyTitle>
     <TargetFrameworks>net452;net461;net471</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
+    <!-- We cannot sign this assembly, since IdentityServer3 is not signed -->
+    <!--<SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>-->
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HellBrick.Diagnostics" Version="2.0.0" PrivateAssets="All" />
     <PackageReference Include="IdentityServer3" Version="2.6.1" />
   </ItemGroup>
 </Project>

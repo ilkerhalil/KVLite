@@ -3,8 +3,10 @@
     <AssemblyTitle>KVLite - IdentityServer4 cache provider</AssemblyTitle>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
+    <!-- We cannot sign this assembly, since IdentityServer4 is not signed -->
+    <!--<SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>-->
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HellBrick.Diagnostics" Version="2.0.0" PrivateAssets="All" />
     <PackageReference Include="IdentityServer4" Version="2.0.6" />
   </ItemGroup>
 </Project>

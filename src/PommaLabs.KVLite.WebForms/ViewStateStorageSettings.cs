@@ -29,14 +29,14 @@ namespace PommaLabs.KVLite.WebForms
     /// </summary>
     public sealed class ViewStateStorageSettings : ICloneable
     {
-        ViewStateStorageBehavior _behavior;
-        bool _compressed;
-        string _connectionString = "data source=127.0.0.1;Trusted_Connection=yes";
-        ViewStateStorageMethod _method;
-        string _storagePath = "~/Viewstate";
-        string _tableName = "app_ViewState";
-        double _fileage = 3;
-        TimeSpan _maxAge = TimeSpan.Zero;
+        private ViewStateStorageBehavior _behavior;
+        private bool _compressed;
+        private string _connectionString = "data source=127.0.0.1;Trusted_Connection=yes";
+        private ViewStateStorageMethod _method;
+        private string _storagePath = "~/Viewstate";
+        private string _tableName = "app_ViewState";
+        private double _fileage = 3;
+        private TimeSpan _maxAge = TimeSpan.Zero;
 
         /// <summary>
         ///   Initializes a new instance of Flesk.Accelerator.ViewState.ViewStateStorageSettings
@@ -190,8 +190,8 @@ namespace PommaLabs.KVLite.WebForms
 
         /// <summary>
         ///   Gets or sets the storage behavior for the page request; if set to FirstLoad, the page
-        ///   will then reuse the Viewstate data for the following postbacks, if set to EachLoad,
-        ///   the page will generate Viewstate data for each request.
+        ///   will then reuse the Viewstate data for the following postbacks, if set to EachLoad, the
+        ///   page will generate Viewstate data for each request.
         /// </summary>
         public ViewStateStorageBehavior RequestBehavior
         {
@@ -200,8 +200,8 @@ namespace PommaLabs.KVLite.WebForms
         }
 
         /// <summary>
-        ///   If the Method property is set to 'File', use this property to set the virtual
-        ///   directory where the viewstate files are created.
+        ///   If the Method property is set to 'File', use this property to set the virtual directory
+        ///   where the viewstate files are created.
         /// </summary>
         public string StorageVirtualPath
         {
@@ -270,7 +270,7 @@ namespace PommaLabs.KVLite.WebForms
     }
 
     /// <summary>
-    ///   </summary>
+    /// </summary>
     public enum ViewStateStorageMethod
     {
         /// <summary>
@@ -300,12 +300,12 @@ namespace PommaLabs.KVLite.WebForms
     }
 
     /// <summary>
-    ///   </summary>
+    /// </summary>
     public enum ViewStateStorageBehavior
     {
         /// <summary>
-        ///   The Viewstate storage is generated on the first request to a page, and is reused in
-        ///   the following postbacks.
+        ///   The Viewstate storage is generated on the first request to a page, and is reused in the
+        ///   following postbacks.
         /// </summary>
         FirstLoad,
 
