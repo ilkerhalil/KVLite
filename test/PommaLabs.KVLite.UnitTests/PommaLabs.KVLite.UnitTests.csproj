@@ -36,4 +36,9 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="IdentityServer3\" />
+    <Folder Include="IdentityServer4\" />
+  </ItemGroup>
 </Project>

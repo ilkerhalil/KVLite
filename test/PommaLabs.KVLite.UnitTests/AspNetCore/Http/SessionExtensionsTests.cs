@@ -4,7 +4,7 @@
 //
 // The MIT License (MIT)
 //
-// Copyright (c) 2014-2017 Alessio Parma <alessio.parma@gmail.com>
+// Copyright (c) 2014-2018 Alessio Parma <alessio.parma@gmail.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -33,7 +33,7 @@ namespace PommaLabs.KVLite.UnitTests.AspNetCore.Http
 {
     internal sealed class SessionExtensionsTests : AbstractTests
     {
-        #region Setup/Teardown
+#region Setup/Teardown
 
         private MemorySession _memorySession;
 
@@ -50,7 +50,7 @@ namespace PommaLabs.KVLite.UnitTests.AspNetCore.Http
             _memorySession = null;
         }
 
-        #endregion Setup/Teardown
+#endregion Setup/Teardown
 
         [Test]
         public void ShouldGetTheSameObjectAfterSetWithDefaultSerializer()
