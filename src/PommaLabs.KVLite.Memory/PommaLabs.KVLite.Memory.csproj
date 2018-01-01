@@ -19,6 +19,10 @@
     <ProjectReference Include="..\PommaLabs.KVLite.Core\PommaLabs.KVLite.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
+  </ItemGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'net452' Or '$(TargetFramework)' == 'net461' Or '$(TargetFramework)' == 'net471' ">
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>

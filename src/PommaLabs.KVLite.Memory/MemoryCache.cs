@@ -23,9 +23,18 @@
 
 #if NETSTD20
 
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Options;
 using NodaTime;
+using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
+using PommaLabs.KVLite.Logging;
+using PommaLabs.KVLite.Resources;
+using MicrosoftMemoryCache = Microsoft.Extensions.Caching.Memory.MemoryCache;
+using MicrosoftMemoryCacheOptions = Microsoft.Extensions.Caching.Memory.MemoryCacheOptions;
 
 namespace PommaLabs.KVLite.Memory
 {
@@ -34,25 +43,100 @@ namespace PommaLabs.KVLite.Memory
     /// </summary>
     public sealed class MemoryCache : AbstractCache<MemoryCache, MemoryCacheSettings>
     {
+        #region Default Instance
+
+        /// <summary>
+        ///   Gets the default instance for this cache kind. Default instance is configured using
+        ///   default application settings.
+        /// </summary>
+        public static MemoryCache DefaultInstance { get; } = new MemoryCache(new MemoryCacheSettings());
+
+        #endregion Default Instance
+
+        #region Construction
+
+        /// <summary>
+        ///   The Microsoft memory cache used as backend.
+        /// </summary>
+        private MicrosoftMemoryCache _store;
+
+        /// <summary>
+        ///   Helper map used to enumerate entries, something which has not been implemented by
+        ///   Microsoft memory cache.
+        /// </summary>
+        private ConcurrentDictionary<MemoryCacheKey, MemoryCacheValue> _helperMap;
+
         /// <summary>
         ///   Initializes a new instance of the <see cref="MemoryCache"/> class with given settings.
         /// </summary>
         /// <param name="settings">Cache settings.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
-        public MemoryCache(MemoryCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null, IRandom random = null)
+        public MemoryCache(MemoryCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null)
         {
             Settings = settings;
             Clock = SystemClock.Instance;
             Compressor = compressor ?? DeflateCompressor.Instance;
             Serializer = serializer ?? JsonSerializer.Instance;
+
+            InitMicrosoftMemoryCache();
         }
+
+        private void InitMicrosoftMemoryCache()
+        {
+            // If a memory cache was already instanced, then dispose it before applying the new initialization.
+            _store?.Dispose();
+            _store = new MicrosoftMemoryCache(new OptionsWrapper<MicrosoftMemoryCacheOptions>(new MicrosoftMemoryCacheOptions
+            {
+                SizeLimit = Settings.MaxCacheSizeInMB
+            }));
+
+            // Clear the helper map, since we are replacing the memory cache.
+            _helperMap?.Clear();
+            _helperMap = new ConcurrentDictionary<MemoryCacheKey, MemoryCacheValue>();
+        }
+
+        #endregion Construction
+
+        #region FormattableObject members
+
+        /// <summary>
+        ///   Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString() => $"MicrosoftMemoryCache: {_store}";
+
+        #endregion FormattableObject members
+
+        #region IDisposable members
+
+        /// <summary>
+        ///   Performs application-defined tasks associated with freeing, releasing, or resetting
+        ///   unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">True if it is a managed dispose, false otherwise.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing)
+            {
+                // Nothing to do, we can handle only managed Dispose calls.
+                return;
+            }
+
+            _store?.Dispose();
+            _store = null;
+
+            _helperMap?.Clear();
+            _helperMap = null;
+        }
+
+        #endregion IDisposable members
 
         /// <summary>
         ///   Gets the clock used by the cache.
         /// </summary>
         /// <remarks>
-        ///   Since <see cref="SystemMemoryCache"/> does not allow clock customisation, then this
+        ///   Since <see cref="MicrosoftMemoryCache"/> does not allow clock customisation, then this
         ///   property defaults to <see cref="SystemClock"/>.
         /// </remarks>
         public override IClock Clock { get; }
@@ -76,11 +160,6 @@ namespace PommaLabs.KVLite.Memory
         public override int MaxParentKeyTreeDepth { get; } = int.MaxValue;
 
         /// <summary>
-        ///   Generates random numbers. Used to determine when to perform automatic soft cleanups.
-        /// </summary>
-        public IRandom Random { get; }
-
-        /// <summary>
         ///   Gets the serializer used by the cache.
         /// </summary>
         /// <remarks>
@@ -100,34 +179,162 @@ namespace PommaLabs.KVLite.Memory
         /// </summary>
         public override bool CanPeek => false;
 
+        /// <summary>
+        ///   Adds given value with the specified expiry time and refresh internal.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="utcExpiry">The UTC expiry time.</param>
+        /// <param name="interval">The refresh interval.</param>
+        /// <param name="parentKeys">
+        ///   Keys, belonging to current partition, on which the new item will depend.
+        /// </param>
         protected override void AddInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)
         {
-            throw new System.NotImplementedException();
+            if (Log.IsDebugEnabled())
+            {
+                Log.DebugFormat(DebugMessages.AddItem, partition, key, Settings.CacheName, utcExpiry, interval);
+            }
+
+            byte[] serializedValue;
+            bool compressed;
+            try
+            {
+                using (var serializedStream = new PooledMemoryStream())
+                {
+                    Serializer.SerializeToStream(value, serializedStream);
+
+                    if (serializedStream.Length > Settings.MinValueLengthForCompression)
+                    {
+                        // Stream is too long, we should compress it.
+                        using (var compressedStream = new PooledMemoryStream())
+                        {
+                            using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
+                            {
+                                serializedStream.Position = 0L;
+                                serializedStream.CopyTo(compressionStream);
+                            }
+                            serializedValue = compressedStream.ToArray();
+                            compressed = true;
+                        }
+                    }
+                    else
+                    {
+                        // Stream is shorter than specified threshold, we can store it as it is.
+                        serializedValue = serializedStream.ToArray();
+                        compressed = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.ErrorException(ErrorMessages.InternalErrorOnSerialization, ex, value);
+                throw new ArgumentException(ErrorMessages.NotSerializableValue, ex);
+            }
+
+            var cacheKey = new MemoryCacheKey(partition, key);
+            var cacheValue = new MemoryCacheValue
+            {
+                Value = serializedValue,
+                Compressed = compressed,
+                UtcCreation = Clock.GetCurrentInstant(),
+                ParentKeys = (parentKeys == null || parentKeys.Count == 0)
+                    ? Array.Empty<MemoryCacheKey>()
+                    : parentKeys.Select(pk => new MemoryCacheKey(partition, pk)).ToArray()
+            };
+
+            var cacheEntry = _store.CreateEntry(cacheKey);
+            cacheEntry.Size = cacheValue.Value.LongLength;
+            cacheEntry.Value = cacheValue;
+
+            if (interval == Duration.Zero)
+            {
+                cacheEntry.AbsoluteExpiration = utcExpiry.ToDateTimeOffset();
+            }
+            else
+            {
+                cacheEntry.SlidingExpiration = interval.ToTimeSpan();
+            }
+
+            _helperMap.AddOrUpdate(cacheKey, cacheValue, (a, b) => cacheValue);
+            cacheEntry.PostEvictionCallbacks.Add(new Microsoft.Extensions.Caching.Memory.PostEvictionCallbackRegistration
+            {
+                EvictionCallback = (eKey, eValue, reason, state) =>
+                {
+                    _helperMap.TryRemove((MemoryCacheKey) eKey, out var _);
+                    foreach (var parentKey in (eValue as MemoryCacheValue).ParentKeys)
+                    {
+                        _store.Remove(parentKey);
+                    }
+                }
+            });
         }
 
+        /// <summary>
+        ///   Clears this instance or a partition, if specified.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <param name="cacheReadMode">The cache read mode.</param>
+        /// <returns>The number of items that have been removed.</returns>
         protected override long ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
-            throw new System.NotImplementedException();
+            // We need to make a snapshot of the keys, since the cache might be used by other
+            // processes. Therefore, we start projecting all keys.
+            var cacheKeys = _helperMap.Select(x => x.Key);
+
+            // Then, if a partition has been specified, we select only those keys that belong to that partition.
+            if (partition != null)
+            {
+                cacheKeys = cacheKeys.Where(k => k.Partition == partition);
+            }
+
+            // Now we take the snapshot of the keys.
+            var cacheKeysArray = cacheKeys.ToArray();
+
+            // At last, we can remove them safely from the store itself.
+            foreach (var cacheKey in cacheKeysArray)
+            {
+                _store.Remove(cacheKey);
+            }
+
+            return cacheKeysArray.LongLength;
         }
 
+        /// <summary>
+        ///   Determines whether cache contains the specified partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>Whether cache contains the specified partition and key.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected override bool ContainsInternal(string partition, string key)
         {
-            throw new System.NotImplementedException();
+            var maybeCacheKey = new MemoryCacheKey(partition, key);
+            return _store.TryGetValue(maybeCacheKey, out var _);
         }
 
+        /// <summary>
+        ///   The number of items in the cache or in a partition, if specified.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <param name="cacheReadMode">The cache read mode.</param>
+        /// <returns>The number of items in the cache.</returns>
+        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected override long CountInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate)
         {
-            throw new System.NotImplementedException();
-        }
+            // If partition has not been specified, then we use the GetCount method provided directly
+            // by the MemoryCache.
+            if (partition == null)
+            {
+                return _store.Count;
+            }
 
-        protected override void Dispose(bool disposing)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override long GetCacheSizeInBytesInternal()
-        {
-            throw new System.NotImplementedException();
+            // Otherwise, we need to count items, which is surely slower. In fact, we also need to
+            // deserialize the key in order to understand if the item belongs to the partition.
+            return _helperMap.Count(x => x.Key.Partition == partition);
         }
 
         protected override CacheResult<TVal> GetInternal<TVal>(string partition, string key)
@@ -164,6 +371,20 @@ namespace PommaLabs.KVLite.Memory
         {
             throw new System.NotImplementedException();
         }
+
+        #region Cache size estimation
+
+        /// <summary>
+        ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
+        ///   therefore, it does not need to be extremely accurate.
+        /// </summary>
+        /// <returns>An estimate of cache size in bytes.</returns>
+        protected override long GetCacheSizeInBytesInternal() => _helperMap
+            .Select(x => x.Value)
+            .Where(x => x != null)
+            .Sum(x => x.Value.LongLength);
+
+        #endregion Cache size estimation
     }
 }
 
@@ -195,11 +416,7 @@ namespace PommaLabs.KVLite.Memory
         ///   Gets the default instance for this cache kind. Default instance is configured using
         ///   default application settings.
         /// </summary>
-#pragma warning disable CC0022 // Should dispose object
-
         public static MemoryCache DefaultInstance { get; } = new MemoryCache(new MemoryCacheSettings());
-
-#pragma warning restore CC0022 // Should dispose object
 
 #endregion Default Instance
 
@@ -224,6 +441,31 @@ namespace PommaLabs.KVLite.Memory
             Serializer = serializer ?? JsonSerializer.Instance;
 
             InitSystemMemoryCache();
+        }
+
+        private void InitSystemMemoryCache()
+        {
+            // If a memory cache was already instanced, then dispose it before applying the new initialization.
+            if (_store != null && _store != SystemMemoryCache.Default)
+            {
+                _store.Dispose();
+            }
+
+            if (Settings.CacheName == new MemoryCacheSettings().CacheName)
+            {
+                // If the default cache name is used, then refer to the Default memory cache. It is
+                // the safest and most efficient way to use that kind of cache.
+                _store = SystemMemoryCache.Default;
+                return;
+            }
+
+            // Otherwise, if a name has been specified, then we need to apply a proper configuration.
+            // This way is more dangerous, because it is not easy to choose the right moment to
+            // dispose the memory cache.
+            _store = new SystemMemoryCache(Settings.CacheName, new NameValueCollection
+            {
+                { "CacheMemoryLimitMegabytes", Settings.MaxCacheSizeInMB.ToString() }
+            });
         }
 
 #endregion Construction
@@ -377,11 +619,11 @@ namespace PommaLabs.KVLite.Memory
 
             if (parentKeys != null && parentKeys.Count > 0)
             {
-                policy.ChangeMonitors.Add(_store.CreateCacheEntryChangeMonitor(parentKeys.Select(pk => SerializeCacheKey(partition, pk))));
+                policy.ChangeMonitors.Add(_store.CreateCacheEntryChangeMonitor(parentKeys.Select(pk => MemoryCacheKey.Serialize(partition, pk))));
             }
 
-            var cacheValue = new CacheValue { Value = serializedValue, Compressed = compressed, UtcCreation = Clock.GetCurrentInstant() };
-            _store.Set(SerializeCacheKey(partition, key), cacheValue, policy);
+            var cacheValue = new MemoryCacheValue { Value = serializedValue, Compressed = compressed, UtcCreation = Clock.GetCurrentInstant() };
+            _store.Set(MemoryCacheKey.Serialize(partition, key), cacheValue, policy);
         }
 
         /// <summary>
@@ -394,24 +636,24 @@ namespace PommaLabs.KVLite.Memory
         {
             // We need to make a snapshot of the keys, since the cache might be used by other
             // processes. Therefore, we start projecting all keys.
-            var keys = _store.Select(x => x.Key);
+            var cacheKeys = _store.Select(x => x.Key);
 
             // Then, if a partition has been specified, we select only those keys that belong to that partition.
             if (partition != null)
             {
-                keys = keys.Where(k => DeserializeCacheKey(k).Partition == partition);
+                cacheKeys = cacheKeys.Where(k => MemoryCacheKey.Deserialize(k).Partition == partition);
             }
 
             // Now we take the snapshot of the keys.
-            var keysArray = keys.ToArray();
+            var cacheKeysArray = cacheKeys.ToArray();
 
             // At last, we can remove them safely from the store itself.
-            foreach (var key in keys)
+            foreach (var cacheKey in cacheKeysArray)
             {
-                _store.Remove(key);
+                _store.Remove(cacheKey);
             }
 
-            return keysArray.LongLength;
+            return cacheKeysArray.LongLength;
         }
 
         /// <summary>
@@ -423,7 +665,7 @@ namespace PommaLabs.KVLite.Memory
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected override bool ContainsInternal(string partition, string key)
         {
-            var maybeCacheKey = SerializeCacheKey(partition, key);
+            var maybeCacheKey = MemoryCacheKey.Serialize(partition, key);
             return _store.Contains(maybeCacheKey);
         }
 
@@ -445,7 +687,7 @@ namespace PommaLabs.KVLite.Memory
 
             // Otherwise, we need to count items, which is surely slower. In fact, we also need to
             // deserialize the key in order to understand if the item belongs to the partition.
-            return _store.Count(x => DeserializeCacheKey(x.Key).Partition == partition);
+            return _store.Count(x => MemoryCacheKey.Deserialize(x.Key).Partition == partition);
         }
 
         /// <summary>
@@ -458,8 +700,8 @@ namespace PommaLabs.KVLite.Memory
         /// <returns>The value with specified partition and key.</returns>
         protected override CacheResult<TVal> GetInternal<TVal>(string partition, string key)
         {
-            var maybeCacheKey = SerializeCacheKey(partition, key);
-            var maybeCacheValue = _store.Get(maybeCacheKey) as CacheValue;
+            var maybeCacheKey = MemoryCacheKey.Serialize(partition, key);
+            var maybeCacheValue = _store.Get(maybeCacheKey) as MemoryCacheValue;
             return DeserializeCacheValue<TVal>(maybeCacheValue, partition, key);
         }
 
@@ -473,8 +715,8 @@ namespace PommaLabs.KVLite.Memory
         /// <returns>The cache item with specified partition and key.</returns>
         protected override CacheResult<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
-            var maybeCacheKey = SerializeCacheKey(partition, key);
-            var maybeCacheValue = _store.Get(maybeCacheKey) as CacheValue;
+            var maybeCacheKey = MemoryCacheKey.Serialize(partition, key);
+            var maybeCacheValue = _store.Get(maybeCacheKey) as MemoryCacheValue;
             return DeserializeCacheItem<TVal>(maybeCacheValue, partition, key);
         }
 
@@ -488,10 +730,10 @@ namespace PommaLabs.KVLite.Memory
         protected override IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition)
         {
             // Pick only the items with the right type.
-            var q = _store.Where(x => x.Value is CacheValue).Select(x => new
+            var q = _store.Where(x => x.Value is MemoryCacheValue).Select(x => new
             {
-                CacheKey = DeserializeCacheKey(x.Key),
-                CacheValue = x.Value as CacheValue
+                CacheKey = MemoryCacheKey.Deserialize(x.Key),
+                CacheValue = x.Value as MemoryCacheValue
             });
 
             // If partition has been specified, then we shall also filter by it.
@@ -564,37 +806,11 @@ namespace PommaLabs.KVLite.Memory
         /// <param name="key">The key.</param>
         protected override void RemoveInternal(string partition, string key)
         {
-            var maybeCacheKey = SerializeCacheKey(partition, key);
+            var maybeCacheKey = MemoryCacheKey.Serialize(partition, key);
             _store.Remove(maybeCacheKey);
         }
 
 #endregion ICache members
-
-        private void InitSystemMemoryCache()
-        {
-            // If a memory cache was already instanced, and it was not the default, the dispose it
-            // after applying the new initialization.
-            if (_store != null && _store != SystemMemoryCache.Default)
-            {
-                _store.Dispose();
-            }
-
-            if (Settings.CacheName == new MemoryCacheSettings().CacheName)
-            {
-                // If the default cache name is used, then refer to the Default memory cache. It is
-                // the safest and most efficient way to use that kind of cache.
-                _store = SystemMemoryCache.Default;
-                return;
-            }
-
-            // Otherwise, if a name has been specified, then we need to apply a proper configuration.
-            // This way is more dangerous, because it is not easy to choose the right moment to
-            // dispose the memory cache.
-            _store = new SystemMemoryCache(Settings.CacheName, new NameValueCollection
-            {
-                { "CacheMemoryLimitMegabytes", Settings.MaxCacheSizeInMB.ToString() }
-            });
-        }
 
 #region Cache size estimation
 
@@ -604,7 +820,7 @@ namespace PommaLabs.KVLite.Memory
         /// </summary>
         /// <returns>An estimate of cache size in bytes.</returns>
         protected override long GetCacheSizeInBytesInternal() => _store
-            .Select(x => x.Value as CacheValue)
+            .Select(x => x.Value as MemoryCacheValue)
             .Where(x => x != null)
             .Sum(x => x.Value.LongLength);
 
@@ -612,36 +828,7 @@ namespace PommaLabs.KVLite.Memory
 
 #region Cache key handling
 
-        [Serializable, DataContract]
-        private sealed class CacheValue
-        {
-            [DataMember(Name = "vl", Order = 0, EmitDefaultValue = false)]
-            public byte[] Value { get; set; }
-
-            [DataMember(Name = "co", Order = 1, EmitDefaultValue = false)]
-            public bool Compressed { get; set; }
-
-            [DataMember(Name = "cr", Order = 2, EmitDefaultValue = false)]
-            public Instant UtcCreation { get; set; }
-        }
-
-        private static string SerializeCacheKey(string partition, string key)
-        {
-            var partitionLength = partition.Length;
-            return $"{partitionLength}${partition}${key}";
-        }
-
-        private static (string Partition, string Key) DeserializeCacheKey(string cacheKey)
-        {
-            var partitionLengthEnd = cacheKey.IndexOf('$');
-            var partitionLengthPrefix = cacheKey.Substring(0, partitionLengthEnd);
-            var partitionLength = int.Parse(partitionLengthPrefix);
-            var partition = cacheKey.Substring(partitionLengthEnd + 1, partitionLength);
-            var key = cacheKey.Substring(partitionLengthEnd + partitionLength + 2);
-            return (partition, key);
-        }
-
-        private TVal UnsafeDeserializeCacheValue<TVal>(CacheValue cacheValue)
+        private TVal UnsafeDeserializeCacheValue<TVal>(MemoryCacheValue cacheValue)
         {
             var buffer = cacheValue.Value;
             using (var memoryStream = new PooledMemoryStream(buffer))
@@ -659,7 +846,7 @@ namespace PommaLabs.KVLite.Memory
             }
         }
 
-        private CacheResult<TVal> DeserializeCacheValue<TVal>(CacheValue cacheValue, string partition, string key)
+        private CacheResult<TVal> DeserializeCacheValue<TVal>(MemoryCacheValue cacheValue, string partition, string key)
         {
             if (cacheValue == null || cacheValue.Value == null)
             {
@@ -678,7 +865,7 @@ namespace PommaLabs.KVLite.Memory
             }
         }
 
-        private CacheResult<ICacheItem<TVal>> DeserializeCacheItem<TVal>(CacheValue cacheValue, string partition, string key)
+        private CacheResult<ICacheItem<TVal>> DeserializeCacheItem<TVal>(MemoryCacheValue cacheValue, string partition, string key)
         {
             if (cacheValue == null || cacheValue.Value == null)
             {
