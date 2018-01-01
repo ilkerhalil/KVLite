@@ -23,16 +23,16 @@
 
 #if NETSTD20
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Options;
 using NodaTime;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using MicrosoftMemoryCache = Microsoft.Extensions.Caching.Memory.MemoryCache;
 using MicrosoftMemoryCacheOptions = Microsoft.Extensions.Caching.Memory.MemoryCacheOptions;
 
@@ -310,11 +310,7 @@ namespace PommaLabs.KVLite.Memory
         /// <param name="key">The key.</param>
         /// <returns>Whether cache contains the specified partition and key.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        protected override bool ContainsInternal(string partition, string key)
-        {
-            var maybeCacheKey = new MemoryCacheKey(partition, key);
-            return _store.TryGetValue(maybeCacheKey, out var _);
-        }
+        protected override bool ContainsInternal(string partition, string key) => _store.TryGetValue(new MemoryCacheKey(partition, key), out var _);
 
         /// <summary>
         ///   The number of items in the cache or in a partition, if specified.
@@ -337,39 +333,131 @@ namespace PommaLabs.KVLite.Memory
             return _helperMap.Count(x => x.Key.Partition == partition);
         }
 
+        /// <summary>
+        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by the corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value with specified partition and key.</returns>
         protected override CacheResult<TVal> GetInternal<TVal>(string partition, string key)
         {
-            throw new System.NotImplementedException();
+            var maybeCacheKey = new MemoryCacheKey(partition, key);
+            if (_store.TryGetValue(maybeCacheKey, out var cacheValue))
+            {
+                var maybeCacheValue = cacheValue as MemoryCacheValue;
+                return DeserializeCacheValue<TVal>(maybeCacheValue, partition, key);
+            }
+            return default;
         }
 
+        /// <summary>
+        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
+        ///   value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected value.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The cache item with specified partition and key.</returns>
         protected override CacheResult<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key)
         {
-            throw new System.NotImplementedException();
+            var maybeCacheKey = new MemoryCacheKey(partition, key);
+            if (_store.TryGetValue(maybeCacheKey, out var cacheValue))
+            {
+                var maybeCacheValue = cacheValue as MemoryCacheValue;
+                return DeserializeCacheItem<TVal>(maybeCacheValue, partition, key);
+            }
+            return default;
         }
 
+        /// <summary>
+        ///   Gets all cache items or the ones in a partition, if specified. If an item is a
+        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <returns>All cache items.</returns>
         protected override IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition)
         {
-            throw new System.NotImplementedException();
+            // Take a snapshot of all keys.
+            var maybeCacheKeys = _helperMap.Keys.Where(k => partition == null || k.Partition == partition);
+
+            // For each key, verify that the item is still valid.
+            var items = new List<ICacheItem<TVal>>();
+            foreach (var maybeCacheKey in maybeCacheKeys)
+            {
+                MemoryCacheValue maybeCacheValue;
+                if (_store.TryGetValue(maybeCacheKey, out var cacheValue) && (maybeCacheValue = cacheValue as MemoryCacheValue) != null)
+                {
+                    items.Add(DeserializeCacheItem<TVal>(maybeCacheValue, maybeCacheKey.Partition, maybeCacheKey.Key).Value);
+                }
+            }
+
+            return items;
         }
 
+        /// <summary>
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///   The item corresponding to given partition and key, without updating expiry date.
+        /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         protected override CacheResult<TVal> PeekInternal<TVal>(string partition, string key)
         {
-            throw new System.NotImplementedException();
+            throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, Settings.CacheName));
         }
 
+        /// <summary>
+        ///   Gets the item corresponding to given partition and key, without updating expiry date.
+        /// </summary>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///   The item corresponding to given partition and key, without updating expiry date.
+        /// </returns>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         protected override CacheResult<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key)
         {
-            throw new System.NotImplementedException();
+            throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, Settings.CacheName));
         }
 
+        /// <summary>
+        ///   Gets the all values in the cache or in the specified partition, without updating expiry dates.
+        /// </summary>
+        /// <param name="partition">The optional partition.</param>
+        /// <typeparam name="TVal">The type of the expected values.</typeparam>
+        /// <returns>All values, without updating expiry dates.</returns>
+        /// <remarks>
+        ///   If you are uncertain of which type the value should have, you can always pass
+        ///   <see cref="T:System.Object"/> as type parameter; that will work whether the required
+        ///   value is a class or not.
+        /// </remarks>
+        /// <exception cref="NotSupportedException">
+        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
+        /// </exception>
         protected override IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition)
         {
-            throw new System.NotImplementedException();
+            throw new NotSupportedException(string.Format(ErrorMessages.CacheDoesNotAllowPeeking, Settings.CacheName));
         }
 
+        /// <summary>
+        ///   Removes the value with given partition and key.
+        /// </summary>
+        /// <param name="partition">The partition.</param>
+        /// <param name="key">The key.</param>
         protected override void RemoveInternal(string partition, string key)
         {
-            throw new System.NotImplementedException();
+            _store.Remove(new MemoryCacheKey(partition, key));
         }
 
         #region Cache size estimation
@@ -385,6 +473,74 @@ namespace PommaLabs.KVLite.Memory
             .Sum(x => x.Value.LongLength);
 
         #endregion Cache size estimation
+
+        #region Cache entry handling
+
+        private TVal UnsafeDeserializeCacheValue<TVal>(MemoryCacheValue cacheValue)
+        {
+            var buffer = cacheValue.Value;
+            using (var memoryStream = new PooledMemoryStream(buffer))
+            {
+                if (!cacheValue.Compressed)
+                {
+                    // Handle uncompressed value.
+                    return Serializer.DeserializeFromStream<TVal>(memoryStream);
+                }
+                using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
+                {
+                    // Handle compressed value.
+                    return Serializer.DeserializeFromStream<TVal>(decompressionStream);
+                }
+            }
+        }
+
+        private CacheResult<TVal> DeserializeCacheValue<TVal>(MemoryCacheValue cacheValue, string partition, string key)
+        {
+            if (cacheValue == null || cacheValue.Value == null)
+            {
+                // Nothing to deserialize, return None.
+                return default;
+            }
+            try
+            {
+                return UnsafeDeserializeCacheValue<TVal>(cacheValue);
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, Settings.CacheName);
+                return default;
+            }
+        }
+
+        private CacheResult<ICacheItem<TVal>> DeserializeCacheItem<TVal>(MemoryCacheValue cacheValue, string partition, string key)
+        {
+            if (cacheValue == null || cacheValue.Value == null)
+            {
+                // Nothing to deserialize, return None.
+                return default;
+            }
+            try
+            {
+                // Generate the KVLite cache item and return it. Many properties available in the
+                // KVLite cache items cannot be filled due to missing information.
+                return new CacheItem<TVal>
+                {
+                    Partition = partition,
+                    Key = key,
+                    Value = UnsafeDeserializeCacheValue<TVal>(cacheValue),
+                    UtcCreation = cacheValue.UtcCreation
+                };
+            }
+            catch (Exception ex)
+            {
+                LastError = ex;
+                Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, Settings.CacheName);
+                return default;
+            }
+        }
+
+        #endregion Cache entry handling
     }
 }
 
@@ -826,7 +982,7 @@ namespace PommaLabs.KVLite.Memory
 
 #endregion Cache size estimation
 
-#region Cache key handling
+#region Cache entry handling
 
         private TVal UnsafeDeserializeCacheValue<TVal>(MemoryCacheValue cacheValue)
         {
@@ -892,7 +1048,7 @@ namespace PommaLabs.KVLite.Memory
             }
         }
 
-#endregion Cache key handling
+#endregion Cache entry handling
     }
 }
 
