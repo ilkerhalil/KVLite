@@ -9,6 +9,13 @@
     <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>-->
   </PropertyGroup>
 
+  <PropertyGroup Label="NuGet">
+    <Title>KVLite - IdentityServer3 cache provider</Title>
+    <Summary>KVLite is a partition-based key-value cache built for SQL RDBMSs. This package contains an IdentityServer3 cache provider.</Summary>
+    <Description>$(Summary)</Description>
+    <PackageTags>kvlite;cache;partition;key;value;store;concurrent;timed;sliding;identity;server;identityserver3</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net452;net461;net471</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;net452;net461;net471</TargetFrameworks>
     <OutputType>exe</OutputType>
   </PropertyGroup>
 
@@ -10,35 +10,43 @@
     <!-- Drivers -->
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.Memory\PommaLabs.KVLite.Memory.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.SQLite\PommaLabs.KVLite.SQLite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
+    <!-- Adapters -->
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.AspNetCore\PommaLabs.KVLite.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.IdentityServer4\PommaLabs.KVLite.IdentityServer4.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' Or '$(TargetFramework)' == 'net461' Or '$(TargetFramework)' == 'net471' ">
     <!-- Adapters -->
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.EntityFramework\PommaLabs.KVLite.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.IdentityServer3\PommaLabs.KVLite.IdentityServer3.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.WebApi\PommaLabs.KVLite.WebApi.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.WebForms\PommaLabs.KVLite.WebForms.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net452' ">
-    <!-- Adapters -->
-    <ProjectReference Include="..\..\src\PommaLabs.KVLite.AspNetCore\PommaLabs.KVLite.AspNetCore.csproj" />
-  </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Effort.EF6" Version="1.3.1" />
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.1" />
     <PackageReference Include="Ninject" Version="3.3.4" />
-    <PackageReference Include="NMemory" Version="1.1.2" />
     <PackageReference Include="NodaTime.Testing" Version="2.2.3" />
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="NUnitLite" Version="3.9.0" />
-    <PackageReference Include="Shouldly" Version="2.8.3" />
+    <PackageReference Include="Shouldly" Version="3.0.0-beta0003" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' Or '$(TargetFramework)' == 'net461' Or '$(TargetFramework)' == 'net471' ">
+    <PackageReference Include="Effort.EF6" Version="1.3.1" />
+    <PackageReference Include="NMemory" Version="1.1.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' Or '$(TargetFramework)' == 'net461' Or '$(TargetFramework)' == 'net471' ">
+    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+    <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net452' Or '$(TargetFramework)' == 'net461' Or '$(TargetFramework)' == 'net471' ">
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="IdentityServer3\" />
-    <Folder Include="IdentityServer4\" />
   </ItemGroup>
 </Project>

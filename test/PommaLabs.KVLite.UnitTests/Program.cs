@@ -29,7 +29,7 @@ namespace PommaLabs.KVLite.UnitTests
     {
         public static int Main(string[] args)
         {
-#if NETSTD16
+#if NETSTD20
             return new AutoRun(System.Reflection.Assembly.GetEntryAssembly()).Execute(args, new NUnit.Common.ColorConsoleWriter(), System.Console.In);
 #else
             return new AutoRun().Execute(args);

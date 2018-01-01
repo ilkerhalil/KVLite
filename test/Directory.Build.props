@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <Project>
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <DefineConstants>$(DefineConstants);NETSTD20</DefineConstants>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
+    <DefineConstants>$(DefineConstants);NETSTD20;HAS_ASPNETCORE;HAS_EFCORE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net452' ">
-    <DefineConstants>$(DefineConstants);NET45</DefineConstants>
+    <DefineConstants>$(DefineConstants);NET45;HAS_ASPNET;HAS_EF</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <DefineConstants>$(DefineConstants);NET46</DefineConstants>
+    <DefineConstants>$(DefineConstants);NET46;HAS_ASPNET;HAS_EF</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);NET47</DefineConstants>
+    <DefineConstants>$(DefineConstants);NET47;HAS_ASPNET;HAS_EF</DefineConstants>
   </PropertyGroup>
 </Project>

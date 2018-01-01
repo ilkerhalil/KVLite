@@ -1,4 +1,4 @@
-﻿// File name: PersistentOutputCacheProviderTests.cs
+﻿// File name: AbstractKVLiteCacheTests.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -24,22 +24,14 @@
 #if HAS_ASPNET
 
 using NUnit.Framework;
-using PommaLabs.KVLite.WebForms;
+using PommaLabs.KVLite.IdentityServer3;
 
-namespace PommaLabs.KVLite.UnitTests.WebForms
+namespace PommaLabs.KVLite.UnitTests.IdentityServer3
 {
-    [TestFixture]
-    sealed class PersistentOutputCacheProviderTests
+    [Category(nameof(IdentityServer3))]
+    internal sealed class AbstractKVLiteCacheTests : AbstractTests
     {
-        /// <summary>
-        ///   Verifies issue #1.
-        /// </summary>
-        [Test]
-        public void Get_ShouldReturnNullIfItemIsMissing()
-        {
-            var provider = new PersistentOutputCacheProvider();
-            Assert.IsNull(provider.Get("X"));
-        }
+        private readonly KVLiteCache<string> _cache;
     }
 }
 

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>KVLite - In-memory driver</AssemblyTitle>
-    <TargetFrameworks>net452;net461;net471</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net452;net461;net471</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <SignAssembly>true</SignAssembly>
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
@@ -19,7 +19,7 @@
     <ProjectReference Include="..\PommaLabs.KVLite.Core\PommaLabs.KVLite.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' Or '$(TargetFramework)' == 'net461' Or '$(TargetFramework)' == 'net471' ">
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
 </Project>

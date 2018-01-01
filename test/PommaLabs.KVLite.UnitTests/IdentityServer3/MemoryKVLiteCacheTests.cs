@@ -1,4 +1,4 @@
-﻿// File name: PersistentOutputCacheProviderTests.cs
+﻿// File name: MemoryKVLiteCacheTests.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -23,23 +23,16 @@
 
 #if HAS_ASPNET
 
-using NUnit.Framework;
-using PommaLabs.KVLite.WebForms;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace PommaLabs.KVLite.UnitTests.WebForms
+namespace PommaLabs.KVLite.UnitTests.IdentityServer3
 {
-    [TestFixture]
-    sealed class PersistentOutputCacheProviderTests
+    internal sealed class MemoryKVLiteCacheTests
     {
-        /// <summary>
-        ///   Verifies issue #1.
-        /// </summary>
-        [Test]
-        public void Get_ShouldReturnNullIfItemIsMissing()
-        {
-            var provider = new PersistentOutputCacheProvider();
-            Assert.IsNull(provider.Get("X"));
-        }
     }
 }
 

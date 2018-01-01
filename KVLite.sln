@@ -20,8 +20,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-5
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DA9B418B-185E-4B62-A6EE-DAFC4E5DAB51}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7BB9E3FA-1248-4572-A5AB-2BAB740AD373}"
+	ProjectSection(SolutionItems) = preProject
+		test\Directory.Build.props = test\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logo", "logo", "{2FAF059E-AE80-4682-8F1F-E6965A1AD53A}"
 	ProjectSection(SolutionItems) = preProject
@@ -82,9 +88,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.Examples.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.AspNetCore", "src\PommaLabs.KVLite.AspNetCore\PommaLabs.KVLite.AspNetCore.csproj", "{66D3A5CC-AC65-4D0B-884D-7392976EA7FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.IdentityServer3", "src\PommaLabs.KVLite.IdentityServer3\PommaLabs.KVLite.IdentityServer3.csproj", "{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.IdentityServer3", "src\PommaLabs.KVLite.IdentityServer3\PommaLabs.KVLite.IdentityServer3.csproj", "{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.IdentityServer4", "src\PommaLabs.KVLite.IdentityServer4\PommaLabs.KVLite.IdentityServer4.csproj", "{D533B99E-84BA-4B2B-999E-BF17B0BE5623}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.IdentityServer4", "src\PommaLabs.KVLite.IdentityServer4\PommaLabs.KVLite.IdentityServer4.csproj", "{D533B99E-84BA-4B2B-999E-BF17B0BE5623}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,12 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>KVLite - IdentityServer4 cache provider</AssemblyTitle>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- We cannot sign this assembly, since IdentityServer4 is not signed -->
     <!--<SignAssembly>true</SignAssembly>
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>-->
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet">
+    <Title>KVLite - IdentityServer4 cache provider</Title>
+    <Summary>KVLite is a partition-based key-value cache built for SQL RDBMSs. This package contains an IdentityServer4 cache provider.</Summary>
+    <Description>$(Summary)</Description>
+    <PackageTags>kvlite;cache;partition;key;value;store;concurrent;timed;sliding;identity;server;identityserver4</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

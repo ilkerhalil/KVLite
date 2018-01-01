@@ -25,7 +25,11 @@ using Ninject.Modules;
 using NodaTime;
 using NodaTime.Testing;
 using PommaLabs.KVLite.Extensibility;
+
+#if HAS_EF
+using PommaLabs.KVLite.UnitTests.EntityFramework;
 using System.Data.Entity.Infrastructure.Interception;
+#endif
 
 namespace PommaLabs.KVLite.UnitTests
 {
@@ -52,7 +56,9 @@ namespace PommaLabs.KVLite.UnitTests
                 .To<SystemRandom>()
                 .InTransientScope();
 
-            DbInterception.Add(new DbCommandInterceptor());
+#if HAS_EF
+            DbInterception.Add(new PrintingDbCommandInterceptor());
+#endif
         }
     }
 }
