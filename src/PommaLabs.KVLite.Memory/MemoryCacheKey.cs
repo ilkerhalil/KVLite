@@ -26,7 +26,7 @@ using System.Collections.Generic;
 
 namespace PommaLabs.KVLite.Memory
 {
-    internal readonly struct MemoryCacheKey : IEquatable<MemoryCacheKey>
+    internal sealed class MemoryCacheKey : IEquatable<MemoryCacheKey>
     {
         public MemoryCacheKey(string partition, string key)
         {
@@ -54,24 +54,34 @@ namespace PommaLabs.KVLite.Memory
             return new MemoryCacheKey(partition, key);
         }
 
-        public override int GetHashCode()
+        public override bool Equals(object obj)
         {
-            unchecked
-            {
-                const int prime = -1521134295;
-                var hash = 12345701;
-                hash = hash * prime + EqualityComparer<string>.Default.GetHashCode(Partition);
-                hash = hash * prime + EqualityComparer<string>.Default.GetHashCode(Key);
-                return hash;
-            }
+            return Equals(obj as MemoryCacheKey);
         }
 
-        public bool Equals(MemoryCacheKey other) => Partition == other.Partition && Key == other.Key;
+        public bool Equals(MemoryCacheKey other)
+        {
+            return other != null &&
+                   Partition == other.Partition &&
+                   Key == other.Key;
+        }
 
-        public override bool Equals(object obj) => obj is MemoryCacheKey && Equals((MemoryCacheKey) obj);
+        public override int GetHashCode()
+        {
+            var hashCode = -2068116195;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Partition);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Key);
+            return hashCode;
+        }
 
-        public static bool operator ==(MemoryCacheKey x, MemoryCacheKey y) => x.Equals(y);
+        public static bool operator ==(MemoryCacheKey key1, MemoryCacheKey key2)
+        {
+            return EqualityComparer<MemoryCacheKey>.Default.Equals(key1, key2);
+        }
 
-        public static bool operator !=(MemoryCacheKey x, MemoryCacheKey y) => !x.Equals(y);
+        public static bool operator !=(MemoryCacheKey key1, MemoryCacheKey key2)
+        {
+            return !(key1 == key2);
+        }
     }
 }

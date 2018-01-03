@@ -29,8 +29,13 @@ namespace PommaLabs.KVLite.Extensibility
     /// <summary>
     ///   Clock implementation which relies upon <see cref="DateTimeOffset.UtcNow"/>.
     /// </summary>
-    public sealed class SystemClock : ISystemClock
+    public sealed class MachineClock : ISystemClock
     {
+        /// <summary>
+        ///   Shared clock instance.
+        /// </summary>
+        public static MachineClock Instance { get; } = new MachineClock();
+
         /// <summary>
         ///   Retrieves the current system time in UTC.
         /// </summary>
