@@ -17,7 +17,6 @@
  *                                                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-using NodaTime;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.Text;
@@ -95,8 +94,7 @@ namespace PommaLabs.KVLite.WebForms
             var state = GetViewState(guid);
 
             // the state object is a System.Web.UI.Pair, because we must set the ControlState as well
-            var pair = state as Pair;
-            if (pair != null)
+            if (state is Pair pair)
             {
                 ControlState = pair.First;
                 ViewState = pair.Second;

@@ -101,7 +101,7 @@ namespace PommaLabs.KVLite.Examples.WebApi.Controllers
         /// <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
         /// <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
         [Route("items")]
-        public override IEnumerable<ICacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = default(DateTime?), DateTime? toExpiry = default(DateTime?), DateTime? fromCreation = default(DateTime?), DateTime? toCreation = default(DateTime?))
+        public override IEnumerable<ICacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTimeOffset? fromExpiry = default(DateTimeOffset?), DateTimeOffset? toExpiry = default(DateTimeOffset?), DateTimeOffset? fromCreation = default(DateTimeOffset?), DateTimeOffset? toCreation = default(DateTimeOffset?))
         {
             return base.GetItems(partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
@@ -122,7 +122,7 @@ namespace PommaLabs.KVLite.Examples.WebApi.Controllers
         /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
         /// <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
         [Route("items/withValues")]
-        public override IEnumerable<ICacheItem<object>> GetItemsWithValues(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = default(DateTime?), DateTime? toExpiry = default(DateTime?), DateTime? fromCreation = default(DateTime?), DateTime? toCreation = default(DateTime?))
+        public override IEnumerable<ICacheItem<object>> GetItemsWithValues(string partitionLike = null, string keyLike = null, DateTimeOffset? fromExpiry = default(DateTimeOffset?), DateTimeOffset? toExpiry = default(DateTimeOffset?), DateTimeOffset? fromCreation = default(DateTimeOffset?), DateTimeOffset? toCreation = default(DateTimeOffset?))
         {
             return base.GetItemsWithValues(partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
@@ -144,7 +144,7 @@ namespace PommaLabs.KVLite.Examples.WebApi.Controllers
         /// </returns>
         /// <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
         [Route("items/{partition}")]
-        public override IEnumerable<ICacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTime? fromExpiry = default(DateTime?), DateTime? toExpiry = default(DateTime?), DateTime? fromCreation = default(DateTime?), DateTime? toCreation = default(DateTime?))
+        public override IEnumerable<ICacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTimeOffset? fromExpiry = default(DateTimeOffset?), DateTimeOffset? toExpiry = default(DateTimeOffset?), DateTimeOffset? fromCreation = default(DateTimeOffset?), DateTimeOffset? toCreation = default(DateTimeOffset?))
         {
             return base.GetPartitionItems(partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
@@ -165,7 +165,7 @@ namespace PommaLabs.KVLite.Examples.WebApi.Controllers
         ///   All _valid_ items stored in the cache for given partition which follow given search criteria.
         /// </returns>
         [Route("items/{partition}/withValues")]
-        public override IEnumerable<ICacheItem<object>> GetPartitionItemsWithValues(string partition, string keyLike = null, DateTime? fromExpiry = default(DateTime?), DateTime? toExpiry = default(DateTime?), DateTime? fromCreation = default(DateTime?), DateTime? toCreation = default(DateTime?))
+        public override IEnumerable<ICacheItem<object>> GetPartitionItemsWithValues(string partition, string keyLike = null, DateTimeOffset? fromExpiry = default(DateTimeOffset?), DateTimeOffset? toExpiry = default(DateTimeOffset?), DateTimeOffset? fromCreation = default(DateTimeOffset?), DateTimeOffset? toCreation = default(DateTimeOffset?))
         {
             return base.GetPartitionItemsWithValues(partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }

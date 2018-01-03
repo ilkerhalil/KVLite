@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.Web.Caching;
@@ -71,7 +70,7 @@ namespace PommaLabs.KVLite.WebForms
         /// <returns>A reference to the specified provider.</returns>
         public override object Add(string key, object entry, DateTime utcExpiry)
         {
-            Cache.AddTimed(OutputCachePartition, key, entry, utcExpiry.ToInstant());
+            Cache.AddTimed(OutputCachePartition, key, entry, utcExpiry);
             return entry;
         }
 
@@ -86,7 +85,7 @@ namespace PommaLabs.KVLite.WebForms
         /// </param>
         public override void Set(string key, object entry, DateTime utcExpiry)
         {
-            Cache.AddTimed(OutputCachePartition, key, entry, utcExpiry.ToInstant());
+            Cache.AddTimed(OutputCachePartition, key, entry, utcExpiry);
         }
 
         /// <summary>

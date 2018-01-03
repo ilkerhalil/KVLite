@@ -41,7 +41,7 @@
             <param name="key">The key.</param>
             <returns>A _valid_ item stored in the cache for given partition and key.</returns>
         </member>
-        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetItems(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetItems(System.String,System.String,System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset})">
             <summary>
               Returns all _valid_ items stored in the cache which follow given search criteria.
               Values are omitted, in order to keep the response small.
@@ -59,7 +59,7 @@
             <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
             <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
         </member>
-        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetItemsWithValues(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetItemsWithValues(System.String,System.String,System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset})">
             <summary>
               Returns all _valid_ items stored in the cache which follow given search criteria.
               Values are included in the response.
@@ -76,7 +76,7 @@
             <param name="toCreation">Optional, the maximum creation date items should have.</param>
             <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
         </member>
-        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetPartitionItems(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetPartitionItems(System.String,System.String,System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset})">
             <summary>
               Returns all _valid_ items stored in the cache for given partition which follow given
               search criteria. Values are omitted, in order to keep the response small.
@@ -94,7 +94,7 @@
             </returns>
             <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
         </member>
-        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetPartitionItemsWithValues(System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:PommaLabs.KVLite.Examples.WebApi.Controllers.CacheController.GetPartitionItemsWithValues(System.String,System.String,System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset})">
             <summary>
               Returns all _valid_ items stored in the cache for given partition which follow given
               search criteria. Values are included in the response.

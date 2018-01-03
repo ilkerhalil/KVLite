@@ -21,7 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime.Extensions;
+using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.Collections.Generic;
@@ -67,7 +67,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
         /// <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
         [Route("items")]
-        public virtual IEnumerable<ICacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
+        public virtual IEnumerable<ICacheItem<object>> GetItems(string partitionLike = null, string keyLike = null, DateTimeOffset? fromExpiry = null, DateTimeOffset? toExpiry = null, DateTimeOffset? fromCreation = null, DateTimeOffset? toCreation = null)
         {
             // Removes the value, as stated in the docs.
             var items = Cache.GetItems<object>().Select(i => new CacheItem<object>(i.Partition, i.Key, null, i.UtcCreation, i.UtcExpiry, i.Interval, i.ParentKeys));
@@ -90,7 +90,7 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
         /// <returns>All _valid_ items stored in the cache which follow given search criteria.</returns>
         [Route("items/withValues")]
-        public virtual IEnumerable<ICacheItem<object>> GetItemsWithValues(string partitionLike = null, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
+        public virtual IEnumerable<ICacheItem<object>> GetItemsWithValues(string partitionLike = null, string keyLike = null, DateTimeOffset? fromExpiry = null, DateTimeOffset? toExpiry = null, DateTimeOffset? fromCreation = null, DateTimeOffset? toCreation = null)
         {
             return QueryCacheItems(Cache.GetItems<object>(), partitionLike, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
@@ -121,7 +121,7 @@ namespace PommaLabs.KVLite.WebApi
         /// </returns>
         /// <remarks>Value is not serialized in the response, since it might be truly heavy.</remarks>
         [Route("items/{partition}")]
-        public virtual IEnumerable<ICacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
+        public virtual IEnumerable<ICacheItem<object>> GetPartitionItems(string partition, string keyLike = null, DateTimeOffset? fromExpiry = null, DateTimeOffset? toExpiry = null, DateTimeOffset? fromCreation = null, DateTimeOffset? toCreation = null)
         {
             // Removes the value, as stated in the docs.
             var items = Cache.GetItems<object>(partition).Select(i => new CacheItem<object>(i.Partition, i.Key, null, i.UtcCreation, i.UtcExpiry, i.Interval, i.ParentKeys));
@@ -144,7 +144,7 @@ namespace PommaLabs.KVLite.WebApi
         ///   All _valid_ items stored in the cache for given partition which follow given search criteria.
         /// </returns>
         [Route("items/{partition}/withValues")]
-        public virtual IEnumerable<ICacheItem<object>> GetPartitionItemsWithValues(string partition, string keyLike = null, DateTime? fromExpiry = null, DateTime? toExpiry = null, DateTime? fromCreation = null, DateTime? toCreation = null)
+        public virtual IEnumerable<ICacheItem<object>> GetPartitionItemsWithValues(string partition, string keyLike = null, DateTimeOffset? fromExpiry = null, DateTimeOffset? toExpiry = null, DateTimeOffset? fromCreation = null, DateTimeOffset? toCreation = null)
         {
             return QueryCacheItems(Cache.GetItems<object>(partition), partition, keyLike, fromExpiry, toExpiry, fromCreation, toCreation);
         }
@@ -188,20 +188,20 @@ namespace PommaLabs.KVLite.WebApi
         /// <param name="fromCreation">Optional, the minimum creation date items should have.</param>
         /// <param name="toCreation">Optional, the maximum creation date items should have.</param>
         /// <returns>The items extracted by the query.</returns>
-        private static IEnumerable<ICacheItem<object>> QueryCacheItems(IEnumerable<ICacheItem<object>> items, string partitionLike, string keyLike, DateTime? fromExpiry, DateTime? toExpiry, DateTime? fromCreation, DateTime? toCreation)
+        private static IEnumerable<ICacheItem<object>> QueryCacheItems(IEnumerable<ICacheItem<object>> items, string partitionLike, string keyLike, DateTimeOffset? fromExpiry, DateTimeOffset? toExpiry, DateTimeOffset? fromCreation, DateTimeOffset? toCreation)
         {
-            var fromExpiryUnix = fromExpiry.HasValue ? fromExpiry.Value.ToInstant().ToUnixTimeSeconds() : new long?();
-            var toExpiryUnix = toExpiry.HasValue ? toExpiry.Value.ToInstant().ToUnixTimeSeconds() : new long?();
-            var fromCreationUnix = fromCreation.HasValue ? fromCreation.Value.ToInstant().ToUnixTimeSeconds() : new long?();
-            var toCreationUnix = toCreation.HasValue ? toCreation.Value.ToInstant().ToUnixTimeSeconds() : new long?();
+            var fromExpiryUnix = fromExpiry.HasValue ? ClockHelper.ToUnixTimeSeconds(fromExpiry.Value) : new long?();
+            var toExpiryUnix = toExpiry.HasValue ? ClockHelper.ToUnixTimeSeconds(toExpiry.Value) : new long?();
+            var fromCreationUnix = fromCreation.HasValue ? ClockHelper.ToUnixTimeSeconds(fromCreation.Value) : new long?();
+            var toCreationUnix = toCreation.HasValue ? ClockHelper.ToUnixTimeSeconds(toCreation.Value) : new long?();
 
             return from i in items
                    where string.IsNullOrWhiteSpace(partitionLike) || i.Partition.Contains(partitionLike)
                    where string.IsNullOrWhiteSpace(keyLike) || i.Key.Contains(keyLike)
-                   where !fromExpiryUnix.HasValue || i.UtcExpiry.ToUnixTimeSeconds() >= fromExpiryUnix.Value
-                   where !toExpiryUnix.HasValue || i.UtcExpiry.ToUnixTimeSeconds() <= toExpiryUnix.Value
-                   where !fromCreationUnix.HasValue || i.UtcCreation.ToUnixTimeSeconds() >= fromCreationUnix.Value
-                   where !toCreationUnix.HasValue || i.UtcCreation.ToUnixTimeSeconds() <= toCreationUnix.Value
+                   where !fromExpiryUnix.HasValue || ClockHelper.ToUnixTimeSeconds(i.UtcExpiry) >= fromExpiryUnix.Value
+                   where !toExpiryUnix.HasValue || ClockHelper.ToUnixTimeSeconds(i.UtcExpiry) <= toExpiryUnix.Value
+                   where !fromCreationUnix.HasValue || ClockHelper.ToUnixTimeSeconds(i.UtcCreation) >= fromCreationUnix.Value
+                   where !toCreationUnix.HasValue || ClockHelper.ToUnixTimeSeconds(i.UtcCreation) <= toCreationUnix.Value
                    select i;
         }
     }

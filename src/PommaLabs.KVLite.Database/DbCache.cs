@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Dapper;
-using NodaTime;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Goodies;
@@ -69,9 +68,9 @@ namespace PommaLabs.KVLite.Database
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings), ErrorMessages.NullSettings);
             ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-            Clock = clock ?? NodaTime.SystemClock.Instance;
             Serializer = serializer ?? JsonSerializer.Instance;
             Compressor = compressor ?? DeflateCompressor.Instance;
+            Clock = clock ?? SystemClock.Instance;
             Random = random ?? new SystemRandom();
         }
 
@@ -126,7 +125,7 @@ namespace PommaLabs.KVLite.Database
         /// <param name="cacheReadMode">The cache read mode.</param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>The number of items that have been removed.</returns>
-        public async Task<long> ClearAsync(CacheReadMode cacheReadMode, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<long> ClearAsync(CacheReadMode cacheReadMode, CancellationToken cancellationToken = default)
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -192,7 +191,7 @@ namespace PommaLabs.KVLite.Database
         /// <param name="cacheReadMode">The cache read mode.</param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>The number of items that have been removed.</returns>
-        public async Task<long> ClearAsync(string partition, CacheReadMode cacheReadMode, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<long> ClearAsync(string partition, CacheReadMode cacheReadMode, CancellationToken cancellationToken = default)
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -368,7 +367,7 @@ namespace PommaLabs.KVLite.Database
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="NodaTime.SystemClock"/>.
+        ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
         /// </remarks>
         public sealed override IClock Clock { get; }
 
@@ -553,7 +552,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             return RetryOnFail(() =>
@@ -580,7 +579,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             return await RetryOnFailAsync(async () =>
@@ -607,7 +606,7 @@ namespace PommaLabs.KVLite.Database
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             using (var db = cf.Open())
@@ -632,7 +631,7 @@ namespace PommaLabs.KVLite.Database
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
@@ -657,7 +656,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             using (var db = cf.Open())
@@ -682,7 +681,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
@@ -707,7 +706,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             DbCacheValue dbCacheValue;
@@ -718,7 +717,7 @@ namespace PommaLabs.KVLite.Database
                 if (dbCacheValue == null)
                 {
                     // Nothing to deserialize, return None.
-                    return default(CacheResult<TVal>);
+                    return default;
                 }
 
                 if (dbCacheValue.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
@@ -727,7 +726,7 @@ namespace PommaLabs.KVLite.Database
                     db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
 
                     // Nothing to deserialize, return None.
-                    return default(CacheResult<TVal>);
+                    return default;
                 }
 
                 if (dbCacheValue.Interval > 0L)
@@ -759,7 +758,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             DbCacheValue dbCacheValue;
@@ -770,7 +769,7 @@ namespace PommaLabs.KVLite.Database
                 if (dbCacheValue == null)
                 {
                     // Nothing to deserialize, return None.
-                    return default(CacheResult<TVal>);
+                    return default;
                 }
 
                 if (dbCacheValue.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
@@ -780,7 +779,7 @@ namespace PommaLabs.KVLite.Database
                     await db.ExecuteAsync(cmd).ConfigureAwait(false);
 
                     // Nothing to deserialize, return None.
-                    return default(CacheResult<TVal>);
+                    return default;
                 }
 
                 if (dbCacheValue.Interval > 0L)
@@ -812,7 +811,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             DbCacheEntry dbCacheEntry;
@@ -823,7 +822,7 @@ namespace PommaLabs.KVLite.Database
                 if (dbCacheEntry == null)
                 {
                     // Nothing to deserialize, return None.
-                    return default(CacheResult<ICacheItem<TVal>>);
+                    return default;
                 }
 
                 if (dbCacheEntry.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
@@ -832,7 +831,7 @@ namespace PommaLabs.KVLite.Database
                     db.Execute(cf.DeleteCacheEntryCommand, dbCacheEntrySingle);
 
                     // Nothing to deserialize, return None.
-                    return default(CacheResult<ICacheItem<TVal>>);
+                    return default;
                 }
 
                 if (dbCacheEntry.Interval > 0L)
@@ -864,7 +863,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             DbCacheEntry dbCacheEntry;
@@ -875,7 +874,7 @@ namespace PommaLabs.KVLite.Database
                 if (dbCacheEntry == null)
                 {
                     // Nothing to deserialize, return None.
-                    return default(CacheResult<ICacheItem<TVal>>);
+                    return default;
                 }
 
                 if (dbCacheEntry.UtcExpiry < dbCacheEntrySingle.UtcExpiry)
@@ -885,7 +884,7 @@ namespace PommaLabs.KVLite.Database
                     await db.ExecuteAsync(cmd).ConfigureAwait(false);
 
                     // Nothing to deserialize, return None.
-                    return default(CacheResult<ICacheItem<TVal>>);
+                    return default;
                 }
 
                 if (dbCacheEntry.Interval > 0L)
@@ -916,7 +915,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             DbCacheEntry[] dbCacheEntries;
@@ -971,7 +970,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             DbCacheEntry[] dbCacheEntries;
@@ -1029,7 +1028,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             DbCacheValue dbCacheValue;
@@ -1041,7 +1040,7 @@ namespace PommaLabs.KVLite.Database
             if (dbCacheValue == null)
             {
                 // Nothing to deserialize, return None.
-                return default(CacheResult<TVal>);
+                return default;
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -1066,7 +1065,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             DbCacheValue dbCacheValue;
@@ -1078,7 +1077,7 @@ namespace PommaLabs.KVLite.Database
             if (dbCacheValue == null)
             {
                 // Nothing to deserialize, return None.
-                return default(CacheResult<TVal>);
+                return default;
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -1102,7 +1101,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             DbCacheEntry dbCacheEntry;
@@ -1114,7 +1113,7 @@ namespace PommaLabs.KVLite.Database
             if (dbCacheEntry == null)
             {
                 // Nothing to deserialize, return None.
-                return default(CacheResult<ICacheItem<TVal>>);
+                return default;
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -1139,7 +1138,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             DbCacheEntry dbCacheEntry;
@@ -1151,7 +1150,7 @@ namespace PommaLabs.KVLite.Database
             if (dbCacheEntry == null)
             {
                 // Nothing to deserialize, return None.
-                return default(CacheResult<ICacheItem<TVal>>);
+                return default;
             }
 
             // Deserialize operation is expensive and it should be performed outside the connection.
@@ -1177,7 +1176,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             DbCacheEntry[] dbCacheEntries;
@@ -1214,7 +1213,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             DbCacheEntry[] dbCacheEntries;
@@ -1313,7 +1312,7 @@ namespace PommaLabs.KVLite.Database
 
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, Settings.CacheName);
 
-                return default(CacheResult<TVal>);
+                return default;
             }
         }
 
@@ -1329,8 +1328,8 @@ namespace PommaLabs.KVLite.Database
                     Partition = partition,
                     Key = key,
                     Value = UnsafeDeserializeCacheValue<TVal>(dbCacheEntry),
-                    UtcCreation = Instant.FromUnixTimeSeconds(dbCacheEntry.UtcCreation),
-                    UtcExpiry = Instant.FromUnixTimeSeconds(dbCacheEntry.UtcExpiry),
+                    UtcCreation = ClockHelper.FromUnixTimeSeconds(dbCacheEntry.UtcCreation),
+                    UtcExpiry = ClockHelper.FromUnixTimeSeconds(dbCacheEntry.UtcExpiry),
                     Interval = TimeSpan.FromSeconds(dbCacheEntry.Interval)
                 };
 
@@ -1361,7 +1360,7 @@ namespace PommaLabs.KVLite.Database
 
                 Log.WarnException(ErrorMessages.InternalErrorOnDeserialization, ex, partition, key, Settings.CacheName);
 
-                return default(CacheResult<ICacheItem<TVal>>);
+                return default;
             }
         }
 
@@ -1394,9 +1393,9 @@ namespace PommaLabs.KVLite.Database
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 Partition = partition,
                 Key = key,
-                UtcExpiry = utcExpiry.ToUnixTimeSeconds(),
+                UtcExpiry = ClockHelper.ToUnixTimeSeconds(utcExpiry),
                 Interval = (long) interval.TotalSeconds,
-                UtcCreation = Clock.UtcNow.ToUnixTimeSeconds()
+                UtcCreation = ClockHelper.ToUnixTimeSeconds(Clock.UtcNow)
             };
 
             // Serializing may be pretty expensive, therefore we keep it out of the connection.
@@ -1515,7 +1514,7 @@ namespace PommaLabs.KVLite.Database
         {
             if (retry == null)
             {
-                return default(T);
+                return default;
             }
             for (var i = 1; i <= RetryLimit; ++i)
             {
@@ -1528,14 +1527,14 @@ namespace PommaLabs.KVLite.Database
                     Task.Delay(RetryInterval(i)).Wait();
                 }
             }
-            return default(T); // We will never get here.
+            return default; // We will never get here.
         }
 
         private static async Task<T> RetryOnFailAsync<T>(Func<Task<T>> retry)
         {
             if (retry == null)
             {
-                return default(T);
+                return default;
             }
             for (var i = 1; i <= RetryLimit; ++i)
             {
@@ -1548,7 +1547,7 @@ namespace PommaLabs.KVLite.Database
                     await Task.Delay(RetryInterval(i)).ConfigureAwait(false);
                 }
             }
-            return default(T); // We will never get here.
+            return default; // We will never get here.
         }
 
         #endregion Retry policy management

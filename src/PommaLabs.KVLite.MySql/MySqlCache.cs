@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using MySql.Data.MySqlClient;
-using NodaTime;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 

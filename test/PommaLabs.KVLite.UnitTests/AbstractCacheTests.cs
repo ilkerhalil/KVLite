@@ -21,8 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
-using NodaTime.Testing;
 using NUnit.Framework;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
@@ -557,10 +555,10 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v2, info.Value.Item2);
 
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(e.InUtc().Date, info.UtcExpiry.InUtc().Date);
-            Assert.AreEqual(e.InUtc().Hour, info.UtcExpiry.InUtc().Hour);
-            Assert.AreEqual(e.InUtc().Minute, info.UtcExpiry.InUtc().Minute);
-            Assert.AreEqual(e.InUtc().Second, info.UtcExpiry.InUtc().Second);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
 
             Assert.AreEqual(TimeSpan.Zero, info.Interval);
         }
@@ -586,10 +584,10 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v2, info.Value.Item2);
 
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(e.InUtc().Date, info.UtcExpiry.InUtc().Date);
-            Assert.AreEqual(e.InUtc().Hour, info.UtcExpiry.InUtc().Hour);
-            Assert.AreEqual(e.InUtc().Minute, info.UtcExpiry.InUtc().Minute);
-            Assert.AreEqual(e.InUtc().Second, info.UtcExpiry.InUtc().Second);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
 
             Assert.AreEqual(TimeSpan.Zero, info.Interval);
 
@@ -615,12 +613,12 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v1, info.Value.Item1);
             Assert.AreEqual(v2, info.Value.Item2);
 
-            var e = Cache.Clock.UtcNow.Plus(l);
+            var e = Cache.Clock.UtcNow.Add(l);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(e.InUtc().Date, info.UtcExpiry.InUtc().Date);
-            Assert.AreEqual(e.InUtc().Hour, info.UtcExpiry.InUtc().Hour);
-            Assert.AreEqual(e.InUtc().Minute, info.UtcExpiry.InUtc().Minute);
-            Assert.AreEqual(e.InUtc().Second, info.UtcExpiry.InUtc().Second);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
 
             Assert.AreEqual(TimeSpan.Zero, info.Interval);
         }
@@ -646,10 +644,10 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v2, r.Item2);
 
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(e.InUtc().Date, info.UtcExpiry.InUtc().Date);
-            Assert.AreEqual(e.InUtc().Hour, info.UtcExpiry.InUtc().Hour);
-            Assert.AreEqual(e.InUtc().Minute, info.UtcExpiry.InUtc().Minute);
-            Assert.AreEqual(e.InUtc().Second, info.UtcExpiry.InUtc().Second);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
 
             Assert.AreEqual(TimeSpan.Zero, info.Interval);
         }
@@ -674,12 +672,12 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v1, r.Item1);
             Assert.AreEqual(v2, r.Item2);
 
-            var e = Cache.Clock.UtcNow.Plus(l);
+            var e = Cache.Clock.UtcNow.Add(l);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(e.InUtc().Date, info.UtcExpiry.InUtc().Date);
-            Assert.AreEqual(e.InUtc().Hour, info.UtcExpiry.InUtc().Hour);
-            Assert.AreEqual(e.InUtc().Minute, info.UtcExpiry.InUtc().Minute);
-            Assert.AreEqual(e.InUtc().Second, info.UtcExpiry.InUtc().Second);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
 
             Assert.AreEqual(TimeSpan.Zero, info.Interval);
         }
@@ -704,12 +702,12 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v1, r.Item1);
             Assert.AreEqual(v2, r.Item2);
 
-            var e = Cache.Clock.UtcNow.Plus(l);
+            var e = Cache.Clock.UtcNow.Add(l);
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(e.InUtc().Date, info.UtcExpiry.InUtc().Date);
-            Assert.AreEqual(e.InUtc().Hour, info.UtcExpiry.InUtc().Hour);
-            Assert.AreEqual(e.InUtc().Minute, info.UtcExpiry.InUtc().Minute);
-            Assert.AreEqual(e.InUtc().Second, info.UtcExpiry.InUtc().Second);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
 
             Assert.AreEqual(TimeSpan.Zero, info.Interval);
         }
@@ -738,10 +736,10 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v2, r.Item2);
 
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(e.InUtc().Date, info.UtcExpiry.InUtc().Date);
-            Assert.AreEqual(e.InUtc().Hour, info.UtcExpiry.InUtc().Hour);
-            Assert.AreEqual(e.InUtc().Minute, info.UtcExpiry.InUtc().Minute);
-            Assert.AreEqual(e.InUtc().Second, info.UtcExpiry.InUtc().Second);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
 
             Assert.AreEqual(TimeSpan.Zero, info.Interval);
         }
@@ -766,10 +764,10 @@ namespace PommaLabs.KVLite.UnitTests
             Assert.AreEqual(v2, info.Value.Item2);
 
             Assert.IsNotNull(info.UtcExpiry);
-            Assert.AreEqual(e.InUtc().Date, info.UtcExpiry.InUtc().Date);
-            Assert.AreEqual(e.InUtc().Hour, info.UtcExpiry.InUtc().Hour);
-            Assert.AreEqual(e.InUtc().Minute, info.UtcExpiry.InUtc().Minute);
-            Assert.AreEqual(e.InUtc().Second, info.UtcExpiry.InUtc().Second);
+            Assert.AreEqual(e.Date, info.UtcExpiry.Date);
+            Assert.AreEqual(e.Hour, info.UtcExpiry.Hour);
+            Assert.AreEqual(e.Minute, info.UtcExpiry.Minute);
+            Assert.AreEqual(e.Second, info.UtcExpiry.Second);
 
             Assert.AreEqual(TimeSpan.Zero, info.Interval);
         }
@@ -781,12 +779,12 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Plus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(Cache.Contains(StringItems[i]));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Plus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(Cache.Contains(StringItems[i]));
             }
         }
@@ -798,12 +796,12 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Plus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(Cache.Contains(StringItems[i]));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Plus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(Cache.Contains(StringItems[i]));
             }
             var items = Cache.GetItems<string>();
@@ -825,7 +823,7 @@ namespace PommaLabs.KVLite.UnitTests
                 var l = i;
                 var task = Task.Factory.StartNew(() =>
                 {
-                    Cache.AddTimed(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Minus(TimeSpan.FromMinutes(10)));
+                    Cache.AddTimed(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
                     Cache.Contains(StringItems[l]);
                 });
                 tasks.Add(task);
@@ -835,7 +833,7 @@ namespace PommaLabs.KVLite.UnitTests
                 var l = i;
                 var task = Task.Factory.StartNew(() =>
                 {
-                    Cache.AddTimed(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Minus(TimeSpan.FromMinutes(10)));
+                    Cache.AddTimed(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
                     Cache.Contains(StringItems[l]);
                 });
                 tasks.Add(task);
@@ -1005,7 +1003,7 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Minus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             for (var i = 0; i < itemCount; ++i)
             {
@@ -1090,7 +1088,7 @@ namespace PommaLabs.KVLite.UnitTests
         [TestCase(LargeItemCount)]
         public void GetMany_RightItems_AfterAddTimed_InvalidTime(int itemCount)
         {
-            AddTimed(Cache, itemCount, Cache.Clock.UtcNow.Minus(TimeSpan.FromMinutes(10)));
+            AddTimed(Cache, itemCount, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             var items = new HashSet<string>(Cache.GetItems<string>().Select(i => i.Value));
             for (var i = 0; i < itemCount; ++i)
             {
@@ -1198,7 +1196,7 @@ namespace PommaLabs.KVLite.UnitTests
             const int fixedValue = 64;
             for (var i = 0; i < fixedValue; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Minus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             Assert.AreEqual(0, Cache.Count());
         }
@@ -1231,7 +1229,7 @@ namespace PommaLabs.KVLite.UnitTests
             const int fixedValue = 64;
             Parallel.For(0, fixedValue, i =>
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Minus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             });
             Assert.AreEqual(0, Cache.Count());
         }
@@ -1339,10 +1337,10 @@ namespace PommaLabs.KVLite.UnitTests
                 var value = Cache.Peek<string>(StringItems[i]);
                 Assert.AreEqual(StringItems[i], value.Value);
                 var item = Cache.PeekItem<string>(StringItems[i]).Value;
-                Assert.AreEqual(expiryDate.InUtc().Date, item.UtcExpiry.InUtc().Date);
-                Assert.AreEqual(expiryDate.InUtc().Hour, item.UtcExpiry.InUtc().Hour);
-                Assert.AreEqual(expiryDate.InUtc().Minute, item.UtcExpiry.InUtc().Minute);
-                Assert.AreEqual(expiryDate.InUtc().Second, item.UtcExpiry.InUtc().Second);
+                Assert.AreEqual(expiryDate.Date, item.UtcExpiry.Date);
+                Assert.AreEqual(expiryDate.Hour, item.UtcExpiry.Hour);
+                Assert.AreEqual(expiryDate.Minute, item.UtcExpiry.Minute);
+                Assert.AreEqual(expiryDate.Second, item.UtcExpiry.Second);
             }
         }
 
@@ -1353,7 +1351,7 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Minus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             for (var i = 0; i < itemCount; ++i)
             {

@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Microsoft.Data.Sqlite;
-using NodaTime;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
 using System;

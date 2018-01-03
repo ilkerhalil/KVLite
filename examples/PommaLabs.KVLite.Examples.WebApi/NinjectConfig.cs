@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Ninject.Modules;
-using NodaTime;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.SQLite;
 
@@ -33,7 +32,7 @@ namespace PommaLabs.KVLite.Examples.WebApi
         public override void Load()
         {
             Bind<IClock>()
-                .ToConstant(NodaTime.SystemClock.Instance)
+                .ToConstant(SystemClock.Instance)
                 .InSingletonScope();
 
             Bind<ICompressor>()

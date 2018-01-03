@@ -1,4 +1,4 @@
-﻿// File name: OutputCacheProviderTests.cs
+﻿// File name: ClockHelper.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,41 +21,32 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#if HAS_ASPNET
-
-using Ninject;
-using NUnit.Framework;
-using PommaLabs.KVLite.Extensibility;
-using PommaLabs.KVLite.SQLite;
-using PommaLabs.KVLite.WebApi;
 using System;
 
-namespace PommaLabs.KVLite.UnitTests.WebApi
+namespace PommaLabs.KVLite.Extensibility
 {
-    internal sealed class OutputCacheProviderTests : AbstractTests
+    /// <summary>
+    ///   Helpers for clock management.
+    /// </summary>
+    public static class ClockHelper
     {
-        private OutputCacheProvider _outputCache;
+        private static readonly DateTimeOffset UnixEpoch = new DateTimeOffset(1970, 1, 1, 0, 0, 0, 0, TimeSpan.Zero);
 
-        [SetUp]
-        public void SetUp()
-        {
-            _outputCache = new OutputCacheProvider(new PersistentCache(new PersistentCacheSettings(), clock: Kernel.Get<IClock>()));
-        }
+        /// <summary>
+        ///   Converts a Unix time expressed as the number of seconds that have elapsed since
+        ///   1970-01-01T00:00:00Z to a System.DateTimeOffset value.
+        /// </summary>
+        /// <param name="seconds">Seconds.</param>
+        /// <returns>
+        ///   A date and time value that represents the same moment in time as the Unix time.
+        /// </returns>
+        public static DateTimeOffset FromUnixTimeSeconds(long seconds) => UnixEpoch.AddSeconds(seconds);
 
-        [TearDown]
-        public void TearDown()
-        {
-            _outputCache = null;
-        }
-
-        [Test]
-        public void Add_One_Valid()
-        {
-            _outputCache.Add("a", "b", _outputCache.Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)), null);
-            Assert.AreEqual("b", _outputCache.Get("a"));
-            Assert.AreEqual("b", _outputCache.Get<string>("a"));
-        }
+        /// <summary>
+        ///   Returns the number of seconds that have elapsed since 1970-01-01T00:00:00Z.
+        /// </summary>
+        /// <param name="dateTimeOffset">Date time offset.</param>
+        /// <returns>The number of seconds that have elapsed since 1970-01-01T00:00:00Z.</returns>
+        public static long ToUnixTimeSeconds(DateTimeOffset dateTimeOffset) => (long) dateTimeOffset.Subtract(UnixEpoch).TotalSeconds;
     }
 }
-
-#endif

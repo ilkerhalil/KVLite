@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.Collections.Generic;
@@ -118,7 +117,7 @@ namespace PommaLabs.KVLite.WebApi
         public void Add(string key, object o, DateTimeOffset expiration, string dependsOnKey)
         {
             var parentKeys = (dependsOnKey != null) ? new[] { dependsOnKey } : CacheExtensions.NoParentKeys;
-            Cache.AddTimed(ResponseCachePartition, key, o, expiration.ToInstant(), parentKeys);
+            Cache.AddTimed(ResponseCachePartition, key, o, expiration, parentKeys);
         }
 
 #pragma warning restore 1591

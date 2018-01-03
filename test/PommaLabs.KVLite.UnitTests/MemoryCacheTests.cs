@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
 using NUnit.Framework;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
@@ -296,12 +295,12 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Plus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(Cache.Contains(StringItems[i]));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Plus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(Cache.Contains(StringItems[i]));
             }
         }
@@ -313,12 +312,12 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Plus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(Cache.Contains(StringItems[i]));
             }
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Plus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
                 Assert.True(Cache.Contains(StringItems[i]));
             }
             var items = Cache.GetItems<string>();
@@ -340,7 +339,7 @@ namespace PommaLabs.KVLite.UnitTests
                 var l = i;
                 var task = Task.Factory.StartNew(() =>
                 {
-                    Cache.AddTimed(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Minus(TimeSpan.FromMinutes(10)));
+                    Cache.AddTimed(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
                     Cache.Contains(StringItems[l]);
                 });
                 tasks.Add(task);
@@ -350,7 +349,7 @@ namespace PommaLabs.KVLite.UnitTests
                 var l = i;
                 var task = Task.Factory.StartNew(() =>
                 {
-                    Cache.AddTimed(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Minus(TimeSpan.FromMinutes(10)));
+                    Cache.AddTimed(StringItems[l], StringItems[l], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
                     Cache.Contains(StringItems[l]);
                 });
                 tasks.Add(task);
@@ -553,7 +552,7 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Minus(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
             }
             for (var i = 0; i < itemCount; ++i)
             {

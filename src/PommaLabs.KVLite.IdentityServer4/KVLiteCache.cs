@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.Threading.Tasks;
@@ -84,8 +83,7 @@ namespace PommaLabs.KVLite.IdentityServer4
         {
             var partition = _options.Partition;
             key = string.IsNullOrWhiteSpace(key) ? NoKey : key;
-            var lifetime = TimeSpan.FromTimeSpan(expiration);
-            await _cache.AddTimedAsync(partition, key, item, lifetime).ConfigureAwait(false);
+            await _cache.AddTimedAsync(partition, key, item, expiration).ConfigureAwait(false);
         }
     }
 }

@@ -23,7 +23,6 @@
 
 using BenchmarkDotNet.Running;
 using NLog;
-using NodaTime;
 using PommaLabs.KVLite.Benchmarks.Compression;
 using PommaLabs.KVLite.Benchmarks.Models;
 using PommaLabs.KVLite.Benchmarks.Serialization;

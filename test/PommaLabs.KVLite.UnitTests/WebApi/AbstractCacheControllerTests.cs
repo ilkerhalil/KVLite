@@ -23,7 +23,6 @@
 
 #if HAS_ASPNET
 
-using NodaTime;
 using NUnit.Framework;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.SQLite;
@@ -80,7 +79,7 @@ namespace PommaLabs.KVLite.UnitTests.WebApi
             _controller.Cache.AddSliding("abc1", "def", 123, TimeSpan.FromMinutes(30));
             _controller.Cache.AddSliding("abc2", "def", 123, TimeSpan.FromMinutes(40));
             _controller.Cache.AddSliding("abc3", "def", 123, TimeSpan.FromMinutes(50));
-            var items = _controller.GetItems(fromExpiry: (_controller.Cache.Clock.UtcNow + TimeSpan.FromMinutes(fromExpiry)).ToDateTimeUtc(), toExpiry: (_controller.Cache.Clock.UtcNow + TimeSpan.FromMinutes(toExpiry)).ToDateTimeUtc()).ToList();
+            var items = _controller.GetItems(fromExpiry: (_controller.Cache.Clock.UtcNow + TimeSpan.FromMinutes(fromExpiry)), toExpiry: (_controller.Cache.Clock.UtcNow + TimeSpan.FromMinutes(toExpiry))).ToList();
             expectedCount.ShouldBe(items.Count);
         }
 

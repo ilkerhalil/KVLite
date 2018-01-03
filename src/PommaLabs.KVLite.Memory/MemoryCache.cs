@@ -75,9 +75,9 @@ namespace PommaLabs.KVLite.Memory
         public MemoryCache(MemoryCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null)
         {
             Settings = settings;
-            Clock = clock ?? SystemClock.Instance;
             Compressor = compressor ?? DeflateCompressor.Instance;
             Serializer = serializer ?? JsonSerializer.Instance;
+            Clock = clock ?? SystemClock.Instance;
 
             InitMicrosoftMemoryCache();
         }
