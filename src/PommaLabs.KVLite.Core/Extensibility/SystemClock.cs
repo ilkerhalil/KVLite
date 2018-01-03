@@ -24,7 +24,7 @@
 using Microsoft.Extensions.Internal;
 using System;
 
-namespace PommaLabs.KVLite.Core.Extensibility
+namespace PommaLabs.KVLite.Extensibility
 {
     /// <summary>
     ///   Clock implementation which relies upon <see cref="DateTimeOffset.UtcNow"/>.

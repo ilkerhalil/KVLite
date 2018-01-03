@@ -21,7 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
+using Microsoft.Extensions.Internal;
 using PommaLabs.KVLite.Extensibility;
 using System;
 
@@ -44,7 +44,7 @@ namespace PommaLabs.KVLite
         ///   This property belongs to the services which can be injected using the cache
         ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
         /// </remarks>
-        IClock Clock { get; }
+        ISystemClock Clock { get; }
 
         /// <summary>
         ///   Gets the compressor used by the cache.
