@@ -31,6 +31,7 @@ using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,7 +66,7 @@ namespace PommaLabs.KVLite.Memory
         ///   Helper map used to enumerate entries, something which has not been implemented by
         ///   Microsoft memory cache.
         /// </summary>
-        private ConcurrentDictionary<MemoryCacheKey, MemoryCacheValue> _helperMap;
+        private Hashtable _helperMap;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="MemoryCache"/> class with given settings.
@@ -94,7 +95,7 @@ namespace PommaLabs.KVLite.Memory
 
             // Clear the helper map, since we are replacing the memory cache.
             _helperMap?.Clear();
-            _helperMap = new ConcurrentDictionary<MemoryCacheKey, MemoryCacheValue>();
+            _helperMap = new Hashtable();
         }
 
         #endregion Construction
@@ -262,12 +263,15 @@ namespace PommaLabs.KVLite.Memory
             {
                 EvictionCallback = (eKey, eValue, reason, state) =>
                 {
-                    _helperMap.TryRemove((MemoryCacheKey) eKey, out var _);
-                    var childCacheKeys = (eValue as MemoryCacheValue).ChildKeys;
-                    if (childCacheKeys != null)
+                    if (reason != EvictionReason.Replaced)
                     {
-                        foreach (var childCacheKey in childCacheKeys)
+                        lock (_helperMap) _helperMap.Remove(eKey);
+                    }
+                    if (eValue is MemoryCacheValue oldCacheValue && oldCacheValue.ChildKeys != null)
+                    {
+                        foreach (var childCacheKey in oldCacheValue.ChildKeys)
                         {
+                            lock (_helperMap) _helperMap.Remove(childCacheKey);
                             _store.Remove(childCacheKey);
                         }
                     }
@@ -279,7 +283,7 @@ namespace PommaLabs.KVLite.Memory
                 foreach (var parentKey in parentKeys)
                 {
                     var parentCacheKey = new MemoryCacheKey(partition, parentKey);
-                    if (_helperMap.TryGetValue(parentCacheKey, out var parentCacheValue))
+                    if (_helperMap[parentCacheKey] is MemoryCacheValue parentCacheValue)
                     {
                         if (parentCacheValue.ChildKeys == null)
                         {
@@ -291,7 +295,7 @@ namespace PommaLabs.KVLite.Memory
             }
 
             _store.Set(cacheKey, cacheValue, cacheEntryOptions);
-            _helperMap.AddOrUpdate(cacheKey, cacheValue, (k, old) => cacheValue);
+            lock (_helperMap) _helperMap[cacheKey] = cacheValue;
         }
 
         /// <summary>
@@ -302,7 +306,7 @@ namespace PommaLabs.KVLite.Memory
         /// <returns>The number of items that have been removed.</returns>
         protected override long ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
-            var q = _helperMap.Keys.AsEnumerable();
+            var q = _helperMap.Keys.Cast<MemoryCacheKey>();
 
             if (partition != null)
             {
@@ -313,7 +317,7 @@ namespace PommaLabs.KVLite.Memory
 
             foreach (var cacheKey in cacheKeys)
             {
-                _helperMap.TryRemove(cacheKey, out var _);
+                lock (_helperMap) _helperMap.Remove(cacheKey);
                 _store.Remove(cacheKey);
             }
 
@@ -342,7 +346,7 @@ namespace PommaLabs.KVLite.Memory
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected override long CountInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate)
         {
-            var q = _helperMap.Keys.AsEnumerable();
+            var q = _helperMap.Keys.Cast<MemoryCacheKey>();
             if (partition != null)
             {
                 q = q.Where(k => k.Partition == partition);
@@ -395,7 +399,7 @@ namespace PommaLabs.KVLite.Memory
         /// <returns>All cache items.</returns>
         protected override IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition)
         {
-            var q = _helperMap.Keys.AsEnumerable();
+            var q = _helperMap.Keys.Cast<MemoryCacheKey>();
 
             if (partition != null)
             {
@@ -477,14 +481,16 @@ namespace PommaLabs.KVLite.Memory
         protected override void RemoveInternal(string partition, string key)
         {
             var cacheKey = new MemoryCacheKey(partition, key);
-            if (_helperMap.TryRemove(cacheKey, out var cacheValue) && cacheValue.ChildKeys != null)
+            if (_helperMap[cacheKey] is MemoryCacheValue cacheValue && cacheValue.ChildKeys != null)
             {
                 foreach (var childCacheKey in cacheValue.ChildKeys)
                 {
+                    lock (_helperMap) _helperMap.Remove(childCacheKey);
                     _store.Remove(childCacheKey);
                 }
                 cacheValue.ChildKeys = null;
             }
+            lock (_helperMap) _helperMap.Remove(cacheKey);
             _store.Remove(cacheKey);
         }
 
@@ -495,9 +501,9 @@ namespace PommaLabs.KVLite.Memory
         ///   therefore, it does not need to be extremely accurate.
         /// </summary>
         /// <returns>An estimate of cache size in bytes.</returns>
-        protected override long GetCacheSizeInBytesInternal() => _helperMap
-            .Select(x => x.Value)
-            .Where(x => x != null)
+        protected override long GetCacheSizeInBytesInternal() => _helperMap.Values
+            .Cast<MemoryCacheValue>()
+            .Where(x => x != null && x.Value != null)
             .Sum(x => x.Value.LongLength);
 
         #endregion Cache size estimation
