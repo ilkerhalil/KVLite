@@ -1133,7 +1133,7 @@ namespace PommaLabs.KVLite.UnitTests
             {
                 var item = Cache.GetItem<string>(StringItems[i]).Value;
                 Assert.IsNotNull(item);
-                item.UtcExpiry.ToUnixTimeSeconds().ShouldBe((Cache.Clock.UtcNow + interval).ToUnixTimeSeconds());
+                ClockHelper.ToUnixTimeSeconds(item.UtcExpiry).ShouldBe(ClockHelper.ToUnixTimeSeconds(Cache.Clock.UtcNow + interval));
             }
         }
 
@@ -1153,7 +1153,7 @@ namespace PommaLabs.KVLite.UnitTests
             {
                 var item = items[i];
                 Assert.IsNotNull(item);
-                item.UtcExpiry.ToUnixTimeSeconds().ShouldBe((Cache.Clock.UtcNow + interval).ToUnixTimeSeconds());
+                ClockHelper.ToUnixTimeSeconds(item.UtcExpiry).ShouldBe(ClockHelper.ToUnixTimeSeconds(Cache.Clock.UtcNow + interval));
             }
         }
 
