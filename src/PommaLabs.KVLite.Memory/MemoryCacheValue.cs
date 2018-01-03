@@ -22,6 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NodaTime;
+using System.Collections.Concurrent;
 
 namespace PommaLabs.KVLite.Memory
 {
@@ -33,6 +34,6 @@ namespace PommaLabs.KVLite.Memory
 
         public Instant UtcCreation { get; set; }
 
-        public MemoryCacheKey[] ParentKeys { get; set; }
+        public ConcurrentBag<MemoryCacheKey> ChildKeys { get; set; }
     }
 }
