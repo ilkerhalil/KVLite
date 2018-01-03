@@ -50,7 +50,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
+        ///   constructor. If not specified, it defaults to <see cref="NodaTime.SystemClock"/>.
         /// </remarks>
         public abstract IClock Clock { get; }
 

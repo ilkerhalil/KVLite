@@ -68,7 +68,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var serializer = provider.GetService<ISerializer>() ?? JsonSerializer.Instance;
             var compressor = provider.GetService<ICompressor>() ?? DeflateCompressor.Instance;
-            var clock = provider.GetService<IClock>() ?? SystemClock.Instance;
+            var clock = provider.GetService<IClock>() ?? NodaTime.SystemClock.Instance;
             var random = provider.GetService<IRandom>() ?? new SystemRandom();
 
             return (serializer, compressor, clock, random);

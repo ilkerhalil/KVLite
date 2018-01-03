@@ -58,9 +58,9 @@ namespace PommaLabs.KVLite.NoOp
         /// <value>The clock used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
+        ///   constructor. If not specified, it defaults to <see cref="NodaTime.SystemClock"/>.
         /// </remarks>
-        public override IClock Clock { get; } = SystemClock.Instance;
+        public override IClock Clock { get; } = NodaTime.SystemClock.Instance;
 
         /// <summary>
         ///   Gets the compressor used by the cache.

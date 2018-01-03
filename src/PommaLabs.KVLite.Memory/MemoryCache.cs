@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Options;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
@@ -73,10 +72,10 @@ namespace PommaLabs.KVLite.Memory
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
         /// <param name="clock">The clock.</param>
-        public MemoryCache(MemoryCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, ISystemClock clock = null)
+        public MemoryCache(MemoryCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null)
         {
             Settings = settings;
-            Clock = clock ?? MachineClock.Instance;
+            Clock = clock ?? SystemClock.Instance;
             Compressor = compressor ?? DeflateCompressor.Instance;
             Serializer = serializer ?? JsonSerializer.Instance;
 
@@ -141,9 +140,9 @@ namespace PommaLabs.KVLite.Memory
         /// </summary>
         /// <remarks>
         ///   Since <see cref="MicrosoftMemoryCache"/> does not allow clock customisation, then this
-        ///   property defaults to <see cref="MachineClock"/>.
+        ///   property defaults to <see cref="SystemClock"/>.
         /// </remarks>
-        public override ISystemClock Clock { get; }
+        public override IClock Clock { get; }
 
         /// <summary>
         ///   Gets the compressor used by the cache.

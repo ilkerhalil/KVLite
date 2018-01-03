@@ -1,4 +1,4 @@
-﻿// File name: FakeClock.cs
+﻿// File name: SystemClock.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,28 +21,23 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Microsoft.Extensions.Internal;
 using System;
 
 namespace PommaLabs.KVLite.Extensibility
 {
     /// <summary>
-    ///   Fake clock implementation which can be used for unit testing.
+    ///   Clock implementation which relies upon <see cref="DateTimeOffset.UtcNow"/>.
     /// </summary>
-    public sealed class FakeClock : ISystemClock
+    public sealed class SystemClock : IClock
     {
-        private DateTimeOffset _utcNow = DateTimeOffset.UtcNow;
+        /// <summary>
+        ///   Shared clock instance.
+        /// </summary>
+        public static SystemClock Instance { get; } = new SystemClock();
 
         /// <summary>
         ///   Retrieves the current system time in UTC.
         /// </summary>
-        public DateTimeOffset UtcNow => _utcNow;
-
-        /// <summary>
-        ///   Advances the clock by the given time span.
-        /// </summary>
-        /// <param name="timeSpan">The time span.</param>
-        /// <returns>Advanced clock.</returns>
-        public DateTimeOffset Advance(TimeSpan timeSpan) => (_utcNow = _utcNow.Add(timeSpan));
+        public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
     }
 }

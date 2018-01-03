@@ -1,4 +1,4 @@
-﻿// File name: SystemClock.cs
+﻿// File name: IClock.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -22,23 +22,13 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Microsoft.Extensions.Internal;
-using System;
 
 namespace PommaLabs.KVLite.Extensibility
 {
     /// <summary>
-    ///   Clock implementation which relies upon <see cref="DateTimeOffset.UtcNow"/>.
+    ///   Abstracts the system clock to facilitate testing.
     /// </summary>
-    public sealed class MachineClock : ISystemClock
+    public interface IClock : ISystemClock
     {
-        /// <summary>
-        ///   Shared clock instance.
-        /// </summary>
-        public static MachineClock Instance { get; } = new MachineClock();
-
-        /// <summary>
-        ///   Retrieves the current system time in UTC.
-        /// </summary>
-        public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
     }
 }

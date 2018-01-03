@@ -69,7 +69,7 @@ namespace PommaLabs.KVLite.Database
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings), ErrorMessages.NullSettings);
             ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-            Clock = clock ?? SystemClock.Instance;
+            Clock = clock ?? NodaTime.SystemClock.Instance;
             Serializer = serializer ?? JsonSerializer.Instance;
             Compressor = compressor ?? DeflateCompressor.Instance;
             Random = random ?? new SystemRandom();
@@ -368,7 +368,7 @@ namespace PommaLabs.KVLite.Database
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
+        ///   constructor. If not specified, it defaults to <see cref="NodaTime.SystemClock"/>.
         /// </remarks>
         public sealed override IClock Clock { get; }
 

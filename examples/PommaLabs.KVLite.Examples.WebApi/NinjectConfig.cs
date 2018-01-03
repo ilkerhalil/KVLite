@@ -33,7 +33,7 @@ namespace PommaLabs.KVLite.Examples.WebApi
         public override void Load()
         {
             Bind<IClock>()
-                .ToConstant(SystemClock.Instance)
+                .ToConstant(NodaTime.SystemClock.Instance)
                 .InSingletonScope();
 
             Bind<ICompressor>()

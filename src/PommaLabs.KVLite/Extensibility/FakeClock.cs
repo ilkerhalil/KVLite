@@ -1,4 +1,4 @@
-﻿// File name: NinjectConfig.cs
+﻿// File name: FakeClock.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,42 +21,36 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Ninject.Modules;
-using PommaLabs.KVLite.Extensibility;
+using System;
 
-#if HAS_EF
-using PommaLabs.KVLite.UnitTests.EntityFramework;
-using System.Data.Entity.Infrastructure.Interception;
-#endif
-
-namespace PommaLabs.KVLite.UnitTests
+namespace PommaLabs.KVLite.Extensibility
 {
     /// <summary>
-    ///   Bindings for KVLite.
+    ///   Fake clock implementation which can be used for unit testing.
     /// </summary>
-    internal sealed class NinjectConfig : NinjectModule
+    public sealed class FakeClock : IClock
     {
-        public override void Load()
+        private DateTimeOffset _utcNow;
+
+        /// <summary>
+        ///   Retrieves the current system time in UTC.
+        /// </summary>
+        public DateTimeOffset UtcNow => _utcNow;
+
+        /// <summary>
+        ///   Creates a fake clock with given initial UTC time.
+        /// </summary>
+        /// <param name="initialUtcNow">Initial UTC time.</param>
+        public FakeClock(DateTimeOffset initialUtcNow)
         {
-            Bind<IClock>()
-                .ToConstant(new FakeClock(SystemClock.Instance.UtcNow))
-                .InSingletonScope();
-
-            Bind<ICompressor>()
-                .ToConstant(DeflateCompressor.Instance)
-                .InSingletonScope();
-
-            Bind<ISerializer>()
-                .ToConstant(JsonSerializer.Instance)
-                .InSingletonScope();
-
-            Bind<IRandom>()
-                .To<SystemRandom>()
-                .InTransientScope();
-
-#if HAS_EF
-            DbInterception.Add(new PrintingDbCommandInterceptor());
-#endif
+            _utcNow = initialUtcNow;
         }
+
+        /// <summary>
+        ///   Advances the clock by the given time span.
+        /// </summary>
+        /// <param name="timeSpan">The time span.</param>
+        /// <returns>Advanced clock.</returns>
+        public DateTimeOffset Advance(TimeSpan timeSpan) => (_utcNow = _utcNow.Add(timeSpan));
     }
 }
