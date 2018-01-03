@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Microsoft.Extensions.Caching.Distributed;
-using NodaTime.Extensions;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.Threading;
@@ -45,15 +44,15 @@ namespace PommaLabs.KVLite
 
             if (options.SlidingExpiration.HasValue)
             {
-                AddSliding(CachePartitions.DistributedCache, key, value, options.SlidingExpiration.Value.ToDuration());
+                AddSliding(CachePartitions.DistributedCache, key, value, options.SlidingExpiration.Value);
             }
             else if (options.AbsoluteExpiration.HasValue)
             {
-                AddTimed(CachePartitions.DistributedCache, key, value, options.AbsoluteExpiration.Value.ToInstant());
+                AddTimed(CachePartitions.DistributedCache, key, value, options.AbsoluteExpiration.Value);
             }
             else if (options.AbsoluteExpirationRelativeToNow.HasValue)
             {
-                AddTimed(CachePartitions.DistributedCache, key, value, options.AbsoluteExpirationRelativeToNow.Value.ToDuration());
+                AddTimed(CachePartitions.DistributedCache, key, value, options.AbsoluteExpirationRelativeToNow.Value);
             }
             else
             {
@@ -76,15 +75,15 @@ namespace PommaLabs.KVLite
 
             if (options.SlidingExpiration.HasValue)
             {
-                await AddSlidingAsync(CachePartitions.DistributedCache, key, value, options.SlidingExpiration.Value.ToDuration(), null, token).ConfigureAwait(false);
+                await AddSlidingAsync(CachePartitions.DistributedCache, key, value, options.SlidingExpiration.Value, null, token).ConfigureAwait(false);
             }
             else if (options.AbsoluteExpiration.HasValue)
             {
-                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpiration.Value.ToInstant(), null, token).ConfigureAwait(false);
+                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpiration.Value, null, token).ConfigureAwait(false);
             }
             else if (options.AbsoluteExpirationRelativeToNow.HasValue)
             {
-                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpirationRelativeToNow.Value.ToDuration(), null, token).ConfigureAwait(false);
+                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpirationRelativeToNow.Value, null, token).ConfigureAwait(false);
             }
             else
             {
@@ -107,15 +106,15 @@ namespace PommaLabs.KVLite
 
             if (options.SlidingExpiration.HasValue)
             {
-                await AddSlidingAsync(CachePartitions.DistributedCache, key, value, options.SlidingExpiration.Value.ToDuration(), null, CancellationToken.None).ConfigureAwait(false);
+                await AddSlidingAsync(CachePartitions.DistributedCache, key, value, options.SlidingExpiration.Value, null, CancellationToken.None).ConfigureAwait(false);
             }
             else if (options.AbsoluteExpiration.HasValue)
             {
-                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpiration.Value.ToInstant(), null, CancellationToken.None).ConfigureAwait(false);
+                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpiration.Value, null, CancellationToken.None).ConfigureAwait(false);
             }
             else if (options.AbsoluteExpirationRelativeToNow.HasValue)
             {
-                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpirationRelativeToNow.Value.ToDuration(), null, CancellationToken.None).ConfigureAwait(false);
+                await AddTimedAsync(CachePartitions.DistributedCache, key, value, options.AbsoluteExpirationRelativeToNow.Value, null, CancellationToken.None).ConfigureAwait(false);
             }
             else
             {

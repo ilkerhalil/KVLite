@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -56,13 +55,13 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static Task AddSlidingAsync<TVal>(this IAsyncCache cache, string key, TVal value, Duration interval, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task AddSlidingAsync<TVal>(this IAsyncCache cache, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
             => cache.AddSlidingAsync(cache.Settings.DefaultPartition, key, value, interval, parentKeys, cancellationToken);
 
         /// <summary>
         ///   Adds a "static" value with given key and default partition. Value will last as much as
-        ///   specified in <see cref="IEssentialCacheSettings.StaticInterval"/> and, if
-        ///   accessed before expiry, its lifetime will be extended by that interval.
+        ///   specified in <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="cache">The async cache.</param>
@@ -100,7 +99,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static Task AddTimedAsync<TVal>(this IAsyncCache cache, string key, TVal value, Instant utcExpiry, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task AddTimedAsync<TVal>(this IAsyncCache cache, string key, TVal value, DateTimeOffset utcExpiry, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
             => cache.AddTimedAsync(cache.Settings.DefaultPartition, key, value, utcExpiry, parentKeys, cancellationToken);
 
         /// <summary>
@@ -122,7 +121,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static Task AddTimedAsync<TVal>(this IAsyncCache cache, string key, TVal value, Duration lifetime, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task AddTimedAsync<TVal>(this IAsyncCache cache, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
             => cache.AddTimedAsync(cache.Settings.DefaultPartition, key, value, lifetime, parentKeys, cancellationToken);
 
         #endregion Add
@@ -216,7 +215,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static Task<TVal> GetOrAddSlidingAsync<TVal>(this IAsyncCache cache, string key, Func<Task<TVal>> valueGetter, Duration interval, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<TVal> GetOrAddSlidingAsync<TVal>(this IAsyncCache cache, string key, Func<Task<TVal>> valueGetter, TimeSpan interval, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
             => cache.GetOrAddSlidingAsync(cache.Settings.DefaultPartition, key, valueGetter, interval, parentKeys, cancellationToken);
 
         /// <summary>
@@ -225,8 +224,8 @@ namespace PommaLabs.KVLite
         ///
         ///   If the value is not found, then it adds a "static" value with given key and default
         ///   partition. Value will last as much as specified in
-        ///   <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed before
-        ///   expiry, its lifetime will be extended by that interval.
+        ///   <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed before expiry,
+        ///   its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="cache">The async cache.</param>
@@ -284,7 +283,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static Task<TVal> GetOrAddTimedAsync<TVal>(this IAsyncCache cache, string key, Func<Task<TVal>> valueGetter, Instant utcExpiry, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<TVal> GetOrAddTimedAsync<TVal>(this IAsyncCache cache, string key, Func<Task<TVal>> valueGetter, DateTimeOffset utcExpiry, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
             => cache.GetOrAddTimedAsync(cache.Settings.DefaultPartition, key, valueGetter, utcExpiry, parentKeys, cancellationToken);
 
         /// <summary>
@@ -318,7 +317,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static Task<TVal> GetOrAddTimedAsync<TVal>(this IAsyncCache cache, string key, Func<Task<TVal>> valueGetter, Duration lifetime, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<TVal> GetOrAddTimedAsync<TVal>(this IAsyncCache cache, string key, Func<Task<TVal>> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
             => cache.GetOrAddTimedAsync(cache.Settings.DefaultPartition, key, valueGetter, lifetime, parentKeys, cancellationToken);
 
         #endregion GetOrAdd

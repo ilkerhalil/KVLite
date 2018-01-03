@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
 using PommaLabs.KVLite.Extensibility;
 using System;
 using System.Collections.Generic;
@@ -58,9 +57,9 @@ namespace PommaLabs.KVLite.NoOp
         /// <value>The clock used by the cache.</value>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="NodaTime.SystemClock"/>.
+        ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
         /// </remarks>
-        public override IClock Clock { get; } = NodaTime.SystemClock.Instance;
+        public override IClock Clock { get; } = SystemClock.Instance;
 
         /// <summary>
         ///   Gets the compressor used by the cache.
@@ -118,7 +117,7 @@ namespace PommaLabs.KVLite.NoOp
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
-        protected override void AddInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)
+        protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTimeOffset utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
             // Nothing to do.
         }

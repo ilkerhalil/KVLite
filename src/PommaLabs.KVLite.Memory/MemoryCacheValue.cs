@@ -32,7 +32,7 @@ namespace PommaLabs.KVLite.Memory
 
         public bool Compressed { get; set; }
 
-        public Instant UtcCreation { get; set; }
+        public DateTimeOffset UtcCreation { get; set; }
 
         public ConcurrentBag<MemoryCacheKey> ChildKeys { get; set; }
     }

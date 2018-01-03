@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
 using PommaLabs.KVLite.Resources;
 using PommaLabs.KVLite.Logging;
 using System;
@@ -91,7 +90,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public async Task AddSlidingAsync<TVal>(string partition, string key, TVal value, Duration interval, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task AddSlidingAsync<TVal>(string partition, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -103,7 +102,7 @@ namespace PommaLabs.KVLite
 
             try
             {
-                await AddAsyncInternal(partition, key, value, Clock.GetCurrentInstant() + interval, interval, parentKeys, cancellationToken).ConfigureAwait(false);
+                await AddAsyncInternal(partition, key, value, Clock.UtcNow + interval, interval, parentKeys, cancellationToken).ConfigureAwait(false);
 
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == interval);
@@ -148,7 +147,7 @@ namespace PommaLabs.KVLite
 
             try
             {
-                await AddAsyncInternal(partition, key, value, Clock.GetCurrentInstant() + Settings.StaticInterval, Settings.StaticInterval, parentKeys, cancellationToken).ConfigureAwait(false);
+                await AddAsyncInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval, parentKeys, cancellationToken).ConfigureAwait(false);
 
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Settings.StaticInterval);
@@ -181,7 +180,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public async Task AddTimedAsync<TVal>(string partition, string key, TVal value, Instant utcExpiry, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task AddTimedAsync<TVal>(string partition, string key, TVal value, DateTimeOffset utcExpiry, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -193,10 +192,10 @@ namespace PommaLabs.KVLite
 
             try
             {
-                await AddAsyncInternal(partition, key, value, utcExpiry, Duration.Zero, parentKeys, cancellationToken).ConfigureAwait(false);
+                await AddAsyncInternal(partition, key, value, utcExpiry, TimeSpan.Zero, parentKeys, cancellationToken).ConfigureAwait(false);
 
                 // Postconditions
-                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Duration.Zero);
+                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
             catch (Exception ex)
             {
@@ -226,7 +225,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public async Task AddTimedAsync<TVal>(string partition, string key, TVal value, Duration lifetime, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task AddTimedAsync<TVal>(string partition, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -238,10 +237,10 @@ namespace PommaLabs.KVLite
 
             try
             {
-                await AddAsyncInternal(partition, key, value, Clock.GetCurrentInstant() + lifetime, Duration.Zero, parentKeys, cancellationToken).ConfigureAwait(false);
+                await AddAsyncInternal(partition, key, value, Clock.UtcNow + lifetime, TimeSpan.Zero, parentKeys, cancellationToken).ConfigureAwait(false);
 
                 // Postconditions
-                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Duration.Zero);
+                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
             catch (Exception ex)
             {
@@ -648,7 +647,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public async Task<TVal> GetOrAddSlidingAsync<TVal>(string partition, string key, Func<Task<TVal>> valueGetter, Duration interval, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<TVal> GetOrAddSlidingAsync<TVal>(string partition, string key, Func<Task<TVal>> valueGetter, TimeSpan interval, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -686,7 +685,7 @@ namespace PommaLabs.KVLite
 
             try
             {
-                await AddAsyncInternal(partition, key, value, Clock.GetCurrentInstant() + interval, interval, parentKeys, cancellationToken).ConfigureAwait(false);
+                await AddAsyncInternal(partition, key, value, Clock.UtcNow + interval, interval, parentKeys, cancellationToken).ConfigureAwait(false);
 
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == interval);
@@ -770,7 +769,7 @@ namespace PommaLabs.KVLite
 
             try
             {
-                await AddAsyncInternal(partition, key, value, Clock.GetCurrentInstant() + Settings.StaticInterval, Settings.StaticInterval, parentKeys, cancellationToken).ConfigureAwait(false);
+                await AddAsyncInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval, parentKeys, cancellationToken).ConfigureAwait(false);
 
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Settings.StaticInterval);
@@ -816,7 +815,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public async Task<TVal> GetOrAddTimedAsync<TVal>(string partition, string key, Func<Task<TVal>> valueGetter, Instant utcExpiry, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<TVal> GetOrAddTimedAsync<TVal>(string partition, string key, Func<Task<TVal>> valueGetter, DateTimeOffset utcExpiry, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -854,10 +853,10 @@ namespace PommaLabs.KVLite
 
             try
             {
-                await AddAsyncInternal(partition, key, value, utcExpiry, Duration.Zero, parentKeys, cancellationToken).ConfigureAwait(false);
+                await AddAsyncInternal(partition, key, value, utcExpiry, TimeSpan.Zero, parentKeys, cancellationToken).ConfigureAwait(false);
 
                 // Postconditions
-                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Duration.Zero);
+                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
             catch (Exception ex)
             {
@@ -900,7 +899,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public async Task<TVal> GetOrAddTimedAsync<TVal>(string partition, string key, Func<Task<TVal>> valueGetter, Duration lifetime, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<TVal> GetOrAddTimedAsync<TVal>(string partition, string key, Func<Task<TVal>> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -938,10 +937,10 @@ namespace PommaLabs.KVLite
 
             try
             {
-                await AddAsyncInternal(partition, key, value, Clock.GetCurrentInstant() + lifetime, Duration.Zero, parentKeys, cancellationToken).ConfigureAwait(false);
+                await AddAsyncInternal(partition, key, value, Clock.UtcNow + lifetime, TimeSpan.Zero, parentKeys, cancellationToken).ConfigureAwait(false);
 
                 // Postconditions
-                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Duration.Zero);
+                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
             catch (Exception ex)
             {

@@ -463,7 +463,7 @@ namespace PommaLabs.KVLite.Database
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
-        protected sealed override void AddInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)
+        protected sealed override void AddInternal<TVal>(string partition, string key, TVal value, DateTimeOffset utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
             // Compute all parameters _before_ opening the connection.
             var cf = ConnectionFactory;
@@ -507,7 +507,7 @@ namespace PommaLabs.KVLite.Database
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
-        protected sealed override async Task AddAsyncInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys, CancellationToken cancellationToken)
+        protected sealed override async Task AddAsyncInternal<TVal>(string partition, string key, TVal value, DateTimeOffset utcExpiry, TimeSpan interval, IList<string> parentKeys, CancellationToken cancellationToken)
         {
             // Compute all parameters _before_ opening the connection.
             var cf = ConnectionFactory;
@@ -553,7 +553,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             return RetryOnFail(() =>
@@ -580,7 +580,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             return await RetryOnFailAsync(async () =>
@@ -607,7 +607,7 @@ namespace PommaLabs.KVLite.Database
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             using (var db = cf.Open())
@@ -632,7 +632,7 @@ namespace PommaLabs.KVLite.Database
             var dbCacheEntrySingle = new DbCacheEntry.Single
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
@@ -657,7 +657,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             using (var db = cf.Open())
@@ -682,7 +682,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = (cacheReadMode == CacheReadMode.IgnoreExpiryDate) ? DbCacheValue.True : DbCacheValue.False,
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             using (var db = await cf.OpenAsync(cancellationToken).ConfigureAwait(false))
@@ -707,7 +707,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             DbCacheValue dbCacheValue;
@@ -759,7 +759,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             DbCacheValue dbCacheValue;
@@ -812,7 +812,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             DbCacheEntry dbCacheEntry;
@@ -864,7 +864,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             DbCacheEntry dbCacheEntry;
@@ -916,7 +916,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             DbCacheEntry[] dbCacheEntries;
@@ -971,7 +971,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = DbCacheValue.True, // Expiry is checked by this method.
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             DbCacheEntry[] dbCacheEntries;
@@ -1029,7 +1029,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             DbCacheValue dbCacheValue;
@@ -1066,7 +1066,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             DbCacheValue dbCacheValue;
@@ -1102,7 +1102,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             DbCacheEntry dbCacheEntry;
@@ -1139,7 +1139,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartitionAndKey(partition, key),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             DbCacheEntry dbCacheEntry;
@@ -1177,7 +1177,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             DbCacheEntry[] dbCacheEntries;
@@ -1214,7 +1214,7 @@ namespace PommaLabs.KVLite.Database
             {
                 Hash = Hashing.HashPartition(partition),
                 IgnoreExpiryDate = DbCacheValue.False,
-                UtcExpiry = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcExpiry = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             DbCacheEntry[] dbCacheEntries;
@@ -1331,7 +1331,7 @@ namespace PommaLabs.KVLite.Database
                     Value = UnsafeDeserializeCacheValue<TVal>(dbCacheEntry),
                     UtcCreation = Instant.FromUnixTimeSeconds(dbCacheEntry.UtcCreation),
                     UtcExpiry = Instant.FromUnixTimeSeconds(dbCacheEntry.UtcExpiry),
-                    Interval = Duration.FromSeconds(dbCacheEntry.Interval)
+                    Interval = TimeSpan.FromSeconds(dbCacheEntry.Interval)
                 };
 
                 // Quickly read the parent keys, if any.
@@ -1383,7 +1383,7 @@ namespace PommaLabs.KVLite.Database
             });
         }
 
-        private SqlMapper.IDynamicParameters PrepareCacheEntryForAdd<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)
+        private SqlMapper.IDynamicParameters PrepareCacheEntryForAdd<TVal>(string partition, string key, TVal value, DateTimeOffset utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
             var cf = ConnectionFactory;
 
@@ -1396,7 +1396,7 @@ namespace PommaLabs.KVLite.Database
                 Key = key,
                 UtcExpiry = utcExpiry.ToUnixTimeSeconds(),
                 Interval = (long) interval.TotalSeconds,
-                UtcCreation = Clock.GetCurrentInstant().ToUnixTimeSeconds()
+                UtcCreation = Clock.UtcNow.ToUnixTimeSeconds()
             };
 
             // Serializing may be pretty expensive, therefore we keep it out of the connection.

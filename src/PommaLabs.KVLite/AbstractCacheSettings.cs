@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
 using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
@@ -80,25 +79,25 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Backing field for <see cref="DefaultDistributedCacheAbsoluteExpiration"/>.
         /// </summary>
-        private Duration _defaultDistributedCacheAbsoluteExpiration = Duration.FromMinutes(20);
+        private TimeSpan _defaultDistributedCacheAbsoluteExpiration = TimeSpan.FromMinutes(20);
 
         /// <summary>
         ///   Default absolute expiration for distributed cache entries. Initial value is 20 minutes.
         /// </summary>
-        public Duration DefaultDistributedCacheAbsoluteExpiration
+        public TimeSpan DefaultDistributedCacheAbsoluteExpiration
         {
             get
             {
                 var result = _defaultDistributedCacheAbsoluteExpiration;
 
                 // Postconditions
-                Debug.Assert(result.TotalTicks > 0.0);
+                Debug.Assert(result.Ticks > 0L);
                 return result;
             }
             set
             {
                 // Preconditions
-                if (value.TotalTicks <= 0.0) throw new ArgumentOutOfRangeException(nameof(DefaultDistributedCacheAbsoluteExpiration));
+                if (value.Ticks <= 0L) throw new ArgumentOutOfRangeException(nameof(DefaultDistributedCacheAbsoluteExpiration));
 
                 Log.DebugFormat(DebugMessages.UpdateSetting, nameof(DefaultDistributedCacheAbsoluteExpiration), _defaultDistributedCacheAbsoluteExpiration, value);
                 _defaultDistributedCacheAbsoluteExpiration = value;
@@ -174,26 +173,26 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   Backing field for <see cref="StaticInterval"/>.
         /// </summary>
-        private Duration _staticInterval = Duration.FromDays(30);
+        private TimeSpan _staticInterval = TimeSpan.FromDays(30);
 
         /// <summary>
         ///   How long static values will last.
         /// </summary>
         [DataMember]
-        public Duration StaticInterval
+        public TimeSpan StaticInterval
         {
             get
             {
                 var result = _staticInterval;
 
                 // Postconditions
-                Debug.Assert(result.TotalTicks > 0.0);
+                Debug.Assert(result.Ticks > 0L);
                 return result;
             }
             set
             {
                 // Preconditions
-                if (value.TotalTicks <= 0.0) throw new ArgumentOutOfRangeException(nameof(StaticInterval));
+                if (value.Ticks <= 0L) throw new ArgumentOutOfRangeException(nameof(StaticInterval));
 
                 Log.DebugFormat(DebugMessages.UpdateSetting, nameof(StaticInterval), _staticInterval, value);
                 _staticInterval = value;

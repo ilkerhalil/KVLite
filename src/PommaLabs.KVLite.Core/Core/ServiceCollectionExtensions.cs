@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Microsoft.Extensions.Caching.Distributed;
-using NodaTime;
 using PommaLabs.KVLite;
 using PommaLabs.KVLite.Extensibility;
 
@@ -68,7 +67,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var serializer = provider.GetService<ISerializer>() ?? JsonSerializer.Instance;
             var compressor = provider.GetService<ICompressor>() ?? DeflateCompressor.Instance;
-            var clock = provider.GetService<IClock>() ?? NodaTime.SystemClock.Instance;
+            var clock = provider.GetService<IClock>() ?? SystemClock.Instance;
             var random = provider.GetService<IRandom>() ?? new SystemRandom();
 
             return (serializer, compressor, clock, random);

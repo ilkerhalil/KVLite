@@ -553,7 +553,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
             foreach (var table in _tables)
             {
-                cache.AddTimed(table.TableName, table, cache.Clock.GetCurrentInstant() + Duration.FromHours(1));
+                cache.AddTimed(table.TableName, table, cache.Clock.UtcNow + TimeSpan.FromHours(1));
             }
 
             var stopwatch = new Stopwatch();
@@ -582,7 +582,7 @@ namespace PommaLabs.KVLite.Benchmarks
 
             await _tables.ParallelForEachAsync(async table =>
             {
-                await cache.AddTimedAsync(table.TableName, table, cache.Clock.GetCurrentInstant() + Duration.FromHours(1));
+                await cache.AddTimedAsync(table.TableName, table, cache.Clock.UtcNow + TimeSpan.FromHours(1));
             }, maxDegreeOfParalellism: Environment.ProcessorCount * 2);
 
             var stopwatch = new Stopwatch();

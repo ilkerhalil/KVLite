@@ -29,7 +29,6 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.1" />
     <PackageReference Include="Ninject" Version="3.3.4" />
-    <PackageReference Include="NodaTime.Testing" Version="2.2.3" />
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="NUnitLite" Version="3.9.0" />
     <PackageReference Include="Shouldly" Version="3.0.0-beta0003" />

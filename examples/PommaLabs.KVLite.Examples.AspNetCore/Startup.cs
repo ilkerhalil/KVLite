@@ -45,7 +45,7 @@ namespace PommaLabs.KVLite.Examples.AspNetCore
             services.AddKVLitePersistentSQLiteCache(s =>
             {
                 s.CacheFile = "AspNetCoreCache.sqlite";
-                s.DefaultDistributedCacheAbsoluteExpiration = Duration.FromSeconds(30);
+                s.DefaultDistributedCacheAbsoluteExpiration = TimeSpan.FromSeconds(30);
             });
 
             // Add Session service, which will rely on KVLite distributed cache.

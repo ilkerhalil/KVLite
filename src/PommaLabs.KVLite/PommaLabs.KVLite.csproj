@@ -18,7 +18,6 @@
   <ItemGroup>
     <PackageReference Include="LibLog" Version="4.2.6" PrivateAssets="All" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
-    <PackageReference Include="NodaTime" Version="2.2.3" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">

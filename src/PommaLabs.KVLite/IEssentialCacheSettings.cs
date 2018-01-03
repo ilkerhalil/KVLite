@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
 using System;
 using System.ComponentModel;
 
@@ -56,6 +55,6 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   How long static values will last.
         /// </summary>
-        Duration StaticInterval { get; set; }
+        TimeSpan StaticInterval { get; set; }
     }
 }

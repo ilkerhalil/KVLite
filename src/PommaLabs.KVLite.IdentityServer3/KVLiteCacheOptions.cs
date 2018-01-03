@@ -38,6 +38,6 @@ namespace PommaLabs.KVLite.IdentityServer3
         /// <summary>
         ///   How long should entries be stored into the cache. Defaults to 30 minutes.
         /// </summary>
-        public Duration Lifetime { get; set; } = Duration.FromMinutes(30);
+        public TimeSpan Lifetime { get; set; } = TimeSpan.FromMinutes(30);
     }
 }

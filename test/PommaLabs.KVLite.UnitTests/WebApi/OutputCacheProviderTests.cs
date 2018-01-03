@@ -50,7 +50,7 @@ namespace PommaLabs.KVLite.UnitTests.WebApi
         [Test]
         public void Add_One_Valid()
         {
-            _outputCache.Add("a", "b", _outputCache.Cache.Clock.GetCurrentInstant().Plus(Duration.FromMinutes(10)).ToDateTimeOffset(), null);
+            _outputCache.Add("a", "b", _outputCache.Cache.Clock.UtcNow.Plus(TimeSpan.FromMinutes(10)).ToDateTimeOffset(), null);
             Assert.AreEqual("b", _outputCache.Get("a"));
             Assert.AreEqual("b", _outputCache.Get<string>("a"));
         }

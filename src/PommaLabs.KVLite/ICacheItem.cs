@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
 using System;
 using System.Collections.Generic;
 
@@ -51,17 +50,17 @@ namespace PommaLabs.KVLite
         /// <summary>
         ///   When the cache item was created.
         /// </summary>
-        Instant UtcCreation { get; }
+        DateTimeOffset UtcCreation { get; }
 
         /// <summary>
         ///   When the cache item will expire.
         /// </summary>
-        Instant UtcExpiry { get; }
+        DateTimeOffset UtcExpiry { get; }
 
         /// <summary>
-        ///   The refresh interval, used if the item is sliding; if it is not, it equals to <see cref="Duration.Zero"/>.
+        ///   The refresh interval, used if the item is sliding; if it is not, it equals to <see cref="TimeSpan.Zero"/>.
         /// </summary>
-        Duration Interval { get; }
+        TimeSpan Interval { get; }
 
         /// <summary>
         ///   The parent keys of this item. If not specified, the array will be empty, but not null.

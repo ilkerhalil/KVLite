@@ -172,9 +172,9 @@ namespace PommaLabs.KVLite.EntityFramework
                     return Cache.GetOrAddTimed(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), utcExpiry.ToInstant(), parentKeys);
 
                 case CacheExpirationMode.Duration:
-                    // The cache item will expire using the Duration property to calculate the
+                    // The cache item will expire using the TimeSpan property to calculate the
                     // absolute expiration from DateTimeOffset.Now.
-                    return Cache.GetOrAddTimed(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), cachePolicy.Duration.ToDuration(), parentKeys);
+                    return Cache.GetOrAddTimed(EfCachePartition, cacheKey.Key, () => valueFactory?.Invoke(cacheKey), cachePolicy.TimeSpan.ToDuration(), parentKeys);
 
                 case CacheExpirationMode.None:
                     // The cache item will not expire.
@@ -247,9 +247,9 @@ namespace PommaLabs.KVLite.EntityFramework
                     break;
 
                 case CacheExpirationMode.Duration:
-                    // The cache item will expire using the Duration property to calculate the
+                    // The cache item will expire using the TimeSpan property to calculate the
                     // absolute expiration from DateTimeOffset.Now.
-                    Cache.AddTimed(EfCachePartition, cacheKey.Key, value, cachePolicy.Duration.ToDuration(), parentKeys);
+                    Cache.AddTimed(EfCachePartition, cacheKey.Key, value, cachePolicy.TimeSpan.ToDuration(), parentKeys);
                     break;
 
                 case CacheExpirationMode.None:

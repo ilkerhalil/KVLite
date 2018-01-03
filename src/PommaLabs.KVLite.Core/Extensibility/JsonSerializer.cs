@@ -22,7 +22,6 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Newtonsoft.Json;
-using NodaTime.Serialization.JsonNet;
 using PommaLabs.KVLite.Core.Extensibility.Converters;
 using System;
 using System.Buffers;
@@ -90,7 +89,7 @@ namespace PommaLabs.KVLite.Extensibility
             ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
             TypeNameHandling = TypeNameHandling.All,
             TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
-        }.ConfigureForNodaTime(NodaTime.DateTimeZoneProviders.Tzdb);
+        };
 
         /// <summary>
         ///   Thread safe singleton.

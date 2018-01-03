@@ -76,10 +76,10 @@ namespace PommaLabs.KVLite.Examples
             // You can start using the default caches immediately. Let's try to store some values in
             // a way similar to the figure above, using the default persistent cache.
             ICache persistentCache = PersistentCache.DefaultInstance;
-            persistentCache.AddTimed(examplePartition1, exampleKey1, simpleValue, persistentCache.Clock.GetCurrentInstant() + Duration.FromMinutes(5));
-            persistentCache.AddTimed(examplePartition1, exampleKey2, simpleValue, persistentCache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
-            persistentCache.AddTimed(examplePartition2, exampleKey1, complexValue, persistentCache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
-            persistentCache.AddTimed(examplePartition2, exampleKey2, complexValue, persistentCache.Clock.GetCurrentInstant() + Duration.FromMinutes(5));
+            persistentCache.AddTimed(examplePartition1, exampleKey1, simpleValue, persistentCache.Clock.UtcNow + TimeSpan.FromMinutes(5));
+            persistentCache.AddTimed(examplePartition1, exampleKey2, simpleValue, persistentCache.Clock.UtcNow + TimeSpan.FromMinutes(10));
+            persistentCache.AddTimed(examplePartition2, exampleKey1, complexValue, persistentCache.Clock.UtcNow + TimeSpan.FromMinutes(10));
+            persistentCache.AddTimed(examplePartition2, exampleKey2, complexValue, persistentCache.Clock.UtcNow + TimeSpan.FromMinutes(5));
             PrettyPrint(persistentCache);
 
             // Otherwise, you can customize you own cache... Let's see how we can use a volatile
@@ -87,7 +87,7 @@ namespace PommaLabs.KVLite.Examples
             var volatileCacheSettings = new VolatileCacheSettings
             {
                 CacheName = "My In-Memory Cache", // The backend.
-                StaticInterval = Duration.FromDays(10) // How long static values will last.
+                StaticInterval = TimeSpan.FromDays(10) // How long static values will last.
             };
 
             // Then the settings that we will use in new persistent caches.
@@ -95,7 +95,7 @@ namespace PommaLabs.KVLite.Examples
             {
                 CacheFile = "CustomCache.sqlite", // The SQLite DB used as the backend for the cache.
                 ChancesOfAutoCleanup = 0.5, // Chance of an automatic a cache cleanup being issued.
-                StaticInterval = Duration.FromDays(10) // How long static values will last.
+                StaticInterval = TimeSpan.FromDays(10) // How long static values will last.
             };
 
             // We create both a volatile and a persistent cache.
@@ -125,10 +125,10 @@ namespace PommaLabs.KVLite.Examples
 
             // Let's clear the volatile cache and let's a value for each type.
             volatileCache.Clear();
-            volatileCache.AddTimed(examplePartition1, exampleKey1, simpleValue, volatileCache.Clock.GetCurrentInstant() + Duration.FromMinutes(10));
-            volatileCache.AddTimed(examplePartition1, exampleKey2, complexValue, Duration.FromMinutes(15));
+            volatileCache.AddTimed(examplePartition1, exampleKey1, simpleValue, volatileCache.Clock.UtcNow + TimeSpan.FromMinutes(10));
+            volatileCache.AddTimed(examplePartition1, exampleKey2, complexValue, TimeSpan.FromMinutes(15));
             volatileCache.AddStatic(examplePartition2, exampleKey1, simpleValue);
-            volatileCache.AddSliding(examplePartition2, exampleKey2, complexValue, Duration.FromMinutes(15));
+            volatileCache.AddSliding(examplePartition2, exampleKey2, complexValue, TimeSpan.FromMinutes(15));
             PrettyPrint(volatileCache);
 
             Console.Read();

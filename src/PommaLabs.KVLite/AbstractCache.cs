@@ -21,10 +21,9 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
 using PommaLabs.KVLite.Extensibility;
-using PommaLabs.KVLite.Resources;
 using PommaLabs.KVLite.Logging;
+using PommaLabs.KVLite.Resources;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -50,7 +49,7 @@ namespace PommaLabs.KVLite
         /// </summary>
         /// <remarks>
         ///   This property belongs to the services which can be injected using the cache
-        ///   constructor. If not specified, it defaults to <see cref="NodaTime.SystemClock"/>.
+        ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
         /// </remarks>
         public abstract IClock Clock { get; }
 
@@ -127,7 +126,7 @@ namespace PommaLabs.KVLite
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
-        protected abstract void AddInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys);
+        protected abstract void AddInternal<TVal>(string partition, string key, TVal value, DateTimeOffset utcExpiry, TimeSpan interval, IList<string> parentKeys);
 
         /// <summary>
         ///   Adds given value with the specified expiry time and refresh internal.
@@ -142,7 +141,7 @@ namespace PommaLabs.KVLite
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
-        protected virtual Task AddAsyncInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys, CancellationToken cancellationToken)
+        protected virtual Task AddAsyncInternal<TVal>(string partition, string key, TVal value, DateTimeOffset utcExpiry, TimeSpan interval, IList<string> parentKeys, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -604,7 +603,7 @@ namespace PommaLabs.KVLite
         ///   Too many parent keys have been specified for this item. Please have a look at the
         ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
-        public void AddSliding<TVal>(string partition, string key, TVal value, Duration interval, IList<string> parentKeys = null)
+        public void AddSliding<TVal>(string partition, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null)
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -616,7 +615,7 @@ namespace PommaLabs.KVLite
 
             try
             {
-                AddInternal(partition, key, value, Clock.GetCurrentInstant() + interval, interval, parentKeys);
+                AddInternal(partition, key, value, Clock.UtcNow + interval, interval, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == interval);
@@ -656,7 +655,7 @@ namespace PommaLabs.KVLite
 
             try
             {
-                AddInternal(partition, key, value, Clock.GetCurrentInstant() + Settings.StaticInterval, Settings.StaticInterval, parentKeys);
+                AddInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Settings.StaticInterval);
@@ -684,7 +683,7 @@ namespace PommaLabs.KVLite
         ///   Too many parent keys have been specified for this item. Please have a look at the
         ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
-        public void AddTimed<TVal>(string partition, string key, TVal value, Instant utcExpiry, IList<string> parentKeys = null)
+        public void AddTimed<TVal>(string partition, string key, TVal value, DateTimeOffset utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -696,10 +695,10 @@ namespace PommaLabs.KVLite
 
             try
             {
-                AddInternal(partition, key, value, utcExpiry, Duration.Zero, parentKeys);
+                AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero, parentKeys);
 
                 // Postconditions
-                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Duration.Zero);
+                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
             catch (Exception ex)
             {
@@ -724,7 +723,7 @@ namespace PommaLabs.KVLite
         ///   Too many parent keys have been specified for this item. Please have a look at the
         ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
-        public void AddTimed<TVal>(string partition, string key, TVal value, Duration lifetime, IList<string> parentKeys = null)
+        public void AddTimed<TVal>(string partition, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -736,10 +735,10 @@ namespace PommaLabs.KVLite
 
             try
             {
-                AddInternal(partition, key, value, Clock.GetCurrentInstant() + lifetime, Duration.Zero, parentKeys);
+                AddInternal(partition, key, value, Clock.UtcNow + lifetime, TimeSpan.Zero, parentKeys);
 
                 // Postconditions
-                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Duration.Zero);
+                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
             catch (Exception ex)
             {
@@ -1116,7 +1115,7 @@ namespace PommaLabs.KVLite
         ///   Too many parent keys have been specified for this item. Please have a look at the
         ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
-        public TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, Duration interval, IList<string> parentKeys = null)
+        public TVal GetOrAddSliding<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null)
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -1154,7 +1153,7 @@ namespace PommaLabs.KVLite
 
             try
             {
-                AddInternal(partition, key, value, Clock.GetCurrentInstant() + interval, interval, parentKeys);
+                AddInternal(partition, key, value, Clock.UtcNow + interval, interval, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == interval);
@@ -1232,7 +1231,7 @@ namespace PommaLabs.KVLite
 
             try
             {
-                AddInternal(partition, key, value, Clock.GetCurrentInstant() + Settings.StaticInterval, Settings.StaticInterval, parentKeys);
+                AddInternal(partition, key, value, Clock.UtcNow + Settings.StaticInterval, Settings.StaticInterval, parentKeys);
 
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Settings.StaticInterval);
@@ -1272,7 +1271,7 @@ namespace PommaLabs.KVLite
         ///   Too many parent keys have been specified for this item. Please have a look at the
         ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
-        public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, Instant utcExpiry, IList<string> parentKeys = null)
+        public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, DateTimeOffset utcExpiry, IList<string> parentKeys = null)
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -1310,10 +1309,10 @@ namespace PommaLabs.KVLite
 
             try
             {
-                AddInternal(partition, key, value, utcExpiry, Duration.Zero, parentKeys);
+                AddInternal(partition, key, value, utcExpiry, TimeSpan.Zero, parentKeys);
 
                 // Postconditions
-                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Duration.Zero);
+                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
             catch (Exception ex)
             {
@@ -1350,7 +1349,7 @@ namespace PommaLabs.KVLite
         ///   Too many parent keys have been specified for this item. Please have a look at the
         ///   <see cref="MaxParentKeyCountPerItem"/> to understand how many parent keys each item may have.
         /// </exception>
-        public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, Duration lifetime, IList<string> parentKeys = null)
+        public TVal GetOrAddTimed<TVal>(string partition, string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null)
         {
             // Preconditions
             if (Disposed) throw new ObjectDisposedException(Settings.CacheName, string.Format(ErrorMessages.CacheHasBeenDisposed, Settings.CacheName));
@@ -1388,10 +1387,10 @@ namespace PommaLabs.KVLite
 
             try
             {
-                AddInternal(partition, key, value, Clock.GetCurrentInstant() + lifetime, Duration.Zero, parentKeys);
+                AddInternal(partition, key, value, Clock.UtcNow + lifetime, TimeSpan.Zero, parentKeys);
 
                 // Postconditions
-                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Duration.Zero);
+                Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
             catch (Exception ex)
             {

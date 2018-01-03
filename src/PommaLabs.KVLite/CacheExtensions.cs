@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using NodaTime;
 using System;
 using System.Collections.Generic;
 
@@ -62,13 +61,13 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static void AddSliding<TVal>(this ICache cache, string key, TVal value, Duration interval, IList<string> parentKeys = null)
+        public static void AddSliding<TVal>(this ICache cache, string key, TVal value, TimeSpan interval, IList<string> parentKeys = null)
             => cache.AddSliding(cache.Settings.DefaultPartition, key, value, interval, parentKeys);
 
         /// <summary>
         ///   Adds a "static" value with given key and default partition. Value will last as much as
-        ///   specified in <see cref="IEssentialCacheSettings.StaticInterval"/> and, if
-        ///   accessed before expiry, its lifetime will be extended by that interval.
+        ///   specified in <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed
+        ///   before expiry, its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="cache">The cache.</param>
@@ -103,7 +102,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static void AddTimed<TVal>(this ICache cache, string key, TVal value, Instant utcExpiry, IList<string> parentKeys = null)
+        public static void AddTimed<TVal>(this ICache cache, string key, TVal value, DateTimeOffset utcExpiry, IList<string> parentKeys = null)
             => cache.AddTimed(cache.Settings.DefaultPartition, key, value, utcExpiry, parentKeys);
 
         /// <summary>
@@ -123,7 +122,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static void AddTimed<TVal>(this ICache cache, string key, TVal value, Duration lifetime, IList<string> parentKeys = null)
+        public static void AddTimed<TVal>(this ICache cache, string key, TVal value, TimeSpan lifetime, IList<string> parentKeys = null)
             => cache.AddTimed(cache.Settings.DefaultPartition, key, value, lifetime, parentKeys);
 
         #endregion Add
@@ -211,7 +210,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static TVal GetOrAddSliding<TVal>(this ICache cache, string key, Func<TVal> valueGetter, Duration interval, IList<string> parentKeys = null)
+        public static TVal GetOrAddSliding<TVal>(this ICache cache, string key, Func<TVal> valueGetter, TimeSpan interval, IList<string> parentKeys = null)
             => cache.GetOrAddSliding(cache.Settings.DefaultPartition, key, valueGetter, interval, parentKeys);
 
         /// <summary>
@@ -220,8 +219,8 @@ namespace PommaLabs.KVLite
         ///
         ///   If the value is not found, then it adds a "static" value with given key and default
         ///   partition. Value will last as much as specified in
-        ///   <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed before
-        ///   expiry, its lifetime will be extended by that interval.
+        ///   <see cref="IEssentialCacheSettings.StaticInterval"/> and, if accessed before expiry,
+        ///   its lifetime will be extended by that interval.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
         /// <param name="cache">The cache.</param>
@@ -276,7 +275,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static TVal GetOrAddTimed<TVal>(this ICache cache, string key, Func<TVal> valueGetter, Instant utcExpiry, IList<string> parentKeys = null)
+        public static TVal GetOrAddTimed<TVal>(this ICache cache, string key, Func<TVal> valueGetter, DateTimeOffset utcExpiry, IList<string> parentKeys = null)
             => cache.GetOrAddTimed(cache.Settings.DefaultPartition, key, valueGetter, utcExpiry, parentKeys);
 
         /// <summary>
@@ -308,7 +307,7 @@ namespace PommaLabs.KVLite
         ///   <see cref="IEssentialCache.MaxParentKeyCountPerItem"/> to understand how many parent
         ///   keys each item may have.
         /// </exception>
-        public static TVal GetOrAddTimed<TVal>(this ICache cache, string key, Func<TVal> valueGetter, Duration lifetime, IList<string> parentKeys = null)
+        public static TVal GetOrAddTimed<TVal>(this ICache cache, string key, Func<TVal> valueGetter, TimeSpan lifetime, IList<string> parentKeys = null)
             => cache.GetOrAddTimed(cache.Settings.DefaultPartition, key, valueGetter, lifetime, parentKeys);
 
         #endregion GetOrAdd

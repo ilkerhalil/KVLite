@@ -194,7 +194,7 @@ namespace PommaLabs.KVLite.Memory
         /// <param name="parentKeys">
         ///   Keys, belonging to current partition, on which the new item will depend.
         /// </param>
-        protected override void AddInternal<TVal>(string partition, string key, TVal value, Instant utcExpiry, Duration interval, IList<string> parentKeys)
+        protected override void AddInternal<TVal>(string partition, string key, TVal value, DateTimeOffset utcExpiry, TimeSpan interval, IList<string> parentKeys)
         {
             if (Log.IsDebugEnabled())
             {
@@ -243,7 +243,7 @@ namespace PommaLabs.KVLite.Memory
             {
                 Value = serializedValue,
                 Compressed = compressed,
-                UtcCreation = Clock.GetCurrentInstant()
+                UtcCreation = Clock.UtcNow
             };
 
             var cacheEntryOptions = new MemoryCacheEntryOptions
@@ -253,13 +253,13 @@ namespace PommaLabs.KVLite.Memory
 #endif
             };
 
-            if (interval == Duration.Zero)
+            if (interval == TimeSpan.Zero)
             {
-                cacheEntryOptions.AbsoluteExpiration = utcExpiry.ToDateTimeOffset();
+                cacheEntryOptions.AbsoluteExpiration = utcExpiry;
             }
             else
             {
-                cacheEntryOptions.SlidingExpiration = interval.ToTimeSpan();
+                cacheEntryOptions.SlidingExpiration = interval;
             }
 
             cacheEntryOptions.PostEvictionCallbacks.Add(new PostEvictionCallbackRegistration

@@ -84,7 +84,7 @@ namespace PommaLabs.KVLite.IdentityServer4
         {
             var partition = _options.Partition;
             key = string.IsNullOrWhiteSpace(key) ? NoKey : key;
-            var lifetime = Duration.FromTimeSpan(expiration);
+            var lifetime = TimeSpan.FromTimeSpan(expiration);
             await _cache.AddTimedAsync(partition, key, item, lifetime).ConfigureAwait(false);
         }
     }
