@@ -72,10 +72,11 @@ namespace PommaLabs.KVLite.Memory
         /// <param name="settings">Cache settings.</param>
         /// <param name="serializer">The serializer.</param>
         /// <param name="compressor">The compressor.</param>
-        public MemoryCache(MemoryCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null)
+        /// <param name="clock">The clock.</param>
+        public MemoryCache(MemoryCacheSettings settings, ISerializer serializer = null, ICompressor compressor = null, IClock clock = null)
         {
             Settings = settings;
-            Clock = SystemClock.Instance;
+            Clock = clock ?? SystemClock.Instance;
             Compressor = compressor ?? DeflateCompressor.Instance;
             Serializer = serializer ?? JsonSerializer.Instance;
 
@@ -88,6 +89,7 @@ namespace PommaLabs.KVLite.Memory
             _store?.Dispose();
             _store = new MicrosoftMemoryCache(new OptionsWrapper<MicrosoftMemoryCacheOptions>(new MicrosoftMemoryCacheOptions
             {
+                Clock = new TmpClockAdapter(Clock),
 #if !NET45
                 SizeLimit = Settings.MaxCacheSizeInMB * 1024 * 1024
 #endif
@@ -96,6 +98,18 @@ namespace PommaLabs.KVLite.Memory
             // Clear the helper map, since we are replacing the memory cache.
             _helperMap?.Clear();
             _helperMap = new Hashtable();
+        }
+
+        private sealed class TmpClockAdapter : Microsoft.Extensions.Internal.ISystemClock
+        {
+            private readonly IClock _clock;
+
+            public TmpClockAdapter(IClock clock)
+            {
+                _clock = clock;
+            }
+
+            public DateTimeOffset UtcNow => _clock.GetCurrentInstant().ToDateTimeOffset();
         }
 
         #endregion Construction

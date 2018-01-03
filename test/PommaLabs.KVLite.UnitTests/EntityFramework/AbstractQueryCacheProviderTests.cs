@@ -26,7 +26,6 @@
 using EntityFramework.Caching;
 using EntityFramework.Extensions;
 using NUnit.Framework;
-using PommaLabs.KVLite;
 using PommaLabs.KVLite.EntityFramework;
 using PommaLabs.KVLite.Memory;
 using System.ComponentModel.DataAnnotations;
@@ -51,7 +50,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
             Effort.Provider.EffortProviderConfiguration.RegisterProvider();
         }
 
-#region Setup/Teardown
+        #region Setup/Teardown
 
         protected ICache Cache;
 
@@ -107,7 +106,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
             }
         }
 
-#endregion Setup/Teardown
+        #endregion Setup/Teardown
 
         [Test]
         public void FromCache_ItemsAreAvaialable_OneQueryWithTags_ExpireOneTag()
