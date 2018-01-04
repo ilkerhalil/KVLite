@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Ninject;
 using NUnit.Framework;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
@@ -33,8 +34,7 @@ using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.UnitTests
 {
-    [TestFixture]
-    internal sealed class MemoryCacheTests
+    internal sealed class MemoryCacheTests : AbstractTests
     {
         private const int LargeItemCount = 1000;
         private const int MediumItemCount = 100;
@@ -54,7 +54,7 @@ namespace PommaLabs.KVLite.UnitTests
         [SetUp]
         public void SetUp()
         {
-            Cache = new MemoryCache(new MemoryCacheSettings());
+            Cache = Kernel.Get<MemoryCache>();
             Cache.Clear();
         }
 

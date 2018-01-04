@@ -262,28 +262,6 @@ namespace PommaLabs.KVLite.Memory
                 cacheEntryOptions.SlidingExpiration = interval;
             }
 
-            cacheEntryOptions.PostEvictionCallbacks.Add(new PostEvictionCallbackRegistration
-            {
-                EvictionCallback = (eKey, eValue, reason, state) =>
-                {
-                    if (reason == EvictionReason.Replaced)
-                    {
-                        return;
-                    }
-                    var oKey = eKey as MemoryCacheKey;
-                    _helperMap.TryRemove(oKey, out var _);
-
-                    var childCacheValues = _helperMap.Values
-                        .Cast<MemoryCacheValue>()
-                        .Where(v => v.ParentKeys.Contains(oKey));
-
-                    foreach (var childCacheValue in childCacheValues)
-                    {
-                        RemoveInternal(childCacheValue.CacheKey);
-                    }
-                }
-            });
-
             if (parentKeys != null && parentKeys.Count > 0)
             {
                 cacheValue.ParentKeys = new HashSet<MemoryCacheKey>(parentKeys.Select(pk => new MemoryCacheKey(partition, pk)));
