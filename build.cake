@@ -181,7 +181,8 @@ private void Test(string cfg)
     var flags = "--noheader --noresult --stoponerror";
     if (AppVeyor.IsRunningOnAppVeyor)
     {
-        flags += " --mysql \"Server=localhost;Database=kvlite;Uid=root;Pwd=Password12!;Pooling=true;CharSet=utf8;AutoEnlist=false;SslMode=none;\"";
+        flags += " --mysql \"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=root;Pwd=Password12!;Pooling=true;CharSet=utf8;AutoEnlist=false;SslMode=none;\"";
+        flags += " --postgresql \"Server=127.0.0.1;Port=5432;Database=kvlite;User Id=postgres;Password=Password12!;Pooling=true;Protocol=3;\"";
         flags += " --sqlserver \"Server=(local)\SQL2017;Database=kvlite;User ID=sa;Password=Password12!;\"";
     }
 
@@ -191,12 +192,12 @@ private void Test(string cfg)
         {
             throw new Exception(cfg + errMsg + netExe);
         }
-    });
+    }
     
     foreach (var netCoreDll in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)))
     {
         DotNetCoreExecute(netCoreDll, flags);
-    });
+    }
 }
 
 private void Pack(string cfg)

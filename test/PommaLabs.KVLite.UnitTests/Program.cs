@@ -29,7 +29,9 @@ namespace PommaLabs.KVLite.UnitTests
 {
     internal static class Program
     {
-        public static string MySqlConnectionString { get; set; } = @"Server=localhost;Database=kvlite;Uid=kvlite;Pwd=kvlite;Pooling=true;CharSet=utf8;AutoEnlist=false;SslMode=none;";
+        public static string MySqlConnectionString { get; set; } = @"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=kvlite;Pwd=kvlite;Pooling=true;CharSet=utf8;AutoEnlist=false;SslMode=none;";
+
+        public static string PostgreSqlConnectionString { get; set; } = @"Server=127.0.0.1;Port=5432;Database=postgres;User Id=kvlite;Password=kvlite;Pooling=true;Protocol=3;";
 
         public static string SqlServerConnectionString { get; set; } = @"Data Source=(LocalDB)\MSSQLLocalDB;Database=kvlite;Integrated Security=True;MultipleActiveResultSets=True;";
 
@@ -51,6 +53,13 @@ namespace PommaLabs.KVLite.UnitTests
             {
                 MySqlConnectionString = args[mySqlIndex + 1];
                 args[mySqlIndex] = args[mySqlIndex + 1] = null;
+            }
+
+            var postgreSqlIndex = Array.IndexOf(args, "--postgresql");
+            if (postgreSqlIndex >= 0 && args.Length > postgreSqlIndex + 1)
+            {
+                PostgreSqlConnectionString = args[postgreSqlIndex + 1];
+                args[postgreSqlIndex] = args[postgreSqlIndex + 1] = null;
             }
 
             var sqlServerIndex = Array.IndexOf(args, "--sqlserver");
