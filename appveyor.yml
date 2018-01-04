@@ -1,9 +1,9 @@
 version: 6.4.4.{build}
 image: Visual Studio 2017
 services:
-- mssql2008r2sp2
+- mssql2012sp1
 - mysql
-- postgresql93
+- postgresql
 build_script:
 - ps: .\build.ps1
 artifacts:
