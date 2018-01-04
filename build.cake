@@ -181,8 +181,8 @@ private void Test(string cfg)
     var flags = "--noheader --noresult --stoponerror";
     if (AppVeyor.IsRunningOnAppVeyor)
     {
-        flags += " --mysql \"Server=localhost;Uid=root;Pwd=Password12!;Pooling=true;CharSet=utf8;AutoEnlist=false;SslMode=none;\"";
-        flags += " --sqlserver \"Server=(local)\SQL2017;Database=master;User ID=sa;Password=Password12!;\"";
+        flags += " --mysql \"Server=localhost;Database=kvlite;Uid=root;Pwd=Password12!;Pooling=true;CharSet=utf8;AutoEnlist=false;SslMode=none;\"";
+        flags += " --sqlserver \"Server=(local)\SQL2017;Database=kvlite;User ID=sa;Password=Password12!;\"";
     }
 
     foreach (var netExe in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)))

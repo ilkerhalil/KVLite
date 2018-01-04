@@ -1,0 +1,5 @@
+﻿$instance = "(local)\SQL2017"
+$userName = "sa"
+$password = "Password12!"
+$dbName   = "kvlite"
+sqlcmd -S "$instance" -U "$userName" -P "$password" -Q "USE [master]; CREATE DATABASE [$dbName];"
