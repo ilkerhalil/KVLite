@@ -1,4 +1,4 @@
-﻿// File name: SqlServerCacheTests.cs
+﻿// File name: MySqlCacheTests.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,12 +21,12 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.SqlServer;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
+using PommaLabs.KVLite.MySql;
 
 namespace PommaLabs.KVLite.UnitTests
 {
-    internal sealed class SqlServerCacheTests : AbstractCacheTests<SqlServerCache, SqlServerCacheSettings, SqlServerCacheConnectionFactory, SqlConnection>
+    internal sealed class MySqlCacheTests : AbstractCacheTests<MySqlCache, MySqlCacheSettings, MySqlCacheConnectionFactory, MySqlConnection>
     {
     }
 }
