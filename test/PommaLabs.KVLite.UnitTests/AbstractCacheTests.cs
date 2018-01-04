@@ -37,7 +37,7 @@ using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.UnitTests
 {
-    [Parallelizable(ParallelScope.Fixtures)]
+    [Parallelizable(ParallelScope.Children)]
     internal abstract class AbstractCacheTests<TCache, TSettings, TConnectionFactory, TConnection> : AbstractTests
         where TCache : DbCache<TCache, TSettings, TConnectionFactory, TConnection>
         where TSettings : DbCacheSettings<TSettings>

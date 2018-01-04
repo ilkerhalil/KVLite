@@ -27,7 +27,6 @@ using EntityFramework.Caching;
 using EntityFramework.Extensions;
 using NUnit.Framework;
 using PommaLabs.KVLite.EntityFramework;
-using PommaLabs.KVLite.Memory;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Common;
@@ -36,7 +35,7 @@ using System.Linq;
 
 namespace PommaLabs.KVLite.UnitTests.EntityFramework
 {
-    [Parallelizable(ParallelScope.Fixtures)]
+    [Parallelizable(ParallelScope.Children)]
     internal abstract class AbstractQueryCacheProviderTests : AbstractTests
     {
         private const string Pino = "PINO";
