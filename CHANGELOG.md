@@ -1,9 +1,13 @@
 # Changelog for PommaLabs.KVLite
 
-### v6.5.0 (2017-12-??)
+### v7.0.1 (2018-01-??)
 
-* [UPD] Revert to MySql.Data as low level driver for MySQL and MariaDB.
-* [UPD] Updated to JSON.NET v11.
+* [UPD] Reverted to MySql.Data as low level driver for MySQL and MariaDB.
+* [UPD] Updated JSON.NET to v11.
+* [REM] Removed NodaTime and updated interfaces accordingly.
+* [ADD] Some integration tests have been setup on AppVeyor.
+* [ADD] Many unit tests can now run in parallel.
+* [UPD] MemoryCache sample driver can now run on .NET Standard 2.0.
 
 ### v6.4.4 (2017-10-31)
 
