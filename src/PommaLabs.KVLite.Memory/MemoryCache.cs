@@ -240,6 +240,7 @@ namespace PommaLabs.KVLite.Memory
             var cacheKey = new MemoryCacheKey(partition, key);
             var cacheValue = new MemoryCacheValue
             {
+                CacheKey = cacheKey,
                 Value = serializedValue,
                 Compressed = compressed,
                 UtcCreation = Clock.UtcNow
@@ -269,42 +270,24 @@ namespace PommaLabs.KVLite.Memory
                     {
                         return;
                     }
-                    lock (_helperMap) _helperMap.Remove(eKey);
-                    if (eValue is MemoryCacheValue oValue && oValue.ChildKeys != null)
+                    var oKey = eKey as MemoryCacheKey;
+                    lock (_helperMap) _helperMap.Remove(oKey);
+
+                    var childCacheValues = _helperMap.Values
+                        .Cast<MemoryCacheValue>()
+                        .Where(v => v.ParentKeys.Contains(oKey))
+                        .ToArray();
+
+                    foreach (var childCacheValue in childCacheValues)
                     {
-                        foreach (var childCacheKey in oValue.ChildKeys)
-                        {
-                            RemoveInternal(childCacheKey);
-                        }
+                        RemoveInternal(childCacheValue.CacheKey);
                     }
                 }
             });
 
-            if (_helperMap.ContainsKey(cacheKey) && _store.TryGetValue(cacheKey, out var tmp) && tmp is MemoryCacheValue oldCacheValue && oldCacheValue.ChildKeys != null)
-            {
-                parentKeys = oldCacheValue.ChildKeys
-                    .Select(k => k.Key)
-                    .Union(parentKeys ?? Enumerable.Empty<string>())
-                    .ToList();
-            }
-
             if (parentKeys != null && parentKeys.Count > 0)
             {
-                foreach (var parentKey in parentKeys)
-                {
-                    var parentCacheKey = new MemoryCacheKey(partition, parentKey);
-                    if (_helperMap[parentCacheKey] is MemoryCacheValue parentCacheValue)
-                    {
-                        lock (parentCacheValue)
-                        {
-                            if (parentCacheValue.ChildKeys == null)
-                            {
-                                parentCacheValue.ChildKeys = new HashSet<MemoryCacheKey>();
-                            }
-                            parentCacheValue.ChildKeys.Add(cacheKey);
-                        }
-                    }
-                }
+                cacheValue.ParentKeys = new HashSet<MemoryCacheKey>(parentKeys.Select(pk => new MemoryCacheKey(partition, pk)));
             }
 
             _store.Set(cacheKey, cacheValue, cacheEntryOptions);
@@ -330,7 +313,8 @@ namespace PommaLabs.KVLite.Memory
 
             foreach (var cacheKey in cacheKeys)
             {
-                RemoveInternal(cacheKey);
+                lock (_helperMap) _helperMap.Remove(cacheKey);
+                _store.Remove(cacheKey);
             }
 
             return cacheKeys.LongLength;
@@ -513,14 +497,16 @@ namespace PommaLabs.KVLite.Memory
 
         private void RemoveInternal(MemoryCacheKey cacheKey)
         {
-            if (_helperMap[cacheKey] is MemoryCacheValue cacheValue && cacheValue.ChildKeys != null)
+            var childCacheValues = _helperMap.Values
+                .Cast<MemoryCacheValue>()
+                .Where(v => v.ParentKeys.Contains(cacheKey))
+                .ToArray();
+
+            foreach (var childCacheValue in childCacheValues)
             {
-                foreach (var childCacheKey in cacheValue.ChildKeys)
-                {
-                    RemoveInternal(childCacheKey);
-                }
-                cacheValue.ChildKeys = null;
+                RemoveInternal(childCacheValue.CacheKey);
             }
+
             lock (_helperMap) _helperMap.Remove(cacheKey);
             _store.Remove(cacheKey);
         }

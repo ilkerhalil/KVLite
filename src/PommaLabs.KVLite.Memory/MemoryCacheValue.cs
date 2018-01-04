@@ -28,12 +28,16 @@ namespace PommaLabs.KVLite.Memory
 {
     internal sealed class MemoryCacheValue
     {
+        public static HashSet<MemoryCacheKey> NoParentKeys { get; } = new HashSet<MemoryCacheKey>();
+
+        public MemoryCacheKey CacheKey { get; set; }
+
         public byte[] Value { get; set; }
 
         public bool Compressed { get; set; }
 
         public DateTimeOffset UtcCreation { get; set; }
 
-        public HashSet<MemoryCacheKey> ChildKeys { get; set; }
+        public HashSet<MemoryCacheKey> ParentKeys { get; set; } = NoParentKeys;
     }
 }
