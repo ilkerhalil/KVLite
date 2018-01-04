@@ -22,18 +22,45 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NUnitLite;
+using System;
+using System.Linq;
 
 namespace PommaLabs.KVLite.UnitTests
 {
     internal static class Program
     {
+        public static string MySqlConnectionString { get; set; } = @"Server=localhost;Database=kvlite;Uid=kvlite;Pwd=kvlite;Pooling=true;CharSet=utf8;AutoEnlist=false;SslMode=none;";
+
+        public static string SqlServerConnectionString { get; set; } = @"Data Source=(LocalDB)\MSSQLLocalDB;Database=kvlite;Integrated Security=True;MultipleActiveResultSets=True;";
+
         public static int Main(string[] args)
         {
+            args = LookForConnectionStrings(args);
+
 #if NETSTD20
             return new AutoRun(System.Reflection.Assembly.GetEntryAssembly()).Execute(args, new NUnit.Common.ColorConsoleWriter(), System.Console.In);
 #else
             return new AutoRun().Execute(args);
 #endif
+        }
+
+        private static string[] LookForConnectionStrings(string[] args)
+        {
+            var mySqlIndex = Array.IndexOf(args, "--mysql");
+            if (mySqlIndex >= 0 && args.Length > mySqlIndex + 1)
+            {
+                MySqlConnectionString = args[mySqlIndex + 1];
+                args[mySqlIndex] = args[mySqlIndex + 1] = null;
+            }
+
+            var sqlServerIndex = Array.IndexOf(args, "--sqlserver");
+            if (sqlServerIndex >= 0 && args.Length > sqlServerIndex + 1)
+            {
+                SqlServerConnectionString = args[sqlServerIndex + 1];
+                args[sqlServerIndex] = args[sqlServerIndex + 1] = null;
+            }
+
+            return args.Where(a => a != null).ToArray();
         }
     }
 }

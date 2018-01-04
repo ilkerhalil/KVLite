@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Ninject;
 using NUnit.Framework;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
@@ -50,6 +51,7 @@ namespace PommaLabs.KVLite.UnitTests
         [SetUp]
         public virtual void SetUp()
         {
+            Cache = Kernel.Get<TCache>();
             Cache.Clear();
         }
 

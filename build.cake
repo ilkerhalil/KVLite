@@ -176,18 +176,24 @@ private void Test(string cfg)
     //    NoResults = true
     //});
 
-    const string flags = "--noheader --noresult --stoponerror";
     const string errMsg = " - Unit test failure - ";
+    
+    var flags = "--noheader --noresult --stoponerror";
+    if (AppVeyor.IsRunningOnAppVeyor)
+    {
+        flags += " --mysql \"Server=localhost;Uid=root;Pwd=Password12!;Pooling=true;CharSet=utf8;AutoEnlist=false;SslMode=none;\"";
+        flags += " --sqlserver \"Server=(local)\SQL2017;Database=master;User ID=sa;Password=Password12!;\"";
+    }
 
-    Parallel.ForEach(GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)), netExe => 
+    foreach (var netExe in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)))
     {
         if (StartProcess(netExe, flags) != 0)
         {
             throw new Exception(cfg + errMsg + netExe);
         }
     });
-
-    Parallel.ForEach(GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)), netCoreDll =>
+    
+    foreach (var netCoreDll in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.dll".Replace("{cfg}", cfg)))
     {
         DotNetCoreExecute(netCoreDll, flags);
     });

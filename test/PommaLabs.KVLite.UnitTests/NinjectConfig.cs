@@ -23,6 +23,8 @@
 
 using Ninject.Modules;
 using PommaLabs.KVLite.Extensibility;
+using PommaLabs.KVLite.MySql;
+using PommaLabs.KVLite.SqlServer;
 
 namespace PommaLabs.KVLite.UnitTests
 {
@@ -48,6 +50,22 @@ namespace PommaLabs.KVLite.UnitTests
             Bind<IRandom>()
                 .To<SystemRandom>()
                 .InTransientScope();
+
+            Bind<MySqlCacheSettings>()
+                .ToConstant(new MySqlCacheSettings { ConnectionString = Program.MySqlConnectionString })
+                .InSingletonScope();
+
+            Bind<MySqlCache>()
+                .ToSelf()
+                .InSingletonScope();
+
+            Bind<SqlServerCacheSettings>()
+                .ToConstant(new SqlServerCacheSettings { ConnectionString = Program.SqlServerConnectionString })
+                .InSingletonScope();
+
+            Bind<SqlServerCache>()
+                .ToSelf()
+                .InSingletonScope();
         }
     }
 }

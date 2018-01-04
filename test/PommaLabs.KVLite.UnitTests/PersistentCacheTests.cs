@@ -35,23 +35,6 @@ namespace PommaLabs.KVLite.UnitTests
     {
         private const string BlankPath = "   ";
 
-        #region Setup/Teardown
-
-        [SetUp]
-        public override void SetUp()
-        {
-            Cache = Kernel.Get<PersistentCache>();
-            base.SetUp();
-        }
-
-        [TearDown]
-        public override void TearDown()
-        {
-            base.TearDown();
-        }
-
-        #endregion Setup/Teardown
-
         #region Cache creation and disposal
 
         [Test]

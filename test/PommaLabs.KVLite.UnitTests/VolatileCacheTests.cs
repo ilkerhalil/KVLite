@@ -33,23 +33,6 @@ namespace PommaLabs.KVLite.UnitTests
 {
     internal sealed class VolatileCacheTests : AbstractCacheTests<VolatileCache, VolatileCacheSettings, SQLiteCacheConnectionFactory<VolatileCacheSettings>, SqliteConnection>
     {
-        #region Setup/Teardown
-
-        [SetUp]
-        public override void SetUp()
-        {
-            Cache = Kernel.Get<VolatileCache>();
-            base.SetUp();
-        }
-
-        [TearDown]
-        public override void TearDown()
-        {
-            base.TearDown();
-        }
-
-        #endregion Setup/Teardown
-
         #region Cache creation and disposal
 
         [TestCase("")]
