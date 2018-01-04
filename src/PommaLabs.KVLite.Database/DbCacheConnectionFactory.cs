@@ -42,11 +42,6 @@ namespace PommaLabs.KVLite.Database
         where TConnection : DbConnection
     {
         /// <summary>
-        ///   Used to validate SQL names.
-        /// </summary>
-        private static Regex IsValidSqlNameRegex { get; } = new Regex("[a-z0-9_]*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        /// <summary>
         ///   DB provider factory used to create SQL connections.
         /// </summary>
         private readonly DbProviderFactory _dbProviderFactory;

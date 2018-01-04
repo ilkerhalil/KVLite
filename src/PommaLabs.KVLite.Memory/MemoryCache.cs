@@ -290,7 +290,7 @@ namespace PommaLabs.KVLite.Memory
             }
 
             _store.Set(cacheKey, cacheValue, cacheEntryOptions);
-            _helperMap[cacheKey] = cacheValue;
+            _helperMap.AddOrUpdate(cacheKey, cacheValue, (k, o) => cacheValue);
         }
 
         /// <summary>

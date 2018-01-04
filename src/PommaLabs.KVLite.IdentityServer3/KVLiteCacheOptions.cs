@@ -21,6 +21,7 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using PommaLabs.KVLite.Resources;
 using System;
 
 namespace PommaLabs.KVLite.IdentityServer3
@@ -31,9 +32,9 @@ namespace PommaLabs.KVLite.IdentityServer3
     public sealed class KVLiteCacheOptions
     {
         /// <summary>
-        ///   The partition used by the cache. Defaults to "IdentityServer3".
+        ///   The partition used by the cache. Defaults to "KVLite.IdentityServer3".
         /// </summary>
-        public string Partition { get; set; } = nameof(IdentityServer3);
+        public string Partition { get; set; } = $"{CachePartitions.Prefix}.{nameof(IdentityServer3)}";
 
         /// <summary>
         ///   How long should entries be stored into the cache. Defaults to 30 minutes.
