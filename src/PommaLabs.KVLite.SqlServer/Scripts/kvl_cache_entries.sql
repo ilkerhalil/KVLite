@@ -1,5 +1,6 @@
-﻿DROP TABLE [kvl_cache_entries];
+﻿USE [kvlite];
 
+DROP TABLE IF EXISTS [kvl_cache_entries];
 
 CREATE TABLE [kvl_cache_entries] (
     [kvle_id]          UNIQUEIDENTIFIER ROWGUIDCOL NOT NULL DEFAULT NEWSEQUENTIALID(),
@@ -27,11 +28,9 @@ WITH (MEMORY_OPTIMIZED=ON, DURABILITY=SCHEMA_ONLY)
  */
 ;
 
-
 CREATE INDEX [ix_kvle_parent0] ON [kvl_cache_entries] ([kvle_parent_hash0]);
 CREATE INDEX [ix_kvle_parent1] ON [kvl_cache_entries] ([kvle_parent_hash1]);
 CREATE INDEX [ix_kvle_parent2] ON [kvl_cache_entries] ([kvle_parent_hash2]);
-
 
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = 'Automatically generated ID.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'kvl_cache_entries', @level2type = N'COLUMN', @level2name = N'kvle_id';
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = 'Hash of partition and key.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'kvl_cache_entries', @level2type = N'COLUMN', @level2name = N'kvle_hash';

@@ -75,7 +75,6 @@ namespace PommaLabs.KVLite.SQLite
             // Connection string must be customized by each cache.
             UpdateConnectionString();
 
-            Settings.PropertyChanged -= ConnectionFactory.OnSettingsPropertyChanged;
             Settings.PropertyChanged += (sender, args) =>
             {
                 if (DataSourceHasChanged(args.PropertyName))
@@ -83,7 +82,6 @@ namespace PommaLabs.KVLite.SQLite
                     UpdateConnectionString();
                 }
             };
-            Settings.PropertyChanged += ConnectionFactory.OnSettingsPropertyChanged;
         }
 
         #endregion Construction

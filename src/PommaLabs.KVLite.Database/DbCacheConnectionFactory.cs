@@ -55,9 +55,7 @@ namespace PommaLabs.KVLite.Database
             _dbProviderFactory = dbProviderFactory ?? throw new ArgumentNullException(nameof(dbProviderFactory));
 
             Settings.PropertyChanged += OnSettingsPropertyChanged;
-
-            OnSettingsPropertyChanged(null, new PropertyChangedEventArgs(nameof(DbCacheSettings<TSettings>.CacheSchemaName)));
-            OnSettingsPropertyChanged(null, new PropertyChangedEventArgs(nameof(DbCacheSettings<TSettings>.ConnectionString)));
+            OnSettingsPropertyChanged(null, null);
         }
 
         #region Configuration
@@ -72,15 +70,11 @@ namespace PommaLabs.KVLite.Database
         /// </summary>
         /// <param name="sender">Sender.</param>
         /// <param name="e">Arguments.</param>
-        public void OnSettingsPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnSettingsPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(DbCacheSettings<TSettings>.CacheSchemaName) || e.PropertyName == nameof(DbCacheSettings<TSettings>.CacheEntriesTableName))
+            if (sender == null || e.PropertyName == nameof(DbCacheSettings<TSettings>.CacheSchemaName) || e.PropertyName == nameof(DbCacheSettings<TSettings>.CacheEntriesTableName))
             {
                 UpdateCommandsAndQueries();
-            }
-            if (e.PropertyName == nameof(DbCacheSettings<TSettings>.ConnectionString))
-            {
-                // TODO
             }
         }
 
