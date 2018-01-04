@@ -38,22 +38,6 @@ namespace PommaLabs.KVLite.Memory
 
         public string Key { get; }
 
-        public static string Serialize(string partition, string key)
-        {
-            var partitionLength = partition.Length;
-            return $"{partitionLength}${partition}${key}";
-        }
-
-        public static MemoryCacheKey Deserialize(string serialized)
-        {
-            var partitionLengthEnd = serialized.IndexOf('$');
-            var partitionLengthPrefix = serialized.Substring(0, partitionLengthEnd);
-            var partitionLength = int.Parse(partitionLengthPrefix);
-            var partition = serialized.Substring(partitionLengthEnd + 1, partitionLength);
-            var key = serialized.Substring(partitionLengthEnd + partitionLength + 2);
-            return new MemoryCacheKey(partition, key);
-        }
-
         public override bool Equals(object obj)
         {
             return Equals(obj as MemoryCacheKey);

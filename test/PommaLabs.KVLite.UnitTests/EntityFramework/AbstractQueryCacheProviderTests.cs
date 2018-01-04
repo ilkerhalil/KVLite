@@ -179,20 +179,7 @@ namespace PommaLabs.KVLite.UnitTests.EntityFramework
                     Assert.That(inis.Count(i => i.Name == Pino), Is.EqualTo(1));
                     Assert.That(inis.Count(i => i.Name == Gino), Is.EqualTo(0));
                     Assert.That(inis.Count(i => i.Name == Nino), Is.EqualTo(1));
-
-                    if (Cache is MemoryCache)
-                    {
-                        // FIXME: MemoryCache is triggering one more delete than necessary. Of
-                        //        course, this is a broken behaviour, but there is no easy way to fix
-                        //        it right now.
-                        Assert.That(Cache.GetItems<object>().Count, Is.EqualTo(4));
-                        Assert.Ignore("MemoryCache has a partially buggy behavior...");
-                    }
-                    else
-                    {
-                        // This is the right behavior.
-                        Assert.That(Cache.GetItems<object>().Count, Is.EqualTo(5));
-                    }
+                    Assert.That(Cache.GetItems<object>().Count, Is.EqualTo(5));
                 }
             }
         }

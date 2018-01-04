@@ -22,7 +22,7 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace PommaLabs.KVLite.Memory
 {
@@ -34,6 +34,6 @@ namespace PommaLabs.KVLite.Memory
 
         public DateTimeOffset UtcCreation { get; set; }
 
-        public ConcurrentBag<MemoryCacheKey> ChildKeys { get; set; }
+        public HashSet<MemoryCacheKey> ChildKeys { get; set; }
     }
 }

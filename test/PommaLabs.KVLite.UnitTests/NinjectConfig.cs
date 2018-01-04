@@ -24,11 +24,6 @@
 using Ninject.Modules;
 using PommaLabs.KVLite.Extensibility;
 
-#if HAS_EF
-using PommaLabs.KVLite.UnitTests.EntityFramework;
-using System.Data.Entity.Infrastructure.Interception;
-#endif
-
 namespace PommaLabs.KVLite.UnitTests
 {
     /// <summary>
@@ -38,10 +33,6 @@ namespace PommaLabs.KVLite.UnitTests
     {
         public override void Load()
         {
-            Bind<IClock>()
-                .ToConstant(new FakeClock(SystemClock.Instance.UtcNow))
-                .InSingletonScope();
-
             Bind<ICompressor>()
                 .ToConstant(DeflateCompressor.Instance)
                 .InSingletonScope();
@@ -50,13 +41,13 @@ namespace PommaLabs.KVLite.UnitTests
                 .ToConstant(JsonSerializer.Instance)
                 .InSingletonScope();
 
+            Bind<IClock>()
+                .ToConstant(new FakeClock(SystemClock.Instance.UtcNow))
+                .InSingletonScope();
+
             Bind<IRandom>()
                 .To<SystemRandom>()
                 .InTransientScope();
-
-#if HAS_EF
-            DbInterception.Add(new PrintingDbCommandInterceptor());
-#endif
         }
     }
 }

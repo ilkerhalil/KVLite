@@ -29,7 +29,6 @@ using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using MicrosoftMemoryCache = Microsoft.Extensions.Caching.Memory.MemoryCache;
@@ -266,19 +265,28 @@ namespace PommaLabs.KVLite.Memory
             {
                 EvictionCallback = (eKey, eValue, reason, state) =>
                 {
-                    if (reason != EvictionReason.Replaced)
+                    if (reason == EvictionReason.Replaced)
                     {
-                        lock (_helperMap) _helperMap.Remove(eKey);
+                        return;
                     }
-                    if (eValue is MemoryCacheValue oldCacheValue && oldCacheValue.ChildKeys != null)
+                    lock (_helperMap) _helperMap.Remove(eKey);
+                    if (eValue is MemoryCacheValue oValue && oValue.ChildKeys != null)
                     {
-                        foreach (var childCacheKey in oldCacheValue.ChildKeys)
+                        foreach (var childCacheKey in oValue.ChildKeys)
                         {
                             RemoveInternal(childCacheKey);
                         }
                     }
                 }
             });
+
+            if (_helperMap.ContainsKey(cacheKey) && _store.TryGetValue(cacheKey, out var tmp) && tmp is MemoryCacheValue oldCacheValue && oldCacheValue.ChildKeys != null)
+            {
+                parentKeys = oldCacheValue.ChildKeys
+                    .Select(k => k.Key)
+                    .Union(parentKeys ?? Enumerable.Empty<string>())
+                    .ToList();
+            }
 
             if (parentKeys != null && parentKeys.Count > 0)
             {
@@ -287,11 +295,14 @@ namespace PommaLabs.KVLite.Memory
                     var parentCacheKey = new MemoryCacheKey(partition, parentKey);
                     if (_helperMap[parentCacheKey] is MemoryCacheValue parentCacheValue)
                     {
-                        if (parentCacheValue.ChildKeys == null)
+                        lock (parentCacheValue)
                         {
-                            parentCacheValue.ChildKeys = new ConcurrentBag<MemoryCacheKey>();
+                            if (parentCacheValue.ChildKeys == null)
+                            {
+                                parentCacheValue.ChildKeys = new HashSet<MemoryCacheKey>();
+                            }
+                            parentCacheValue.ChildKeys.Add(cacheKey);
                         }
-                        parentCacheValue.ChildKeys.Add(cacheKey);
                     }
                 }
             }
