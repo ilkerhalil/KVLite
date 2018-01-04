@@ -1,4 +1,11 @@
-﻿DROP TABLE IF EXISTS [kvl_cache_entries];
+﻿USE [master]; 
+
+CREATE DATABASE [kvlite]; 
+
+GO
+USE [kvlite]; 
+
+DROP TABLE IF EXISTS [kvl_cache_entries];
 
 CREATE TABLE [kvl_cache_entries] (
     [kvle_id]          UNIQUEIDENTIFIER ROWGUIDCOL NOT NULL DEFAULT NEWSEQUENTIALID(),
