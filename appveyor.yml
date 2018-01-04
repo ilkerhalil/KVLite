@@ -1,7 +1,7 @@
 version: 6.4.4.{build}
 image: Visual Studio 2017
 services:
-- mssql2012sp1
+- mssql2017
 - mysql
 - postgresql
 build_script:
