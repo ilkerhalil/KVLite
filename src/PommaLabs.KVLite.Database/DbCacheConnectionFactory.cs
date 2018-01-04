@@ -21,11 +21,9 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using PommaLabs.KVLite.Resources;
 using System;
 using System.ComponentModel;
 using System.Data.Common;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,13 +52,12 @@ namespace PommaLabs.KVLite.Database
         protected DbCacheConnectionFactory(TSettings settings, DbProviderFactory dbProviderFactory)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            Settings.PropertyChanged += Settings_PropertyChanged;
-
             _dbProviderFactory = dbProviderFactory ?? throw new ArgumentNullException(nameof(dbProviderFactory));
 
-#pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
-            UpdateCommandsAndQueries();
-#pragma warning restore RECS0021 // Warns about calls to virtual member functions occuring in the constructor
+            Settings.PropertyChanged += OnSettingsPropertyChanged;
+
+            OnSettingsPropertyChanged(null, new PropertyChangedEventArgs(nameof(DbCacheSettings<TSettings>.CacheSchemaName)));
+            OnSettingsPropertyChanged(null, new PropertyChangedEventArgs(nameof(DbCacheSettings<TSettings>.ConnectionString)));
         }
 
         #region Configuration
@@ -75,11 +72,15 @@ namespace PommaLabs.KVLite.Database
         /// </summary>
         /// <param name="sender">Sender.</param>
         /// <param name="e">Arguments.</param>
-        private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        public void OnSettingsPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(DbCacheSettings<TSettings>.CacheSchemaName) || e.PropertyName == nameof(DbCacheSettings<TSettings>.CacheEntriesTableName))
             {
                 UpdateCommandsAndQueries();
+            }
+            if (e.PropertyName == nameof(DbCacheSettings<TSettings>.ConnectionString))
+            {
+                // TODO
             }
         }
 

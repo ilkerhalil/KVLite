@@ -142,8 +142,37 @@ namespace PommaLabs.KVLite.Database
         }
 
         /// <summary>
+        ///   Backing field for <see cref="ConnectionString"/>.
+        /// </summary>
+        private string _connectionString;
+
+        /// <summary>
         ///   The connection string used to connect to the cache data provider.
         /// </summary>
-        public string ConnectionString { get; set; }
+        /// <exception cref="ArgumentException">
+        ///   <paramref name="value"/> is null, empty or blank.
+        /// </exception>
+        [DataMember]
+        public string ConnectionString
+        {
+            get
+            {
+                var result = _connectionString;
+
+                // Postconditions
+                Debug.Assert(!string.IsNullOrWhiteSpace(result));
+                return result;
+            }
+            set
+            {
+                // Preconditions
+                if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException(ErrorMessages.NullOrEmptyConnectionString, nameof(ConnectionString));
+
+                // Avoid logging connection string, in order not to expose sensitive information.
+                //Log.DebugFormat(DebugMessages.UpdateSetting, nameof(ConnectionString), _connectionString, value);
+                _connectionString = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }

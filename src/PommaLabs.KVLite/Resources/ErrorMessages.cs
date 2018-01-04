@@ -176,6 +176,11 @@ namespace PommaLabs.KVLite.Resources
         /// <summary>
         ///   An error message.
         /// </summary>
+        public static string NullOrEmptyConnectionString { get; } = "Connection string cannot be null or empty";
+
+        /// <summary>
+        ///   An error message.
+        /// </summary>
         public static string NullOrEmptyDefaultPartition { get; } = "Default partition cannot be null or empty";
 
         /// <summary>
