@@ -28,7 +28,7 @@ using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
-using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using MicrosoftMemoryCache = Microsoft.Extensions.Caching.Memory.MemoryCache;
@@ -62,7 +62,7 @@ namespace PommaLabs.KVLite.Memory
         ///   Helper map used to enumerate entries, something which has not been implemented by
         ///   Microsoft memory cache.
         /// </summary>
-        private Hashtable _helperMap;
+        private ConcurrentDictionary<MemoryCacheKey, MemoryCacheValue> _helperMap;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="MemoryCache"/> class with given settings.
@@ -95,7 +95,7 @@ namespace PommaLabs.KVLite.Memory
 
             // Clear the helper map, since we are replacing the memory cache.
             _helperMap?.Clear();
-            _helperMap = new Hashtable();
+            _helperMap = new ConcurrentDictionary<MemoryCacheKey, MemoryCacheValue>();
         }
 
         #endregion Construction
@@ -138,8 +138,8 @@ namespace PommaLabs.KVLite.Memory
         ///   Gets the clock used by the cache.
         /// </summary>
         /// <remarks>
-        ///   Since <see cref="MicrosoftMemoryCache"/> does not allow clock customisation, then this
-        ///   property defaults to <see cref="SystemClock"/>.
+        ///   This property belongs to the services which can be injected using the cache
+        ///   constructor. If not specified, it defaults to <see cref="SystemClock"/>.
         /// </remarks>
         public override IClock Clock { get; }
 
@@ -271,12 +271,11 @@ namespace PommaLabs.KVLite.Memory
                         return;
                     }
                     var oKey = eKey as MemoryCacheKey;
-                    lock (_helperMap) _helperMap.Remove(oKey);
+                    _helperMap.TryRemove(oKey, out var _);
 
                     var childCacheValues = _helperMap.Values
                         .Cast<MemoryCacheValue>()
-                        .Where(v => v.ParentKeys.Contains(oKey))
-                        .ToArray();
+                        .Where(v => v.ParentKeys.Contains(oKey));
 
                     foreach (var childCacheValue in childCacheValues)
                     {
@@ -291,7 +290,7 @@ namespace PommaLabs.KVLite.Memory
             }
 
             _store.Set(cacheKey, cacheValue, cacheEntryOptions);
-            lock (_helperMap) _helperMap[cacheKey] = cacheValue;
+            _helperMap[cacheKey] = cacheValue;
         }
 
         /// <summary>
@@ -313,7 +312,7 @@ namespace PommaLabs.KVLite.Memory
 
             foreach (var cacheKey in cacheKeys)
             {
-                lock (_helperMap) _helperMap.Remove(cacheKey);
+                _helperMap.TryRemove(cacheKey, out var _);
                 _store.Remove(cacheKey);
             }
 
@@ -499,15 +498,14 @@ namespace PommaLabs.KVLite.Memory
         {
             var childCacheValues = _helperMap.Values
                 .Cast<MemoryCacheValue>()
-                .Where(v => v.ParentKeys.Contains(cacheKey))
-                .ToArray();
+                .Where(v => v.ParentKeys.Contains(cacheKey));
 
             foreach (var childCacheValue in childCacheValues)
             {
                 RemoveInternal(childCacheValue.CacheKey);
             }
 
-            lock (_helperMap) _helperMap.Remove(cacheKey);
+            _helperMap.TryRemove(cacheKey, out var _);
             _store.Remove(cacheKey);
         }
 
