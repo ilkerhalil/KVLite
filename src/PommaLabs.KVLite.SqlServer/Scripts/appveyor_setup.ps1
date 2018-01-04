@@ -4,4 +4,4 @@ $password = "Password12!"
 
 $setup = "$PSScriptRoot\kvl_cache_entries.sql"
 
-sqlcmd -S "$instance" -U "$userName" -P "$password" -I "$setup"
+sqlcmd -S "$instance" -U "$userName" -P "$password" -i "$setup"
