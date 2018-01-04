@@ -1,4 +1,8 @@
-﻿DROP TABLE IF EXISTS `kvl_cache_entries`;
+﻿CREATE DATABASE `kvlite`;
+
+USE `kvlite`;
+
+DROP TABLE IF EXISTS `kvl_cache_entries`;
 
 CREATE TABLE IF NOT EXISTS `kvl_cache_entries` (
     `kvle_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Automatically generated ID.',

@@ -1,6 +1,6 @@
 ﻿USE [master]; 
 
-CREATE DATABASE [kvlite]; 
+CREATE DATABASE [kvlite];
 
 GO
 USE [kvlite]; 

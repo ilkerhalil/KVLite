@@ -2,7 +2,6 @@
 $userName = "sa"
 $password = "Password12!"
 
-$setup = Get-Content "$PSScriptRoot\kvl_cache_entries.sql"
-$setup = $setup -replace "`t|`n|`r", ""
+$script = "$PSScriptRoot\kvl_cache_entries.sql"
 
-sqlcmd -S "$instance" -U "$userName" -P "$password" -Q "$setup"
+sqlcmd -S "$instance" -U "$userName" -P "$password" -I "$setup"
