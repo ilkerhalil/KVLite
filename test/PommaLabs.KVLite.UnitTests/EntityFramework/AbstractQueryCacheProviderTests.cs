@@ -36,6 +36,7 @@ using System.Linq;
 
 namespace PommaLabs.KVLite.UnitTests.EntityFramework
 {
+    [Parallelizable(ParallelScope.Fixtures)]
     internal abstract class AbstractQueryCacheProviderTests : AbstractTests
     {
         private const string Pino = "PINO";
