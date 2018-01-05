@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.UnitTests
 {
+    [NonParallelizable]
     internal sealed class MemoryCacheTests : AbstractTests
     {
         private const int LargeItemCount = 1000;

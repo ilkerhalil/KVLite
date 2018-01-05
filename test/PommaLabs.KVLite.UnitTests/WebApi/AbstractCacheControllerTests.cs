@@ -33,6 +33,7 @@ using System.Linq;
 
 namespace PommaLabs.KVLite.UnitTests.WebApi
 {
+    [NonParallelizable]
     internal sealed class AbstractCacheControllerTests : AbstractTests
     {
         private CacheController _controller;

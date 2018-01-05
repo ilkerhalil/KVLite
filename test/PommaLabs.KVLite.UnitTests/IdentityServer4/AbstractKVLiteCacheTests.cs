@@ -28,6 +28,7 @@ using NUnit.Framework;
 namespace PommaLabs.KVLite.UnitTests.IdentityServer4
 {
     [Category(nameof(IdentityServer4))]
+    [Parallelizable(ParallelScope.Fixtures)]
     internal sealed class AbstractKVLiteCacheTests : AbstractTests
     {
     }

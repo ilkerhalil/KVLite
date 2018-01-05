@@ -32,6 +32,7 @@ using System;
 
 namespace PommaLabs.KVLite.UnitTests.WebApi
 {
+    [NonParallelizable]
     internal sealed class OutputCacheProviderTests : AbstractTests
     {
         private OutputCacheProvider _outputCache;

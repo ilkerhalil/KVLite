@@ -4,5 +4,7 @@ dist: trusty
 
 before_script:
   - chmod a+x ./build.sh
+
 script:
+  - git fetch --unshallow
   - ./build.sh

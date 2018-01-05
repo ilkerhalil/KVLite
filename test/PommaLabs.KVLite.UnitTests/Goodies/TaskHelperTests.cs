@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.UnitTests.Goodies
 {
+    [Parallelizable(ParallelScope.Fixtures)]
     internal sealed class TaskHelperTests : AbstractTests
     {
         [TestCase(1)]
