@@ -25,12 +25,13 @@
 
 using NUnit.Framework;
 using PommaLabs.KVLite.AspNetCore.Http;
-using PommaLabs.KVLite.Extensibility;
 using Shouldly;
 using System;
 
 namespace PommaLabs.KVLite.UnitTests.AspNetCore.Http
 {
+    [Category(nameof(AspNetCore))]
+    [Parallelizable(ParallelScope.Fixtures)]
     internal sealed class SessionExtensionsTests : AbstractTests
     {
 #region Setup/Teardown

@@ -28,8 +28,8 @@ using PommaLabs.KVLite.WebForms;
 
 namespace PommaLabs.KVLite.UnitTests.WebForms
 {
-    [TestFixture]
-    sealed class PersistentOutputCacheProviderTests
+    [NonParallelizable]
+    sealed class PersistentOutputCacheProviderTests : AbstractTests
     {
         /// <summary>
         ///   Verifies issue #1.

@@ -29,7 +29,7 @@ using PommaLabs.KVLite.IdentityServer3;
 namespace PommaLabs.KVLite.UnitTests.IdentityServer3
 {
     [Category(nameof(IdentityServer3))]
-    [Parallelizable(ParallelScope.Fixtures)]
+    [NonParallelizable]
     internal sealed class AbstractKVLiteCacheTests : AbstractTests
     {
         private readonly KVLiteCache<string> _cache;
