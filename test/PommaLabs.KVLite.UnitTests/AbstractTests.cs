@@ -29,6 +29,6 @@ namespace PommaLabs.KVLite.UnitTests
     [TestFixture]
     internal abstract class AbstractTests
     {
-        protected readonly IKernel Kernel = new StandardKernel(new NinjectConfig());
+        protected static IKernel Kernel { get; } = new StandardKernel(new NinjectConfig());
     }
 }
