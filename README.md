@@ -11,11 +11,11 @@ Entries are grouped by partition, where each key must be unique only inside the 
 
 Following RDBMSs are currently supported by KVLite or will be supported soon:
 
-* MySQL and MariaDB (.NET and .NET Core)
-* Oracle (.NET only, expected driver in Q1/2018)
-* PostgreSQL (.NET and .NET Core)
-* SQL Server (.NET and .NET Core)
-* SQLite (.NET and .NET Core)
+* MySQL and MariaDB (.NET and .NET Core, with integration tests for MySQL only)
+* Oracle (.NET only, expected .NET Core driver in Q1/2018)
+* PostgreSQL (.NET and .NET Core, with integration tests)
+* SQL Server (.NET and .NET Core, with integration tests)
+* SQLite (.NET and .NET Core, with integrations tests)
 
 KVLite implements different caching adapters for various libraries and frameworks:
 
@@ -23,6 +23,7 @@ KVLite implements different caching adapters for various libraries and framework
 * ASP.NET WebAPI output cache.
 * ASP.NET WebForms output cache and viewstate storage.
 * Entity Framework query cache.
+* IdentityServer3 and IdentityServer4 cache provider.
 
 ## Summary
 
@@ -52,7 +53,7 @@ KVLite implements different caching adapters for various libraries and framework
 Clone the project, go to the root and run PowerShell script `build.ps1`. In order for it to work, you need:
 
 * At least Windows 10 Fall Creators Update
-* At least Visual Studio 2017 Update 4
+* At least Visual Studio 2017 Update 5
 * .NET Framework 4.7.1 Developer Pack
 * .NET Core 2.0 SDK
 
