@@ -22,6 +22,8 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NUnitLite;
+using Serilog;
+using Serilog.Events;
 using System;
 using System.Linq;
 
@@ -37,6 +39,12 @@ namespace PommaLabs.KVLite.UnitTests
 
         public static int Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .MinimumLevel.Is(LogEventLevel.Warning)
+                .Enrich.WithDemystifiedStackTraces()
+                .CreateLogger();
+
             args = LookForConnectionStrings(args);
 
 #if NETSTD20
