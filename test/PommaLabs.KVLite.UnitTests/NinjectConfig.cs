@@ -24,6 +24,7 @@
 using Ninject.Modules;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.MySql;
+using PommaLabs.KVLite.PostgreSql;
 using PommaLabs.KVLite.SqlServer;
 
 namespace PommaLabs.KVLite.UnitTests
@@ -56,6 +57,14 @@ namespace PommaLabs.KVLite.UnitTests
                 .InSingletonScope();
 
             Bind<MySqlCache>()
+                .ToSelf()
+                .InSingletonScope();
+
+            Bind<PostgreSqlCacheSettings>()
+                .ToConstant(new PostgreSqlCacheSettings { ConnectionString = Program.PostgreSqlConnectionString })
+                .InSingletonScope();
+
+            Bind<PostgreSqlCache>()
                 .ToSelf()
                 .InSingletonScope();
 

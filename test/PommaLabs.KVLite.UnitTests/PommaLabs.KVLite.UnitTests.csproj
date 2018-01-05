@@ -10,6 +10,7 @@
     <!-- Drivers -->
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.Memory\PommaLabs.KVLite.Memory.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.MySql\PommaLabs.KVLite.MySql.csproj" />
+    <ProjectReference Include="..\..\src\PommaLabs.KVLite.PostgreSql\PommaLabs.KVLite.PostgreSql.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.SQLite\PommaLabs.KVLite.SQLite.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.SqlServer\PommaLabs.KVLite.SqlServer.csproj" />
   </ItemGroup>
