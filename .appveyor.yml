@@ -1,4 +1,4 @@
-version: 6.4.4.{build}
+version: 7.0.1.{build}
 image: Visual Studio 2017
 services:
   - mssql2017
