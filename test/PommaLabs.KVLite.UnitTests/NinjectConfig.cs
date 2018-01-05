@@ -45,7 +45,7 @@ namespace PommaLabs.KVLite.UnitTests
                 .InSingletonScope();
 
             Bind<IClock>()
-                .ToConstant(new FakeClock(SystemClock.Instance.UtcNow))
+                .ToMethod(_ => new FakeClock(SystemClock.Instance.UtcNow))
                 .InTransientScope();
 
             Bind<IRandom>()

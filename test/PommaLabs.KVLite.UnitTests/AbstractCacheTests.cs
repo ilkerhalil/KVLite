@@ -782,13 +782,11 @@ namespace PommaLabs.KVLite.UnitTests
             for (var i = 0; i < itemCount; ++i)
             {
                 Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
-                if (Cache.LastError != null) throw Cache.LastError;
                 Assert.True(Cache.Contains(StringItems[i]));
             }
             for (var i = 0; i < itemCount; ++i)
             {
                 Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow.Add(TimeSpan.FromMinutes(10)));
-                if (Cache.LastError != null) throw Cache.LastError;
                 Assert.True(Cache.Contains(StringItems[i]));
             }
         }
