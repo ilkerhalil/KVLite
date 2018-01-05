@@ -5,4 +5,4 @@ $dbName         = "kvlite"
 $setup = "$PSScriptRoot\kvl_cache_entries.sql"
 
 iex "& `"C:\Program Files\PostgreSQL\9.6\bin\createdb`" $dbName"
-iex "& `"C:\Program Files\PostgreSQL\9.6\bin\psql`" -c $dbName -f `"$setup`""
+iex "& `"C:\Program Files\PostgreSQL\9.6\bin\psql`" -d $dbName -f `"$setup`""
