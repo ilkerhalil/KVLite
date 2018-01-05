@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>KVLite - FluentCache adapter</AssemblyTitle>
-    <TargetFrameworks>netstandard2.0;net452;net461;net471</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net452;net461</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- We cannot sign this assembly, since FluentCache is not signed -->
     <!--<SignAssembly>true</SignAssembly>

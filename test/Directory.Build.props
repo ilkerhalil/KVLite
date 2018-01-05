@@ -12,8 +12,4 @@
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <DefineConstants>$(DefineConstants);NET46;HAS_ASPNET;HAS_EF</DefineConstants>
   </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <DefineConstants>$(DefineConstants);NET47;HAS_ASPNET;HAS_EF</DefineConstants>
-  </PropertyGroup>
 </Project>

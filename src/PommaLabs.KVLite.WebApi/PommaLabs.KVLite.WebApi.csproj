@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>KVLite - Web API output cache provider</AssemblyTitle>
-    <TargetFrameworks>net452;net461;net471</TargetFrameworks>
+    <TargetFrameworks>net452;net461</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- We cannot sign this assembly, since Strathweb.CacheOutput.WebApi2 is not signed -->
     <!--<SignAssembly>true</SignAssembly>
