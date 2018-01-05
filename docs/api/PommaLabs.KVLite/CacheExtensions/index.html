@@ -137,6 +137,12 @@
 			<li class="header">Namespace</li>
 		<li><a href="/KVLite/api/PommaLabs.KVLite">PommaLabs<wbr>.KVLite</a></li>
 		<li role="separator" class="divider"></li>
+			<li class="header">Class Types</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1">Abstract<wbr>Cache<wbr>Settings<wbr>&lt;TSettings&gt;<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></li>
+				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheItem_1">CacheItem<wbr>&lt;TVal&gt;<wbr></a></li>
 			<li class="header">Interface Types</li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache_1">IAsyncCache<wbr>&lt;TSettings&gt;<wbr></a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache">IAsyncCache</a></li>
@@ -147,16 +153,10 @@
 				<li><a href="/KVLite/api/PommaLabs.KVLite/ICacheSettings">ICacheSettings</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCache">IEssentialCache</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings">I<wbr>Essential<wbr>Cache<wbr>Settings</a></li>
-			<li class="header">Enum Types</li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheReadMode">CacheReadMode</a></li>
 			<li class="header">Struct Types</li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheResult_1">CacheResult<wbr>&lt;T&gt;<wbr></a></li>
-			<li class="header">Class Types</li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1">Abstract<wbr>Cache<wbr>Settings<wbr>&lt;TSettings&gt;<wbr></a></li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></li>
-				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheItem_1">CacheItem<wbr>&lt;TVal&gt;<wbr></a></li>
+			<li class="header">Enum Types</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheReadMode">CacheReadMode</a></li>
 
 
                     </ul>
@@ -262,7 +262,7 @@ class Type type-node
 							</tr>
 						</thead>
 							<tbody><tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/BCBF13A8">AddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(ICache, <wbr>string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/5097977E">AddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(ICache, <wbr>string, <wbr>TVal, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>void</td>
 								<td>
 									<div>
@@ -279,30 +279,30 @@ class Type type-node
 								<td>
 									<div>
       Adds a "static" value with given key and default partition. Value will last as much as
-      specified in <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if
-      accessed before expiry, its lifetime will be extended by that interval.
+      specified in <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if accessed
+      before expiry, its lifetime will be extended by that interval.
     </div>
 											<div><small><em>static</em></small></div>
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/78D06EC9">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(ICache, <wbr>string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
-								<td>void</td>
-								<td>
-									<div>
-      Adds a "timed" value with given key and default partition. Value will last for the
-      specified lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
-    </div>
-											<div><small><em>static</em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/D9D45CD4">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(ICache, <wbr>string, <wbr>TVal, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/03F72559">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(ICache, <wbr>string, <wbr>TVal, <wbr>DateTimeOffset, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>void</td>
 								<td>
 									<div>
       Adds a "timed" value with given key and default partition. Value will last until the
       specified time and, if accessed before expiry, its lifetime will _not_ be extended.
+    </div>
+											<div><small><em>static</em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/5F25BF3D">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(ICache, <wbr>string, <wbr>TVal, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td>void</td>
+								<td>
+									<div>
+      Adds a "timed" value with given key and default partition. Value will last for the
+      specified lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
     </div>
 											<div><small><em>static</em></small></div>
 								</td>
@@ -340,7 +340,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/8020BEE9">GetOrAddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(ICache, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/9F987B56">GetOrAddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(ICache, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>TVal</td>
 								<td>
 									<div>
@@ -364,29 +364,14 @@ class Type type-node
     
        If the value is not found, then it adds a "static" value with given key and default
        partition. Value will last as much as specified in
-       <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if accessed before
-       expiry, its lifetime will be extended by that interval.
+       <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if accessed before expiry,
+       its lifetime will be extended by that interval.
      </div>
 											<div><small><em>static</em></small></div>
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/CF5DC34C">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(ICache, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
-								<td>TVal</td>
-								<td>
-									<div>
-       At first, it tries to get the cache item with default partition and specified key. If
-       it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
-    
-       If the value is not found, then it adds a "timed" value with given key and default
-       partition. Value will last for the specified lifetime and, if accessed before expiry,
-       its lifetime will _not_ be extended.
-     </div>
-											<div><small><em>static</em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/8BBBE11C">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(ICache, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/6762E847">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(ICache, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>DateTimeOffset, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>TVal</td>
 								<td>
 									<div>
@@ -396,6 +381,21 @@ class Type type-node
        If the value is not found, then it adds a "timed" value with given key and default
        partition. Value will last until the specified time and, if accessed before expiry, its
        lifetime will _not_ be extended.
+     </div>
+											<div><small><em>static</em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/594E7328">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(ICache, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td>TVal</td>
+								<td>
+									<div>
+       At first, it tries to get the cache item with default partition and specified key. If
+       it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+    
+       If the value is not found, then it adds a "timed" value with given key and default
+       partition. Value will last for the specified lifetime and, if accessed before expiry,
+       its lifetime will _not_ be extended.
      </div>
 											<div><small><em>static</em></small></div>
 								</td>

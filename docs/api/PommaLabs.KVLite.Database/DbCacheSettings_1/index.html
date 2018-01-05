@@ -199,11 +199,11 @@
 								<dt>Derived Types</dt>
 								<dd>
 									<ul class="list-unstyled">
-											<li><a href="/KVLite/api/PommaLabs.KVLite.Oracle/OracleCacheSettings">OracleCacheSettings</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCacheSettings">Sql<wbr>Server<wbr>Cache<wbr>Settings</a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCacheSettings">Postgre<wbr>Sql<wbr>Cache<wbr>Settings</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.Oracle/OracleCacheSettings">OracleCacheSettings</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.MySql/MySqlCacheSettings">MySqlCacheSettings</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/SQLiteCacheSettings_1">SQLiteCacheSettings<wbr>&lt;TSettings&gt;<wbr></a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCacheSettings">Postgre<wbr>Sql<wbr>Cache<wbr>Settings</a></li>								
 									</ul>
 								</dd>			
 							
@@ -224,16 +224,16 @@
 	Interface3["INotifyPropertyChanged"]-.-&gt;Type
 	Type["DbCacheSettings&lt;TSettings&gt;"]
 class Type type-node
-	Type--&gt;Derived0["OracleCacheSettings"]
-	click Derived0 "/KVLite/api/PommaLabs.KVLite.Oracle/OracleCacheSettings"
-	Type--&gt;Derived1["SqlServerCacheSettings"]
-	click Derived1 "/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCacheSettings"
-	Type--&gt;Derived2["PostgreSqlCacheSettings"]
-	click Derived2 "/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCacheSettings"
-	Type--&gt;Derived3["MySqlCacheSettings"]
-	click Derived3 "/KVLite/api/PommaLabs.KVLite.MySql/MySqlCacheSettings"
-	Type--&gt;Derived4["SQLiteCacheSettings&lt;TSettings&gt;"]
-	click Derived4 "/KVLite/api/PommaLabs.KVLite.SQLite/SQLiteCacheSettings_1"
+	Type--&gt;Derived0["SqlServerCacheSettings"]
+	click Derived0 "/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCacheSettings"
+	Type--&gt;Derived1["OracleCacheSettings"]
+	click Derived1 "/KVLite/api/PommaLabs.KVLite.Oracle/OracleCacheSettings"
+	Type--&gt;Derived2["MySqlCacheSettings"]
+	click Derived2 "/KVLite/api/PommaLabs.KVLite.MySql/MySqlCacheSettings"
+	Type--&gt;Derived3["SQLiteCacheSettings&lt;TSettings&gt;"]
+	click Derived3 "/KVLite/api/PommaLabs.KVLite.SQLite/SQLiteCacheSettings_1"
+	Type--&gt;Derived4["PostgreSqlCacheSettings"]
+	click Derived4 "/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCacheSettings"
 
 						</div>
 					</div>
@@ -243,7 +243,6 @@ class Type type-node
 
 	<h1 id="Syntax">Syntax</h1>
 	<pre><code>[Serializable, DataContract]
-[Serializable, DataContract]
 public class DbCacheSettings&lt;TSettings&gt; : AbstractCacheSettings&lt;TSettings&gt;, IAsyncCacheSettings, 
     ICacheSettings, IEssentialCacheSettings, INotifyPropertyChanged
     where TSettings : DbCacheSettings&lt;TSettings&gt;</code></pre>
@@ -378,7 +377,7 @@ public class DbCacheSettings&lt;TSettings&gt; : AbstractCacheSettings&lt;TSettin
 							</tr>
 							<tr>
 								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1/2ADBA73D">Default<wbr>Distributed<wbr>Cache<wbr>Absolute<wbr>Expiration</a></td>
-								<td>Duration</td>
+								<td>TimeSpan</td>
 								<td>
 									<div>
       Default absolute expiration for distributed cache entries. Initial value is 20 minutes.
@@ -421,7 +420,7 @@ public class DbCacheSettings&lt;TSettings&gt; : AbstractCacheSettings&lt;TSettin
 							</tr>
 							<tr>
 								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1/E4DD226D">StaticInterval</a></td>
-								<td>Duration</td>
+								<td>TimeSpan</td>
 								<td>
 									<div>
       How long static values will last.

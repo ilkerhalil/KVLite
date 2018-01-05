@@ -139,14 +139,18 @@
 			<li class="header">Class Types</li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/BinarySerializer">BinarySerializer</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/BinarySerializerSettings">Binary<wbr>Serializer<wbr>Settings</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/ClockHelper">ClockHelper</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/DeflateCompressor">DeflateCompressor</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/FakeClock">FakeClock</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/FakeRandom">FakeRandom</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/GZipCompressor">GZipCompressor</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/JsonSerializer">JsonSerializer</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/NoOpCompressor">NoOpCompressor</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/NoOpSerializer">NoOpSerializer</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/SystemClock">SystemClock</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/SystemRandom">SystemRandom</a></li>
 			<li class="header">Interface Types</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/IClock">IClock</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/ICompressor">ICompressor</a></li>
 				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/IRandom">IRandom</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/ISerializer">ISerializer</a></li>
@@ -188,8 +192,8 @@
 								<dt>Implementing Types</dt>
 								<dd>
 									<ul class="list-unstyled">
-											<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/FakeRandom">FakeRandom</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/SystemRandom">SystemRandom</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/FakeRandom">FakeRandom</a></li>								
 									</ul>
 								</dd>				
 						</dl>
@@ -199,10 +203,10 @@
 							graph TD
 	Type["IRandom"]
 class Type type-node
-	Type-.-&gt;Implementing0["FakeRandom"]
-	click Implementing0 "/KVLite/api/PommaLabs.KVLite.Extensibility/FakeRandom"
-	Type-.-&gt;Implementing1["SystemRandom"]
-	click Implementing1 "/KVLite/api/PommaLabs.KVLite.Extensibility/SystemRandom"
+	Type-.-&gt;Implementing0["SystemRandom"]
+	click Implementing0 "/KVLite/api/PommaLabs.KVLite.Extensibility/SystemRandom"
+	Type-.-&gt;Implementing1["FakeRandom"]
+	click Implementing1 "/KVLite/api/PommaLabs.KVLite.Extensibility/FakeRandom"
 
 						</div>
 					</div>

@@ -145,7 +145,6 @@
 				<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCacheSettings">Persistent<wbr>Cache<wbr>Settings</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/SQLiteCacheConnectionFactory_1">S<wbr>Q<wbr>Lite<wbr>Cache<wbr>Connection<wbr>Factory<wbr>&lt;TSettings&gt;<wbr></a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/SQLiteCacheSettings_1">SQLiteCacheSettings<wbr>&lt;TSettings&gt;<wbr></a></li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/SQLiteServiceCollectionExtensions">S<wbr>Q<wbr>Lite<wbr>Service<wbr>Collection<wbr>Extensions</a></li>
 				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache">VolatileCache</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCacheSettings">Volatile<wbr>Cache<wbr>Settings</a></li>
 
@@ -183,10 +182,10 @@
 								<dt>Interfaces</dt>
 								<dd>
 									<ul class="list-unstyled">
-											<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache_1">IAsyncCache<wbr>&lt;TSettings&gt;<wbr></a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache">IAsyncCache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache_1">ICache<wbr>&lt;TSettings&gt;<wbr></a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache">ICache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache_1">IAsyncCache<wbr>&lt;TSettings&gt;<wbr></a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache">IAsyncCache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCache">IEssentialCache</a></li>								
 											<li>IDisposable</li>								
 									</ul>
@@ -212,14 +211,14 @@
 	Base1["AbstractCache&lt;TCache, TSettings&gt;"]--&gt;Base0
 	click Base1 "/KVLite/api/PommaLabs.KVLite/AbstractCache_2"
 	Base2["IDistributedCache"]--&gt;Base1
-	Interface0["IAsyncCache&lt;TSettings&gt;"]-.-&gt;Type
-	click Interface0 "/KVLite/api/PommaLabs.KVLite/IAsyncCache_1"
-	Interface1["IAsyncCache"]-.-&gt;Type
-	click Interface1 "/KVLite/api/PommaLabs.KVLite/IAsyncCache"
-	Interface2["ICache&lt;TSettings&gt;"]-.-&gt;Type
-	click Interface2 "/KVLite/api/PommaLabs.KVLite/ICache_1"
-	Interface3["ICache"]-.-&gt;Type
-	click Interface3 "/KVLite/api/PommaLabs.KVLite/ICache"
+	Interface0["ICache&lt;TSettings&gt;"]-.-&gt;Type
+	click Interface0 "/KVLite/api/PommaLabs.KVLite/ICache_1"
+	Interface1["ICache"]-.-&gt;Type
+	click Interface1 "/KVLite/api/PommaLabs.KVLite/ICache"
+	Interface2["IAsyncCache&lt;TSettings&gt;"]-.-&gt;Type
+	click Interface2 "/KVLite/api/PommaLabs.KVLite/IAsyncCache_1"
+	Interface3["IAsyncCache"]-.-&gt;Type
+	click Interface3 "/KVLite/api/PommaLabs.KVLite/IAsyncCache"
 	Interface4["IEssentialCache"]-.-&gt;Type
 	click Interface4 "/KVLite/api/PommaLabs.KVLite/IEssentialCache"
 	Interface5["IDisposable"]-.-&gt;Type
@@ -236,7 +235,7 @@ class Type type-node
 	<pre><code>public sealed class VolatileCache : 
     
     DbCache&lt;VolatileCache, VolatileCacheSettings, SQLiteCacheConnectionFactory&lt;VolatileCacheSettings&gt;, SqliteConnection&gt;, 
-    IAsyncCache&lt;VolatileCacheSettings&gt;, IAsyncCache, ICache&lt;VolatileCacheSettings&gt;, ICache, 
+    ICache&lt;VolatileCacheSettings&gt;, ICache, IAsyncCache&lt;VolatileCacheSettings&gt;, IAsyncCache, 
     IEssentialCache, IDisposable</code></pre>
 
 
@@ -257,7 +256,7 @@ class Type type-node
 							</tr>
 						</thead>
 							<tbody><tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache/F4CAA935">VolatileCache<wbr>(<wbr>Volatile<wbr>Cache<wbr>Settings, <wbr>ISerializer, <wbr>ICompressor, <wbr>IClock, <wbr>IRandom)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache/E2DE5C93">VolatileCache<wbr>(<wbr>Volatile<wbr>Cache<wbr>Settings, <wbr>ISerializer, <wbr>ICompressor, <wbr>IClock, <wbr>IRandom)<wbr></a></td>
 									<td>
       Initializes a new instance of the <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache">VolatileCache</a></code> class with given settings.
     </td>
@@ -292,7 +291,7 @@ class Type type-node
 							</tr>
 							<tr>
 								<td><a href="/KVLite/api/PommaLabs.KVLite.Database/DbCache_4/9134F546">Clock</a></td>
-								<td>IClock</td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/IClock">IClock</a></td>
 								<td>
 									<div>
       Gets the clock used by the cache.
@@ -453,7 +452,7 @@ class Type type-node
 							</tr>
 						</thead>
 							<tbody><tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite.Database/DbCache_4/B5E8BE28">AddAsyncInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Instant, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite.Database/DbCache_4/4893D208">AddAsyncInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>DateTimeOffset, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
 								<td>Task</td>
 								<td>
 									<div>
@@ -463,7 +462,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite.Database/DbCache_4/AC5C729A">AddInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Instant, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite.Database/DbCache_4/57546858">AddInternal<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>DateTimeOffset, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>void</td>
 								<td>
 									<div>
@@ -473,7 +472,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/2FF81B4D">AddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/EE3B3B63">AddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>void</td>
 								<td>
 									<div>
@@ -485,7 +484,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/5888A3D1">AddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/D3C78686">AddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
 								<td>Task</td>
 								<td>
 									<div>
@@ -521,18 +520,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/B3EF8EF0">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
-								<td>void</td>
-								<td>
-									<div>
-      Adds a "timed" value with given partition and key. Value will last for the specified
-      lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
-    </div>
-											<div><small><em>Inherited from <a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/3ADDD037">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/3C5F6576">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>DateTimeOffset, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>void</td>
 								<td>
 									<div>
@@ -543,8 +531,8 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/624F39B9">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
-								<td>Task</td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/A22B7EA3">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td>void</td>
 								<td>
 									<div>
       Adds a "timed" value with given partition and key. Value will last for the specified
@@ -554,12 +542,23 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/05F73118">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/58EF461A">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>DateTimeOffset, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
 								<td>Task</td>
 								<td>
 									<div>
       Adds a "timed" value with given partition and key. Value will last until the specified
       time and, if accessed before expiry, its lifetime will _not_ be extended.
+    </div>
+											<div><small><em>Inherited from <a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/9EF35CE3">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>TVal, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task</td>
+								<td>
+									<div>
+      Adds a "timed" value with given partition and key. Value will last for the specified
+      lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
     </div>
 											<div><small><em>Inherited from <a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></em></small></div>
 								</td>
@@ -1005,7 +1004,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/9EDF401F">GetOrAddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/877357D1">GetOrAddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>TVal</td>
 								<td>
 									<div>
@@ -1020,7 +1019,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/79D095FE">GetOrAddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/2F8DA1D9">GetOrAddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
 								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
 								<td>
 									<div>
@@ -1067,22 +1066,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/8F5D7244">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
-								<td>TVal</td>
-								<td>
-									<div>
-       At first, it tries to get the cache item with specified partition and key. If it is a
-       "sliding" or "static" value, its lifetime will be increased by corresponding interval.
-    
-       If the value is not found, then it adds a "timed" value with given partition and key.
-       Value will last for the specified lifetime and, if accessed before expiry, its lifetime
-       will _not_ be extended.
-     </div>
-											<div><small><em>Inherited from <a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/C6D6DCC0">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/7B12B777">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>DateTimeOffset, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>TVal</td>
 								<td>
 									<div>
@@ -1097,8 +1081,8 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/35A04A3B">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
-								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/6B326B84">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td>TVal</td>
 								<td>
 									<div>
        At first, it tries to get the cache item with specified partition and key. If it is a
@@ -1112,7 +1096,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/53612A63">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/26AF8ED1">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>DateTimeOffset, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
 								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
 								<td>
 									<div>
@@ -1121,6 +1105,21 @@ class Type type-node
     
        If the value is not found, then it adds a "timed" value with given partition and key.
        Value will last until the specified time and, if accessed before expiry, its lifetime
+       will _not_ be extended.
+     </div>
+											<div><small><em>Inherited from <a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2/5F691E1B">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+       At first, it tries to get the cache item with specified partition and key. If it is a
+       "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+    
+       If the value is not found, then it adds a "timed" value with given partition and key.
+       Value will last for the specified lifetime and, if accessed before expiry, its lifetime
        will _not_ be extended.
      </div>
 											<div><small><em>Inherited from <a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></em></small></div>
@@ -1404,7 +1403,7 @@ class Type type-node
 							</tr>
 						</thead>
 							<tbody><tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/BCBF13A8">AddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/5097977E">AddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>void</td>
 								<td>
 									<div>
@@ -1416,7 +1415,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/2CF50317">AddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/B8031C0A">AddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
 								<td>Task</td>
 								<td>
 									<div>
@@ -1433,8 +1432,8 @@ class Type type-node
 								<td>
 									<div>
       Adds a "static" value with given key and default partition. Value will last as much as
-      specified in <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if
-      accessed before expiry, its lifetime will be extended by that interval.
+      specified in <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if accessed
+      before expiry, its lifetime will be extended by that interval.
     </div>
 										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></em></small></div>
 								</td>
@@ -1445,25 +1444,14 @@ class Type type-node
 								<td>
 									<div>
       Adds a "static" value with given key and default partition. Value will last as much as
-      specified in <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if
-      accessed before expiry, its lifetime will be extended by that interval.
+      specified in <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if accessed
+      before expiry, its lifetime will be extended by that interval.
     </div>
 										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/78D06EC9">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
-								<td>void</td>
-								<td>
-									<div>
-      Adds a "timed" value with given key and default partition. Value will last for the
-      specified lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
-    </div>
-										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/D9D45CD4">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/03F72559">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>DateTimeOffset, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>void</td>
 								<td>
 									<div>
@@ -1474,23 +1462,34 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/3EB8720F">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
-								<td>Task</td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/5F25BF3D">AddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td>void</td>
 								<td>
 									<div>
       Adds a "timed" value with given key and default partition. Value will last for the
       specified lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
     </div>
-										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></em></small></div>
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/3A96EB35">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/9C03E2CF">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>DateTimeOffset, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
 								<td>Task</td>
 								<td>
 									<div>
       Adds a "timed" value with given key and default partition. Value will last until the
       specified time and, if accessed before expiry, its lifetime will _not_ be extended.
+    </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/E2218418">AddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>TVal, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task</td>
+								<td>
+									<div>
+      Adds a "timed" value with given key and default partition. Value will last for the
+      specified lifetime and, if accessed before expiry, its lifetime will _not_ be extended.
     </div>
 										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
 								</td>
@@ -1560,7 +1559,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/8020BEE9">GetOrAddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/9F987B56">GetOrAddSliding<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>TVal</td>
 								<td>
 									<div>
@@ -1575,7 +1574,7 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/CF498E4D">GetOrAddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/D9F79AB8">GetOrAddSlidingAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
 								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
 								<td>
 									<div>
@@ -1599,8 +1598,8 @@ class Type type-node
     
        If the value is not found, then it adds a "static" value with given key and default
        partition. Value will last as much as specified in
-       <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if accessed before
-       expiry, its lifetime will be extended by that interval.
+       <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if accessed before expiry,
+       its lifetime will be extended by that interval.
      </div>
 										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></em></small></div>
 								</td>
@@ -1615,29 +1614,14 @@ class Type type-node
     
        If the value is not found, then it adds a "static" value with given key and default
        partition. Value will last as much as specified in
-       <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if accessed before
-       expiry, its lifetime will be extended by that interval.
+       <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings/5783F41F">StaticInterval</a></code> and, if accessed before expiry,
+       its lifetime will be extended by that interval.
      </div>
 										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/CF5DC34C">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
-								<td>TVal</td>
-								<td>
-									<div>
-       At first, it tries to get the cache item with default partition and specified key. If
-       it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
-    
-       If the value is not found, then it adds a "timed" value with given key and default
-       partition. Value will last for the specified lifetime and, if accessed before expiry,
-       its lifetime will _not_ be extended.
-     </div>
-										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></em></small></div>
-								</td>
-							</tr>
-							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/8BBBE11C">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/6762E847">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>DateTimeOffset, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
 								<td>TVal</td>
 								<td>
 									<div>
@@ -1652,8 +1636,8 @@ class Type type-node
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/17E7DA29">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Duration, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
-								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions/594E7328">GetOrAddTimed<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;TVal&gt;<wbr>, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>)<wbr></a></td>
+								<td>TVal</td>
 								<td>
 									<div>
        At first, it tries to get the cache item with default partition and specified key. If
@@ -1663,11 +1647,11 @@ class Type type-node
        partition. Value will last for the specified lifetime and, if accessed before expiry,
        its lifetime will _not_ be extended.
      </div>
-										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></em></small></div>
 								</td>
 							</tr>
 							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/0A138444">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>Instant, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/66AF1BBC">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>DateTimeOffset, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
 								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
 								<td>
 									<div>
@@ -1677,6 +1661,21 @@ class Type type-node
        If the value is not found, then it adds a "timed" value with given key and default
        partition. Value will last until the specified time and, if accessed before expiry, its
        lifetime will _not_ be extended.
+     </div>
+										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
+								</td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions/3AC3777A">GetOrAddTimedAsync<wbr>&lt;TVal&gt;<wbr><wbr>(string, <wbr>Func<wbr>&lt;Task<wbr>&lt;TVal&gt;<wbr>&gt;<wbr>, <wbr>TimeSpan, <wbr>IList<wbr>&lt;string&gt;<wbr>, <wbr>CancellationToken)<wbr></a></td>
+								<td>Task<wbr>&lt;TResult&gt;<wbr></td>
+								<td>
+									<div>
+       At first, it tries to get the cache item with default partition and specified key. If
+       it is a "sliding" or "static" value, its lifetime will be increased by corresponding interval.
+    
+       If the value is not found, then it adds a "timed" value with given key and default
+       partition. Value will last for the specified lifetime and, if accessed before expiry,
+       its lifetime will _not_ be extended.
      </div>
 										<div><small><em>From <a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></em></small></div>
 								</td>

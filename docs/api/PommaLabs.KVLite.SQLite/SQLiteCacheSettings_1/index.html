@@ -145,7 +145,6 @@
 				<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCacheSettings">Persistent<wbr>Cache<wbr>Settings</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/SQLiteCacheConnectionFactory_1">S<wbr>Q<wbr>Lite<wbr>Cache<wbr>Connection<wbr>Factory<wbr>&lt;TSettings&gt;<wbr></a></li>
 				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite.SQLite/SQLiteCacheSettings_1">SQLiteCacheSettings<wbr>&lt;TSettings&gt;<wbr></a></li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/SQLiteServiceCollectionExtensions">S<wbr>Q<wbr>Lite<wbr>Service<wbr>Collection<wbr>Extensions</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache">VolatileCache</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCacheSettings">Volatile<wbr>Cache<wbr>Settings</a></li>
 
@@ -239,7 +238,6 @@ class Type type-node
 
 	<h1 id="Syntax">Syntax</h1>
 	<pre><code>[Serializable, DataContract]
-[Serializable, DataContract]
 public abstract class SQLiteCacheSettings&lt;TSettings&gt; : DbCacheSettings&lt;TSettings&gt;, 
     IAsyncCacheSettings, ICacheSettings, IEssentialCacheSettings, INotifyPropertyChanged
     where TSettings : SQLiteCacheSettings&lt;TSettings&gt;</code></pre>
@@ -378,7 +376,7 @@ public abstract class SQLiteCacheSettings&lt;TSettings&gt; : DbCacheSettings&lt;
 							</tr>
 							<tr>
 								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1/2ADBA73D">Default<wbr>Distributed<wbr>Cache<wbr>Absolute<wbr>Expiration</a></td>
-								<td>Duration</td>
+								<td>TimeSpan</td>
 								<td>
 									<div>
       Default absolute expiration for distributed cache entries. Initial value is 20 minutes.
@@ -421,7 +419,7 @@ public abstract class SQLiteCacheSettings&lt;TSettings&gt; : DbCacheSettings&lt;
 							</tr>
 							<tr>
 								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1/E4DD226D">StaticInterval</a></td>
-								<td>Duration</td>
+								<td>TimeSpan</td>
 								<td>
 									<div>
       How long static values will last.

@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite.UnitTests
     {
         public static string MySqlConnectionString { get; set; } = @"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=kvlite;Pwd=kvlite;Pooling=true;CharSet=utf8;AutoEnlist=false;SslMode=none;";
 
-        public static string PostgreSqlConnectionString { get; set; } = @"Server=127.0.0.1;Port=5432;Database=postgres;User Id=kvlite;Password=kvlite;Pooling=true;Protocol=3;";
+        public static string PostgreSqlConnectionString { get; set; } = @"Server=127.0.0.1;Port=5432;Database=postgres;User Id=kvlite;Password=kvlite;Pooling=true;";
 
         public static string SqlServerConnectionString { get; set; } = @"Data Source=(LocalDB)\MSSQLLocalDB;Database=kvlite;Integrated Security=True;MultipleActiveResultSets=True;";
 

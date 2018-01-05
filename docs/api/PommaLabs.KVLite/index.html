@@ -73,10 +73,10 @@
             <aside class="main-sidebar ">
                 <section class="infobar" data-spy="affix" data-offset-top="60" data-offset-bottom="200"> 
                     	
-	<div id="infobar-headings"><h6>On This Page</h6><p><a href="#InterfaceTypes">Interface Types</a></p>
-<p><a href="#EnumTypes">Enum Types</a></p>
+	<div id="infobar-headings"><h6>On This Page</h6><p><a href="#ClassTypes">Class Types</a></p>
+<p><a href="#InterfaceTypes">Interface Types</a></p>
 <p><a href="#StructTypes">Struct Types</a></p>
-<p><a href="#ClassTypes">Class Types</a></p>
+<p><a href="#EnumTypes">Enum Types</a></p>
 <p><a href="#Namespaces">Namespaces</a></p>
 <hr class="infobar-hidden">
 </div>
@@ -143,6 +143,24 @@
 						<li><a href="/KVLite/api/EntityFramework.Extensions">EntityFramework<wbr>.Extensions</a></li>
 </ul></li>			<li><a href="/KVLite/api/global">global</a></li>
 
+				<li class="treeview">
+				<a href="/KVLite/api/IdentityServer3">IdentityServer3</a> <a href="#" class="expand"></a>
+				<ul class="treeview-menu">
+			
+				<li class="treeview">
+				<a href="/KVLite/api/IdentityServer3.Core">IdentityServer3<wbr>.Core</a> <a href="#" class="expand"></a>
+				<ul class="treeview-menu">
+						<li><a href="/KVLite/api/IdentityServer3.Core.Configuration">IdentityServer3<wbr>.Core<wbr>.Configuration</a></li>
+</ul></li></ul></li>
+				<li class="treeview">
+				<a href="/KVLite/api/Microsoft">Microsoft</a> <a href="#" class="expand"></a>
+				<ul class="treeview-menu">
+			
+				<li class="treeview">
+				<a href="/KVLite/api/Microsoft.Extensions">Microsoft<wbr>.Extensions</a> <a href="#" class="expand"></a>
+				<ul class="treeview-menu">
+						<li><a href="/KVLite/api/Microsoft.Extensions.DependencyInjection">Microsoft<wbr>.Extensions<wbr>.DependencyInjection</a></li>
+</ul></li></ul></li>
 				<li class="treeview active">
 				<a href="/KVLite/api/PommaLabs">PommaLabs</a> <a href="#" class="expand"></a>
 				<ul class="treeview-menu">
@@ -168,6 +186,8 @@
 			<li><a href="/KVLite/api/PommaLabs.KVLite.EntityFramework">PommaLabs<wbr>.KVLite<wbr>.EntityFramework</a></li>
 			<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility">PommaLabs<wbr>.KVLite<wbr>.Extensibility</a></li>
 			<li><a href="/KVLite/api/PommaLabs.KVLite.Goodies">PommaLabs<wbr>.KVLite<wbr>.Goodies</a></li>
+			<li><a href="/KVLite/api/PommaLabs.KVLite.IdentityServer3">PommaLabs<wbr>.KVLite<wbr>.IdentityServer3</a></li>
+			<li><a href="/KVLite/api/PommaLabs.KVLite.IdentityServer4">PommaLabs<wbr>.KVLite<wbr>.IdentityServer4</a></li>
 			<li><a href="/KVLite/api/PommaLabs.KVLite.Logging">PommaLabs<wbr>.KVLite<wbr>.Logging</a></li>
 			<li><a href="/KVLite/api/PommaLabs.KVLite.Memory">PommaLabs<wbr>.KVLite<wbr>.Memory</a></li>
 			<li><a href="/KVLite/api/PommaLabs.KVLite.MySql">PommaLabs<wbr>.KVLite<wbr>.MySql</a></li>
@@ -199,6 +219,50 @@
 	
 	
 
+			<h1 id="ClassTypes">Class Types</h1>
+			<div class="box">
+				<div class="box-body no-padding table-responsive">
+					<table class="table table-striped table-hover two-cols">
+						<thead>
+							<tr>
+								<th>Class</th>
+									<th>Summary</th>
+							</tr>
+						</thead>
+							<tbody><tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></td>
+									<td>
+      Abstract class which should make it easier to implement a new kind of cache.
+    </td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1">Abstract<wbr>Cache<wbr>Settings<wbr>&lt;TSettings&gt;<wbr></a></td>
+									<td>
+      Base class for cache settings. Contains settings shared among different caches.
+    </td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></td>
+									<td>
+      Extensions methods for <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache">IAsyncCache</a></code>.
+    </td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></td>
+									<td>
+      Extensions methods for <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/ICache">ICache</a></code>.
+    </td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheItem_1">CacheItem<wbr>&lt;TVal&gt;<wbr></a></td>
+									<td>
+      An item that is stored into the cache.
+    </td>
+							</tr>
+					</tbody></table>
+				</div>
+			</div>
+		
 			<h1 id="InterfaceTypes">Interface Types</h1>
 			<div class="box">
 				<div class="box-body no-padding table-responsive">
@@ -295,26 +359,6 @@
 				</div>
 			</div>
 		
-			<h1 id="EnumTypes">Enum Types</h1>
-			<div class="box">
-				<div class="box-body no-padding table-responsive">
-					<table class="table table-striped table-hover two-cols">
-						<thead>
-							<tr>
-								<th>Enum</th>
-									<th>Summary</th>
-							</tr>
-						</thead>
-							<tbody><tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheReadMode">CacheReadMode</a></td>
-									<td>
-      Determines whether expired items should be included in lists or in queries.
-    </td>
-							</tr>
-					</tbody></table>
-				</div>
-			</div>
-		
 			<h1 id="StructTypes">Struct Types</h1>
 			<div class="box">
 				<div class="box-body no-padding table-responsive">
@@ -335,44 +379,20 @@
 				</div>
 			</div>
 		
-			<h1 id="ClassTypes">Class Types</h1>
+			<h1 id="EnumTypes">Enum Types</h1>
 			<div class="box">
 				<div class="box-body no-padding table-responsive">
 					<table class="table table-striped table-hover two-cols">
 						<thead>
 							<tr>
-								<th>Class</th>
+								<th>Enum</th>
 									<th>Summary</th>
 							</tr>
 						</thead>
 							<tbody><tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></td>
+								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheReadMode">CacheReadMode</a></td>
 									<td>
-      Abstract class which should make it easier to implement a new kind of cache.
-    </td>
-							</tr>
-							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1">Abstract<wbr>Cache<wbr>Settings<wbr>&lt;TSettings&gt;<wbr></a></td>
-									<td>
-      Base class for cache settings. Contains settings shared among different caches.
-    </td>
-							</tr>
-							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></td>
-									<td>
-      Extensions methods for <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache">IAsyncCache</a></code>.
-    </td>
-							</tr>
-							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></td>
-									<td>
-      Extensions methods for <code class="cs"><a href="/KVLite/api/PommaLabs.KVLite/ICache">ICache</a></code>.
-    </td>
-							</tr>
-							<tr>
-								<td><a href="/KVLite/api/PommaLabs.KVLite/CacheItem_1">CacheItem<wbr>&lt;TVal&gt;<wbr></a></td>
-									<td>
-      An item that is stored into the cache.
+      Determines whether expired items should be included in lists or in queries.
     </td>
 							</tr>
 					</tbody></table>
@@ -411,6 +431,14 @@
 							</tr>
 							<tr>
 								<td><a href="/KVLite/api/PommaLabs.KVLite.Goodies">PommaLabs<wbr>.KVLite<wbr>.Goodies</a></td>
+									<td></td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite.IdentityServer3">PommaLabs<wbr>.KVLite<wbr>.IdentityServer3</a></td>
+									<td></td>
+							</tr>
+							<tr>
+								<td><a href="/KVLite/api/PommaLabs.KVLite.IdentityServer4">PommaLabs<wbr>.KVLite<wbr>.IdentityServer4</a></td>
 									<td></td>
 							</tr>
 							<tr>

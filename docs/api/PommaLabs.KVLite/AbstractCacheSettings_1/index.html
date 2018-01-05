@@ -140,6 +140,12 @@
 			<li class="header">Namespace</li>
 		<li><a href="/KVLite/api/PommaLabs.KVLite">PommaLabs<wbr>.KVLite</a></li>
 		<li role="separator" class="divider"></li>
+			<li class="header">Class Types</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></li>
+				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1">Abstract<wbr>Cache<wbr>Settings<wbr>&lt;TSettings&gt;<wbr></a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheItem_1">CacheItem<wbr>&lt;TVal&gt;<wbr></a></li>
 			<li class="header">Interface Types</li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache_1">IAsyncCache<wbr>&lt;TSettings&gt;<wbr></a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache">IAsyncCache</a></li>
@@ -150,16 +156,10 @@
 				<li><a href="/KVLite/api/PommaLabs.KVLite/ICacheSettings">ICacheSettings</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCache">IEssentialCache</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCacheSettings">I<wbr>Essential<wbr>Cache<wbr>Settings</a></li>
-			<li class="header">Enum Types</li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheReadMode">CacheReadMode</a></li>
 			<li class="header">Struct Types</li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheResult_1">CacheResult<wbr>&lt;T&gt;<wbr></a></li>
-			<li class="header">Class Types</li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></li>
-				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1">Abstract<wbr>Cache<wbr>Settings<wbr>&lt;TSettings&gt;<wbr></a></li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite/AsyncCacheExtensions">AsyncCacheExtensions</a></li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheExtensions">CacheExtensions</a></li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheItem_1">CacheItem<wbr>&lt;TVal&gt;<wbr></a></li>
+			<li class="header">Enum Types</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite/CacheReadMode">CacheReadMode</a></li>
 
 
                     </ul>
@@ -248,7 +248,6 @@ class Type type-node
 
 	<h1 id="Syntax">Syntax</h1>
 	<pre><code>[Serializable, DataContract]
-[Serializable, DataContract]
 public abstract class AbstractCacheSettings&lt;TSettings&gt; : IAsyncCacheSettings, ICacheSettings, 
     IEssentialCacheSettings, INotifyPropertyChanged
     where TSettings : AbstractCacheSettings&lt;TSettings&gt;</code></pre>
@@ -345,7 +344,7 @@ public abstract class AbstractCacheSettings&lt;TSettings&gt; : IAsyncCacheSettin
 							</tr>
 							<tr>
 								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1/2ADBA73D">Default<wbr>Distributed<wbr>Cache<wbr>Absolute<wbr>Expiration</a></td>
-								<td>Duration</td>
+								<td>TimeSpan</td>
 								<td>
 									<div>
       Default absolute expiration for distributed cache entries. Initial value is 20 minutes.
@@ -384,7 +383,7 @@ public abstract class AbstractCacheSettings&lt;TSettings&gt; : IAsyncCacheSettin
 							</tr>
 							<tr>
 								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1/E4DD226D">StaticInterval</a></td>
-								<td>Duration</td>
+								<td>TimeSpan</td>
 								<td>
 									<div>
       How long static values will last.

@@ -1,4 +1,4 @@
-﻿// File name: PersistentCacheTests.cs
+﻿// File name: MemoryCacheTests.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //

@@ -220,7 +220,6 @@ class Type type-node
 
 	<h1 id="Syntax">Syntax</h1>
 	<pre><code>[Serializable, DataContract]
-[Serializable, DataContract]
 public sealed class NoOpCacheSettings : AbstractCacheSettings&lt;NoOpCacheSettings&gt;, 
     IAsyncCacheSettings, ICacheSettings, IEssentialCacheSettings, INotifyPropertyChanged</code></pre>
 
@@ -301,7 +300,7 @@ public sealed class NoOpCacheSettings : AbstractCacheSettings&lt;NoOpCacheSettin
 							</tr>
 							<tr>
 								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1/2ADBA73D">Default<wbr>Distributed<wbr>Cache<wbr>Absolute<wbr>Expiration</a></td>
-								<td>Duration</td>
+								<td>TimeSpan</td>
 								<td>
 									<div>
       Default absolute expiration for distributed cache entries. Initial value is 20 minutes.
@@ -344,7 +343,7 @@ public sealed class NoOpCacheSettings : AbstractCacheSettings&lt;NoOpCacheSettin
 							</tr>
 							<tr>
 								<td><a href="/KVLite/api/PommaLabs.KVLite/AbstractCacheSettings_1/E4DD226D">StaticInterval</a></td>
-								<td>Duration</td>
+								<td>TimeSpan</td>
 								<td>
 									<div>
       How long static values will last.
