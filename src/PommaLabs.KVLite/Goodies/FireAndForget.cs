@@ -35,7 +35,7 @@ namespace PommaLabs.KVLite.Goodies
         /// <summary>
         ///   The maximum number of concurrent fire and forget tasks. Default value is equal to <see cref="Environment.ProcessorCount"/>.
         /// </summary>
-        public static int FireAndForgetLimit { get; set; } = Environment.ProcessorCount;
+        public static int Limit { get; set; } = Environment.ProcessorCount;
 
         private const TaskContinuationOptions FireAndForgetFlags = TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted;
 
@@ -49,7 +49,7 @@ namespace PommaLabs.KVLite.Goodies
 
         /// <summary>
         ///   Tries to fire given action on a dedicated task, but it ensures that the number of
-        ///   concurrent tasks is never greater than <see cref="FireAndForgetLimit"/>; if the number
+        ///   concurrent tasks is never greater than <see cref="Limit"/>; if the number
         ///   of concurrent tasks is already too high, then given action is executed synchronously.
         ///
         ///   Optional error handler is invoked when given action throws an exception; if no handler
@@ -65,14 +65,14 @@ namespace PommaLabs.KVLite.Goodies
             // Preconditions
             if (action == null) throw new ArgumentNullException(nameof(action));
 
-            if (FireAndForgetCount >= FireAndForgetLimit)
+            if (FireAndForgetCount >= Limit)
             {
                 // Run sync, cannot start a new task.
                 RunSyncHelper(action, handler);
                 return false;
             }
 
-            if (Interlocked.Increment(ref FireAndForgetCount) > FireAndForgetLimit)
+            if (Interlocked.Increment(ref FireAndForgetCount) > Limit)
             {
                 // Run sync, cannot start a new task.
                 RunSyncHelper(action, handler);
@@ -90,7 +90,7 @@ namespace PommaLabs.KVLite.Goodies
 
         /// <summary>
         ///   Tries to fire given action on a dedicated task, but it ensures that the number of
-        ///   concurrent tasks is never greater than <see cref="FireAndForgetLimit"/>; if the number
+        ///   concurrent tasks is never greater than <see cref="Limit"/>; if the number
         ///   of concurrent tasks is already too high, then given action is executed synchronously.
         ///
         ///   Optional error handler is invoked when given action throws an exception; if no handler
@@ -106,14 +106,14 @@ namespace PommaLabs.KVLite.Goodies
             // Preconditions
             if (asyncAction == null) throw new ArgumentNullException(nameof(asyncAction));
 
-            if (FireAndForgetCount >= FireAndForgetLimit)
+            if (FireAndForgetCount >= Limit)
             {
                 // Run sync, cannot start a new task.
                 await RunSyncHelper(asyncAction, handler).ConfigureAwait(false);
                 return false;
             }
 
-            if (Interlocked.Increment(ref FireAndForgetCount) > FireAndForgetLimit)
+            if (Interlocked.Increment(ref FireAndForgetCount) > Limit)
             {
                 // Run sync, cannot start a new task.
                 await RunSyncHelper(asyncAction, handler).ConfigureAwait(false);

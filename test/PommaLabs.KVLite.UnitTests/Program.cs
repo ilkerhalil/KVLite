@@ -22,10 +22,12 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using NUnitLite;
+using PommaLabs.KVLite.Goodies;
 using Serilog;
 using Serilog.Events;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace PommaLabs.KVLite.UnitTests
 {
@@ -39,19 +41,21 @@ namespace PommaLabs.KVLite.UnitTests
 
         public static int Main(string[] args)
         {
+            // Configure Serilog and LibLog logging.
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .MinimumLevel.Is(LogEventLevel.Warning)
                 .Enrich.WithDemystifiedStackTraces()
                 .CreateLogger();
 
+            // Avoid async cleanups during the tests.
+            FireAndForget.Limit = -1;
+
+            // Retrieve additional connection strings from command line arguments.
             args = LookForConnectionStrings(args);
 
-#if NETSTD20
-            return new AutoRun(System.Reflection.Assembly.GetEntryAssembly()).Execute(args, new NUnit.Common.ColorConsoleWriter(), System.Console.In);
-#else
-            return new AutoRun().Execute(args);
-#endif
+            // Run unit tests.
+            return new AutoRun(Assembly.GetEntryAssembly()).Execute(args);
         }
 
         private static string[] LookForConnectionStrings(string[] args)

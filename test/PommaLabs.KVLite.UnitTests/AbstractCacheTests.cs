@@ -1168,7 +1168,7 @@ namespace PommaLabs.KVLite.UnitTests
         {
             for (var i = 0; i < itemCount; ++i)
             {
-                Cache.AddTimed(StringItems[i], StringItems[i], Cache.Clock.UtcNow + TimeSpan.FromMinutes(10));
+                Cache.AddTimed(StringItems[i], StringItems[i], TimeSpan.FromMinutes(10));
             }
 
             Assert.That(Cache.Clear(), Is.EqualTo(itemCount));
