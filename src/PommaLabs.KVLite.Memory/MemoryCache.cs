@@ -279,7 +279,7 @@ namespace PommaLabs.KVLite.Memory
         /// <returns>The number of items that have been removed.</returns>
         protected override long ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate)
         {
-            var q = _helperMap.Keys.Cast<MemoryCacheKey>();
+            var q = _helperMap.Keys.AsEnumerable();
 
             if (partition != null)
             {
@@ -475,7 +475,6 @@ namespace PommaLabs.KVLite.Memory
         private void RemoveInternal(MemoryCacheKey cacheKey)
         {
             var childCacheValues = _helperMap.Values
-                .Cast<MemoryCacheValue>()
                 .Where(v => v.ParentKeys.Contains(cacheKey));
 
             foreach (var childCacheValue in childCacheValues)

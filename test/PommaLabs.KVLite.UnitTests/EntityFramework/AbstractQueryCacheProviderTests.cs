@@ -35,7 +35,7 @@ using System.Linq;
 
 namespace PommaLabs.KVLite.UnitTests.EntityFramework
 {
-    [Parallelizable(ParallelScope.Children)]
+    //[Parallelizable(ParallelScope.Children)] <-- Cannot run in parallel due to NMemory issue (https://github.com/zzzprojects/effort/issues/33)
     internal abstract class AbstractQueryCacheProviderTests : AbstractTests
     {
         private const string Pino = "PINO";
