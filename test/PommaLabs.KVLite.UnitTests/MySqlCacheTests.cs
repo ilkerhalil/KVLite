@@ -26,7 +26,7 @@ using PommaLabs.KVLite.MySql;
 
 namespace PommaLabs.KVLite.UnitTests
 {
-    internal sealed class MySqlCacheTests : AbstractCacheTests<MySqlCache, MySqlCacheSettings, MySqlCacheConnectionFactory, MySqlConnection>
-    {
-    }
+    //internal sealed class MySqlCacheTests : AbstractCacheTests<MySqlCache, MySqlCacheSettings, MySqlCacheConnectionFactory, MySqlConnection>
+    //{
+    //}
 }
