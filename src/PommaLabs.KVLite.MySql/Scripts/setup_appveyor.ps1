@@ -1,6 +1,5 @@
 ﻿$userName      = "root"
 $env:MYSQL_PWD = "Password12!"
-$dbName        = "kvlite"
 
 $setup = Get-Content "$PSScriptRoot\kvl_cache_entries.sql"
 $setup = $setup -replace "`t|`n|`r", ""

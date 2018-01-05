@@ -1,4 +1,6 @@
-﻿DROP TABLE kvl_cache_entries;
+﻿DROP SEQUENCE IF EXISTS kvl_cache_entries_kvle_id_seq;
+
+DROP TABLE IF EXISTS kvl_cache_entries;
 
 CREATE SEQUENCE kvl_cache_entries_kvle_id_seq
     INCREMENT 1
