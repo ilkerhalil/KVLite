@@ -12,7 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-5
 		build.cake = build.cake
 		CHANGELOG.md = CHANGELOG.md
 		config.wyam = config.wyam
-		Directory.Build.props = Directory.Build.props
 		LICENSE.md = LICENSE.md
 		NuGet.Config = NuGet.Config
 		pomma89.snk = pomma89.snk
@@ -91,6 +90,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.IdentityServer3", "src\PommaLabs.KVLite.IdentityServer3\PommaLabs.KVLite.IdentityServer3.csproj", "{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.IdentityServer4", "src\PommaLabs.KVLite.IdentityServer4\PommaLabs.KVLite.IdentityServer4.csproj", "{D533B99E-84BA-4B2B-999E-BF17B0BE5623}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.FluentCache", "src\PommaLabs.KVLite.FluentCache\PommaLabs.KVLite.FluentCache.csproj", "{3440FF45-026D-436B-A118-64C2369A596D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -264,6 +265,14 @@ Global
 		{D533B99E-84BA-4B2B-999E-BF17B0BE5623}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D533B99E-84BA-4B2B-999E-BF17B0BE5623}.Release|x86.ActiveCfg = Release|Any CPU
 		{D533B99E-84BA-4B2B-999E-BF17B0BE5623}.Release|x86.Build.0 = Release|Any CPU
+		{3440FF45-026D-436B-A118-64C2369A596D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3440FF45-026D-436B-A118-64C2369A596D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3440FF45-026D-436B-A118-64C2369A596D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3440FF45-026D-436B-A118-64C2369A596D}.Debug|x86.Build.0 = Debug|Any CPU
+		{3440FF45-026D-436B-A118-64C2369A596D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3440FF45-026D-436B-A118-64C2369A596D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3440FF45-026D-436B-A118-64C2369A596D}.Release|x86.ActiveCfg = Release|Any CPU
+		{3440FF45-026D-436B-A118-64C2369A596D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -293,6 +302,7 @@ Global
 		{66D3A5CC-AC65-4D0B-884D-7392976EA7FA} = {C5E21A7F-2C68-402F-A488-13BA125416A3}
 		{E602DD53-CE7E-4220-ADF4-8BF8BEA4C909} = {C5E21A7F-2C68-402F-A488-13BA125416A3}
 		{D533B99E-84BA-4B2B-999E-BF17B0BE5623} = {C5E21A7F-2C68-402F-A488-13BA125416A3}
+		{3440FF45-026D-436B-A118-64C2369A596D} = {C5E21A7F-2C68-402F-A488-13BA125416A3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C211ABFD-845B-457D-BC45-FC39EB4E5192}

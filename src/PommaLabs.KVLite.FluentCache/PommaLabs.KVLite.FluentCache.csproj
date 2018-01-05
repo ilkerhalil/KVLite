@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyTitle>KVLite - FluentCache adapter</AssemblyTitle>
+    <TargetFrameworks>netstandard2.0;net452;net461;net471</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- We cannot sign this assembly, since FluentCache is not signed -->
+    <!--<SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>-->
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet">
+    <Title>KVLite - FluentCache adapter</Title>
+    <Summary>KVLite is a partition-based key-value cache built for SQL RDBMSs. This package contains an adapter for FluentCache.</Summary>
+    <Description>$(Summary)</Description>
+    <PackageTags>kvlite;cache;partition;key;value;store;concurrent;timed;sliding;fluent;fluentcache</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentCache" Version="4.0.0.1" />
+  </ItemGroup>
+</Project>
