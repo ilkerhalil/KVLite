@@ -1,4 +1,4 @@
-﻿// File name: OutputCacheProviderTests.cs
+﻿// File name: SqlServerKVLiteCacheTests.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -21,41 +21,14 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#if HAS_ASPNET
+#if HAS_ASPNETCORE
 
-using Ninject;
-using NUnit.Framework;
-using PommaLabs.KVLite.Extensibility;
-using PommaLabs.KVLite.SQLite;
-using PommaLabs.KVLite.WebApi;
-using System;
+using PommaLabs.KVLite.SqlServer;
 
-namespace PommaLabs.KVLite.UnitTests.WebApi
+namespace PommaLabs.KVLite.UnitTests.IdentityServer4
 {
-    [NonParallelizable]
-    internal sealed class OutputCacheProviderTests : AbstractTests
+    internal sealed class SqlServerKVLiteCacheTests : AbstractKVLiteCacheTests<SqlServerCache>
     {
-        private OutputCacheProvider _outputCache;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _outputCache = new OutputCacheProvider(new PersistentCache(new PersistentCacheSettings(), clock: Kernel.Get<IClock>()));
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _outputCache = null;
-        }
-
-        [Test]
-        public void Add_One_Valid()
-        {
-            _outputCache.Add("a", "b", _outputCache.Cache.Clock.UtcNow.Add(TenMinutes), null);
-            Assert.AreEqual("b", _outputCache.Get("a"));
-            Assert.AreEqual("b", _outputCache.Get<string>("a"));
-        }
     }
 }
 

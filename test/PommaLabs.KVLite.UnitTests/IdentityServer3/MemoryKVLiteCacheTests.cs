@@ -23,15 +23,11 @@
 
 #if HAS_ASPNET
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PommaLabs.KVLite.Memory;
 
 namespace PommaLabs.KVLite.UnitTests.IdentityServer3
 {
-    internal sealed class MemoryKVLiteCacheTests
+    internal sealed class MemoryKVLiteCacheTests : AbstractKVLiteCacheTests<MemoryCache>
     {
     }
 }

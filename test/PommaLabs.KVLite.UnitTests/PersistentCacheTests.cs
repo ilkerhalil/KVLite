@@ -105,20 +105,20 @@ namespace PommaLabs.KVLite.UnitTests
         {
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TenMinutes));
             }
             Cache.Clear();
             Assert.AreEqual(0, Cache.Count());
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TenMinutes));
             }
             var persistentCache = (PersistentCache) Cache;
             persistentCache.Clear(CacheReadMode.ConsiderExpiryDate);
             Assert.AreEqual(0, Cache.Count());
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TimeSpan.FromMinutes(10)));
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow.Subtract(TenMinutes));
             }
             persistentCache.Clear(CacheReadMode.IgnoreExpiryDate);
             Assert.AreEqual(0, Cache.Count());
@@ -129,14 +129,14 @@ namespace PommaLabs.KVLite.UnitTests
         {
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow + TimeSpan.FromMinutes(10));
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow + TenMinutes);
             }
             Cache.Clear();
             Assert.AreEqual(0, Cache.Count());
 
             foreach (var t in StringItems)
             {
-                Cache.AddTimed(t, t, Cache.Clock.UtcNow + TimeSpan.FromMinutes(10));
+                Cache.AddTimed(t, t, Cache.Clock.UtcNow + TenMinutes);
             }
             var persistentCache = (PersistentCache) Cache;
             persistentCache.Clear(CacheReadMode.ConsiderExpiryDate);

@@ -1,4 +1,4 @@
-﻿// File name: OutputCacheProviderTests.cs
+﻿// File name: PersistentKVLiteCacheTests.cs
 //
 // Author(s): Alessio Parma <alessio.parma@gmail.com>
 //
@@ -23,39 +23,12 @@
 
 #if HAS_ASPNET
 
-using Ninject;
-using NUnit.Framework;
-using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.SQLite;
-using PommaLabs.KVLite.WebApi;
-using System;
 
-namespace PommaLabs.KVLite.UnitTests.WebApi
+namespace PommaLabs.KVLite.UnitTests.IdentityServer3
 {
-    [NonParallelizable]
-    internal sealed class OutputCacheProviderTests : AbstractTests
+    internal sealed class PersistentKVLiteCacheTests : AbstractKVLiteCacheTests<PersistentCache>
     {
-        private OutputCacheProvider _outputCache;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _outputCache = new OutputCacheProvider(new PersistentCache(new PersistentCacheSettings(), clock: Kernel.Get<IClock>()));
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _outputCache = null;
-        }
-
-        [Test]
-        public void Add_One_Valid()
-        {
-            _outputCache.Add("a", "b", _outputCache.Cache.Clock.UtcNow.Add(TenMinutes), null);
-            Assert.AreEqual("b", _outputCache.Get("a"));
-            Assert.AreEqual("b", _outputCache.Get<string>("a"));
-        }
     }
 }
 

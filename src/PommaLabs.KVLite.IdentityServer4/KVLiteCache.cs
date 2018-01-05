@@ -40,25 +40,25 @@ namespace PommaLabs.KVLite.IdentityServer4
         private const string NoKey = "__none__";
 
         /// <summary>
+        ///   Initializes cache provider.
+        /// </summary>
+        /// <param name="backingCache">Backing KVLite cache.</param>
+        /// <param name="options">KVLite cache options.</param>
+        public KVLiteCache(IAsyncCache backingCache, KVLiteCacheOptions options)
+        {
+            BackingCache = backingCache ?? throw new ArgumentNullException(ErrorMessages.NullCache);
+            Options = options ?? throw new ArgumentNullException(ErrorMessages.NullSettings);
+        }
+
+        /// <summary>
         ///   Backing KVLite cache.
         /// </summary>
-        private readonly IAsyncCache _cache;
+        public IAsyncCache BackingCache { get; }
 
         /// <summary>
         ///   KVLite cache options.
         /// </summary>
-        private readonly KVLiteCacheOptions _options;
-
-        /// <summary>
-        ///   Initializes cache provider.
-        /// </summary>
-        /// <param name="cache">Backing KVLite cache.</param>
-        /// <param name="options">KVLite cache options.</param>
-        public KVLiteCache(IAsyncCache cache, KVLiteCacheOptions options)
-        {
-            _cache = cache ?? throw new ArgumentNullException(ErrorMessages.NullCache);
-            _options = options ?? throw new ArgumentNullException(ErrorMessages.NullSettings);
-        }
+        public KVLiteCacheOptions Options { get; }
 
         /// <summary>
         ///   Gets the cached data based upon a key index.
@@ -67,9 +67,9 @@ namespace PommaLabs.KVLite.IdentityServer4
         /// <returns>The cached item, or <c>null</c> if no item matches the key.</returns>
         public async Task<T> GetAsync(string key)
         {
-            var partition = _options.Partition;
+            var partition = Options.Partition;
             key = string.IsNullOrWhiteSpace(key) ? NoKey : key;
-            return (await _cache.GetAsync<T>(partition, key).ConfigureAwait(false)).ValueOrDefault();
+            return (await BackingCache.GetAsync<T>(partition, key).ConfigureAwait(false)).ValueOrDefault();
         }
 
         /// <summary>
@@ -81,9 +81,9 @@ namespace PommaLabs.KVLite.IdentityServer4
         /// <returns>A task.</returns>
         public async Task SetAsync(string key, T item, TimeSpan expiration)
         {
-            var partition = _options.Partition;
+            var partition = Options.Partition;
             key = string.IsNullOrWhiteSpace(key) ? NoKey : key;
-            await _cache.AddTimedAsync(partition, key, item, expiration).ConfigureAwait(false);
+            await BackingCache.AddTimedAsync(partition, key, item, expiration).ConfigureAwait(false);
         }
     }
 }

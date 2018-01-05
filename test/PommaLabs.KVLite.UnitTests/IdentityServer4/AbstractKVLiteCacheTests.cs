@@ -23,14 +23,66 @@
 
 #if HAS_ASPNETCORE
 
+using Ninject;
 using NUnit.Framework;
+using PommaLabs.KVLite.IdentityServer4;
+using Shouldly;
+using System;
+using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite.UnitTests.IdentityServer4
 {
     [Category(nameof(IdentityServer4))]
     [NonParallelizable]
-    internal sealed class AbstractKVLiteCacheTests : AbstractTests
+    internal abstract class AbstractKVLiteCacheTests<TBackingCache> : AbstractTests
+        where TBackingCache : IAsyncCache
     {
+        #region Setup/Teardown
+
+        protected KVLiteCache<string> Cache;
+
+        [SetUp]
+        public virtual async Task SetUpAsync()
+        {
+            Cache = new KVLiteCache<string>(Kernel.Get<TBackingCache>(), new KVLiteCacheOptions());
+            await Cache.BackingCache.ClearAsync();
+        }
+
+        [TearDown]
+        public virtual async Task TearDownAsync()
+        {
+            try
+            {
+                await Cache?.BackingCache?.ClearAsync();
+            }
+            finally
+            {
+                Cache = null;
+            }
+        }
+
+        #endregion Setup/Teardown
+
+        public async Task ShouldReturnNullWhenRequestedItemDoesNotExist()
+        {
+            const string notExistingKey = nameof(notExistingKey);
+
+            var result = await Cache.GetAsync(notExistingKey);
+
+            result.ShouldBeNull();
+        }
+
+        public async Task ShouldReturnAnItemWhenItExists()
+        {
+            const string existingKey = nameof(existingKey);
+            const string existingValue = nameof(existingValue);
+            await Cache.SetAsync(existingKey, existingValue, TenMinutes);
+
+            var result = await Cache.GetAsync(existingKey);
+
+            result.ShouldNotBeNull();
+            result.ShouldBe(existingValue);
+        }
     }
 }
 

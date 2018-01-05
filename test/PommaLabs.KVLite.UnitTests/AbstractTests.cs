@@ -23,6 +23,7 @@
 
 using Ninject;
 using NUnit.Framework;
+using System;
 
 namespace PommaLabs.KVLite.UnitTests
 {
@@ -30,5 +31,7 @@ namespace PommaLabs.KVLite.UnitTests
     internal abstract class AbstractTests
     {
         protected static IKernel Kernel { get; } = new StandardKernel(new NinjectConfig());
+
+        protected static TimeSpan TenMinutes { get; } = TimeSpan.FromMinutes(10);
     }
 }
