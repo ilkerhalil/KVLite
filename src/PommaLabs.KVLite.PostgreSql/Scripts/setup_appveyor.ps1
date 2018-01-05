@@ -1,5 +1,6 @@
 ﻿$env:PGUSER     = "postgres"
 $env:PGPASSWORD = "Password12!"
+$env:PGOPTIONS  = "--client-min-messages=warning"
 $dbName         = "kvlite"
 
 $setup = "$PSScriptRoot\kvl_cache_entries.sql"
