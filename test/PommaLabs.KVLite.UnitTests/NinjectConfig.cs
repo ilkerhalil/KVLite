@@ -61,7 +61,7 @@ namespace PommaLabs.KVLite.UnitTests
                 .InSingletonScope();
 
             Bind<PostgreSqlCacheSettings>()
-                .ToConstant(new PostgreSqlCacheSettings { ConnectionString = Program.PostgreSqlConnectionString })
+                .ToConstant(new PostgreSqlCacheSettings { ConnectionString = Program.PostgreSqlConnectionString, CacheSchemaName = "kvlite" })
                 .InSingletonScope();
 
             Bind<PostgreSqlCache>()
