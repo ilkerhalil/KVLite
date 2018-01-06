@@ -1,17 +1,10 @@
-﻿DROP SEQUENCE IF EXISTS kvl_cache_entries_kvle_id_seq;
+﻿CREATE SCHEMA IF NOT EXISTS kvlite;
 
-DROP TABLE IF EXISTS kvl_cache_entries;
+DROP TABLE IF EXISTS kvlite.kvl_cache_entries;
 
-CREATE SEQUENCE kvl_cache_entries_kvle_id_seq
-    INCREMENT 1
-    START 1
-    MINVALUE 1
-    MAXVALUE 9223372036854775807
-    CACHE 1;
-
-CREATE TABLE kvl_cache_entries
+CREATE UNLOGGED TABLE kvlite.kvl_cache_entries
 (
-    kvle_id bigint NOT NULL DEFAULT nextval('kvl_cache_entries_kvle_id_seq'::regclass),
+    kvle_id bigserial NOT NULL,
     kvle_hash bigint NOT NULL,
     kvle_expiry bigint NOT NULL,
     kvle_interval bigint NOT NULL,
@@ -34,58 +27,58 @@ WITH (
 );
 
 CREATE INDEX ix_kvle_parent0
-    ON kvl_cache_entries USING btree
-    (kvle_parent_hash0);
+    ON kvlite.kvl_cache_entries(kvle_parent_hash0)
+ WHERE kvle_parent_hash0 IS NOT NULL;
 
 CREATE INDEX ix_kvle_parent1
-    ON kvl_cache_entries USING btree
-    (kvle_parent_hash1);
+    ON kvlite.kvl_cache_entries(kvle_parent_hash1)
+ WHERE kvle_parent_hash1 IS NOT NULL;
 
 CREATE INDEX ix_kvle_parent2
-    ON kvl_cache_entries USING btree
-    (kvle_parent_hash2);
+    ON kvlite.kvl_cache_entries(kvle_parent_hash2)
+ WHERE kvle_parent_hash2 IS NOT NULL;
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_id
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_id
     IS 'Automatically generated ID.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_hash
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_hash
     IS 'Hash of partition and key.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_expiry
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_expiry
     IS 'When the entry will expire, expressed as seconds after UNIX epoch.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_interval
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_interval
     IS 'How many seconds should be used to extend expiry time when the entry is retrieved.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_value
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_value
     IS 'Serialized and optionally compressed content of this entry.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_compressed
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_compressed
     IS 'Whether the entry content was compressed or not.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_partition
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_partition
     IS 'A partition holds a group of related keys.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_key
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_key
     IS 'A key uniquely identifies an entry inside a partition.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_creation
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_creation
     IS 'When the entry was created, expressed as seconds after UNIX epoch.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_parent_hash0
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_parent_hash0
     IS 'Optional parent entry hash, used to link entries in a hierarchical way.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_parent_key0
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_parent_key0
     IS 'Optional parent entry key, used to link entries in a hierarchical way.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_parent_hash1
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_parent_hash1
     IS 'Optional parent entry hash, used to link entries in a hierarchical way.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_parent_key1
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_parent_key1
     IS 'Optional parent entry key, used to link entries in a hierarchical way.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_parent_hash2
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_parent_hash2
     IS 'Optional parent entry hash, used to link entries in a hierarchical way.';
 
-COMMENT ON COLUMN kvl_cache_entries.kvle_parent_key2
+COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_parent_key2
     IS 'Optional parent entry key, used to link entries in a hierarchical way.';
