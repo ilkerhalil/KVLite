@@ -1,8 +1,12 @@
-﻿CREATE DATABASE `kvlite`;
+﻿/* Optional setup */
+
+CREATE DATABASE `kvlite`;
 
 USE `kvlite`;
 
 DROP TABLE IF EXISTS `kvl_cache_entries`;
+
+/* Table & Comments */
 
 CREATE TABLE IF NOT EXISTS `kvl_cache_entries` (
     `kvle_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Automatically generated ID.',
@@ -27,6 +31,23 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_entries` (
     INDEX `ix_kvle_parent2` (`kvle_parent_hash2`)
 )
 COLLATE='utf8_general_ci'
-ENGINE=MyISAM /* You can use ARIA if running under MariaDB */
+ENGINE=InnoDB
 ROW_FORMAT=DYNAMIC
 ;
+
+/* Foreign keys */
+
+ALTER TABLE kvl_cache_entries 
+  ADD CONSTRAINT fk_kvle_parent0 FOREIGN KEY (kvle_parent_hash0) 
+      REFERENCES kvl_cache_entries (kvle_hash)
+       ON DELETE CASCADE;
+
+ALTER TABLE kvl_cache_entries 
+  ADD CONSTRAINT fk_kvle_parent1 FOREIGN KEY (kvle_parent_hash1) 
+      REFERENCES kvl_cache_entries (kvle_hash)
+       ON DELETE CASCADE;
+
+ALTER TABLE kvl_cache_entries 
+  ADD CONSTRAINT fk_kvle_parent2 FOREIGN KEY (kvle_parent_hash2) 
+      REFERENCES kvl_cache_entries (kvle_hash)
+       ON DELETE CASCADE;
