@@ -66,7 +66,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   Optional parent entry hash, used to link entries in a hierarchical way.
         /// </summary>
-        public long ParentHash0 { get; set; }
+        public long? ParentHash0 { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="ParentKey0"/>.
@@ -86,7 +86,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   Optional parent entry hash, used to link entries in a hierarchical way.
         /// </summary>
-        public long ParentHash1 { get; set; }
+        public long? ParentHash1 { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="ParentKey1"/>.
@@ -106,7 +106,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   Optional parent entry hash, used to link entries in a hierarchical way.
         /// </summary>
-        public long ParentHash2 { get; set; }
+        public long? ParentHash2 { get; set; }
 
         /// <summary>
         ///   SQL column name of <see cref="ParentKey2"/>.

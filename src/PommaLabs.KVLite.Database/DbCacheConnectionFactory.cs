@@ -218,24 +218,7 @@ namespace PommaLabs.KVLite.Database
 
             DeleteCacheEntryCommand = MinifyQuery($@"
                 delete from {s}{Settings.CacheEntriesTableName}
-                 where {DbCacheValue.HashColumn} in (
-                select x.{DbCacheValue.HashColumn} from (
-                select y.{DbCacheValue.HashColumn}
-                  from {s}{Settings.CacheEntriesTableName} y
-                 where y.{DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
-                 union all
-                select y.{DbCacheValue.HashColumn}
-                  from {s}{Settings.CacheEntriesTableName} y
-                 where y.{DbCacheEntry.ParentHash0Column} = {p}{nameof(DbCacheEntry.Single.Hash)}
-                 union all
-                select y.{DbCacheValue.HashColumn}
-                  from {s}{Settings.CacheEntriesTableName} y
-                 where y.{DbCacheEntry.ParentHash1Column} = {p}{nameof(DbCacheEntry.Single.Hash)}
-                 union all
-                select y.{DbCacheValue.HashColumn}
-                  from {s}{Settings.CacheEntriesTableName} y
-                 where y.{DbCacheEntry.ParentHash2Column} = {p}{nameof(DbCacheEntry.Single.Hash)}
-                ) x)
+                 where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
             ");
 
             DeleteCacheEntriesCommand = MinifyQuery($@"
