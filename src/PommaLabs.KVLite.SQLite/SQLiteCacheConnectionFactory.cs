@@ -57,6 +57,7 @@ namespace PommaLabs.KVLite.SQLite
 
             // Used to configure each connection.
             _pragmas = MinifyQuery($@"
+                PRAGMA foreign_keys = ON;
                 PRAGMA journal_mode = {journal};
                 PRAGMA synchronous = OFF;
             ");
@@ -136,26 +137,32 @@ namespace PommaLabs.KVLite.SQLite
             _createCacheSchemaCommand = MinifyQuery($@"
                 DROP TABLE IF EXISTS {s}{Settings.CacheEntriesTableName};
                 CREATE TABLE {s}{Settings.CacheEntriesTableName} (
-                    kvle_id INTEGER PRIMARY KEY,
-                    kvle_hash BIGINT NOT NULL,
-                    kvle_expiry BIGINT NOT NULL,
-                    kvle_interval BIGINT NOT NULL,
-                    kvle_value BLOB NOT NULL,
-                    kvle_compressed BOOLEAN NOT NULL,
-                    kvle_partition TEXT NOT NULL,
-                    kvle_key TEXT NOT NULL,
-                    kvle_creation BIGINT NOT NULL,
-                    kvle_parent_hash0 BIGINT,
-                    kvle_parent_key0 TEXT,
-                    kvle_parent_hash1 BIGINT,
-                    kvle_parent_key1 TEXT,
-                    kvle_parent_hash2 BIGINT,
-                    kvle_parent_key2 TEXT,
-                    CONSTRAINT uk_kvle UNIQUE (kvle_hash)
+                    {DbCacheValue.IdColumn} INTEGER PRIMARY KEY,
+                    {DbCacheValue.HashColumn} BIGINT NOT NULL,
+                    {DbCacheValue.UtcExpiryColumn} BIGINT NOT NULL,
+                    {DbCacheValue.IntervalColumn} BIGINT NOT NULL,
+                    {DbCacheValue.ValueColumn} BLOB NOT NULL,
+                    {DbCacheValue.CompressedColumn} BOOLEAN NOT NULL,
+                    {DbCacheEntry.PartitionColumn} TEXT NOT NULL,
+                    {DbCacheEntry.KeyColumn} TEXT NOT NULL,
+                    {DbCacheEntry.UtcCreationColumn} BIGINT NOT NULL,
+                    {DbCacheEntry.ParentHash0Column} BIGINT,
+                    {DbCacheEntry.ParentKey0Column} TEXT,
+                    {DbCacheEntry.ParentHash1Column} BIGINT,
+                    {DbCacheEntry.ParentKey1Column} TEXT,
+                    {DbCacheEntry.ParentHash2Column} BIGINT,
+                    {DbCacheEntry.ParentKey2Column} TEXT,
+                    CONSTRAINT uk_kvle UNIQUE ({DbCacheValue.HashColumn})
                 );
-                CREATE INDEX ix_kvle_parent0 ON {s}{Settings.CacheEntriesTableName} (kvle_parent_hash0);
-                CREATE INDEX ix_kvle_parent1 ON {s}{Settings.CacheEntriesTableName} (kvle_parent_hash1);
-                CREATE INDEX ix_kvle_parent2 ON {s}{Settings.CacheEntriesTableName} (kvle_parent_hash2);
+                CREATE INDEX ix_kvle_parent0 ON {s}{Settings.CacheEntriesTableName} ({DbCacheEntry.ParentHash0Column});
+                CREATE INDEX ix_kvle_parent1 ON {s}{Settings.CacheEntriesTableName} ({DbCacheEntry.ParentHash1Column});
+                CREATE INDEX ix_kvle_parent2 ON {s}{Settings.CacheEntriesTableName} ({DbCacheEntry.ParentHash2Column});
+                ALTER TABLE {s}{Settings.CacheEntriesTableName} ADD CONSTRAINT fk_kvle_parent0 FOREIGN KEY ({DbCacheEntry.ParentHash0Column})
+                 REFERENCES {s}{Settings.CacheEntriesTableName} ({DbCacheValue.HashColumn}) ON DELETE CASCADE;
+                ALTER TABLE {s}{Settings.CacheEntriesTableName} ADD CONSTRAINT fk_kvle_parent1 FOREIGN KEY ({DbCacheEntry.ParentHash1Column})
+                 REFERENCES {s}{Settings.CacheEntriesTableName} ({DbCacheValue.HashColumn}) ON DELETE CASCADE;
+                ALTER TABLE {s}{Settings.CacheEntriesTableName} ADD CONSTRAINT fk_kvle_parent2 FOREIGN KEY ({DbCacheEntry.ParentHash2Column})
+                 REFERENCES {s}{Settings.CacheEntriesTableName} ({DbCacheValue.HashColumn}) ON DELETE CASCADE;
             ");
 
             _getCacheEntriesSchemaQuery = MinifyQuery($@"
@@ -241,7 +248,7 @@ namespace PommaLabs.KVLite.SQLite
             }
 
             return columns.Count == 15
-                && columns.Contains("kvle_id") // Automatically generated ID.
+                && columns.Contains(DbCacheValue.IdColumn)
                 && columns.Contains(DbCacheValue.HashColumn)
                 && columns.Contains(DbCacheValue.UtcExpiryColumn)
                 && columns.Contains(DbCacheValue.IntervalColumn)

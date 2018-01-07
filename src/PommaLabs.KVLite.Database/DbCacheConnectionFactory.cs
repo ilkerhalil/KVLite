@@ -224,19 +224,7 @@ namespace PommaLabs.KVLite.Database
             DeleteCacheEntriesCommand = MinifyQuery($@"
                 delete from {s}{Settings.CacheEntriesTableName}
                  where ({p}{nameof(DbCacheEntry.Group.Hash)} is null or ({DbCacheValue.HashColumn} >= {p}{nameof(DbCacheEntry.Group.Hash)} and {DbCacheValue.HashColumn} <= {p}{nameof(DbCacheEntry.Group.Hash)} + {t}))
-                   and (({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
-                     or ({DbCacheEntry.ParentHash0Column} in (select x.{DbCacheValue.HashColumn} from
-                                                             (select y.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} y
-                                                               where y.{DbCacheValue.HashColumn} = {DbCacheValue.HashColumn}
-                                                                 and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)
-                      or {DbCacheEntry.ParentHash1Column} in (select x.{DbCacheValue.HashColumn} from
-                                                             (select y.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} y
-                                                               where y.{DbCacheValue.HashColumn} = {DbCacheValue.HashColumn}
-                                                                 and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)
-                      or {DbCacheEntry.ParentHash2Column} in (select x.{DbCacheValue.HashColumn} from
-                                                             (select y.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} y
-                                                               where y.{DbCacheValue.HashColumn} = {DbCacheValue.HashColumn}
-                                                                 and y.{DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)}) x)))
+                   and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} < {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
             ");
 
             UpdateCacheEntryExpiryCommand = MinifyQuery($@"

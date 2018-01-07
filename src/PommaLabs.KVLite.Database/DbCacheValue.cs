@@ -41,6 +41,11 @@ namespace PommaLabs.KVLite.Database
         public const byte False = 0;
 
         /// <summary>
+        ///   SQL column name of automatically generated ID.
+        /// </summary>
+        public const string IdColumn = "kvle_id";
+
+        /// <summary>
         ///   SQL column name of <see cref="Hash"/>.
         /// </summary>
         public const string HashColumn = "kvle_hash";
