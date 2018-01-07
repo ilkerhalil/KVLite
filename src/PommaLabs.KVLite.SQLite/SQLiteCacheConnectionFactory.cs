@@ -59,6 +59,8 @@ namespace PommaLabs.KVLite.SQLite
             _pragmas = MinifyQuery($@"
                 PRAGMA foreign_keys = ON;
                 PRAGMA journal_mode = {journal};
+                PRAGMA read_uncommitted = ON;
+                PRAGMA recursive_triggers = ON;
                 PRAGMA synchronous = OFF;
             ");
         }
