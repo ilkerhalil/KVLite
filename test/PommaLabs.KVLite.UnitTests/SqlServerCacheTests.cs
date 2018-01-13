@@ -26,7 +26,7 @@ using System.Data.SqlClient;
 
 namespace PommaLabs.KVLite.UnitTests
 {
-    //internal sealed class SqlServerCacheTests : AbstractCacheTests<SqlServerCache, SqlServerCacheSettings, SqlServerCacheConnectionFactory, SqlConnection>
-    //{
-    //}
+    internal sealed class SqlServerCacheTests : AbstractCacheTests<SqlServerCache, SqlServerCacheSettings, SqlServerCacheConnectionFactory, SqlConnection>
+    {
+    }
 }

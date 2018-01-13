@@ -22,4 +22,8 @@
   <ItemGroup>
     <PackageReference Include="Oracle.ManagedDataAccess" Version="12.2.1100" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="HellBrick.Diagnostics" Version="3.0.0" />
+  </ItemGroup>
 </Project>

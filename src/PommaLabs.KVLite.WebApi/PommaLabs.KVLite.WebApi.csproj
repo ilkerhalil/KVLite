@@ -23,4 +23,8 @@
   <ItemGroup>
     <PackageReference Include="Strathweb.CacheOutput.WebApi2" Version="0.10.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="HellBrick.Diagnostics" Version="3.0.0" />
+  </ItemGroup>
 </Project>

@@ -122,7 +122,7 @@ namespace PommaLabs.KVLite.Extensibility
             var obj = _binaryFormatter.Deserialize(inputStream);
             if (obj is NullObject)
             {
-                return default(TObj);
+                return default;
             }
             if (!typeof(TObj).IsInstanceOfType(obj))
             {
@@ -135,7 +135,7 @@ namespace PommaLabs.KVLite.Extensibility
         ///   Workaround to make binary formatter handle null objects.
         /// </summary>
         [Serializable]
-        private struct NullObject : IEquatable<NullObject>
+        private readonly struct NullObject : IEquatable<NullObject>
         {
             public static bool operator !=(NullObject x, NullObject y) => !x.Equals(y);
 

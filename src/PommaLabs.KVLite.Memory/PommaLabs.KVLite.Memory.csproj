@@ -26,4 +26,8 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="HellBrick.Diagnostics" Version="3.0.0" />
+  </ItemGroup>
 </Project>

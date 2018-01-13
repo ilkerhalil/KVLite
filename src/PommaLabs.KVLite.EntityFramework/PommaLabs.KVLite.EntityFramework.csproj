@@ -23,4 +23,8 @@
     <PackageReference Include="EntityFramework" Version="6.2.0" />
     <PackageReference Include="EntityFramework.Extended" Version="6.1.0.168" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="HellBrick.Diagnostics" Version="3.0.0" />
+  </ItemGroup>
 </Project>

@@ -23,4 +23,8 @@
   <ItemGroup>
     <PackageReference Include="IdentityServer3" Version="2.6.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="HellBrick.Diagnostics" Version="3.0.0" />
+  </ItemGroup>
 </Project>

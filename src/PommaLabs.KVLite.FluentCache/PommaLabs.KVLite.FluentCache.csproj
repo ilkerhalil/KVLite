@@ -23,4 +23,8 @@
   <ItemGroup>
     <PackageReference Include="FluentCache" Version="4.0.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="HellBrick.Diagnostics" Version="3.0.0" />
+  </ItemGroup>
 </Project>

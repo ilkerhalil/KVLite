@@ -31,28 +31,6 @@ CREATE TABLE [kvl_cache_entries] (
     CONSTRAINT [uk_kvle] UNIQUE ([kvle_hash])
 );
 
-CREATE INDEX [ix_kvle_parent0] ON [kvl_cache_entries] ([kvle_parent_hash0]);
-CREATE INDEX [ix_kvle_parent1] ON [kvl_cache_entries] ([kvle_parent_hash1]);
-CREATE INDEX [ix_kvle_parent2] ON [kvl_cache_entries] ([kvle_parent_hash2]);
-
-/* Foreign keys (sort of...) */
-
-CREATE TRIGGER [td_kvl_cache_entries]
-       ON [kvl_cache_entries]
-INSTEAD OF DELETE
-AS
-BEGIN
-	DECLARE @kvle_hash BIGINT
-    SELECT @kvle_hash = DELETED.[kvle_hash]        
-      FROM DELETED
-
-    DELETE FROM [kvl_cache_entries] WHERE [kvle_parent_hash0] = @kvle_hash;
-    DELETE FROM [kvl_cache_entries] WHERE [kvle_parent_hash1] = @kvle_hash;
-    DELETE FROM [kvl_cache_entries] WHERE [kvle_parent_hash2] = @kvle_hash;
-
-    DELETE FROM [kvl_cache_entries] WHERE [kvle_hash] = @kvle_hash;
-END
-
 /* Comments */
 
 EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = 'Automatically generated ID.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'kvl_cache_entries', @level2type = N'COLUMN', @level2name = N'kvle_id';

@@ -30,35 +30,6 @@ WITH (
     OIDS = FALSE
 );
 
-CREATE INDEX ix_kvle_parent0
-    ON kvlite.kvl_cache_entries (kvle_parent_hash0)
- WHERE kvle_parent_hash0 IS NOT NULL;
-
-CREATE INDEX ix_kvle_parent1
-    ON kvlite.kvl_cache_entries (kvle_parent_hash1)
- WHERE kvle_parent_hash1 IS NOT NULL;
-
-CREATE INDEX ix_kvle_parent2
-    ON kvlite.kvl_cache_entries (kvle_parent_hash2)
- WHERE kvle_parent_hash2 IS NOT NULL;
-
-/* Foreign keys */
-
-ALTER TABLE kvlite.kvl_cache_entries 
-  ADD CONSTRAINT fk_kvle_parent0 FOREIGN KEY (kvle_parent_hash0) 
-      REFERENCES kvlite.kvl_cache_entries (kvle_hash)
-       ON DELETE CASCADE;
-
-ALTER TABLE kvlite.kvl_cache_entries 
-  ADD CONSTRAINT fk_kvle_parent1 FOREIGN KEY (kvle_parent_hash1) 
-      REFERENCES kvlite.kvl_cache_entries (kvle_hash)
-       ON DELETE CASCADE;
-
-ALTER TABLE kvlite.kvl_cache_entries 
-  ADD CONSTRAINT fk_kvle_parent2 FOREIGN KEY (kvle_parent_hash2) 
-      REFERENCES kvlite.kvl_cache_entries (kvle_hash)
-       ON DELETE CASCADE;
-
 /* Comments */
 
 COMMENT ON COLUMN kvlite.kvl_cache_entries.kvle_id

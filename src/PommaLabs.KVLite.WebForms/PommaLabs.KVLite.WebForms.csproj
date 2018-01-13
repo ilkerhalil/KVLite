@@ -25,4 +25,8 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="HellBrick.Diagnostics" Version="3.0.0" />
+  </ItemGroup>
 </Project>

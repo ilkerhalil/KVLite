@@ -22,4 +22,8 @@
   <ItemGroup>
     <PackageReference Include="Dapper.StrongName" Version="1.50.4" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="HellBrick.Diagnostics" Version="3.0.0" />
+  </ItemGroup>
 </Project>

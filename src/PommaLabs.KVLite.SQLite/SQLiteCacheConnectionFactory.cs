@@ -154,14 +154,8 @@ namespace PommaLabs.KVLite.SQLite
                     {DbCacheEntry.ParentKey1Column} TEXT,
                     {DbCacheEntry.ParentHash2Column} BIGINT,
                     {DbCacheEntry.ParentKey2Column} TEXT,
-                    CONSTRAINT uk_kvle UNIQUE ({DbCacheValue.HashColumn}),
-                    FOREIGN KEY ({DbCacheEntry.ParentHash0Column}) REFERENCES {s}{Settings.CacheEntriesTableName} ({DbCacheValue.HashColumn}) ON DELETE CASCADE,
-                    FOREIGN KEY ({DbCacheEntry.ParentHash1Column}) REFERENCES {s}{Settings.CacheEntriesTableName} ({DbCacheValue.HashColumn}) ON DELETE CASCADE,
-                    FOREIGN KEY ({DbCacheEntry.ParentHash2Column}) REFERENCES {s}{Settings.CacheEntriesTableName} ({DbCacheValue.HashColumn}) ON DELETE CASCADE
+                    CONSTRAINT uk_kvle UNIQUE ({DbCacheValue.HashColumn})
                 );
-                CREATE INDEX ix_kvle_parent0 ON {s}{Settings.CacheEntriesTableName} ({DbCacheEntry.ParentHash0Column});
-                CREATE INDEX ix_kvle_parent1 ON {s}{Settings.CacheEntriesTableName} ({DbCacheEntry.ParentHash1Column});
-                CREATE INDEX ix_kvle_parent2 ON {s}{Settings.CacheEntriesTableName} ({DbCacheEntry.ParentHash2Column});
             ");
 
             _getCacheEntriesSchemaQuery = MinifyQuery($@"

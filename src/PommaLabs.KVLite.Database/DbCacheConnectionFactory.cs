@@ -239,16 +239,42 @@ namespace PommaLabs.KVLite.Database
 
             ContainsCacheEntryQuery = MinifyQuery($@"
                 select count(*)
-                  from {s}{Settings.CacheEntriesTableName}
-                 where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
-                   and {DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}
+                  from {s}{Settings.CacheEntriesTableName} x
+                 where x.{DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
+                   and x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}
+                   and (x.{DbCacheEntry.ParentHash0Column} is null
+                     or x.{DbCacheEntry.ParentHash0Column} in (select p0.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p0
+                                                                where p0.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash0Column}
+                                                                  and p0.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}))
+                   and (x.{DbCacheEntry.ParentHash1Column} is null
+                     or x.{DbCacheEntry.ParentHash1Column} in (select p1.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p1
+                                                                where p1.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash1Column}
+                                                                  and p1.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}))
+                   and (x.{DbCacheEntry.ParentHash2Column} is null
+                     or x.{DbCacheEntry.ParentHash2Column} in (select p2.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p2
+                                                                where p2.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash2Column}
+                                                                  and p2.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}))
             ");
 
             CountCacheEntriesQuery = MinifyQuery($@"
                 select count(*)
-                  from {s}{Settings.CacheEntriesTableName}
-                 where ({p}{nameof(DbCacheEntry.Group.Hash)} is null or ({DbCacheValue.HashColumn} >= {p}{nameof(DbCacheEntry.Group.Hash)} and {DbCacheValue.HashColumn} <= {p}{nameof(DbCacheEntry.Group.Hash)} + {t}))
-                   and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or {DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
+                  from {s}{Settings.CacheEntriesTableName} x
+                 where ({p}{nameof(DbCacheEntry.Group.Hash)} is null
+                     or (x.{DbCacheValue.HashColumn} >= {p}{nameof(DbCacheEntry.Group.Hash)} and x.{DbCacheValue.HashColumn} <= {p}{nameof(DbCacheEntry.Group.Hash)} + {t}))
+                   and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1
+                     or (x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)}
+                     and (x.{DbCacheEntry.ParentHash0Column} is null
+                       or x.{DbCacheEntry.ParentHash0Column} in (select p0.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p0
+                                                                  where p0.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash0Column}
+                                                                    and p0.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)}))
+                     and (x.{DbCacheEntry.ParentHash1Column} is null
+                       or x.{DbCacheEntry.ParentHash1Column} in (select p1.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p1
+                                                                  where p1.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash1Column}
+                                                                    and p1.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)}))
+                     and (x.{DbCacheEntry.ParentHash2Column} is null
+                       or x.{DbCacheEntry.ParentHash2Column} in (select p2.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p2
+                                                                  where p2.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash2Column}
+                                                                    and p2.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)}))))
             ");
 
             PeekCacheEntriesQuery = MinifyQuery($@"
@@ -264,8 +290,22 @@ namespace PommaLabs.KVLite.Database
                        x.{DbCacheEntry.ParentKey1Column}  {l}{nameof(DbCacheEntry.ParentKey1)}{r},
                        x.{DbCacheEntry.ParentKey2Column}  {l}{nameof(DbCacheEntry.ParentKey2)}{r}
                   from {s}{Settings.CacheEntriesTableName} x
-                 where ({p}{nameof(DbCacheEntry.Group.Hash)} is null or (x.{DbCacheValue.HashColumn} >= {p}{nameof(DbCacheEntry.Group.Hash)} and x.{DbCacheValue.HashColumn} <= {p}{nameof(DbCacheEntry.Group.Hash)} + {t}))
-                   and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)})
+                 where ({p}{nameof(DbCacheEntry.Group.Hash)} is null
+                     or (x.{DbCacheValue.HashColumn} >= {p}{nameof(DbCacheEntry.Group.Hash)} and x.{DbCacheValue.HashColumn} <= {p}{nameof(DbCacheEntry.Group.Hash)} + {t}))
+                   and ({p}{nameof(DbCacheEntry.Group.IgnoreExpiryDate)} = 1
+                     or (x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)}
+                     and (x.{DbCacheEntry.ParentHash0Column} is null
+                       or x.{DbCacheEntry.ParentHash0Column} in (select p0.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p0
+                                                                  where p0.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash0Column}
+                                                                    and p0.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)}))
+                     and (x.{DbCacheEntry.ParentHash1Column} is null
+                       or x.{DbCacheEntry.ParentHash1Column} in (select p1.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p1
+                                                                  where p1.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash1Column}
+                                                                    and p1.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)}))
+                     and (x.{DbCacheEntry.ParentHash2Column} is null
+                       or x.{DbCacheEntry.ParentHash2Column} in (select p2.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p2
+                                                                  where p2.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash2Column}
+                                                                    and p2.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Group.UtcExpiry)}))))
             ");
 
             // Partition and key are not "select-ed" because the caller already knows them.
@@ -280,8 +320,21 @@ namespace PommaLabs.KVLite.Database
                        x.{DbCacheEntry.ParentKey1Column}  {l}{nameof(DbCacheEntry.ParentKey1)}{r},
                        x.{DbCacheEntry.ParentKey2Column}  {l}{nameof(DbCacheEntry.ParentKey2)}{r}
                   from {s}{Settings.CacheEntriesTableName} x
-                 where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
-                   and ({p}{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)})
+                 where x.{DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
+                   and ({p}{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1
+                     or (x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}
+                     and (x.{DbCacheEntry.ParentHash0Column} is null
+                       or x.{DbCacheEntry.ParentHash0Column} in (select p0.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p0
+                                                                  where p0.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash0Column}
+                                                                    and p0.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}))
+                     and (x.{DbCacheEntry.ParentHash1Column} is null
+                       or x.{DbCacheEntry.ParentHash1Column} in (select p1.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p1
+                                                                  where p1.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash1Column}
+                                                                    and p1.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}))
+                     and (x.{DbCacheEntry.ParentHash2Column} is null
+                       or x.{DbCacheEntry.ParentHash2Column} in (select p2.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p2
+                                                                  where p2.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash2Column}
+                                                                    and p2.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}))))
             ");
 
             PeekCacheValueQuery = MinifyQuery($@"
@@ -291,8 +344,21 @@ namespace PommaLabs.KVLite.Database
                        x.{DbCacheValue.ValueColumn}       {l}{nameof(DbCacheValue.Value)}{r},
                        x.{DbCacheValue.CompressedColumn}  {l}{nameof(DbCacheValue.Compressed)}{r}
                   from {s}{Settings.CacheEntriesTableName} x
-                 where {DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
-                   and ({p}{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1 or x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)})
+                 where x.{DbCacheValue.HashColumn} = {p}{nameof(DbCacheEntry.Single.Hash)}
+                   and ({p}{nameof(DbCacheEntry.Single.IgnoreExpiryDate)} = 1
+                     or (x.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}
+                     and (x.{DbCacheEntry.ParentHash0Column} is null
+                       or x.{DbCacheEntry.ParentHash0Column} in (select p0.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p0
+                                                                  where p0.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash0Column}
+                                                                    and p0.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}))
+                     and (x.{DbCacheEntry.ParentHash1Column} is null
+                       or x.{DbCacheEntry.ParentHash1Column} in (select p1.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p1
+                                                                  where p1.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash1Column}
+                                                                    and p1.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}))
+                     and (x.{DbCacheEntry.ParentHash2Column} is null
+                       or x.{DbCacheEntry.ParentHash2Column} in (select p2.{DbCacheValue.HashColumn} from {s}{Settings.CacheEntriesTableName} p2
+                                                                  where p2.{DbCacheValue.HashColumn} = x.{DbCacheEntry.ParentHash2Column}
+                                                                    and p2.{DbCacheValue.UtcExpiryColumn} >= {p}{nameof(DbCacheEntry.Single.UtcExpiry)}))))
             ");
 
             GetCacheSizeInBytesQuery = MinifyQuery($@"

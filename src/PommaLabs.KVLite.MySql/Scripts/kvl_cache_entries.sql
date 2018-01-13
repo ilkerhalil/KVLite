@@ -25,29 +25,9 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_entries` (
     `kvle_parent_hash2` BIGINT(20) SIGNED DEFAULT NULL COMMENT 'Optional parent entry hash, used to link entries in a hierarchical way.',
     `kvle_parent_key2` VARCHAR(2000) NULL DEFAULT NULL COMMENT 'Optional parent entry key, used to link entries in a hierarchical way.',
     PRIMARY KEY (`kvle_id`),
-    UNIQUE `uk_kvle` (`kvle_hash`),
-    INDEX `ix_kvle_parent0` (`kvle_parent_hash0`),
-    INDEX `ix_kvle_parent1` (`kvle_parent_hash1`),
-    INDEX `ix_kvle_parent2` (`kvle_parent_hash2`)
+    UNIQUE `uk_kvle` (`kvle_hash`)
 )
 COLLATE='utf8_general_ci'
 ENGINE=InnoDB
 ROW_FORMAT=DYNAMIC
 ;
-
-/* Foreign keys */
-
-ALTER TABLE kvl_cache_entries 
-  ADD CONSTRAINT fk_kvle_parent0 FOREIGN KEY (kvle_parent_hash0) 
-      REFERENCES kvl_cache_entries (kvle_hash)
-       ON DELETE CASCADE;
-
-ALTER TABLE kvl_cache_entries 
-  ADD CONSTRAINT fk_kvle_parent1 FOREIGN KEY (kvle_parent_hash1) 
-      REFERENCES kvl_cache_entries (kvle_hash)
-       ON DELETE CASCADE;
-
-ALTER TABLE kvl_cache_entries 
-  ADD CONSTRAINT fk_kvle_parent2 FOREIGN KEY (kvle_parent_hash2) 
-      REFERENCES kvl_cache_entries (kvle_hash)
-       ON DELETE CASCADE;
