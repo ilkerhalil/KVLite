@@ -79,7 +79,8 @@
 </div>
 
                 </section>
-                <section class="sidebar">                    
+                <section class="sidebar">    
+                                     
                     	
 	    <script src="/KVLite/assets/js/lunr.min.js"></script>
     <script src="/KVLite/assets/js/searchIndex.js"></script>
@@ -135,6 +136,11 @@
 			<li class="header">Namespace</li>
 		<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility">PommaLabs<wbr>.KVLite<wbr>.Extensibility</a></li>
 		<li role="separator" class="divider"></li>
+			<li class="header">Interface Types</li>
+				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/IClock">IClock</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/ICompressor">ICompressor</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/IRandom">IRandom</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/ISerializer">ISerializer</a></li>
 			<li class="header">Class Types</li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/BinarySerializer">BinarySerializer</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/BinarySerializerSettings">Binary<wbr>Serializer<wbr>Settings</a></li>
@@ -148,14 +154,10 @@
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/NoOpSerializer">NoOpSerializer</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/SystemClock">SystemClock</a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/SystemRandom">SystemRandom</a></li>
-			<li class="header">Interface Types</li>
-				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/IClock">IClock</a></li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/ICompressor">ICompressor</a></li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/IRandom">IRandom</a></li>
-				<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/ISerializer">ISerializer</a></li>
 
 
                     </ul>
+                            
                 </section>                
             </aside>
             
@@ -197,8 +199,8 @@
 								<dt>Implementing Types</dt>
 								<dd>
 									<ul class="list-unstyled">
-											<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/FakeClock">FakeClock</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/SystemClock">SystemClock</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.Extensibility/FakeClock">FakeClock</a></li>								
 									</ul>
 								</dd>				
 						</dl>
@@ -209,10 +211,10 @@
 	Interface0["ISystemClock"]-.-&gt;Type
 	Type["IClock"]
 class Type type-node
-	Type-.-&gt;Implementing0["FakeClock"]
-	click Implementing0 "/KVLite/api/PommaLabs.KVLite.Extensibility/FakeClock"
-	Type-.-&gt;Implementing1["SystemClock"]
-	click Implementing1 "/KVLite/api/PommaLabs.KVLite.Extensibility/SystemClock"
+	Type-.-&gt;Implementing0["SystemClock"]
+	click Implementing0 "/KVLite/api/PommaLabs.KVLite.Extensibility/SystemClock"
+	Type-.-&gt;Implementing1["FakeClock"]
+	click Implementing1 "/KVLite/api/PommaLabs.KVLite.Extensibility/FakeClock"
 
 						</div>
 					</div>

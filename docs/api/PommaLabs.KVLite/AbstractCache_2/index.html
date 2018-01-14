@@ -83,7 +83,8 @@
 </div>
 
                 </section>
-                <section class="sidebar">                    
+                <section class="sidebar">    
+                                     
                     	
 	    <script src="/KVLite/assets/js/lunr.min.js"></script>
     <script src="/KVLite/assets/js/searchIndex.js"></script>
@@ -162,6 +163,7 @@
 
 
                     </ul>
+                            
                 </section>                
             </aside>
             
@@ -194,10 +196,10 @@
 								<dt>Interfaces</dt>
 								<dd>
 									<ul class="list-unstyled">
-											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache_1">ICache<wbr>&lt;TSettings&gt;<wbr></a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache">ICache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache_1">IAsyncCache<wbr>&lt;TSettings&gt;<wbr></a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache">IAsyncCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache_1">ICache<wbr>&lt;TSettings&gt;<wbr></a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite/ICache">ICache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite/IEssentialCache">IEssentialCache</a></li>								
 											<li>IDisposable</li>								
 									</ul>
@@ -225,14 +227,14 @@
 						<div class="mermaid">
 							graph TD
 	Base0["IDistributedCache"]--&gt;Type
-	Interface0["ICache&lt;TSettings&gt;"]-.-&gt;Type
-	click Interface0 "/KVLite/api/PommaLabs.KVLite/ICache_1"
-	Interface1["ICache"]-.-&gt;Type
-	click Interface1 "/KVLite/api/PommaLabs.KVLite/ICache"
-	Interface2["IAsyncCache&lt;TSettings&gt;"]-.-&gt;Type
-	click Interface2 "/KVLite/api/PommaLabs.KVLite/IAsyncCache_1"
-	Interface3["IAsyncCache"]-.-&gt;Type
-	click Interface3 "/KVLite/api/PommaLabs.KVLite/IAsyncCache"
+	Interface0["IAsyncCache&lt;TSettings&gt;"]-.-&gt;Type
+	click Interface0 "/KVLite/api/PommaLabs.KVLite/IAsyncCache_1"
+	Interface1["IAsyncCache"]-.-&gt;Type
+	click Interface1 "/KVLite/api/PommaLabs.KVLite/IAsyncCache"
+	Interface2["ICache&lt;TSettings&gt;"]-.-&gt;Type
+	click Interface2 "/KVLite/api/PommaLabs.KVLite/ICache_1"
+	Interface3["ICache"]-.-&gt;Type
+	click Interface3 "/KVLite/api/PommaLabs.KVLite/ICache"
 	Interface4["IEssentialCache"]-.-&gt;Type
 	click Interface4 "/KVLite/api/PommaLabs.KVLite/IEssentialCache"
 	Interface5["IDisposable"]-.-&gt;Type
@@ -252,8 +254,8 @@ class Type type-node
 		</div>
 
 	<h1 id="Syntax">Syntax</h1>
-	<pre><code>public abstract class AbstractCache&lt;TCache, TSettings&gt; : IDistributedCache, ICache&lt;TSettings&gt;, 
-    ICache, IAsyncCache&lt;TSettings&gt;, IAsyncCache, IEssentialCache, IDisposable
+	<pre><code>public abstract class AbstractCache&lt;TCache, TSettings&gt; : IDistributedCache, IAsyncCache&lt;TSettings&gt;, 
+    IAsyncCache, ICache&lt;TSettings&gt;, ICache, IEssentialCache, IDisposable
     
     where TCache : AbstractCache&lt;TCache, TSettings&gt; where TSettings : AbstractCacheSettings&lt;TSettings&gt;</code></pre>
 

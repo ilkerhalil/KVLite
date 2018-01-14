@@ -82,7 +82,8 @@
 </div>
 
                 </section>
-                <section class="sidebar">                    
+                <section class="sidebar">    
+                                     
                     	
 	    <script src="/KVLite/assets/js/lunr.min.js"></script>
     <script src="/KVLite/assets/js/searchIndex.js"></script>
@@ -161,6 +162,7 @@
 
 
                     </ul>
+                            
                 </section>                
             </aside>
             
@@ -204,16 +206,16 @@
 								<dt>Implementing Types</dt>
 								<dd>
 									<ul class="list-unstyled">
-											<li><a href="/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache">PostgreSqlCache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.NoOp/NoOpCache">NoOpCache</a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache">SqlServerCache</a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite.Oracle/OracleCache">OracleCache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.Database/DbCache_4">DbCache<wbr>&lt;TCache, <wbr>TSettings, <wbr>TConnectionFactory, <wbr>TConnection&gt;<wbr></a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache">SqlServerCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache">MySqlCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite/AbstractCache_2">AbstractCache<wbr>&lt;TCache, <wbr>TSettings&gt;<wbr></a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache">PostgreSqlCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.Oracle/OracleCache">OracleCache</a></li>								
+											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache">VolatileCache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache">MemoryCache</a></li>								
 											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCache">PersistentCache</a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache">MySqlCache</a></li>								
-											<li><a href="/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache">VolatileCache</a></li>								
 									</ul>
 								</dd>				
 						</dl>
@@ -228,26 +230,26 @@
 	Interface2["IDisposable"]-.-&gt;Type
 	Type["IAsyncCache&lt;TSettings&gt;"]
 class Type type-node
-	Type-.-&gt;Implementing0["PostgreSqlCache"]
-	click Implementing0 "/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache"
-	Type-.-&gt;Implementing1["NoOpCache"]
-	click Implementing1 "/KVLite/api/PommaLabs.KVLite.NoOp/NoOpCache"
+	Type-.-&gt;Implementing0["NoOpCache"]
+	click Implementing0 "/KVLite/api/PommaLabs.KVLite.NoOp/NoOpCache"
+	Type-.-&gt;Implementing1["DbCache&lt;TCache, TSettings, TConnectionFactory, TConnection&gt;"]
+	click Implementing1 "/KVLite/api/PommaLabs.KVLite.Database/DbCache_4"
 	Type-.-&gt;Implementing2["SqlServerCache"]
 	click Implementing2 "/KVLite/api/PommaLabs.KVLite.SqlServer/SqlServerCache"
-	Type-.-&gt;Implementing3["AbstractCache&lt;TCache, TSettings&gt;"]
-	click Implementing3 "/KVLite/api/PommaLabs.KVLite/AbstractCache_2"
-	Type-.-&gt;Implementing4["OracleCache"]
-	click Implementing4 "/KVLite/api/PommaLabs.KVLite.Oracle/OracleCache"
-	Type-.-&gt;Implementing5["DbCache&lt;TCache, TSettings, TConnectionFactory, TConnection&gt;"]
-	click Implementing5 "/KVLite/api/PommaLabs.KVLite.Database/DbCache_4"
-	Type-.-&gt;Implementing6["MemoryCache"]
-	click Implementing6 "/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache"
-	Type-.-&gt;Implementing7["PersistentCache"]
-	click Implementing7 "/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCache"
-	Type-.-&gt;Implementing8["MySqlCache"]
-	click Implementing8 "/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache"
-	Type-.-&gt;Implementing9["VolatileCache"]
-	click Implementing9 "/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache"
+	Type-.-&gt;Implementing3["MySqlCache"]
+	click Implementing3 "/KVLite/api/PommaLabs.KVLite.MySql/MySqlCache"
+	Type-.-&gt;Implementing4["AbstractCache&lt;TCache, TSettings&gt;"]
+	click Implementing4 "/KVLite/api/PommaLabs.KVLite/AbstractCache_2"
+	Type-.-&gt;Implementing5["PostgreSqlCache"]
+	click Implementing5 "/KVLite/api/PommaLabs.KVLite.PostgreSql/PostgreSqlCache"
+	Type-.-&gt;Implementing6["OracleCache"]
+	click Implementing6 "/KVLite/api/PommaLabs.KVLite.Oracle/OracleCache"
+	Type-.-&gt;Implementing7["VolatileCache"]
+	click Implementing7 "/KVLite/api/PommaLabs.KVLite.SQLite/VolatileCache"
+	Type-.-&gt;Implementing8["MemoryCache"]
+	click Implementing8 "/KVLite/api/PommaLabs.KVLite.Memory/MemoryCache"
+	Type-.-&gt;Implementing9["PersistentCache"]
+	click Implementing9 "/KVLite/api/PommaLabs.KVLite.SQLite/PersistentCache"
 
 						</div>
 					</div>

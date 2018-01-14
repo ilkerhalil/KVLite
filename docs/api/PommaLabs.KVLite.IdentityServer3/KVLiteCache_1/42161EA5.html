@@ -81,7 +81,8 @@
 </div>
 
                 </section>
-                <section class="sidebar">                    
+                <section class="sidebar">    
+                                     
                     	
 	    <script src="/KVLite/assets/js/lunr.min.js"></script>
     <script src="/KVLite/assets/js/searchIndex.js"></script>
@@ -141,12 +142,16 @@
 		<li role="separator" class="divider"></li>
 			<li class="header">Constructors</li>
 				<li class="selected"><a href="/KVLite/api/PommaLabs.KVLite.IdentityServer3/KVLiteCache_1/42161EA5">KVLiteCache<wbr>(IAsyncCache, <wbr>KVLiteCacheOptions)<wbr></a></li>
+			<li class="header">Property Members</li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.IdentityServer3/KVLiteCache_1/86EDBA4C">BackingCache</a></li>
+				<li><a href="/KVLite/api/PommaLabs.KVLite.IdentityServer3/KVLiteCache_1/B34E19A1">Options</a></li>
 			<li class="header">Method Members</li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.IdentityServer3/KVLiteCache_1/5035D8C9">GetAsync<wbr>(string)<wbr></a></li>
 				<li><a href="/KVLite/api/PommaLabs.KVLite.IdentityServer3/KVLiteCache_1/1037FFDB">SetAsync<wbr>(string, <wbr>T)<wbr></a></li>
 
 
                     </ul>
+                            
                 </section>                
             </aside>
             
@@ -183,7 +188,7 @@
 		</div>
 
 	<h1 id="Syntax">Syntax</h1>
-	<pre><code>public KVLiteCache(IAsyncCache cache, KVLiteCacheOptions options)</code></pre>
+	<pre><code>public KVLiteCache(IAsyncCache backingCache, KVLiteCacheOptions options)</code></pre>
 
 
 
@@ -201,7 +206,7 @@
 					</tr>
 				</thead>
 					<tbody><tr>
-						<td>cache</td>
+						<td>backingCache</td>
 						<td><a href="/KVLite/api/PommaLabs.KVLite/IAsyncCache">IAsyncCache</a></td>
 						<td>Backing KVLite cache.</td>
 					</tr>
