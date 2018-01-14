@@ -23,8 +23,8 @@ CREATE UNLOGGED TABLE kvlite.kvl_cache_entries
     kvle_parent_key1 character varying(2000),
     kvle_parent_hash2 bigint,
     kvle_parent_key2 character varying(2000),
-    CONSTRAINT pk_kvle PRIMARY KEY (kvle_id),
-    CONSTRAINT uk_kvle UNIQUE (kvle_hash)
+    CONSTRAINT pk_kvl_cache_entries PRIMARY KEY (kvle_id),
+    CONSTRAINT uk_kvl_cache_entries UNIQUE (kvle_hash)
 )
 WITH (
     OIDS = FALSE

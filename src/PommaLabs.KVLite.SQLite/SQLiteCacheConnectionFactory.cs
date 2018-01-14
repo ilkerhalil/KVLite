@@ -57,10 +57,8 @@ namespace PommaLabs.KVLite.SQLite
 
             // Used to configure each connection.
             _pragmas = MinifyQuery($@"
-                PRAGMA foreign_keys = ON;
                 PRAGMA journal_mode = {journal};
                 PRAGMA read_uncommitted = ON;
-                PRAGMA recursive_triggers = ON;
                 PRAGMA synchronous = OFF;
             ");
         }
@@ -154,7 +152,7 @@ namespace PommaLabs.KVLite.SQLite
                     {DbCacheEntry.ParentKey1Column} TEXT,
                     {DbCacheEntry.ParentHash2Column} BIGINT,
                     {DbCacheEntry.ParentKey2Column} TEXT,
-                    CONSTRAINT uk_kvle UNIQUE ({DbCacheValue.HashColumn})
+                    CONSTRAINT uk_kvl_cache_entries UNIQUE ({DbCacheValue.HashColumn})
                 );
             ");
 

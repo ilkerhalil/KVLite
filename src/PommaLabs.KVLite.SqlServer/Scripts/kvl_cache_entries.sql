@@ -1,11 +1,11 @@
 ﻿/* Optional setup */
 
-USE [master]; 
+USE [master];
 
 CREATE DATABASE [kvlite];
 
 GO
-USE [kvlite]; 
+USE [kvlite];
 
 DROP TABLE IF EXISTS [kvl_cache_entries];
 
@@ -27,8 +27,8 @@ CREATE TABLE [kvl_cache_entries] (
     [kvle_parent_key1] NVARCHAR (2000) NULL,
     [kvle_parent_hash2] BIGINT NULL,
     [kvle_parent_key2] NVARCHAR (2000) NULL,
-    CONSTRAINT [pk_kvle] PRIMARY KEY CLUSTERED ([kvle_id]), 
-    CONSTRAINT [uk_kvle] UNIQUE ([kvle_hash])
+    CONSTRAINT [pk_kvl_cache_entries] PRIMARY KEY CLUSTERED ([kvle_id]),
+    CONSTRAINT [uk_kvl_cache_entries] UNIQUE ([kvle_hash])
 );
 
 /* Comments */

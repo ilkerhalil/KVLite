@@ -25,9 +25,9 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_entries` (
     `kvle_parent_hash2` BIGINT(20) SIGNED DEFAULT NULL COMMENT 'Optional parent entry hash, used to link entries in a hierarchical way.',
     `kvle_parent_key2` VARCHAR(2000) NULL DEFAULT NULL COMMENT 'Optional parent entry key, used to link entries in a hierarchical way.',
     PRIMARY KEY (`kvle_id`),
-    UNIQUE `uk_kvle` (`kvle_hash`)
+    UNIQUE `uk_kvl_cache_entries` (`kvle_hash`)
 )
 COLLATE='utf8_general_ci'
-ENGINE=InnoDB
+ENGINE=MyISAM /* On MariaDB, you can replace this with Aria */
 ROW_FORMAT=DYNAMIC
 ;
