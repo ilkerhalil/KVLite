@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PommaLabs.KVLite.UnitTests": {
+      "commandName": "Project",
+      "commandLineArgs": "--stoponerror --labels=After --test PommaLabs.KVLite.UnitTests.EntityFramework.PersistentQueryCacheProviderTests"
+    }
+  }
+}
