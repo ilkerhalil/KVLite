@@ -25,9 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AsyncEnumerator" Version="2.1.0" />
-    <PackageReference Include="BenchmarkDotNet" Version="0.10.11" />
-    <PackageReference Include="fastJSON" Version="2.1.27" />
+    <PackageReference Include="AsyncEnumerator" Version="2.1.1" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.12" />
+    <PackageReference Include="fastJSON" Version="2.1.28" />
     <PackageReference Include="Jil.StrongName" Version="2.15.4" />
     <PackageReference Include="lz4net" Version="1.0.15.93" />
     <PackageReference Include="NLipsum" Version="1.1.0" />

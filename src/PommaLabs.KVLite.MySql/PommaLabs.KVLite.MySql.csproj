@@ -22,8 +22,4 @@
   <ItemGroup>
     <PackageReference Include="MySql.Data" Version="6.10.5" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="HellBrick.Diagnostics" Version="3.0.0" />
-  </ItemGroup>
 </Project>

@@ -18,8 +18,4 @@
   <ItemGroup>
     <ProjectReference Include="..\PommaLabs.KVLite.Database\PommaLabs.KVLite.Database.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="HellBrick.Diagnostics" Version="3.0.0" />
-  </ItemGroup>
 </Project>
