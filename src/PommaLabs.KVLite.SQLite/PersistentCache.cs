@@ -21,7 +21,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using Microsoft.Data.Sqlite;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Database;
 using PommaLabs.KVLite.Extensibility;
@@ -29,6 +28,16 @@ using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
 using System.IO;
+
+#if NETSTD20
+
+using Microsoft.Data.Sqlite;
+
+#else
+
+using SqliteConnection = System.Data.SQLite.SQLiteConnection;
+
+#endif
 
 namespace PommaLabs.KVLite.SQLite
 {

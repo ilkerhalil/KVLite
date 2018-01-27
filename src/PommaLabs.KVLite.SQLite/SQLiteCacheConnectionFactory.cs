@@ -22,13 +22,23 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Dapper;
-using Microsoft.Data.Sqlite;
 using PommaLabs.KVLite.Database;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+
+#if NETSTD20
+
+using Microsoft.Data.Sqlite;
+
+#else
+
+using SqliteConnection = System.Data.SQLite.SQLiteConnection;
+using SqliteFactory = System.Data.SQLite.SQLiteFactory;
+
+#endif
 
 namespace PommaLabs.KVLite.SQLite
 {
