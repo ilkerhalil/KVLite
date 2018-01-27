@@ -16,11 +16,11 @@
     <ProjectReference Include="..\PommaLabs.KVLite.Database\PommaLabs.KVLite.Database.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <PackageReference Include="Microsoft.Data.SQLite" Version="2.0.0" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
+    <PackageReference Include="Microsoft.Data.SQLite" Version="1.1.1" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.0' ">
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.106" />
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net452' ">
+    <PackageReference Include="Microsoft.Data.SQLite" Version="2.0.0" />
   </ItemGroup>
 </Project>
