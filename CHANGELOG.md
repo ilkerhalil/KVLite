@@ -2,7 +2,7 @@
 
 ## v7.0.1 (2018-01-??)
 
-* [UPD] Reverted to MySql.Data as low level driver for MySQL and MariaDB.
+* [UPD] Revert to MySql.Data as low level driver for MySQL and MariaDB.
 * [UPD] Updated JSON.NET to v11.
 * [REM] Removed NodaTime and updated interfaces accordingly.
 * [ADD] Some integration tests have been setup on AppVeyor.
