@@ -1,7 +1,3 @@
-﻿Install-Product node "6.10.2" x64
-git clone https://github.com/apatitejs/appveyor-oracle-setup
-npm install ./appveyor-oracle-setup/
-md temp
-node ./appveyor-oracle-setup/app.js
-7z.exe e "temp/ora11gr2setup.zip.001" -o"orasetup"
-cd..
+﻿appveyor DownloadFile https://github.com/symfony/binary-utils/releases/download/v0.1/OracleXE112_Win64.zip
+7z x OracleXE112_Win64.zip -y >NUL
+DISK1\setup.exe /s /f1"DISK1\response\OracleXE-install.iss"
