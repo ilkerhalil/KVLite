@@ -6,6 +6,7 @@ services:
   - postgresql
 before_build:
   - ps: .\src\PommaLabs.KVLite.MySql\Scripts\setup_appveyor.ps1
+  - ps: .\src\PommaLabs.KVLite.Oracle\Scripts\setup_appveyor.ps1
   - ps: .\src\PommaLabs.KVLite.PostgreSql\Scripts\setup_appveyor.ps1
   - ps: .\src\PommaLabs.KVLite.SqlServer\Scripts\setup_appveyor.ps1
 build_script:
