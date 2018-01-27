@@ -1,4 +1,5 @@
-﻿git clone https://github.com/apatitejs/appveyor-oracle-setup
+﻿Install-Product node "6.10.2" x64
+git clone https://github.com/apatitejs/appveyor-oracle-setup
 npm install ./appveyor-oracle-setup/
 md temp
 node ./appveyor-oracle-setup/app.js
