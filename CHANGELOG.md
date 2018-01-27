@@ -9,7 +9,6 @@
 * [ADD] Many unit tests can now run in parallel.
 * [UPD] MemoryCache sample driver can now run on .NET Standard 2.0.
 * [ADD] Implemented an adapter for [FluentCache](https://github.com/cordialgerm/FluentCache).
-* [REM] Library is not strong named anymore.
 
 ## v6.4.4 (2017-10-31)
 

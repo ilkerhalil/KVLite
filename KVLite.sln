@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-52E1-43BC-971F-94784A43B73E}"
 	ProjectSection(SolutionItems) = preProject
@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{CB218631-5
 		config.wyam = config.wyam
 		LICENSE.md = LICENSE.md
 		NuGet.Config = NuGet.Config
+		pomma89.snk = pomma89.snk
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -90,7 +91,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.IdentitySe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.IdentityServer4", "src\PommaLabs.KVLite.IdentityServer4\PommaLabs.KVLite.IdentityServer4.csproj", "{D533B99E-84BA-4B2B-999E-BF17B0BE5623}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PommaLabs.KVLite.FluentCache", "src\PommaLabs.KVLite.FluentCache\PommaLabs.KVLite.FluentCache.csproj", "{3440FF45-026D-436B-A118-64C2369A596D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PommaLabs.KVLite.FluentCache", "src\PommaLabs.KVLite.FluentCache\PommaLabs.KVLite.FluentCache.csproj", "{3440FF45-026D-436B-A118-64C2369A596D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

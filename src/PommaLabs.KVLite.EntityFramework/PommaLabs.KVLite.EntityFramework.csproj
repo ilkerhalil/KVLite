@@ -3,6 +3,9 @@
     <AssemblyTitle>KVLite - Entity Framework query cache provider</AssemblyTitle>
     <TargetFrameworks>net452;net461</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet">

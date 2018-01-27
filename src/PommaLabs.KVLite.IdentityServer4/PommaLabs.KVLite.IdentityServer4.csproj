@@ -3,6 +3,10 @@
     <AssemblyTitle>KVLite - IdentityServer4 cache provider</AssemblyTitle>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- We cannot sign this assembly, since IdentityServer4 is not signed -->
+    <!--<SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <AssemblyOriginatorKeyFile>../../pomma89.snk</AssemblyOriginatorKeyFile>-->
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet">
