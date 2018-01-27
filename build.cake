@@ -182,7 +182,7 @@ private void Test(string cfg)
     if (AppVeyor.IsRunningOnAppVeyor)
     {
         flags += " --mysql \"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=root;Pwd=Password12!;Pooling=true;MinimumPoolSize=1;CacheServerProperties=True;AutoEnlist=false;SslMode=none;CharSet=utf8;\"";
-        flags += " --postgresql \"Server=127.0.0.1;Port=5432;Database=postgres;User Id=postgres;Password=Password12!;Pooling=true;MinPoolSize=1;Enlist=false;SslMode=Disable;\"";
+        flags += " --postgresql \"Server=127.0.0.1;Port=5432;Database=postgres;User Id=postgres;Password=Password12!;Pooling=true;MinPoolSize=1;Enlist=false;SslMode=Disable;MaxAutoPrepare=10;\"";
         flags += " --sqlserver \"Server=(local)\\SQL2017;Database=kvlite;User ID=sa;Password=Password12!;Pooling=true;Min Pool Size=1;Enlist=false;\"";
     }
 
