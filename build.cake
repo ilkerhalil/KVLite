@@ -183,7 +183,7 @@ private void Test(string cfg)
     {
         flags += " --mysql \"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=root;Pwd=Password12!;CharSet=utf8;Pooling=true;MinimumPoolSize=1;AutoEnlist=false;\"";
         flags += " --postgresql \"Server=127.0.0.1;Port=5432;Database=postgres;UserId=postgres;Password=Password12!;MaxAutoPrepare=10;Pooling=true;MinPoolSize=1;Enlist=false;\"";
-        flags += " --sqlserver \"Server=(local)\\SQL2017;Database=kvlite;UserId=sa;Password=Password12!;MultipleActiveResultSets=true;Pooling=true;MinPoolSize=1;Enlist=false;\"";
+        flags += " --sqlserver \"Server=(local)\\SQL2017;Database=kvlite;User ID=sa;Password=Password12!;MultipleActiveResultSets=true;Pooling=true;MinPoolSize=1;Enlist=false;\"";
     }
 
     foreach (var netExe in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)))
