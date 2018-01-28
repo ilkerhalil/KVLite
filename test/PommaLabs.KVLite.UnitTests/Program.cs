@@ -37,7 +37,7 @@ namespace PommaLabs.KVLite.UnitTests
 
         public static string PostgreSqlConnectionString { get; set; } = @"Server=127.0.0.1;Port=5432;Database=postgres;UserId=kvlite;Password=kvlite;MaxAutoPrepare=10;Pooling=true;MinPoolSize=1;Enlist=false;";
 
-        public static string SqlServerConnectionString { get; set; } = @"Data Source=(LocalDB)\\MSSQLLocalDB;Database=kvlite;IntegratedSecurity=true;MultipleActiveResultSets=true;Pooling=true;MinPoolSize=1;Enlist=false;";
+        public static string SqlServerConnectionString { get; set; } = @"Data Source=(LocalDB)\\MSSQLLocalDB;Database=kvlite;IntegratedSecurity=true;MultipleActiveResultSets=true;Pooling=true;Min Pool Size=1;Enlist=false;";
 
         public static int Main(string[] args)
         {
