@@ -181,9 +181,9 @@ private void Test(string cfg)
     var flags = "--noheader --noresult --stoponerror --labels=After";
     if (AppVeyor.IsRunningOnAppVeyor)
     {
-        flags += " --mysql \"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=root;Pwd=Password12!;Pooling=true;MinimumPoolSize=1;CacheServerProperties=True;AutoEnlist=false;SslMode=none;CharSet=utf8;\"";
-        flags += " --postgresql \"Server=127.0.0.1;Port=5432;Database=postgres;User Id=postgres;Password=Password12!;Pooling=true;MinPoolSize=1;Enlist=false;SslMode=Disable;MaxAutoPrepare=10;\"";
-        flags += " --sqlserver \"Server=(local)\\SQL2017;Database=kvlite;User ID=sa;Password=Password12!;MultipleActiveResultSets=True;Pooling=true;Min Pool Size=1;Enlist=false;\"";
+        flags += " --mysql \"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=root;Pwd=Password12!;Pooling=true;MinimumPoolSize=1;AutoEnlist=false;SslMode=none;CharSet=utf8;\"";
+        flags += " --postgresql \"Server=127.0.0.1;Port=5432;Database=postgres;UserId=postgres;Password=Password12!;Pooling=true;MinPoolSize=1;Enlist=false;SslMode=disable;MaxAutoPrepare=10;\"";
+        flags += " --sqlserver \"Server=(local)\\SQL2017;Database=kvlite;UserId=sa;Password=Password12!;MultipleActiveResultSets=true;Pooling=true;MinPoolSize=1;Enlist=false;\"";
     }
 
     foreach (var netExe in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)))

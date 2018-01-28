@@ -33,11 +33,11 @@ namespace PommaLabs.KVLite.UnitTests
 {
     internal static class Program
     {
-        public static string MySqlConnectionString { get; set; } = @"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=kvlite;Pwd=kvlite;Pooling=true;MinimumPoolSize=1;CacheServerProperties=True;AutoEnlist=false;SslMode=none;CharSet=utf8;";
+        public static string MySqlConnectionString { get; set; } = @"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=kvlite;Pwd=kvlite;Pooling=true;MinimumPoolSize=1;AutoEnlist=false;SslMode=none;CharSet=utf8;";
 
-        public static string PostgreSqlConnectionString { get; set; } = @"Server=127.0.0.1;Port=5432;Database=postgres;User Id=kvlite;Password=kvlite;Pooling=true;MinPoolSize=1;Enlist=false;SslMode=Disable;MaxAutoPrepare=10;";
+        public static string PostgreSqlConnectionString { get; set; } = @"Server=127.0.0.1;Port=5432;Database=postgres;UserId=kvlite;Password=kvlite;Pooling=true;MinPoolSize=1;Enlist=false;SslMode=disable;MaxAutoPrepare=10;";
 
-        public static string SqlServerConnectionString { get; set; } = @"Data Source=(LocalDB)\\MSSQLLocalDB;Database=kvlite;Integrated Security=True;MultipleActiveResultSets=True;Pooling=true;Min Pool Size=1;Enlist=false;";
+        public static string SqlServerConnectionString { get; set; } = @"Data Source=(LocalDB)\\MSSQLLocalDB;Database=kvlite;IntegratedSecurity=true;MultipleActiveResultSets=true;Pooling=true;MinPoolSize=1;Enlist=false;";
 
         public static int Main(string[] args)
         {
