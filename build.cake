@@ -178,7 +178,7 @@ private void Test(string cfg)
 
     const string errMsg = " - Unit test failure - ";
 
-    var flags = "--noheader --noresult --stoponerror --labels=After";
+    var flags = "--noheader --noresult --stoponerror";
     if (AppVeyor.IsRunningOnAppVeyor)
     {
         flags += " --mysql \"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=root;Pwd=Password12!;CharSet=utf8;Pooling=true;MinimumPoolSize=1;AutoEnlist=false;\"";
