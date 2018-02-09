@@ -28,6 +28,5 @@ CREATE TABLE IF NOT EXISTS `kvl_cache_entries` (
     UNIQUE `uk_kvl_cache_entries` (`kvle_hash`)
 )
 COLLATE='utf8_general_ci'
-ENGINE=MyISAM /* On MariaDB, you can replace this with Aria */
 ROW_FORMAT=DYNAMIC
 ;
