@@ -34,8 +34,6 @@ namespace PommaLabs.KVLite.Memory
 
         public byte[] Value { get; set; }
 
-        public bool Compressed { get; set; }
-
         public DateTimeOffset UtcCreation { get; set; }
 
         public HashSet<MemoryCacheKey> ParentKeys { get; set; } = NoParentKeys;

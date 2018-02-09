@@ -136,41 +136,6 @@ namespace PommaLabs.KVLite
         }
 
         /// <summary>
-        ///   Backing field for <see cref="MinValueLengthForCompression"/>.
-        /// </summary>
-        private long _minValueLengthForCompression = 4096;
-
-        /// <summary>
-        ///   When a serialized value is longer than specified length, then the cache will compress
-        ///   it. If a serialized value length is less than or equal to the specified length, then
-        ///   the cache will not compress it. Defaults to 4096 bytes.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///   <paramref name="value"/> is less than zero.
-        /// </exception>
-        [DataMember]
-        public long MinValueLengthForCompression
-        {
-            get
-            {
-                var result = _minValueLengthForCompression;
-
-                // Postconditions
-                Debug.Assert(result >= 0L);
-                return result;
-            }
-            set
-            {
-                // Preconditions
-                if (value < 0L) throw new ArgumentOutOfRangeException(nameof(MinValueLengthForCompression));
-
-                Log.DebugFormat(DebugMessages.UpdateSetting, nameof(MinValueLengthForCompression), _minValueLengthForCompression, value);
-                _minValueLengthForCompression = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
         ///   Backing field for <see cref="StaticInterval"/>.
         /// </summary>
         private TimeSpan _staticInterval = TimeSpan.FromDays(30);

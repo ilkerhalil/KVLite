@@ -201,33 +201,15 @@ namespace PommaLabs.KVLite.Memory
             }
 
             byte[] serializedValue;
-            bool compressed;
             try
             {
                 using (var serializedStream = new PooledMemoryStream())
                 {
-                    Serializer.SerializeToStream(value, serializedStream);
-
-                    if (serializedStream.Length > Settings.MinValueLengthForCompression)
+                    using (var compressionStream = Compressor.CreateCompressionStream(serializedStream))
                     {
-                        // Stream is too long, we should compress it.
-                        using (var compressedStream = new PooledMemoryStream())
-                        {
-                            using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
-                            {
-                                serializedStream.Position = 0L;
-                                serializedStream.CopyTo(compressionStream);
-                            }
-                            serializedValue = compressedStream.ToArray();
-                            compressed = true;
-                        }
+                        Serializer.SerializeToStream(value, compressionStream);
                     }
-                    else
-                    {
-                        // Stream is shorter than specified threshold, we can store it as it is.
-                        serializedValue = serializedStream.ToArray();
-                        compressed = false;
-                    }
+                    serializedValue = serializedStream.ToArray();
                 }
             }
             catch (Exception ex)
@@ -242,7 +224,6 @@ namespace PommaLabs.KVLite.Memory
             {
                 CacheKey = cacheKey,
                 Value = serializedValue,
-                Compressed = compressed,
                 UtcCreation = Clock.UtcNow
             };
 
@@ -489,18 +470,11 @@ namespace PommaLabs.KVLite.Memory
         private TVal UnsafeDeserializeCacheValue<TVal>(MemoryCacheValue cacheValue)
         {
             var buffer = cacheValue.Value;
-            using (var memoryStream = new PooledMemoryStream(buffer))
+            using (var serializedStream = new PooledMemoryStream(buffer))
+            using (var decompressionStream = Compressor.CreateDecompressionStream(serializedStream))
             {
-                if (!cacheValue.Compressed)
-                {
-                    // Handle uncompressed value.
-                    return Serializer.DeserializeFromStream<TVal>(memoryStream);
-                }
-                using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
-                {
-                    // Handle compressed value.
-                    return Serializer.DeserializeFromStream<TVal>(decompressionStream);
-                }
+                // Handle compressed value.
+                return Serializer.DeserializeFromStream<TVal>(decompressionStream);
             }
         }
 

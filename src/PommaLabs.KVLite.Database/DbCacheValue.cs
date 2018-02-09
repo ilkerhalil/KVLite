@@ -93,7 +93,7 @@ namespace PommaLabs.KVLite.Database
         /// <summary>
         ///   Whether the entry content was compressed or not.
         /// </summary>
-        public byte Compressed { get; set; }
+        public byte Compressed => True;
 
         /// <summary>
         ///   Returns a 64 bit long hash.

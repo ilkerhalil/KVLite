@@ -28,7 +28,6 @@ using PommaLabs.KVLite.Goodies;
 using PommaLabs.KVLite.Logging;
 using PommaLabs.KVLite.Resources;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
@@ -1279,20 +1278,11 @@ namespace PommaLabs.KVLite.Database
         private TVal UnsafeDeserializeCacheValue<TVal>(DbCacheValue dbCacheValue)
         {
             var buffer = dbCacheValue.Value;
-            using (var memoryStream = new PooledMemoryStream(buffer))
+            using (var serializedStream = new PooledMemoryStream(buffer))
+            using (var decompressionStream = Compressor.CreateDecompressionStream(serializedStream))
             {
-                if (dbCacheValue.Compressed == DbCacheValue.False)
-                {
-                    // Handle uncompressed value.
-                    AntiTamper.ReadAntiTamperHashCode(memoryStream, dbCacheValue);
-                    return BlobSerializer.Deserialize<TVal>(Serializer, memoryStream);
-                }
-                // Handle compressed value.
-                using (var decompressionStream = Compressor.CreateDecompressionStream(memoryStream))
-                {
-                    AntiTamper.ReadAntiTamperHashCode(decompressionStream, dbCacheValue);
-                    return BlobSerializer.Deserialize<TVal>(Serializer, decompressionStream);
-                }
+                AntiTamper.ReadAntiTamperHashCode(decompressionStream, dbCacheValue);
+                return BlobSerializer.Deserialize<TVal>(Serializer, decompressionStream);
             }
         }
 
@@ -1403,32 +1393,16 @@ namespace PommaLabs.KVLite.Database
             {
                 using (var serializedStream = new PooledMemoryStream())
                 {
-                    // First write the anti-tamper hash code...
-                    AntiTamper.WriteAntiTamperHashCode(serializedStream, dbCacheEntry);
-
-                    // Then serialize the new value.
-                    BlobSerializer.Serialize(Serializer, serializedStream, value);
-
-                    if (serializedStream.Length > Settings.MinValueLengthForCompression)
+                    using (var compressionStream = Compressor.CreateCompressionStream(serializedStream))
                     {
-                        // Stream is too long, we should compress it.
-                        using (var compressedStream = new PooledMemoryStream())
-                        {
-                            using (var compressionStream = Compressor.CreateCompressionStream(compressedStream))
-                            {
-                                serializedStream.Position = 0L;
-                                serializedStream.CopyTo(compressionStream);
-                            }
-                            dbCacheEntry.Value = compressedStream.ToArray();
-                            dbCacheEntry.Compressed = DbCacheValue.True;
-                        }
+                        // First write the anti-tamper hash code...
+                        AntiTamper.WriteAntiTamperHashCode(compressionStream, dbCacheEntry);
+
+                        // Then serialize the new value.
+                        BlobSerializer.Serialize(Serializer, compressionStream, value);
                     }
-                    else
-                    {
-                        // Stream is shorter than specified threshold, we can store it as it is.
-                        dbCacheEntry.Value = serializedStream.ToArray();
-                        dbCacheEntry.Compressed = DbCacheValue.False;
-                    }
+
+                    dbCacheEntry.Value = serializedStream.ToArray();
                 }
             }
             catch (Exception ex)
