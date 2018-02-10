@@ -152,9 +152,11 @@ namespace PommaLabs.KVLite.Extensibility
         /// </summary>
         private sealed class JsonArrayPool : IArrayPool<char>
         {
-            public char[] Rent(int minimumLength) => ArrayPool<char>.Shared.Rent(minimumLength);
+            private static readonly ArrayPool<char> CharArrayPool = ArrayPool<char>.Shared;
 
-            public void Return(char[] array) => ArrayPool<char>.Shared.Return(array);
+            public char[] Rent(int minimumLength) => CharArrayPool.Rent(minimumLength);
+
+            public void Return(char[] array) => CharArrayPool.Return(array);
         }
     }
 }

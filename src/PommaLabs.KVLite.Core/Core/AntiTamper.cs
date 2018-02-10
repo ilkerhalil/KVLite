@@ -23,8 +23,8 @@
 
 using PommaLabs.KVLite.Resources;
 using System;
+using System.Buffers;
 using System.IO;
-using System.Runtime.InteropServices;
 
 namespace PommaLabs.KVLite.Core
 {
@@ -33,50 +33,36 @@ namespace PommaLabs.KVLite.Core
     /// </summary>
     public static class AntiTamper
     {
+        private static readonly ArrayPool<byte> ByteArrayPool = ArrayPool<byte>.Shared;
+
         /// <summary>
         ///   Writes an anti-tamper hash code into given stream.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
-        /// <param name="s">The stream.</param>
-        /// <param name="v">The value.</param>
-        public static void WriteAntiTamperHashCode<T>(Stream s, T v)
+        /// <param name="stream">The stream.</param>
+        /// <param name="value">The value.</param>
+        public static void WriteAntiTamperHashCode<T>(Stream stream, T value)
             where T : class, IObjectWithHashCode64
         {
-            var c = new LongToBytesConverter { Long = v.GetHashCode64() };
-
-            s.WriteByte(c.Byte1);
-            s.WriteByte(c.Byte2);
-            s.WriteByte(c.Byte3);
-            s.WriteByte(c.Byte4);
-            s.WriteByte(c.Byte5);
-            s.WriteByte(c.Byte6);
-            s.WriteByte(c.Byte7);
-            s.WriteByte(c.Byte8);
+            var bytes = BitConverter.GetBytes(value.GetHashCode64());
+            stream.Write(bytes, 0, bytes.Length);
         }
 
         /// <summary>
         ///   Reads and checks the anti-tamper hash code from given stream.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
-        /// <param name="s">The stream.</param>
-        /// <param name="v">The value.</param>
-        public static void ReadAntiTamperHashCode<T>(Stream s, T v)
+        /// <param name="stream">The stream.</param>
+        /// <param name="value">The value.</param>
+        public static void ReadAntiTamperHashCode<T>(Stream stream, T value)
             where T : class, IObjectWithHashCode64
         {
-            LongToBytesConverter c;
+            long antiTamper;
             try
             {
-                c = new LongToBytesConverter
-                {
-                    Byte1 = (byte) s.ReadByte(),
-                    Byte2 = (byte) s.ReadByte(),
-                    Byte3 = (byte) s.ReadByte(),
-                    Byte4 = (byte) s.ReadByte(),
-                    Byte5 = (byte) s.ReadByte(),
-                    Byte6 = (byte) s.ReadByte(),
-                    Byte7 = (byte) s.ReadByte(),
-                    Byte8 = (byte) s.ReadByte()
-                };
+                var bytes = ByteArrayPool.Rent(sizeof(long));
+                stream.Read(bytes, 0, bytes.Length);
+                antiTamper = BitConverter.ToInt64(bytes, 0);
             }
             catch (Exception ex)
             {
@@ -85,55 +71,10 @@ namespace PommaLabs.KVLite.Core
             }
 
             // Value is valid if hashes match.
-            if (c.Long != v.GetHashCode64())
+            if (antiTamper != value.GetHashCode64())
             {
-                throw new InvalidDataException(string.Format(ErrorMessages.HashMismatch, v.GetHashCode64(), c.Long));
+                throw new InvalidDataException(string.Format(ErrorMessages.HashMismatch, value.GetHashCode64(), antiTamper));
             }
-        }
-
-        [StructLayout(LayoutKind.Explicit)]
-        private struct LongToBytesConverter : IEquatable<LongToBytesConverter>
-        {
-#pragma warning disable HBStructReadOnlyFields // Struct fields should be readonly
-
-            [FieldOffset(0)]
-            public byte Byte1;
-
-            [FieldOffset(1)]
-            public byte Byte2;
-
-            [FieldOffset(2)]
-            public byte Byte3;
-
-            [FieldOffset(3)]
-            public byte Byte4;
-
-            [FieldOffset(4)]
-            public byte Byte5;
-
-            [FieldOffset(5)]
-            public byte Byte6;
-
-            [FieldOffset(6)]
-            public byte Byte7;
-
-            [FieldOffset(7)]
-            public byte Byte8;
-
-            [FieldOffset(0)]
-            public long Long;
-
-#pragma warning restore HBStructReadOnlyFields // Struct fields should be readonly
-
-            public static bool operator !=(LongToBytesConverter x, LongToBytesConverter y) => !x.Equals(y);
-
-            public static bool operator ==(LongToBytesConverter x, LongToBytesConverter y) => x.Equals(y);
-
-            public bool Equals(LongToBytesConverter other) => true;
-
-            public override bool Equals(object obj) => obj is LongToBytesConverter && Equals((LongToBytesConverter) obj);
-
-            public override int GetHashCode() => 0;
         }
 
         /// <summary>
