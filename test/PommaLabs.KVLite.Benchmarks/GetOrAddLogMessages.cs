@@ -39,7 +39,7 @@ namespace PommaLabs.KVLite.Benchmarks
         public void MemoryCache() => GetOrAddLogMsg(Caches.Memory);
 
         [Benchmark(Baseline = true)]
-        public void GetOrAddManyLogMessages() => GetOrAddLogMsg(Caches.MySql);
+        public void MySqlCache() => GetOrAddLogMsg(Caches.MySql);
 
         [Benchmark]
         public void PostgreSqlCache() => GetOrAddLogMsg(Caches.PostgreSql);
