@@ -28,8 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PommaLabs.KVLite
 {
@@ -42,7 +40,7 @@ namespace PommaLabs.KVLite
         where TCache : AbstractCache<TCache, TSettings>
         where TSettings : AbstractCacheSettings<TSettings>
     {
-        #region Abstract members
+        #region Abstract and virtual members
 
         /// <summary>
         ///   Gets the clock used by the cache.
@@ -100,21 +98,6 @@ namespace PommaLabs.KVLite
         protected abstract long GetCacheSizeInBytesInternal();
 
         /// <summary>
-        ///   Computes cache size in bytes. This value might be an estimate of real cache size and,
-        ///   therefore, it does not need to be extremely accurate.
-        /// </summary>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>An estimate of cache size in bytes.</returns>
-        protected virtual Task<long> GetCacheSizeInBytesAsyncInternal(CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<long>(cancellationToken);
-            }
-            return Task.FromResult(GetCacheSizeInBytesInternal());
-        }
-
-        /// <summary>
         ///   Adds given value with the specified expiry time and refresh internal.
         /// </summary>
         /// <typeparam name="TVal">The type of the value.</typeparam>
@@ -129,52 +112,12 @@ namespace PommaLabs.KVLite
         protected abstract void AddInternal<TVal>(string partition, string key, TVal value, DateTimeOffset utcExpiry, TimeSpan interval, IList<string> parentKeys);
 
         /// <summary>
-        ///   Adds given value with the specified expiry time and refresh internal.
-        /// </summary>
-        /// <typeparam name="TVal">The type of the value.</typeparam>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="utcExpiry">The UTC expiry time.</param>
-        /// <param name="interval">The refresh interval.</param>
-        /// <param name="parentKeys">
-        ///   Keys, belonging to current partition, on which the new item will depend.
-        /// </param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        protected virtual Task AddAsyncInternal<TVal>(string partition, string key, TVal value, DateTimeOffset utcExpiry, TimeSpan interval, IList<string> parentKeys, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<object>(cancellationToken);
-            }
-            AddInternal(partition, key, value, utcExpiry, interval, parentKeys);
-            return Task.FromResult(0);
-        }
-
-        /// <summary>
         ///   Clears this instance or a partition, if specified.
         /// </summary>
         /// <param name="partition">The optional partition.</param>
         /// <param name="cacheReadMode">The cache read mode.</param>
         /// <returns>The number of items that have been removed.</returns>
         protected abstract long ClearInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.IgnoreExpiryDate);
-
-        /// <summary>
-        ///   Clears this instance or a partition, if specified.
-        /// </summary>
-        /// <param name="partition">The optional partition.</param>
-        /// <param name="cacheReadMode">The cache read mode.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>The number of items that have been removed.</returns>
-        protected virtual Task<long> ClearAsyncInternal(string partition, CacheReadMode cacheReadMode, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<long>(cancellationToken);
-            }
-            var result = ClearInternal(partition, cacheReadMode);
-            return Task.FromResult(result);
-        }
 
         /// <summary>
         ///   Determines whether cache contains the specified partition and key.
@@ -186,24 +129,6 @@ namespace PommaLabs.KVLite
         protected abstract bool ContainsInternal(string partition, string key);
 
         /// <summary>
-        ///   Determines whether cache contains the specified partition and key.
-        /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>Whether cache contains the specified partition and key.</returns>
-        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        protected virtual Task<bool> ContainsAsyncInternal(string partition, string key, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<bool>(cancellationToken);
-            }
-            var result = ContainsInternal(partition, key);
-            return Task.FromResult(result);
-        }
-
-        /// <summary>
         ///   The number of items in the cache or in a partition, if specified.
         /// </summary>
         /// <param name="partition">The optional partition.</param>
@@ -211,24 +136,6 @@ namespace PommaLabs.KVLite
         /// <returns>The number of items in the cache.</returns>
         /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
         protected abstract long CountInternal(string partition, CacheReadMode cacheReadMode = CacheReadMode.ConsiderExpiryDate);
-
-        /// <summary>
-        ///   The number of items in the cache or in a partition, if specified.
-        /// </summary>
-        /// <param name="partition">The optional partition.</param>
-        /// <param name="cacheReadMode">The cache read mode.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>The number of items in the cache.</returns>
-        /// <remarks>Calling this method does not extend sliding items lifetime.</remarks>
-        protected virtual Task<long> CountAsyncInternal(string partition, CacheReadMode cacheReadMode, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<long>(cancellationToken);
-            }
-            var result = CountInternal(partition, cacheReadMode);
-            return Task.FromResult(result);
-        }
 
         /// <summary>
         ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
@@ -241,25 +148,6 @@ namespace PommaLabs.KVLite
         protected abstract CacheResult<TVal> GetInternal<TVal>(string partition, string key);
 
         /// <summary>
-        ///   Gets the value with specified partition and key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by the corresponding interval.
-        /// </summary>
-        /// <typeparam name="TVal">The type of the expected value.</typeparam>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>The value with specified partition and key.</returns>
-        protected virtual Task<CacheResult<TVal>> GetAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<CacheResult<TVal>>(cancellationToken);
-            }
-            var result = GetInternal<TVal>(partition, key);
-            return Task.FromResult(result);
-        }
-
-        /// <summary>
         ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
         ///   value, its lifetime will be increased by corresponding interval.
         /// </summary>
@@ -270,25 +158,6 @@ namespace PommaLabs.KVLite
         protected abstract CacheResult<ICacheItem<TVal>> GetItemInternal<TVal>(string partition, string key);
 
         /// <summary>
-        ///   Gets the cache item with specified partition and key. If it is a "sliding" or "static"
-        ///   value, its lifetime will be increased by corresponding interval.
-        /// </summary>
-        /// <typeparam name="TVal">The type of the expected value.</typeparam>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>The cache item with specified partition and key.</returns>
-        protected virtual Task<CacheResult<ICacheItem<TVal>>> GetItemAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<CacheResult<ICacheItem<TVal>>>(cancellationToken);
-            }
-            var result = GetItemInternal<TVal>(partition, key);
-            return Task.FromResult(result);
-        }
-
-        /// <summary>
         ///   Gets all cache items or the ones in a partition, if specified. If an item is a
         ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
         /// </summary>
@@ -296,24 +165,6 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <returns>All cache items.</returns>
         protected abstract IList<ICacheItem<TVal>> GetItemsInternal<TVal>(string partition);
-
-        /// <summary>
-        ///   Gets all cache items or the ones in a partition, if specified. If an item is a
-        ///   "sliding" or "static" value, its lifetime will be increased by corresponding interval.
-        /// </summary>
-        /// <param name="partition">The optional partition.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <typeparam name="TVal">The type of the expected values.</typeparam>
-        /// <returns>All cache items.</returns>
-        protected virtual Task<IList<ICacheItem<TVal>>> GetItemsAsyncInternal<TVal>(string partition, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<IList<ICacheItem<TVal>>>(cancellationToken);
-            }
-            var result = GetItemsInternal<TVal>(partition);
-            return Task.FromResult(result);
-        }
 
         /// <summary>
         ///   Gets the item corresponding to given partition and key, without updating expiry date.
@@ -335,29 +186,6 @@ namespace PommaLabs.KVLite
         /// <typeparam name="TVal">The type of the expected values.</typeparam>
         /// <param name="partition">The partition.</param>
         /// <param name="key">The key.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>
-        ///   The item corresponding to given partition and key, without updating expiry date.
-        /// </returns>
-        /// <exception cref="NotSupportedException">
-        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
-        /// </exception>
-        protected virtual Task<CacheResult<TVal>> PeekAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<CacheResult<TVal>>(cancellationToken);
-            }
-            var result = PeekInternal<TVal>(partition, key);
-            return Task.FromResult(result);
-        }
-
-        /// <summary>
-        ///   Gets the item corresponding to given partition and key, without updating expiry date.
-        /// </summary>
-        /// <typeparam name="TVal">The type of the expected values.</typeparam>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
         /// <returns>
         ///   The item corresponding to given partition and key, without updating expiry date.
         /// </returns>
@@ -365,29 +193,6 @@ namespace PommaLabs.KVLite
         ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
         /// </exception>
         protected abstract CacheResult<ICacheItem<TVal>> PeekItemInternal<TVal>(string partition, string key);
-
-        /// <summary>
-        ///   Gets the item corresponding to given partition and key, without updating expiry date.
-        /// </summary>
-        /// <typeparam name="TVal">The type of the expected values.</typeparam>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <returns>
-        ///   The item corresponding to given partition and key, without updating expiry date.
-        /// </returns>
-        /// <exception cref="NotSupportedException">
-        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
-        /// </exception>
-        protected virtual Task<CacheResult<ICacheItem<TVal>>> PeekItemAsyncInternal<TVal>(string partition, string key, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<CacheResult<ICacheItem<TVal>>>(cancellationToken);
-            }
-            var result = PeekItemInternal<TVal>(partition, key);
-            return Task.FromResult(result);
-        }
 
         /// <summary>
         ///   Gets the all values in the cache or in the specified partition, without updating expiry dates.
@@ -406,31 +211,6 @@ namespace PommaLabs.KVLite
         protected abstract IList<ICacheItem<TVal>> PeekItemsInternal<TVal>(string partition);
 
         /// <summary>
-        ///   Gets the all values in the cache or in the specified partition, without updating expiry dates.
-        /// </summary>
-        /// <param name="partition">The optional partition.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        /// <typeparam name="TVal">The type of the expected values.</typeparam>
-        /// <returns>All values, without updating expiry dates.</returns>
-        /// <remarks>
-        ///   If you are uncertain of which type the value should have, you can always pass
-        ///   <see cref="object"/> as type parameter; that will work whether the required value is a
-        ///   class or not.
-        /// </remarks>
-        /// <exception cref="NotSupportedException">
-        ///   Cache does not support peeking (please have a look at the <see cref="CanPeek"/> property).
-        /// </exception>
-        protected virtual Task<IList<ICacheItem<TVal>>> PeekItemsAsyncInternal<TVal>(string partition, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<IList<ICacheItem<TVal>>>(cancellationToken);
-            }
-            var result = PeekItemsInternal<TVal>(partition);
-            return Task.FromResult(result);
-        }
-
-        /// <summary>
         ///   Removes the value with given partition and key.
         /// </summary>
         /// <param name="partition">The partition.</param>
@@ -438,22 +218,13 @@ namespace PommaLabs.KVLite
         protected abstract void RemoveInternal(string partition, string key);
 
         /// <summary>
-        ///   Removes the value with given partition and key.
+        ///   Determines whether given exception should be logged.
         /// </summary>
-        /// <param name="partition">The partition.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="cancellationToken">An optional cancellation token.</param>
-        protected virtual Task RemoveAsyncInternal(string partition, string key, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return CanceledTask<object>(cancellationToken);
-            }
-            RemoveInternal(partition, key);
-            return Task.FromResult(0);
-        }
+        /// <param name="exception">The exception.</param>
+        /// <returns>True if given exception should be logged, false otherwise.</returns>
+        protected virtual bool ShouldLogException(Exception exception) => true;
 
-        #endregion Abstract members
+        #endregion Abstract and virtual members
 
         #region IDisposable members
 
@@ -552,11 +323,11 @@ namespace PommaLabs.KVLite
                     Debug.Assert(Contains(partition, key) == result.HasValue);
                     return result;
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ShouldLogException(ex))
                 {
                     LastError = ex;
                     Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
-                    return default(CacheResult<object>);
+                    return default;
                 }
             }
         }
@@ -578,7 +349,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result >= 0L);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnReadAll, ex, Settings.CacheName);
@@ -620,7 +391,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == interval);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -660,7 +431,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Settings.StaticInterval);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -700,7 +471,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -740,7 +511,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -766,7 +537,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(LongCount() == 0L);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex, Settings.CacheName);
@@ -795,7 +566,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(LongCount(partition) == 0L);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnClearPartition, ex, Settings.CacheName, partition);
@@ -821,7 +592,7 @@ namespace PommaLabs.KVLite
             {
                 return ContainsInternal(partition, key);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -847,7 +618,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result >= 0);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, Settings.CacheName);
@@ -875,7 +646,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result >= 0);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, Settings.CacheName, partition);
@@ -901,7 +672,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result >= 0L);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, Settings.CacheName);
@@ -929,7 +700,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result >= 0L);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, Settings.CacheName, partition);
@@ -970,11 +741,11 @@ namespace PommaLabs.KVLite
                 Debug.Assert(Contains(partition, key) == result.HasValue);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
-                return default(CacheResult<TVal>);
+                return default;
             }
         }
 
@@ -1011,11 +782,11 @@ namespace PommaLabs.KVLite
                 Debug.Assert(Contains(partition, key) == result.HasValue);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
-                return default(CacheResult<ICacheItem<TVal>>);
+                return default;
             }
         }
 
@@ -1045,7 +816,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result.LongCount() == LongCount());
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnReadAll, ex, Settings.CacheName);
@@ -1081,7 +852,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result.LongCount() == LongCount(partition));
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnReadPartition, ex, Settings.CacheName, partition);
@@ -1141,7 +912,7 @@ namespace PommaLabs.KVLite
                     return result.Value;
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -1158,7 +929,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == interval);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -1219,7 +990,7 @@ namespace PommaLabs.KVLite
                     return result.Value;
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -1236,7 +1007,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Settings.StaticInterval);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -1297,7 +1068,7 @@ namespace PommaLabs.KVLite
                     return result.Value;
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -1314,7 +1085,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -1375,7 +1146,7 @@ namespace PommaLabs.KVLite
                     return result.Value;
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -1392,7 +1163,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -1434,11 +1205,11 @@ namespace PommaLabs.KVLite
                 Debug.Assert(Contains(partition, key) == result.HasValue);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
-                return default(CacheResult<TVal>);
+                return default;
             }
         }
 
@@ -1475,11 +1246,11 @@ namespace PommaLabs.KVLite
                 Debug.Assert(Contains(partition, key) == result.HasValue);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
-                return default(CacheResult<ICacheItem<TVal>>);
+                return default;
             }
         }
 
@@ -1512,7 +1283,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result.LongCount() == LongCount());
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnReadAll, ex, Settings.CacheName);
@@ -1551,7 +1322,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result.LongCount() == LongCount(partition));
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnReadPartition, ex, Settings.CacheName, partition);
@@ -1578,7 +1349,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key));
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldLogException(ex))
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -1593,18 +1364,6 @@ namespace PommaLabs.KVLite
         ///   Gets the log used by the cache.
         /// </summary>
         protected static ILog Log { get; } = LogProvider.For<TCache>();
-
-        /// <summary>
-        ///   Gets a task that has been canceled.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token used to cancel the task.</param>
-        /// <returns>A task that has been canceled.</returns>
-        private static Task<TResult> CanceledTask<TResult>(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var tcs = new TaskCompletionSource<TResult>(cancellationToken);
-            tcs.TrySetCanceled();
-            return tcs.Task;
-        }
 
         #endregion Helpers
     }
