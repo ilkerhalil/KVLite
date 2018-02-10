@@ -13,5 +13,6 @@ build_script:
   - ps: .\build.ps1
 artifacts:
   - path: artifacts\*.nupkg
+  - path: artifacts\BenchmarkDotNet.Artifacts\results\*.html
 test: off
 deploy: off

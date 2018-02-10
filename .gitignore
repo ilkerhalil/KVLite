@@ -59,6 +59,9 @@ build/
 [Tt]est[Rr]esult.xml
 .artifacts
 
+# BenchmarkDotNet Results
+BenchmarkDotNet.Artifacts/
+
 *_i.c
 *_p.c
 *.ilk

@@ -23,9 +23,7 @@
 
 using BenchmarkDotNet.Running;
 using NLog;
-using PommaLabs.KVLite.Benchmarks.Compression;
 using PommaLabs.KVLite.Benchmarks.Models;
-using PommaLabs.KVLite.Benchmarks.Serialization;
 using PommaLabs.KVLite.Core;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
@@ -69,9 +67,7 @@ namespace PommaLabs.KVLite.Benchmarks
             {
                 BenchmarkSwitcher.FromTypes(new[]
                 {
-                    typeof(Comparison),
-                    typeof(LogMessagesCompression),
-                    typeof(LogMessagesSerialization)
+                    typeof(Comparison)
                 }).Run(args);
                 return;
             }

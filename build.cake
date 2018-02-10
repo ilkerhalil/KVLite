@@ -82,12 +82,18 @@ Task("Test-Release")
     Test("Release");
 });
 
+Task("Benchmark-Release")
+    .Does(() =>
+{
+    Benchmark("Release");
+});
+
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Test-Release");
+    .IsDependentOn("Benchmark-Release");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
@@ -242,4 +248,22 @@ private void Docs()
             UpdatePackages = true
         });
     }
+}
+
+private void Benchmark(string cfg)
+{   
+    var flags = "Comparison";
+    if (AppVeyor.IsRunningOnAppVeyor)
+    {
+        flags += " --mysql \"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=root;Pwd=Password12!;CharSet=utf8;Pooling=true;MinimumPoolSize=1;AutoEnlist=false;\"";
+        flags += " --postgresql \"Server=127.0.0.1;Port=5432;Database=postgres;UserId=postgres;Password=Password12!;MaxAutoPrepare=10;Pooling=true;MinPoolSize=1;Enlist=false;\"";
+        flags += " --sqlserver \"Server=(local)\\SQL2017;Database=kvlite;User ID=sa;Password=Password12!;MultipleActiveResultSets=true;Pooling=true;Min Pool Size=1;Enlist=false;\"";
+    }
+
+    DotNetCoreRun("../test/PommaLabs.KVLite.Benchmarks", flags, new DotNetCoreRunSettings
+    {
+        Configuration = cfg,
+        Framework = "net461",
+        WorkingDirectory = ArtifactsDir()
+    });
 }

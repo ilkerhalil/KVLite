@@ -98,20 +98,6 @@ namespace PommaLabs.KVLite.UnitTests
         }
 
         [Test]
-        public void PartitionKeySerialization_BsonSerializer()
-        {
-            Cache = new MemoryCache(new MemoryCacheSettings(), serializer: new BsonSerializer());
-
-            Cache.AddStatic(StringItems[0], StringItems[1], StringItems[2]);
-            var item = Cache.GetItem<string>(StringItems[0], StringItems[1]);
-
-            Assert.IsNotNull(item);
-            Assert.AreEqual(StringItems[0], item.Value.Partition);
-            Assert.AreEqual(StringItems[1], item.Value.Key);
-            Assert.AreEqual(StringItems[2], item.Value.Value);
-        }
-
-        [Test]
         public void PartitionKeySerialization_JsonSerializer()
         {
             Cache = new MemoryCache(new MemoryCacheSettings(), serializer: new JsonSerializer());

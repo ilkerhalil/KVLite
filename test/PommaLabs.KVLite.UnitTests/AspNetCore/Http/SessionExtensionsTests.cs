@@ -25,6 +25,7 @@
 
 using NUnit.Framework;
 using PommaLabs.KVLite.AspNetCore.Http;
+using PommaLabs.KVLite.Extensibility;
 using Shouldly;
 using System;
 
@@ -34,7 +35,7 @@ namespace PommaLabs.KVLite.UnitTests.AspNetCore.Http
     [Parallelizable(ParallelScope.Fixtures)]
     internal sealed class SessionExtensionsTests : AbstractTests
     {
-#region Setup/Teardown
+        #region Setup/Teardown
 
         private MemorySession _memorySession;
 
@@ -51,7 +52,7 @@ namespace PommaLabs.KVLite.UnitTests.AspNetCore.Http
             _memorySession = null;
         }
 
-#endregion Setup/Teardown
+        #endregion Setup/Teardown
 
         [Test]
         public void ShouldGetTheSameObjectAfterSetWithDefaultSerializer()
@@ -78,8 +79,8 @@ namespace PommaLabs.KVLite.UnitTests.AspNetCore.Http
             var z = DateTime.Now.Date;
             var t = (x, y, z);
 
-            _memorySession.SetObject(BsonSerializer.Instance, nameof(t), t);
-            var fromSession = _memorySession.GetObject<(double x, string y, DateTime z)>(BsonSerializer.Instance, nameof(t));
+            _memorySession.SetObject(BinarySerializer.Instance, nameof(t), t);
+            var fromSession = _memorySession.GetObject<(double x, string y, DateTime z)>(BinarySerializer.Instance, nameof(t));
 
             fromSession.HasValue.ShouldBeTrue();
             fromSession.Value.x.ShouldBe(x);

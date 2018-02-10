@@ -22,121 +22,60 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using BenchmarkDotNet.Attributes;
-using PommaLabs.KVLite.Benchmarks.Compression;
+using BenchmarkDotNet.Jobs;
 using PommaLabs.KVLite.Benchmarks.Models;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
 using PommaLabs.KVLite.SQLite;
-using PommaLabs.KVLite.UnitTests;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace PommaLabs.KVLite.Benchmarks
 {
     public class Comparison
     {
-        private Dictionary<string, Dictionary<string, Dictionary<string, ICache>>> _caches;
-        private ICache _cache;
-
-        public Comparison()
+        private readonly Dictionary<string, Dictionary<string, Dictionary<string, ICache>>> _caches = new Dictionary<string, Dictionary<string, Dictionary<string, ICache>>>
         {
-            Directory.CreateDirectory("BenchmarkDotNet.Artifacts\\bin\\BDN.Auto\\x86");
-            Directory.CreateDirectory("BenchmarkDotNet.Artifacts\\bin\\BDN.Auto\\x64");
-            var src86 = Path.GetFullPath("x86\\SQLite.Interop.dll");
-            var src64 = Path.GetFullPath("x64\\SQLite.Interop.dll");
-            var dst86 = Path.Combine(Environment.CurrentDirectory, "BenchmarkDotNet.Artifacts\\bin\\BDN.Auto\\x86\\SQLite.Interop.dll");
-            var dst64 = Path.Combine(Environment.CurrentDirectory, "BenchmarkDotNet.Artifacts\\bin\\BDN.Auto\\x64\\SQLite.Interop.dll");
-            File.Copy(src86, dst86, true);
-            File.Copy(src64, dst64, true);
-
-            _caches = new Dictionary<string, Dictionary<string, Dictionary<string, ICache>>>
+            ["volatile"] = new Dictionary<string, Dictionary<string, ICache>>
             {
-                ["volatile"] = new Dictionary<string, Dictionary<string, ICache>>
+                ["json"] = new Dictionary<string, ICache>
                 {
-                    ["json"] = new Dictionary<string, ICache>
-                    {
-                        ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+deflate" }, JsonSerializer.Instance, DeflateCompressor.Instance),
-                        ["gzip"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+gzip" }, JsonSerializer.Instance, GZipCompressor.Instance),
-                        ["lz4"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+lz4" }, JsonSerializer.Instance, LZ4Compressor.Instance),
-                        ["noop"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+noop" }, JsonSerializer.Instance, NoOpCompressor.Instance),
-                    },
-                    ["bson"] = new Dictionary<string, ICache>
-                    {
-                        ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+deflate" }, BsonSerializer.Instance, DeflateCompressor.Instance),
-                        ["gzip"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+gzip" }, BsonSerializer.Instance, GZipCompressor.Instance),
-                        ["lz4"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+lz4" }, BsonSerializer.Instance, LZ4Compressor.Instance),
-                        ["noop"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "bson+noop" }, BsonSerializer.Instance, NoOpCompressor.Instance),
-                    },
-                    ["binary"] = new Dictionary<string, ICache>
-                    {
-                        ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "binary+deflate" }, BinarySerializer.Instance, DeflateCompressor.Instance),
-                        ["gzip"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "binary+gzip" }, BinarySerializer.Instance, GZipCompressor.Instance),
-                        ["lz4"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "binary+lz4" }, BinarySerializer.Instance, LZ4Compressor.Instance),
-                        ["noop"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "binary+noop" }, BinarySerializer.Instance, NoOpCompressor.Instance),
-                    }
+                    ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+deflate" }, JsonSerializer.Instance, DeflateCompressor.Instance),
+                    ["noop"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "json+noop" }, JsonSerializer.Instance, NoOpCompressor.Instance),
                 },
-                ["memory"] = new Dictionary<string, Dictionary<string, ICache>>
+                ["binary"] = new Dictionary<string, ICache>
                 {
-                    ["json"] = new Dictionary<string, ICache>
-                    {
-                        ["deflate"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "json+deflate" }, JsonSerializer.Instance, DeflateCompressor.Instance),
-                        ["gzip"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "json+gzip" }, JsonSerializer.Instance, GZipCompressor.Instance),
-                        ["lz4"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "json+lz4" }, JsonSerializer.Instance, LZ4Compressor.Instance),
-                        ["noop"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "json+noop" }, JsonSerializer.Instance, NoOpCompressor.Instance),
-                    },
-                    ["bson"] = new Dictionary<string, ICache>
-                    {
-                        ["deflate"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+deflate" }, BsonSerializer.Instance, DeflateCompressor.Instance),
-                        ["gzip"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+gzip" }, BsonSerializer.Instance, GZipCompressor.Instance),
-                        ["lz4"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+lz4" }, BsonSerializer.Instance, LZ4Compressor.Instance),
-                        ["noop"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "bson+noop" }, BsonSerializer.Instance, NoOpCompressor.Instance),
-                    },
-                    ["binary"] = new Dictionary<string, ICache>
-                    {
-                        ["deflate"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "binary+deflate" }, BinarySerializer.Instance, DeflateCompressor.Instance),
-                        ["gzip"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "binary+gzip" }, BinarySerializer.Instance, GZipCompressor.Instance),
-                        ["lz4"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "binary+lz4" }, BinarySerializer.Instance, LZ4Compressor.Instance),
-                        ["noop"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "binary+noop" }, BinarySerializer.Instance, NoOpCompressor.Instance),
-                    }
-                },
-                ["persistent"] = new Dictionary<string, Dictionary<string, ICache>>
-                {
-                    ["json"] = new Dictionary<string, ICache>
-                    {
-                        ["deflate"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "json+deflate" }, JsonSerializer.Instance, DeflateCompressor.Instance),
-                        ["gzip"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "json+gzip" }, JsonSerializer.Instance, GZipCompressor.Instance),
-                        ["lz4"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "json+lz4" }, JsonSerializer.Instance, LZ4Compressor.Instance),
-                        ["noop"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "json+noop" }, JsonSerializer.Instance, NoOpCompressor.Instance),
-                    },
-                    ["bson"] = new Dictionary<string, ICache>
-                    {
-                        ["deflate"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+deflate" }, BsonSerializer.Instance, DeflateCompressor.Instance),
-                        ["gzip"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+gzip" }, BsonSerializer.Instance, GZipCompressor.Instance),
-                        ["lz4"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+lz4" }, BsonSerializer.Instance, LZ4Compressor.Instance),
-                        ["noop"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "bson+noop" }, BsonSerializer.Instance, NoOpCompressor.Instance),
-                    },
-                    ["binary"] = new Dictionary<string, ICache>
-                    {
-                        ["deflate"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "binary+deflate" }, BinarySerializer.Instance, DeflateCompressor.Instance),
-                        ["gzip"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "binary+gzip" }, BinarySerializer.Instance, GZipCompressor.Instance),
-                        ["lz4"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "binary+lz4" }, BinarySerializer.Instance, LZ4Compressor.Instance),
-                        ["noop"] = new PersistentCache(new PersistentCacheSettings { DefaultPartition = "binary+noop" }, BinarySerializer.Instance, NoOpCompressor.Instance),
-                    }
+                    ["deflate"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "binary+deflate" }, BinarySerializer.Instance, DeflateCompressor.Instance),
+                    ["noop"] = new VolatileCache(new VolatileCacheSettings { DefaultPartition = "binary+noop" }, BinarySerializer.Instance, NoOpCompressor.Instance),
                 }
-            };
-        }
+            },
+            ["memory"] = new Dictionary<string, Dictionary<string, ICache>>
+            {
+                ["json"] = new Dictionary<string, ICache>
+                {
+                    ["deflate"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "json+deflate" }, JsonSerializer.Instance, DeflateCompressor.Instance),
+                    ["noop"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "json+noop" }, JsonSerializer.Instance, NoOpCompressor.Instance),
+                },
+                ["binary"] = new Dictionary<string, ICache>
+                {
+                    ["deflate"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "binary+deflate" }, BinarySerializer.Instance, DeflateCompressor.Instance),
+                    ["noop"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "binary+noop" }, BinarySerializer.Instance, NoOpCompressor.Instance),
+                }
+            }
+        };
+
+        private ICache _cache;
 
         [Params(1, 10, 100)]
         public int Count { get; set; }
 
-        [Params("volatile", "memory", "persistent")]
+        [Params("volatile", "memory")]
         public string Cache { get; set; }
 
-        [Params("json", "bson", "binary")]
+        [Params("json", "binary")]
         public string Serializer { get; set; }
 
-        [Params("deflate", "gzip", "lz4", "noop")]
+        [Params("deflate", "noop")]
         public string Compressor { get; set; }
 
         [GlobalSetup]
@@ -151,6 +90,13 @@ namespace PommaLabs.KVLite.Benchmarks
         {
             var k = Guid.NewGuid().ToString();
             _cache.AddStatic(k, LogMessage.GenerateRandomLogMessages(Count));
+        }
+
+        [Benchmark]
+        public void GetOrAddManyLogMessages()
+        {
+            var k = Guid.NewGuid().ToString();
+            _cache.GetOrAddStatic(k, () => LogMessage.GenerateRandomLogMessages(Count));
         }
     }
 }

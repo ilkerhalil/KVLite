@@ -12,6 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="BenchmarkDotNet.Artifacts\**" />
+    <EmbeddedResource Remove="BenchmarkDotNet.Artifacts\**" />
+    <None Remove="BenchmarkDotNet.Artifacts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\PommaLabs.KVLite\PommaLabs.KVLite.csproj" />
     <ProjectReference Include="..\..\src\PommaLabs.KVLite.Core\PommaLabs.KVLite.Core.csproj" />
     <ProjectReference Include="..\PommaLabs.KVLite.UnitTests\PommaLabs.KVLite.UnitTests.csproj" />
@@ -27,9 +33,6 @@
   <ItemGroup>
     <PackageReference Include="AsyncEnumerator" Version="2.1.1" />
     <PackageReference Include="BenchmarkDotNet" Version="0.10.12" />
-    <PackageReference Include="fastJSON" Version="2.1.27" />
-    <PackageReference Include="Jil.StrongName" Version="2.15.4" />
-    <PackageReference Include="lz4net" Version="1.0.15.93" />
     <PackageReference Include="NLipsum" Version="1.1.0" />
     <PackageReference Include="NLog" Version="4.4.12" />
   </ItemGroup>
