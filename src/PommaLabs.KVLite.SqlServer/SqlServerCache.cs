@@ -75,32 +75,5 @@ namespace PommaLabs.KVLite.SqlServer
             : base(settings, connectionFactory, serializer, compressor, clock, random)
         {
         }
-
-        #region Helpers
-
-        /// <summary>
-        ///   A list of error numbers which should not be logged because they are handled by the
-        ///   retry logic and they do not provide useful information.
-        /// </summary>
-        private static readonly HashSet<int> UnloggableErrorNumbers = new HashSet<int>
-        {
-            1205 // Deadlock
-        };
-
-        /// <summary>
-        ///   Determines whether given exception should be logged.
-        /// </summary>
-        /// <param name="exception">The exception.</param>
-        /// <returns>True if given exception should be logged, false otherwise.</returns>
-        protected override bool ShouldLogException(Exception exception)
-        {
-            if (exception is SqlException sqlException)
-            {
-                return !UnloggableErrorNumbers.Contains(sqlException.Number);
-            }
-            return true;
-        }
-
-        #endregion Helpers
     }
 }

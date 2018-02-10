@@ -298,7 +298,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result >= 0L);
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnReadAll, ex, Settings.CacheName);
@@ -345,7 +345,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == interval);
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -390,7 +390,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Settings.StaticInterval);
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -435,7 +435,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -480,7 +480,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -507,7 +507,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(LongCount() == 0L);
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnClearAll, ex, Settings.CacheName);
@@ -538,7 +538,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(LongCount(partition) == 0L);
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnClearPartition, ex, Settings.CacheName, partition);
@@ -565,7 +565,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result >= 0);
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, Settings.CacheName);
@@ -595,7 +595,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result >= 0);
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, Settings.CacheName, partition);
@@ -622,7 +622,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result >= 0L);
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnCountAll, ex, Settings.CacheName);
@@ -652,7 +652,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result >= 0L);
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnCountPartition, ex, Settings.CacheName, partition);
@@ -682,7 +682,7 @@ namespace PommaLabs.KVLite
             {
                 return await ContainsAsyncInternal(partition, key, cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -727,7 +727,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(Contains(partition, key) == result.HasValue);
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -772,7 +772,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(Contains(partition, key) == result.HasValue);
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -807,7 +807,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result.LongCount() == LongCount());
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnReadAll, ex, Settings.CacheName);
@@ -845,7 +845,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result.LongCount() == LongCount(partition));
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnReadPartition, ex, Settings.CacheName, partition);
@@ -911,7 +911,7 @@ namespace PommaLabs.KVLite
                     return result.Value;
                 }
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -928,7 +928,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == interval);
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -995,7 +995,7 @@ namespace PommaLabs.KVLite
                     return result.Value;
                 }
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -1012,7 +1012,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == Settings.StaticInterval);
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -1079,7 +1079,7 @@ namespace PommaLabs.KVLite
                     return result.Value;
                 }
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -1096,7 +1096,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -1163,7 +1163,7 @@ namespace PommaLabs.KVLite
                     return result.Value;
                 }
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -1180,7 +1180,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key) || !CanPeek || PeekItem<TVal>(partition, key).Value.Interval == TimeSpan.Zero);
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
@@ -1227,7 +1227,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(Contains(partition, key) == result.HasValue);
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -1273,7 +1273,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(Contains(partition, key) == result.HasValue);
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnRead, ex, partition, key, Settings.CacheName);
@@ -1312,7 +1312,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result.LongCount() == LongCount());
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnReadAll, ex, Settings.CacheName);
@@ -1354,7 +1354,7 @@ namespace PommaLabs.KVLite
                 Debug.Assert(result.LongCount() == LongCount(partition));
                 return result;
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnReadPartition, ex, Settings.CacheName, partition);
@@ -1385,7 +1385,7 @@ namespace PommaLabs.KVLite
                 // Postconditions
                 Debug.Assert(!Contains(partition, key));
             }
-            catch (Exception ex) when (ShouldLogException(ex))
+            catch (Exception ex)
             {
                 LastError = ex;
                 Log.ErrorException(ErrorMessages.InternalErrorOnWrite, ex, partition, key, Settings.CacheName);
