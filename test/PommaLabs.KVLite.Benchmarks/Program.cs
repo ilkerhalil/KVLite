@@ -70,28 +70,28 @@ namespace PommaLabs.KVLite.Benchmarks
             // Retrieve additional connection strings from command line arguments.
             args = ConnectionStrings.ReadFromCommandLineArguments(args);
 
-            if (args.Length >= 1)
-            {
-                BenchmarkSwitcher.FromTypes(new[]
-                {
-                    typeof(Comparison)
-                }).Run(args);
-                return;
-            }
-
-            Log.Information("Configuring SQL caches...");
-            MySqlCache.DefaultInstance.Settings.ConnectionString = ConnectionStrings.MySql;
+            Log.Information("Changing connection strings of default caches...");
+            Caches.MySql.Settings.ConnectionString = ConnectionStrings.MySql;
             PostgreSqlCache.DefaultInstance.Settings.ConnectionString = ConnectionStrings.PostgreSql;
             SqlServerCache.DefaultInstance.Settings.ConnectionString = ConnectionStrings.SqlServer;
-
-            OracleCache.DefaultInstance.Settings.CacheSchemaName = "CARAVAN";
-            OracleCache.DefaultInstance.Settings.CacheEntriesTableName = "CRVN_KVL_ENTRIES";
-            OracleCache.DefaultInstance.Settings.ConnectionString = ConnectionStrings.Oracle;
-
             PersistentCache.DefaultInstance.Settings.CacheFile = Path.GetTempFileName();
 
             Log.Information("Running vacuum on SQLite persistent cache...");
             PersistentCache.DefaultInstance.Vacuum();
+
+            if (args.Length >= 1)
+            {
+                BenchmarkSwitcher.FromTypes(new[]
+                {
+                    typeof(AddLogMessages),
+                    typeof(GetOrAddLogMessages)
+                }).Run(args);
+                return;
+            }
+
+            OracleCache.DefaultInstance.Settings.CacheSchemaName = "CARAVAN";
+            OracleCache.DefaultInstance.Settings.CacheEntriesTableName = "CRVN_KVL_ENTRIES";
+            OracleCache.DefaultInstance.Settings.ConnectionString = ConnectionStrings.Oracle;
 
             Log.Information("Generating random data tables...");
             _tables = GenerateRandomDataTables();
@@ -111,7 +111,7 @@ namespace PommaLabs.KVLite.Benchmarks
             var caches = new ICache[]
             {
                 MemoryCache.DefaultInstance,
-                MySqlCache.DefaultInstance,
+                Caches.MySql,
                 //OracleCache.DefaultInstance,
                 PostgreSqlCache.DefaultInstance,
                 SqlServerCache.DefaultInstance,
@@ -250,7 +250,7 @@ namespace PommaLabs.KVLite.Benchmarks
         {
             Log.Warning("Fully cleaning all caches...");
             MemoryCache.DefaultInstance.Clear();
-            MySqlCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
+            Caches.MySql.Clear(CacheReadMode.IgnoreExpiryDate);
             //OracleCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             PostgreSqlCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
             SqlServerCache.DefaultInstance.Clear(CacheReadMode.IgnoreExpiryDate);
@@ -262,7 +262,7 @@ namespace PommaLabs.KVLite.Benchmarks
         {
             Log.Warning("Fully cleaning all caches (async)...");
             await MemoryCache.DefaultInstance.ClearAsync();
-            await MySqlCache.DefaultInstance.ClearAsync(CacheReadMode.IgnoreExpiryDate);
+            await Caches.MySql.ClearAsync(CacheReadMode.IgnoreExpiryDate);
             //await OracleCache.DefaultInstance.ClearAsync(CacheReadMode.IgnoreExpiryDate);
             await PostgreSqlCache.DefaultInstance.ClearAsync(CacheReadMode.IgnoreExpiryDate);
             await SqlServerCache.DefaultInstance.ClearAsync(CacheReadMode.IgnoreExpiryDate);

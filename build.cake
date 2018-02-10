@@ -247,7 +247,7 @@ private void Docs()
 
 private void Benchmark(string cfg)
 {   
-    var flags = ChangeConnectionStringsOnAppVeyor("Comparison");
+    var flags = ChangeConnectionStringsOnAppVeyor("*");
 
     DotNetCoreRun("../test/PommaLabs.KVLite.Benchmarks", flags, new DotNetCoreRunSettings
     {
