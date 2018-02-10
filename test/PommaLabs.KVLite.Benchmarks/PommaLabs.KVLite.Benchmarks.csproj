@@ -6,12 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="NLog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="BenchmarkDotNet.Artifacts\**" />
     <EmbeddedResource Remove="BenchmarkDotNet.Artifacts\**" />
     <None Remove="BenchmarkDotNet.Artifacts\**" />
@@ -34,6 +28,5 @@
     <PackageReference Include="AsyncEnumerator" Version="2.1.1" />
     <PackageReference Include="BenchmarkDotNet" Version="0.10.12" />
     <PackageReference Include="NLipsum" Version="1.1.0" />
-    <PackageReference Include="NLog" Version="4.4.12" />
   </ItemGroup>
 </Project>
