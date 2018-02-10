@@ -45,7 +45,7 @@ namespace PommaLabs.KVLite.Core
             where T : class, IObjectWithHashCode64
         {
             var bytes = BitConverter.GetBytes(value.GetHashCode64());
-            stream.Write(bytes, 0, bytes.Length);
+            stream.Write(bytes, 0, sizeof(long));
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace PommaLabs.KVLite.Core
             try
             {
                 var bytes = ByteArrayPool.Rent(sizeof(long));
-                stream.Read(bytes, 0, bytes.Length);
+                stream.Read(bytes, 0, sizeof(long));
                 antiTamper = BitConverter.ToInt64(bytes, 0);
             }
             catch (Exception ex)
