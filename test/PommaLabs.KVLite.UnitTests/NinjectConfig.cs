@@ -53,7 +53,7 @@ namespace PommaLabs.KVLite.UnitTests
                 .InTransientScope();
 
             Bind<MySqlCacheSettings>()
-                .ToConstant(new MySqlCacheSettings { ConnectionString = Program.MySqlConnectionString })
+                .ToConstant(new MySqlCacheSettings { ConnectionString = ConnectionStrings.MySql })
                 .InSingletonScope();
 
             Bind<MySqlCache>()
@@ -61,7 +61,7 @@ namespace PommaLabs.KVLite.UnitTests
                 .InSingletonScope();
 
             Bind<PostgreSqlCacheSettings>()
-                .ToConstant(new PostgreSqlCacheSettings { ConnectionString = Program.PostgreSqlConnectionString, CacheSchemaName = "kvlite" })
+                .ToConstant(new PostgreSqlCacheSettings { ConnectionString = ConnectionStrings.PostgreSql, CacheSchemaName = "kvlite" })
                 .InSingletonScope();
 
             Bind<PostgreSqlCache>()
@@ -69,7 +69,7 @@ namespace PommaLabs.KVLite.UnitTests
                 .InSingletonScope();
 
             Bind<SqlServerCacheSettings>()
-                .ToConstant(new SqlServerCacheSettings { ConnectionString = Program.SqlServerConnectionString })
+                .ToConstant(new SqlServerCacheSettings { ConnectionString = ConnectionStrings.SqlServer })
                 .InSingletonScope();
 
             Bind<SqlServerCache>()

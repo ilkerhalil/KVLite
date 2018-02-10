@@ -22,11 +22,12 @@
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
 using PommaLabs.KVLite.Benchmarks.Models;
 using PommaLabs.KVLite.Extensibility;
 using PommaLabs.KVLite.Memory;
+using PommaLabs.KVLite.MySql;
 using PommaLabs.KVLite.SQLite;
+using PommaLabs.KVLite.UnitTests;
 using System;
 using System.Collections.Generic;
 
@@ -61,6 +62,19 @@ namespace PommaLabs.KVLite.Benchmarks
                     ["deflate"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "binary+deflate" }, BinarySerializer.Instance, DeflateCompressor.Instance),
                     ["noop"] = new MemoryCache(new MemoryCacheSettings { DefaultPartition = "binary+noop" }, BinarySerializer.Instance, NoOpCompressor.Instance),
                 }
+            },
+            ["mysql"] = new Dictionary<string, Dictionary<string, ICache>>
+            {
+                ["json"] = new Dictionary<string, ICache>
+                {
+                    ["deflate"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "json+deflate", ConnectionString = ConnectionStrings.MySql }, JsonSerializer.Instance, DeflateCompressor.Instance),
+                    ["noop"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "json+noop", ConnectionString = ConnectionStrings.MySql }, JsonSerializer.Instance, NoOpCompressor.Instance),
+                },
+                ["binary"] = new Dictionary<string, ICache>
+                {
+                    ["deflate"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "binary+deflate", ConnectionString = ConnectionStrings.MySql }, BinarySerializer.Instance, DeflateCompressor.Instance),
+                    ["noop"] = new MySqlCache(new MySqlCacheSettings { DefaultPartition = "binary+noop", ConnectionString = ConnectionStrings.MySql }, BinarySerializer.Instance, NoOpCompressor.Instance),
+                }
             }
         };
 
@@ -69,7 +83,7 @@ namespace PommaLabs.KVLite.Benchmarks
         [Params(1, 10, 100)]
         public int Count { get; set; }
 
-        [Params("volatile", "memory")]
+        [Params("volatile", "memory", "mysql")]
         public string Cache { get; set; }
 
         [Params("json", "binary")]

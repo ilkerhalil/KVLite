@@ -36,7 +36,6 @@ using PommaLabs.KVLite.UnitTests;
 using System;
 using System.Collections.Async;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -63,6 +62,9 @@ namespace PommaLabs.KVLite.Benchmarks
 
         public static async Task Main(string[] args)
         {
+            // Retrieve additional connection strings from command line arguments.
+            args = ConnectionStrings.ReadFromCommandLineArguments(args);
+
             if (args.Length >= 1)
             {
                 BenchmarkSwitcher.FromTypes(new[]
@@ -73,13 +75,13 @@ namespace PommaLabs.KVLite.Benchmarks
             }
 
             Logger.Info("Configuring SQL caches...");
-            MySqlCache.DefaultInstance.Settings.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(MySql)].ConnectionString;
-            PostgreSqlCache.DefaultInstance.Settings.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(PostgreSql)].ConnectionString;
-            SqlServerCache.DefaultInstance.Settings.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(SqlServer)].ConnectionString;
+            MySqlCache.DefaultInstance.Settings.ConnectionString = ConnectionStrings.MySql;
+            PostgreSqlCache.DefaultInstance.Settings.ConnectionString = ConnectionStrings.PostgreSql;
+            SqlServerCache.DefaultInstance.Settings.ConnectionString = ConnectionStrings.SqlServer;
 
             OracleCache.DefaultInstance.Settings.CacheSchemaName = "CARAVAN";
             OracleCache.DefaultInstance.Settings.CacheEntriesTableName = "CRVN_KVL_ENTRIES";
-            OracleCache.DefaultInstance.Settings.ConnectionString = ConfigurationManager.ConnectionStrings[nameof(Oracle)].ConnectionString;
+            OracleCache.DefaultInstance.Settings.ConnectionString = ConnectionStrings.Oracle;
 
             PersistentCache.DefaultInstance.Settings.CacheFile = Path.GetTempFileName();
 

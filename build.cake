@@ -83,6 +83,7 @@ Task("Test-Release")
 });
 
 Task("Benchmark-Release")
+    .IsDependentOn("Test-Release")
     .Does(() =>
 {
     Benchmark("Release");
@@ -184,13 +185,7 @@ private void Test(string cfg)
 
     const string errMsg = " - Unit test failure - ";
 
-    var flags = "--noheader --noresult --stoponerror";
-    if (AppVeyor.IsRunningOnAppVeyor)
-    {
-        flags += " --mysql \"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=root;Pwd=Password12!;CharSet=utf8;Pooling=true;MinimumPoolSize=1;AutoEnlist=false;\"";
-        flags += " --postgresql \"Server=127.0.0.1;Port=5432;Database=postgres;UserId=postgres;Password=Password12!;MaxAutoPrepare=10;Pooling=true;MinPoolSize=1;Enlist=false;\"";
-        flags += " --sqlserver \"Server=(local)\\SQL2017;Database=kvlite;User ID=sa;Password=Password12!;MultipleActiveResultSets=true;Pooling=true;Min Pool Size=1;Enlist=false;\"";
-    }
+    var flags = ChangeConnectionStringsOnAppVeyor("--noheader --noresult --stoponerror");
 
     foreach (var netExe in GetFiles("./test/*.UnitTests/**/bin/{cfg}/*/*.UnitTests.exe".Replace("{cfg}", cfg)))
     {
@@ -252,13 +247,7 @@ private void Docs()
 
 private void Benchmark(string cfg)
 {   
-    var flags = "Comparison";
-    if (AppVeyor.IsRunningOnAppVeyor)
-    {
-        flags += " --mysql \"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=root;Pwd=Password12!;CharSet=utf8;Pooling=true;MinimumPoolSize=1;AutoEnlist=false;\"";
-        flags += " --postgresql \"Server=127.0.0.1;Port=5432;Database=postgres;UserId=postgres;Password=Password12!;MaxAutoPrepare=10;Pooling=true;MinPoolSize=1;Enlist=false;\"";
-        flags += " --sqlserver \"Server=(local)\\SQL2017;Database=kvlite;User ID=sa;Password=Password12!;MultipleActiveResultSets=true;Pooling=true;Min Pool Size=1;Enlist=false;\"";
-    }
+    var flags = ChangeConnectionStringsOnAppVeyor("Comparison");
 
     DotNetCoreRun("../test/PommaLabs.KVLite.Benchmarks", flags, new DotNetCoreRunSettings
     {
@@ -266,4 +255,15 @@ private void Benchmark(string cfg)
         Framework = "net461",
         WorkingDirectory = ArtifactsDir()
     });
+}
+
+private string ChangeConnectionStringsOnAppVeyor(string flags)
+{
+    if (AppVeyor.IsRunningOnAppVeyor)
+    {
+        flags += " --mysql \"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=root;Pwd=Password12!;CharSet=utf8;Pooling=true;MinimumPoolSize=1;AutoEnlist=false;\"";
+        flags += " --postgresql \"Server=127.0.0.1;Port=5432;Database=postgres;UserId=postgres;Password=Password12!;MaxAutoPrepare=10;Pooling=true;MinPoolSize=1;Enlist=false;\"";
+        flags += " --sqlserver \"Server=(local)\\SQL2017;Database=kvlite;User ID=sa;Password=Password12!;MultipleActiveResultSets=true;Pooling=true;Min Pool Size=1;Enlist=false;\"";
+    }
+    return flags;
 }

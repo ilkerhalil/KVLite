@@ -33,12 +33,6 @@ namespace PommaLabs.KVLite.UnitTests
 {
     internal static class Program
     {
-        public static string MySqlConnectionString { get; set; } = @"Server=127.0.0.1;Port=3306;Database=kvlite;Uid=kvlite;Pwd=kvlite;CharSet=utf8;Pooling=true;MinimumPoolSize=1;AutoEnlist=false;";
-
-        public static string PostgreSqlConnectionString { get; set; } = @"Server=127.0.0.1;Port=5432;Database=postgres;UserId=kvlite;Password=kvlite;MaxAutoPrepare=10;Pooling=true;MinPoolSize=1;Enlist=false;";
-
-        public static string SqlServerConnectionString { get; set; } = @"Data Source=(LocalDB)\\MSSQLLocalDB;Database=kvlite;IntegratedSecurity=true;MultipleActiveResultSets=true;Pooling=true;Min Pool Size=1;Enlist=false;";
-
         public static int Main(string[] args)
         {
             // Configure Serilog and LibLog logging.
@@ -52,36 +46,10 @@ namespace PommaLabs.KVLite.UnitTests
             FireAndForget.Limit = -1;
 
             // Retrieve additional connection strings from command line arguments.
-            args = LookForConnectionStrings(args);
+            args = ConnectionStrings.ReadFromCommandLineArguments(args);
 
             // Run unit tests.
             return new AutoRun(Assembly.GetEntryAssembly()).Execute(args);
-        }
-
-        private static string[] LookForConnectionStrings(string[] args)
-        {
-            var mySqlIndex = Array.IndexOf(args, "--mysql");
-            if (mySqlIndex >= 0 && args.Length > mySqlIndex + 1)
-            {
-                MySqlConnectionString = args[mySqlIndex + 1];
-                args[mySqlIndex] = args[mySqlIndex + 1] = null;
-            }
-
-            var postgreSqlIndex = Array.IndexOf(args, "--postgresql");
-            if (postgreSqlIndex >= 0 && args.Length > postgreSqlIndex + 1)
-            {
-                PostgreSqlConnectionString = args[postgreSqlIndex + 1];
-                args[postgreSqlIndex] = args[postgreSqlIndex + 1] = null;
-            }
-
-            var sqlServerIndex = Array.IndexOf(args, "--sqlserver");
-            if (sqlServerIndex >= 0 && args.Length > sqlServerIndex + 1)
-            {
-                SqlServerConnectionString = args[sqlServerIndex + 1];
-                args[sqlServerIndex] = args[sqlServerIndex + 1] = null;
-            }
-
-            return args.Where(a => a != null).ToArray();
         }
     }
 }
