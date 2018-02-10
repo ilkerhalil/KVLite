@@ -190,10 +190,10 @@ namespace PommaLabs.KVLite.WebApi
         /// <returns>The items extracted by the query.</returns>
         private static IEnumerable<ICacheItem<object>> QueryCacheItems(IEnumerable<ICacheItem<object>> items, string partitionLike, string keyLike, DateTimeOffset? fromExpiry, DateTimeOffset? toExpiry, DateTimeOffset? fromCreation, DateTimeOffset? toCreation)
         {
-            var fromExpiryUnix = fromExpiry.HasValue ? ClockHelper.ToUnixTimeSeconds(fromExpiry.Value) : new long?();
-            var toExpiryUnix = toExpiry.HasValue ? ClockHelper.ToUnixTimeSeconds(toExpiry.Value) : new long?();
-            var fromCreationUnix = fromCreation.HasValue ? ClockHelper.ToUnixTimeSeconds(fromCreation.Value) : new long?();
-            var toCreationUnix = toCreation.HasValue ? ClockHelper.ToUnixTimeSeconds(toCreation.Value) : new long?();
+            var fromExpiryUnix = fromExpiry.HasValue ? ClockHelper.ToUnixTimeSeconds(fromExpiry.Value) - 1L : new long?();
+            var toExpiryUnix = toExpiry.HasValue ? ClockHelper.ToUnixTimeSeconds(toExpiry.Value) + 1L : new long?();
+            var fromCreationUnix = fromCreation.HasValue ? ClockHelper.ToUnixTimeSeconds(fromCreation.Value) - 1L : new long?();
+            var toCreationUnix = toCreation.HasValue ? ClockHelper.ToUnixTimeSeconds(toCreation.Value) + 1L : new long?();
 
             return from i in items
                    where string.IsNullOrWhiteSpace(partitionLike) || i.Partition.Contains(partitionLike)
